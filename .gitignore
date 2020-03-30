@@ -1,0 +1,9 @@
+*.swp
+*.pyc
+.idea/
+.DS_Store
+*.rdb
+/pkg/
+/bin/
+.exe
+/vlog/

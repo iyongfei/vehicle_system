@@ -1,0 +1,136 @@
+syntax = "proto3";
+//基础最外层命令
+message Command {
+    enum TaskType {
+        DEFAULT_TASKTYPE = 0;
+        GW_SET = 1;//网关设置 解析 GwSetParam 类型
+		DEVICE_SET = 2;//终端设备设置 解析 DeviceSetParam 类型
+		STRATEGY_ADD = 3; //策略下发, 给小V添加策略 StrategyAddParam 类型
+		STRATEGY_SET = 4; //策略状态修改 用于解析 StrategySetParam 类型
+		SAMPLE_SET = 5; // 采集样本 用于解析 SampleSetParam 类型
+		PORTREDIRECT_SET = 6; // 端口映射状态修改, 解析 PortRedirectSetParam 类型
+		STATUS_UPDATE = 7; // 更新小V基本信息, 解析 StatusUpdateParam 类型
+		DEPLOYER_SET = 8;// 修改小V负责人信息, 解析 DeployerSetParam 类型
+		FIRMWARE_UPGRADE = 9;//更新版本,解析VersionNotifyParam类型
+    }
+
+    TaskType item_type = 1; //指令类型
+    bytes param = 2;//具体任务内容，根据类型取相应message
+    string cmdID =3; //该指令发送的ID
+}
+
+message FirmwareUpgradeParam {
+    string version = 1; //升级版本号
+    uint64 size = 2;//升级包大小(单位字节类型bytes)
+	string url = 3; //软件更新包存放地址(base64加密)
+	string SOC_type = 4; // 固件支持的SOC类型
+	string board_name = 5; // 硬件型号
+	string firmware_type = 6; // 固件类型
+	string firmware_name = 7; // 固件文件名
+    string md5 = 8;//md5校验软件包是否合法,完整
+}
+
+//更新小V基本信息
+message StatusUpdateParam {
+	enum Type {
+		DEFAULT_INFO = 0;
+		GWINFO = 1;//小V网关基本信息, 对应上传 GwInfoParam ;
+		DEVICE = 2;//小V的所有资产终端信息, 对应上传 DeviceParam ;
+		GWPROTECT = 3;//小V当前保护状态, 对应上传 GWProtectInfoParam ;
+		STRATEGY = 4;//小V当前策略信息及状态, 对应上传 StrategyParam ;
+		PORTREDIRECT = 5;//小V端口映射状态, 对应上传 PortRedirectParam ;
+		DEPLOYER = 6;//小V负责人状态, 对应上传 DeployerParam ;
+	}
+
+	Type type = 1;//需要上报更新的信息类型
+}
+
+
+//小v设置
+message GwSetParam {
+    enum Type {
+        DEFAULT = 0;
+        PROTECT = 1; //全局安全防护
+        RESTART = 2; //重启小V
+	}
+
+    Type type = 1;// 设置类型
+    bool switch = 2;// 开关
+}
+
+//设备设置
+message DeviceSetParam {
+    enum Type {
+        DEFAULT = 0;
+        PROTECT = 1;//是否受小V保护
+		INTERNET = 2;//是否允许联网
+		GUEST_ACCESS_DEVICE = 3;//访客权限，设备间访问限制开关(true为禁止访问)
+		LANVISIT = 4;//是否可以访问内网(内网访问权限修改)
+    }
+    string device_mac = 1;//管理设备
+    Type type = 2;// 设置类型
+    bool switch = 3;// 开关
+}
+
+//策略添加
+message StrategyAddParam{
+    enum Type {
+        TYPEDEFAULT = 0;
+        WHITEMODE =1;//白名单模式
+        BLACKMODE =2;//黑名单模式
+    }
+    enum HandleMode {
+        MODEDEFAULT = 0;
+        PREVENTWARNING = 1;//阻断并告警
+        WARNING = 2;//警告
+	}
+
+    string strategy_id = 1;//策略id
+    HandleMode handle_mode = 2;//处理方式
+	Type defense_type = 3;//策略模式
+	repeated string dIP_list = 5;//策略IP列表
+	repeated string URL_list = 6;//策略URL列表
+	bool enable = 7;//策略是否启用
+}
+
+// 策略修改
+message StrategySetParam{
+	enum HandleMode {
+        MODEDEFAULT = 0;
+        PREVENTWARNING = 1;//阻断并告警
+        WARNING = 2;//警告
+	}
+
+	string strategy_id = 1;//策略id
+	HandleMode handle_mode = 2;//处理方式
+	bool enable = 7;//策略是否启用
+}
+
+// 样本采集任务命令
+message SampleSetParam{
+	string id = 1; //用于采集的样本任务ID
+	uint32 collect_time_remain = 2; //采集时长 (单位 秒)
+}
+
+// 端口映射操作命令
+message PortRedirectSetParam{
+	enum Protocol { //端口映射网络协议类型
+		UNSET = 0;
+		UDP = 1;
+		TCP = 2;
+		ALL = 3; //支持所有协议, 默认
+	}
+
+	string src_port = 1;//外部端口
+	string dest_port = 2;//内部端口
+	bool switch = 3;//是否开启端口映射, false: 关; true: 开
+	Protocol proto = 4;//端口映射的网络协议类型
+	// string id = 5;//端口映射规则ID
+	string dest_ip = 6;//映射目标IP:内部终端IP地址
+}
+
+message DeployerSetParam{
+	string dev_name = 1; // 小V设备自定义名称
+	string name = 2; //小V负责人姓名
+	string phone = 3; //小V负责人电话
+}
