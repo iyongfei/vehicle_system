@@ -127,7 +127,6 @@ func (this *VLogger) FormatWriteLogMsg( logMsg string) {
 	}
 
 	flag := GetLoggerLevel(0)
-
 	_, file, line, ok := runtime.Caller(this.m_Depth)
 	if ok == false {
 		fmt.Println(GetLineNumFail)
