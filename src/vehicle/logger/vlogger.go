@@ -164,7 +164,6 @@ func (this *VLogger) Print(format string, args ...interface{}) {
 }
 
 func (this *VLogger) Info(format string, args ...interface{}) {
-	fmt.Println(args)
 	this.FormatWriteLogMsg(LOG_LEVEL_INFO,fmt.Sprintf(format, args...))
 }
 

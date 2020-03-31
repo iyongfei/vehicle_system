@@ -3,7 +3,6 @@ package api_server
 import (
 	"github.com/gin-gonic/gin"
 	"vehicle_system/src/vehicle/middleware/cors"
-	"vehicle_system/src/vehicle/util/logger"
 )
 
 type T struct {
@@ -13,11 +12,11 @@ type T struct {
 }
 
 func ApiServerStart()  {
-	t:=T{
-		"name",1,"sjdlkf",
-	}
-	logger.Logger.Info("%+v,%+v,%s",t,t,"sjdflk")
-	logger.Logger.Print("%+v,%+v,%s",t,t,"sjdfgggglk")
+	//t:=T{
+	//	"name",1,"sjdlkf",
+	//}
+	//logger.Logger.Info("%+v,%+v,%s",t,t,"sjdflk")
+	//logger.Logger.Print("%+v,%+v,%s",t,t,"sjdfgggglk")
 
 	router := gin.Default()
 	router.Use(cors.Default())
