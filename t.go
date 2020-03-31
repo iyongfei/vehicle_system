@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"runtime"
 	"time"
 )
 /**
@@ -29,8 +30,24 @@ type Name struct{
 	Sex string
 }
 
+func runFuncName()string{
+	pc := make([]uintptr,1)
+	runtime.Callers(2,pc)
+	f := runtime.FuncForPC(pc[0])
+	return f.Name()
+}
+
+func AAA()  {
+	fmt.Println(runFuncName())
+
+}
 
 func main()  {
+
+	r:=runFuncName()
+
+	AAA()
+	fmt.Println(r)
 
 	pwd, err := os.Getwd()
 
@@ -40,12 +57,16 @@ func main()  {
 	fmt.Println(ArgsInvaild)
 
 
-	game:= Name{"sjlkfs"}
+	//game:= Name{"sjlkfs"}
 
 
 
+	re:=fmt.Errorf("%s,%d","sj为ldkf",23)
+	re1:=fmt.Errorf("%s,%d","sj为ldkf",23)
+	fmt.Println(re)
+	fmt.Println(re1)
 
-	fmt.Println(game)
+	//fmt.Println(game)
 
 	//fileName := LOGDIR + "/" + "web" + "-" + TimeFormat(TodayFormat) + ".log"
 	//
