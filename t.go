@@ -22,12 +22,9 @@ const (
 	TodayTimeFormat = "2006-01-02 15:04:05"
 )
 
-func (e Name) Errorr() string {
-	return e.Sex
-}
 
 type Name struct{
-	Sex string
+	Sex interface{}
 }
 
 func runFuncName()string{
@@ -43,7 +40,17 @@ func AAA()  {
 }
 
 func main()  {
+	N:=Name{nil}
+	fmt.Println(N.Sex==nil)
+	S:=Name{""}
+	fmt.Println(S.Sex == "")
+	var a = func() time.Time {
+		return time.Unix(0, 0)
+	}
 
+
+	fmt.Println(a)
+	return
 	r:=runFuncName()
 
 	AAA()

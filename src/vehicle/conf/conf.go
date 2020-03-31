@@ -46,6 +46,10 @@ var (
 	PublishChanIdle time.Duration
 	SubscribeChanCapa uint32
 	SubscribeChanIdle time.Duration
+
+	//jwt
+	Expires time.Duration
+	SignKey string
 )
 
 func init()  {
@@ -111,4 +115,10 @@ func init()  {
 		"password:%s,max_reconnect_interval:%d,qos:%d,publish_chan_capa:%d,publish_chan_idle:%d,subscribe_chan_capa:%d,subscribe_chan_idle:%d\n",
 		EmqBrokerUrl,EmqClientId,EmqKeepAlive,AutoReconnect,ConnectTimeOut,EmqPingTimeOut,EmqCleanSession,
 		EmqUser,EmqPassword,MaxReconnectInterval,EmqQos,PublishChanCapa,PublishChanIdle,SubscribeChanCapa,SubscribeChanIdle)
+
+	Expires = iniParser.GetTimeDuration("jwt","expires")
+	SignKey = iniParser.GetString("jwt","vehicle")
+
+	logger.Logger.Info("Expires:%d,SignKey:%s",Expires,SignKey)
+	logger.Logger.Print("Expires:%d,SignKey:%s",Expires,SignKey)
 }
