@@ -10,7 +10,7 @@ var loggerErrInfo = errors.New("vlogger init error")
 
 func init()  {
 	var loggerErr error
-	Logger,loggerErr = NewRealStLogger()
+	Logger,loggerErr = NewVLogger()
 	if loggerErr!=nil || Logger == nil{
 		fmt.Println(loggerErrInfo)
 	}

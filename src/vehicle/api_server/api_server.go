@@ -6,8 +6,18 @@ import (
 	"vehicle_system/src/vehicle/util/logger"
 )
 
+type T struct {
+	Name string
+	Id int
+	Sex string
+}
+
 func ApiServerStart()  {
-	logger.Logger.INFO("%s","ApiServerStart")
+	t:=T{
+		"name",1,"sjdlkf",
+	}
+	logger.Logger.Info("%+v,%+v,%s",t,t,"sjdflk")
+	logger.Logger.Print("%+v,%+v,%s",t,t,"sjdfgggglk")
 
 	router := gin.Default()
 	router.Use(cors.Default())

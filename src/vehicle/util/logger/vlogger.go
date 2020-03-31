@@ -6,21 +6,23 @@ import (
 	"os"
 	"path"
 	"runtime"
+	"strings"
 	"sync"
 	"time"
 )
 
 const (
-	LOG_LEVEL_INFO = iota
-)
-
-const (
-	defaultDepth = 3
+	LOG_LEVEL_PRINT = 0
+	LOG_LEVEL_INFO = 1
+	LOG_LEVEL_ERROR = 2
+	DEFAULT_DEPTH = 3
+	DEL_LOG_DAYS = 7
+	DAY_SECONDS = 24*3600
 )
 
 var (
-	maxFileCap = 1024 * 1024 * 50
 	logDir = "vlog"
+
 )
 
 var (
@@ -37,10 +39,9 @@ type VLogger struct {
 	m_FileDir       string
 	m_FileName      string
 	m_FileHandle    *os.File
-	m_Level         int
 	m_Depth         int
 	m_nexDay        time.Time
-	m_MaxLogDataNum int
+	m_DelDay    uint
 	m_mu            sync.Mutex
 }
 
@@ -49,17 +50,15 @@ func defaultNew() *VLogger {
 		m_FileDir:       "",
 		m_FileName:      "",
 		m_FileHandle:    nil,
-		m_Level:         0,
-		m_Depth:         defaultDepth,
-		m_MaxLogDataNum: maxFileCap,
+		m_Depth:         DEFAULT_DEPTH,
+		m_DelDay:DEL_LOG_DAYS,
 	}
 }
-
-func NewRealStLogger() (*VLogger,error) {
-	//获取log文件夹的路径
+func NewVLogger() (*VLogger,error) {
 	logDirPwd, err := os.Getwd()
+	fmt.Println(logDirPwd,"logDirPwd")
 	if err != nil {
-		fmt.Println(OsGetWdFail)
+		fmt.Println(OsGetWdFail,err.Error())
 		os.Exit(1)
 		return nil,OsGetWdFail
 	}
@@ -70,6 +69,7 @@ func NewRealStLogger() (*VLogger,error) {
 	err = logger.obtainLofFile()
 
 	if err != nil {
+		fmt.Println(ObtainFileFail,err.Error())
 		return nil,ObtainFileFail
 	}
 	return logger,nil
@@ -85,12 +85,12 @@ func (this *VLogger) obtainLofFile() error {
 	}
 
 	//时间文件夹log20181125
-	//destFilePath := fmt.Sprintf("%s", "wxpay_log")
-	flag, err := IsExist(fileDir)
+	fileDirExist, err := IsExist(fileDir)
 	if err != nil {
+		fmt.Println(OStatPathFail,err.Error())
 		return OStatPathFail
 	}
-	if !flag {
+	if !fileDirExist {
 		os.MkdirAll(fileDir, os.ModePerm)
 	}
 	//文件夹存在,直接以创建的方式打开文件
@@ -100,7 +100,8 @@ func (this *VLogger) obtainLofFile() error {
 
 	fileHandle, err := os.OpenFile(logFilePath, os.O_CREATE|os.O_APPEND|os.O_RDWR, os.ModePerm)
 	if err != nil {
-		fmt.Println(OpenFileFail, err.Error())
+		fmt.Println(OpenFileFail,err.Error())
+		return OpenFileFail
 	}
 
 	this.m_FileHandle = fileHandle
@@ -113,8 +114,7 @@ func (this *VLogger) obtainLofFile() error {
 	return nil
 }
 
-///index
-func (this *VLogger) FormatWriteLogMsg( logMsg string) {
+func (this *VLogger) FormatWriteLogMsg(level int, logMsg string) {
 	this.m_mu.Lock()
 	defer this.m_mu.Unlock()
 	now := time.Now()
@@ -122,35 +122,64 @@ func (this *VLogger) FormatWriteLogMsg( logMsg string) {
 	if now.Unix() > this.m_nexDay.Unix() /**|| int(fileSize) > this.m_MaxLogDataNum*/ {
 		err := this.obtainLofFile()
 		if err != nil {
-			fmt.Println(ObtainFileFail)
+			fmt.Println(ObtainFileFail,err.Error())
 		}
 	}
 
-	flag := GetLoggerLevel(0)
+	for i := 0;i < DEL_LOG_DAYS ; i++ {
+		this.RemoveTimeOutLogFolder(this.m_DelDay+uint(i))
+	}
+
+	logLevel := GetLoggerLevel(level)
 	_, file, line, ok := runtime.Caller(this.m_Depth)
 	if ok == false {
 		fmt.Println(GetLineNumFail)
 	}
-	name := path.Base(file)
-	timer := time.Now().Format("2006-01-02 15:04:05.000")
-
-	fmt.Println(this.m_FileHandle.Name())//2018-11-25 17:55:49.845 [INFO]: [context.go:108] INFO 12
-	_, err := Write(this.m_FileHandle, fmt.Sprintf("%s %s [%s:%d] %s\n", timer, flag, name, line, logMsg))
+	pathBase := path.Base(file)
+	timer := time.Now().Format("2006-01-02 15:04:05")
+	_, err := Write(this.m_FileHandle, fmt.Sprintf("%s [%s:%d] %s %s\n", timer,pathBase, line, logLevel,logMsg))
 	if err != nil {
 		fmt.Println(WriteLogInfoFail, err.Error())
 	}
 }
 
+func (this *VLogger)RemoveTimeOutLogFolder(uiDayAgo uint)  {
+	timeNow := time.Now().Unix()
+	timeAgo := timeNow - int64(uiDayAgo*DAY_SECONDS)
+	t := time.Unix(timeAgo,0)
 
-func (this *VLogger) INFO(format string, args ...interface{}) {
-	this.FormatWriteLogMsg(fmt.Sprintf(format, args...))
+	destFilePath := this.m_FileDir + "/"
+
+	folderName := fmt.Sprintf("%s%d%d%d",destFilePath,t.Year(),t.Month(),t.Day())
+	os.RemoveAll(folderName)
 }
 
 
+func (this *VLogger) Print(format string, args ...interface{}) {
+	lineFeed:=strings.HasSuffix(format,"\n")
+	if !lineFeed{
+		format = format + "\n"
+	}
+	fmt.Printf(format,args...)
+}
+
+func (this *VLogger) Info(format string, args ...interface{}) {
+	fmt.Println(args)
+	this.FormatWriteLogMsg(LOG_LEVEL_INFO,fmt.Sprintf(format, args...))
+}
+
+func (this *VLogger) Error(format string, args ...interface{}) {
+	this.FormatWriteLogMsg(LOG_LEVEL_ERROR,fmt.Sprintf(format, args...))
+}
+
 func GetLoggerLevel(level int) string {
 	switch level {
+	case LOG_LEVEL_PRINT:
+		return "[PRINT]:"
 	case LOG_LEVEL_INFO:
 		return "[INFO]:"
+	case LOG_LEVEL_ERROR:
+		return "[ERROR]:"
 	default:
 		return ""
 	}
