@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"vehicle_system/src/vehicle/conf"
+	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
 	"vehicle_system/src/vehicle/response"
@@ -21,6 +22,8 @@ func Auth(c *gin.Context)  {
 	if argsTrimsEmpty{
 		ret:=response.StructResponseObj(response.VStatusBadRequest,response.ReqArgsIllegalMsg,"")
 		c.JSON(http.StatusOK,ret)
+		logger.Logger.Error("%s argsTrimsEmpty userName:%s,password:%s",util.RunFuncName(),userName,password)
+		logger.Logger.Print("%s argsTrimsEmpty userName:%s,password:%s",util.RunFuncName(),userName,password)
 		return
 	}
 
@@ -32,9 +35,11 @@ func Auth(c *gin.Context)  {
 	modelBase:=model_base.ModelBaseImpl(user)
 
 
-	_,recordNotFound := modelBase.GetModelsByCondition(user,
-		"user_name = ? and password = ?",[]interface{}{user.UserName,user.Password})
+	err,recordNotFound := modelBase.GetModelByCondition(user,
+		"user_name = ? and password = ?",[]interface{}{user.UserName,user.Password}...)
 	if recordNotFound{
+		logger.Logger.Error("%s userName:%s recordNotFound,err:%s",util.RunFuncName(),user.UserName,err)
+		logger.Logger.Print("%s userName:%s recordNotFound,err:%s",util.RunFuncName(),user.UserName,err)
 		ret:=response.StructResponseObj(response.VStatusServerError,response.ReqRegistUnAuthMsg,"")
 		c.JSON(http.StatusOK,ret)
 		return
@@ -54,30 +59,22 @@ func Auth(c *gin.Context)  {
 	if err!=nil{
 		ret:=response.StructResponseObj(response.VStatusServerError,response.ReqRegistAuthFailMsg,"")
 		c.JSON(http.StatusOK,ret)
+		logger.Logger.Error("%s username:%s createToken err:%v",util.RunFuncName(),userName,err)
+		logger.Logger.Print("%s username:%s createToken err:%v",util.RunFuncName(),userName,err)
 		return
 	}
 
-	//accounts,err := accountHandleModle.GetAllModels()
-	//
-	//
-	//user.InsetUser(user)
+	jwtTokenObj:= struct {
+		Token string `json:"token"`
+		UserId string `json:"user_id"`
+	}{jwtToken,user.UserId}
 
 
+	ret:=response.StructResponseObj(response.VStatusOK,response.ReqRegistAuthSuccessMsg,jwtTokenObj)
+	c.JSON(http.StatusOK,ret)
 
-
-	//vhaloClaims := middleware.JWT.VhaloClaims{
-	//	UserId:managerModel.UserId,
-	//	UserName:managerModel.Account,
-	//	PassWord:managerModel.Password,
-	//	StandardClaims:jwt.StandardClaims{
-	//		ExpiresAt: service.ExpiresAt, // 过期时间 2小时
-	//		Issuer:    service.SignKeyStr,              //签名的发行者
-	//	},
-	//}
-	//jwtToken,err := middleware.Jwt.CreateToken(vhaloClaims)
-
-
-
+	logger.Logger.Error("%s username:%s,createToken success",util.RunFuncName(),user.UserName)
+	logger.Logger.Print("%s username:%s,createToken success",util.RunFuncName(),user.UserName)
 }
 
 
@@ -104,7 +101,7 @@ func Regist(c *gin.Context)  {
 
 	modelBase:=model_base.ModelBaseImpl(user)
 
-	_,recordNotFound := modelBase.GetModelsByCondition(user,"user_name = ?",user.UserName)
+	_,recordNotFound := modelBase.GetModelByCondition(user,"user_name = ?",user.UserName)
 	if !recordNotFound{
 		ret:=response.StructResponseObj(response.VStatusServerError,response.ReqRegistExistMsg,"")
 		c.JSON(http.StatusOK,ret)

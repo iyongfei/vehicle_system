@@ -11,8 +11,6 @@ type Response struct {
 	Data interface{} `json:"data"`
 }
 
-
-
 /**
 返回对象
  */

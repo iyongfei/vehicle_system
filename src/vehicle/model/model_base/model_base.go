@@ -4,7 +4,9 @@ type ModelBaseImpl interface {
 	//插入
 	InsertModel(interface{}) error
 	//查询
-	GetModelsByCondition(model interface{},query interface{}, args ...interface{})(error,bool)
+	GetModelByCondition(model interface{},query interface{}, args ...interface{})(error,bool)
+	//查询
+	GetModelListByCondition(model interface{},query interface{}, args ...interface{})(error)
 	//修改
 	UpdateModelsByCondition(query interface{}, args ...interface{})(error)
 	//删除

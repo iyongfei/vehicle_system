@@ -62,7 +62,6 @@ func QueryModelRecordsByWhereCondition(models interface{}, query interface{}, ar
 /**
 获取某记录
  */
-
 func QueryModelOneRecordByWhereCondition(model interface{}, query interface{}, args ...interface{}) error {
 	vgorm,err := GetMysqlInstance().GetMysqlDB()
 	if err!= nil{
@@ -74,6 +73,20 @@ func QueryModelOneRecordByWhereCondition(model interface{}, query interface{}, a
 	}
 	return nil
 }
+/**
+检查是否有记录
+err = vgorm.Where(query, args...).Find(models).Error
+*/
+func QueryModelOneRecordIsExistByWhereCondition(model interface{}, query interface{}, args ...interface{}) (error, bool) {
+	vgorm,err := GetMysqlInstance().GetMysqlDB()
+	if err!= nil{
+		return fmt.Errorf("%s open grom err:%v",util.RunFuncName(),err.Error()),false
+	}
+	isExist := vgorm.Where(query, args...).First(model).RecordNotFound()
+
+	return nil, isExist
+}
+
 
 /**
 var ages []int64
@@ -125,19 +138,6 @@ func QueryModelOneRecordOffsetCount(model interface{}, count int,query interface
 
 
 
-/**
-检查是否有记录
-err = vgorm.Where(query, args...).Find(models).Error
-*/
-func QueryModelOneRecordIsExistByWhereCondition(model interface{}, query interface{}, args ...interface{}) (error, bool) {
-	vgorm,err := GetMysqlInstance().GetMysqlDB()
-	if err!= nil{
-		return fmt.Errorf("%s open grom err:%v",util.RunFuncName(),err.Error()),false
-	}
-	isExist := vgorm.Where(query, args...).First(model).RecordNotFound()
-
-	return nil, isExist
-}
 
 
 

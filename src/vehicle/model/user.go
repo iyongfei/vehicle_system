@@ -21,7 +21,7 @@ func (u *User) InsertModel(model interface{}) error {
 	return mysql.CreateModel(model)
 }
 
-func (u *User) GetModelsByCondition(model interface{},query interface{}, args ...interface{}) (error,bool) {
+func (u *User) GetModelByCondition(model interface{},query interface{}, args ...interface{}) (error,bool) {
 	err,recordNotFound := mysql.QueryModelOneRecordIsExistByWhereCondition(model,query,args...)
 	if err!=nil{
 		return err,true
@@ -35,5 +35,9 @@ func (u *User) UpdateModelsByCondition(query interface{}, args ...interface{}) e
 	return nil
 }
 func (u *User) DeleModelsByCondition(query interface{}, args ...interface{}) error {
+	return nil
+}
+
+func (u *User) GetModelListByCondition(model interface{},query interface{}, args ...interface{}) (error) {
 	return nil
 }

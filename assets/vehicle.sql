@@ -25,3 +25,18 @@ CREATE TABLE IF NOT EXISTS `users`  (
   UNIQUE KEY `user_name` (`user_name`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS `white_lists`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  `white_list_id` varchar(255) NULL DEFAULT NULL,
+  `dest_ip` varchar(255) NULL DEFAULT NULL,
+  `url` varchar(255) NULL DEFAULT NULL,
+  `source_mac` varchar(255) NULL DEFAULT NULL,
+  `source_ip` varchar(255) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE KEY `white_list_id` (`white_list_id`),
+  INDEX `idx_white_lists_deleted_at`(`deleted_at`) USING BTREE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
