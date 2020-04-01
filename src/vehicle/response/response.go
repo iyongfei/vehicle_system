@@ -1,6 +1,9 @@
 package response
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"github.com/gin-gonic/gin"
+)
 
 type Response struct {
 	Code int `json:"code"`
@@ -10,6 +13,9 @@ type Response struct {
 
 
 
+/**
+返回对象
+ */
 func StructResponseObj(code int,msg string,data interface{}) interface{} {
 	return Response{
 		Code:code,
@@ -17,6 +23,19 @@ func StructResponseObj(code int,msg string,data interface{}) interface{} {
 		Data:data}
 }
 
+func StructResponseMap(code int,msg string,data interface{}) interface{} {
+	return gin.H{
+		"code":code,
+		"msg":msg,
+		"data":data,
+	}
+}
+
+
+
+/**
+返回json字符串
+ */
 func StructResponseJson(code int,msg string,data interface{})  interface{}{
 	obj:=StructResponseObj(code,msg,data)
 	ret,err:=json.Marshal(obj)

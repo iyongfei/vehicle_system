@@ -28,7 +28,7 @@ const (
 	VStatusMethodNotAllowed = 4005
 
 	//表示服务器执行请求的时候出错了
-	VStatusInternalServerError   = 5000
+	VStatusServerError   = 5000
 	//作为网关或者代理工作的服务器尝试执行请求时，从上游服务器接收到无效的响应
 	VStatusBadGateway = 5002
 	//能及时从上游服务器收到响应。

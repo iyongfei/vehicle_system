@@ -47,16 +47,7 @@ func RandomString(ln int) string {
 
 	return string(b)
 }
-func RandomNumberString(ln int) string {
-	letters := []rune("123456789012345678901234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-	b := make([]rune, ln)
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	for i := range b {
-		b[i] = letters[r.Intn(len(letters))]
-	}
 
-	return string(b)
-}
 ///////////////////////////////////////////
 func CreatRandowUUId()uuid.UUID{
 	const UTag = "B64UUID"

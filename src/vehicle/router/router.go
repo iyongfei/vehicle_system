@@ -13,6 +13,7 @@ func RouterHandler()  {
 	router := gin.Default()
 	router.Use(cors.Default())
 	router.POST("/auth", api_server.Auth)
+	router.POST("/regist", api_server.Regist)
 
 	v1.V1Router(router)
 

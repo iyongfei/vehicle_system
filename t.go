@@ -1,10 +1,8 @@
 package main
 
 import (
-	"errors"
 	"fmt"
-	"os"
-	"runtime"
+	"strings"
 	"time"
 )
 /**
@@ -23,46 +21,28 @@ const (
 )
 
 
-type Name struct{
-	Sex interface{}
-}
-
-func runFuncName()string{
-	pc := make([]uintptr,1)
-	runtime.Callers(2,pc)
-	f := runtime.FuncForPC(pc[0])
-	return f.Name()
-}
-
-func AAA()  {
-	fmt.Println(runFuncName())
-
-}
-
-func main()  {
-	N:=Name{nil}
-	fmt.Println(N.Sex==nil)
-	S:=Name{""}
-	fmt.Println(S.Sex == "")
-	var a = func() time.Time {
-		return time.Unix(0, 0)
+func RrgsTrim(args... string) bool {
+	var flag = false
+	for _,arg:=range args{
+		if strings.Trim(arg, " ") == ""{
+			 flag = true
+			 break
+		}
 	}
 
+	return flag
+}
+type H map[string]interface{}
 
-	fmt.Println(a)
-	return
-	r:=runFuncName()
 
-	AAA()
-	fmt.Println(r)
+func main()  {
 
-	pwd, err := os.Getwd()
+	Hr := H{
+		"sd":"we",
+	}
+	Hr["sfd"] = "wer"
 
-	fmt.Println(pwd,err)
-
-	ArgsInvaild      := errors.New("args can be vaild")
-	fmt.Println(ArgsInvaild)
-
+	fmt.Println(Hr)
 
 	//game:= Name{"sjlkfs"}
 

@@ -1,12 +1,31 @@
 package util
 
-import "runtime"
+import (
+	"runtime"
+	"strings"
+)
 
 func RunFuncName()string{
 	pc := make([]uintptr,1)
 	runtime.Callers(2,pc)
 	f := runtime.FuncForPC(pc[0])
 	return f.Name()
+}
+
+func RrgsTrimEmpty(arg string) bool {
+	return strings.Trim(arg, " ") == ""
+}
+
+
+func RrgsTrimsEmpty(args... string) bool {
+	var flag = false
+	for _,arg:=range args{
+		if strings.Trim(arg, " ") == ""{
+			flag = true
+			break
+		}
+	}
+	return flag
 }
 
 
