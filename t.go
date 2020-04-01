@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"time"
+	"vehicle_system/src/vehicle/util"
 )
 /**
 go run t.go -logdir "ss"
@@ -34,17 +35,24 @@ func RrgsTrim(args... string) bool {
 }
 type H map[string]interface{}
 
+func T(args... string)  {
+	//for k,v:=range args{
+	//
+	//}
+}
+
+func isASCIIDigit(c byte) bool {
+	return '0' <= c && c <= '9'
+}
 
 func main()  {
 
-	Hr := H{
-		"sd":"we",
-	}
-	Hr["sfd"] = "wer"
-
-	fmt.Println(Hr)
-
+	//user_id := "sef"
+	user_name := "userNameg"
 	//game:= Name{"sjlkfs"}
+	r:=util.CamelCase(user_name)
+	fmt.Println(r)
+
 
 
 

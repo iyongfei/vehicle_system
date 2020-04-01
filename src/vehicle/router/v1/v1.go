@@ -16,10 +16,10 @@ func V1Router(r *gin.Engine)  {
 		apiV1.PUT("/events/:id", api_server.EditEvent)
 		apiV1.DELETE("/events/:id", api_server.DeleEvent)
 
-		apiV1.GET("/white_lists/:id", api_server.GetWhiteList)
+		apiV1.GET("/white_lists/:white_list_id", api_server.GetWhiteList)
 		apiV1.GET("/white_lists", api_server.GetWhiteLists)
 		apiV1.POST("/white_lists", api_server.AddWhiteList)
-		apiV1.PUT("/white_lists/:id", api_server.EditWhiteList)
-		apiV1.DELETE("/white_lists/:id", api_server.DeleWhiteList)
+		apiV1.PUT("/white_lists/:white_list_id", api_server.EditWhiteList)
+		apiV1.DELETE("/white_lists/:white_list_id", api_server.DeleWhiteList)
 	}
 }

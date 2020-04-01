@@ -18,10 +18,6 @@ type WhiteList struct {
 }
 
 
-//func (w *WhiteList) GetModelListByCondition(model interface{},query interface{}, args ...interface{}) (error,bool) {
-//	return nil,false
-//}
-
 
 func (w *WhiteList) InsertModel(model interface{}) error {
 	return mysql.CreateModel(model)
@@ -37,10 +33,20 @@ func (w *WhiteList) GetModelByCondition(model interface{},query interface{}, arg
 	}
 	return nil,false
 }
-func (w *WhiteList) UpdateModelsByCondition(query interface{}, args ...interface{}) error {
+func (w *WhiteList) UpdateModelsByCondition( values interface{}, query interface{}, queryArgs ...interface{}) error {
+	err := mysql.UpdateModelByMapModel(w,values,query,queryArgs...)
+	if err!=nil{
+		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
+	}
 	return nil
 }
+
+
 func (w *WhiteList) DeleModelsByCondition(query interface{}, args ...interface{}) error {
+err := mysql.HardDeleteModelB(w,query,args...)
+	if err!=nil{
+		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
+	}
 	return nil
 }
 func (w *WhiteList) GetModelListByCondition(model interface{},query interface{}, args ...interface{}) (error) {

@@ -8,7 +8,7 @@ type ModelBaseImpl interface {
 	//查询
 	GetModelListByCondition(model interface{},query interface{}, args ...interface{})(error)
 	//修改
-	UpdateModelsByCondition(query interface{}, args ...interface{})(error)
+	UpdateModelsByCondition(values interface{}, query interface{}, queryArgs ...interface{})(error)
 	//删除
 	DeleModelsByCondition(query interface{}, args ...interface{})(error)
 }

@@ -31,7 +31,7 @@ func (u *User) GetModelByCondition(model interface{},query interface{}, args ...
 	}
 	return nil,false
 }
-func (u *User) UpdateModelsByCondition(query interface{}, args ...interface{}) error {
+func (u *User) UpdateModelsByCondition(values interface{}, query interface{}, queryArgs ...interface{}) error {
 	return nil
 }
 func (u *User) DeleModelsByCondition(query interface{}, args ...interface{}) error {
