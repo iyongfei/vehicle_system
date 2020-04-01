@@ -1,11 +1,14 @@
 package api_server
 
 import (
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"vehicle_system/src/vehicle/conf"
 	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
 	"vehicle_system/src/vehicle/response"
+	"vehicle_system/src/vehicle/service"
 	"vehicle_system/src/vehicle/util"
 )
 
@@ -22,14 +25,38 @@ func Auth(c *gin.Context)  {
 	}
 
 	user:= &model.User{
-		UserId:"sdf",
 		UserName:userName,
 		Password:password,
 	}
 
-	re:=model_base.ModelBaseImpl(user)
+	modelBase:=model_base.ModelBaseImpl(user)
 
-	re.InsertModel(user)
+
+	_,recordNotFound := modelBase.GetModelsByCondition(user,
+		"user_name = ? and password = ?",[]interface{}{user.UserName,user.Password})
+	if recordNotFound{
+		ret:=response.StructResponseObj(response.VStatusServerError,response.ReqRegistUnAuthMsg,"")
+		c.JSON(http.StatusOK,ret)
+		return
+	}
+
+	vehicleClaims := service.VehicleClaims{
+		UserId:user.UserId,
+		UserName:user.UserName,
+		PassWord:user.Password,
+		StandardClaims:jwt.StandardClaims{
+			ExpiresAt: service.ExpiresAt,
+			Issuer:    conf.SignKey,
+		},
+	}
+	jwtToken,err := service.Jwt.CreateToken(vehicleClaims)
+
+	if err!=nil{
+		ret:=response.StructResponseObj(response.VStatusServerError,response.ReqRegistAuthFailMsg,"")
+		c.JSON(http.StatusOK,ret)
+		return
+	}
+
 	//accounts,err := accountHandleModle.GetAllModels()
 	//
 	//

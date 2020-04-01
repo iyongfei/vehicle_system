@@ -26,4 +26,6 @@ const (
 	ReqRegistFailMsg = "用户注册失败"
 	ReqRegistSuccessMsg = "用户注册成功"
 	ReqRegistExistMsg = "该用户已注册"
+	ReqRegistUnAuthMsg = "该用户未注册"
+	ReqRegistAuthFailMsg = "该用户授权失败"
 )
