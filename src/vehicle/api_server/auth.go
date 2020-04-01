@@ -9,6 +9,7 @@ func Auth(c *gin.Context)  {
 
 
 
+
 	//vhaloClaims := middleware.JWT.VhaloClaims{
 	//	UserId:managerModel.UserId,
 	//	UserName:managerModel.Account,
