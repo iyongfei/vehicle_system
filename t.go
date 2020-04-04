@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 	"time"
-	"vehicle_system/src/vehicle/util"
 )
 /**
 go run t.go -logdir "ss"
@@ -46,20 +45,19 @@ func isASCIIDigit(c byte) bool {
 }
 
 func main()  {
+	msg:="$SYS/brokers/emqx@127.0.0.1/clients/tianqi-R201b-967E6D9A3001/disconnected"
+	set:="$SYS/brokers/emqx@127.0.0.1/clients/"
 
-	//user_id := "sef"
-	user_name := "userNameg"
-	//game:= Name{"sjlkfs"}
-	r:=util.CamelCase(user_name)
-	fmt.Println(r)
+	topIndex := strings.Index(msg,set)
+	fmt.Println(topIndex)
 
+	topicSlice:=strings.Split(msg,set)
+	fmt.Println("topicSlice::",topicSlice)
+	topicSlice_1 :=topicSlice[1]
+	fmt.Println("topicSlice_1::",topicSlice_1)
+	gwId := strings.Split(topicSlice_1,"/")[0]
 
-
-
-	re:=fmt.Errorf("%s,%d","sj为ldkf",23)
-	re1:=fmt.Errorf("%s,%d","sj为ldkf",23)
-	fmt.Println(re)
-	fmt.Println(re1)
+	fmt.Println(gwId)
 
 	//fmt.Println(game)
 

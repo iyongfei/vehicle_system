@@ -1,4 +1,5 @@
 syntax = "proto3";
+package protobuf;
 //基础最外层命令
 message Command {
     enum TaskType {

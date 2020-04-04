@@ -4,7 +4,8 @@ import (
 	"github.com/eclipse/paho.mqtt.golang"
 	"github.com/golang/protobuf/proto"
 	"strings"
-	"vehicle_system/src/vehicle/emq/emq_client"
+	"vehicle_system/src/vehicle/emq/protobuf"
+	"vehicle_system/src/vehicle/logger"
 )
 
 var topicSubscribeHandler *TopicSubscribeHandler
@@ -29,33 +30,28 @@ Payload:{"clean_start":true,"clientid":"tianqi-R201b-967E6D9A3001","connack":0,"
  */
 func (t *TopicSubscribeHandler) HanleSubscribeTopicData(topicMsg mqtt.Message) error {
 	disconnected:=strings.HasSuffix(topicMsg.Topic(),"disconnected")
-	_=strings.HasSuffix(topicMsg.Topic(),"connected")
+	//_=strings.HasSuffix(topicMsg.Topic(),"connected")
 
 	if disconnected{
-		//topicSlice:=strings.Split(topicMsg.Topic(),"$SYS/brokers/emqx@127.0.0.1/clients/")
-		topicSlice:=strings.Split(topicMsg.Topic(),emq_client.SUBSCRIBE_LINE_TOPIC)
-		topicSlice_1 :=topicSlice[1]
-		gwId := strings.Split(topicSlice_1,"/")[0]
-		err := HandleGwManageInfoOnline(gwId,false)
-		//common_util.Vfmtf(log_util.LOG_WEB,"EmqClient LineStatus disconnected Gwid:%s\n",gwId)
-		//log_util.VlogInfo(log_util.LOG_WEB,"EmqClient LineStatus disconnected Gwid:%s\n",gwId)
+		err :=HanleSubscribeTopicLineData(topicMsg)
 		return err
 	}
 
-	pushReq := vsubscribe.GWResult{}
-	err := proto.Unmarshal(topicMsg.Payload(), &pushReq)
+	vehicleResult := protobuf.GWResult{}
+	err := proto.Unmarshal(topicMsg.Payload(), &vehicleResult)
 
 	if err != nil {
-		log_util.VlogInfo(log_util.LOG_WEB, "HanleSubscribeTopicData proto unmarshal requestBody to GWResult error:[%v]\n", err)
-		common_util.Vfmtf(log_util.LOG_WEB, "HanleSubscribeTopicData proto unmarshal requestBody to GWResult error:[%v]\n", err)
+		//log_util.VlogInfo(log_util.LOG_WEB, "HanleSubscribeTopicData proto unmarshal requestBody to GWResult error:[%v]\n", err)
+		//common_util.Vfmtf(log_util.LOG_WEB, "HanleSubscribeTopicData proto unmarshal requestBody to GWResult error:[%v]\n", err)
 		return err
 	}
-	gwId := pushReq.GetGUID()
+	vehicleId := vehicleResult.GetGUID()
 
 	//更新为在线
-	gwOnlineAttrs:=[]interface{}{"online_status",true}
-	_=mysql_util.UpdateModelOneColumn(&gw.GwInfo{},gwOnlineAttrs,"gw_id = ?",[]interface{}{gwId}...)
-	_=mysql_util.UpdateModelOneColumn(&gw.GwInfoUncerted{},gwOnlineAttrs,"gw_id = ?",[]interface{}{gwId}...)
+	//gwOnlineAttrs:=[]interface{}{"online_status",true}
+	//_=mysql_util.UpdateModelOneColumn(&gw.GwInfo{},gwOnlineAttrs,"gw_id = ?",[]interface{}{gwId}...)
+	//_=mysql_util.UpdateModelOneColumn(&gw.GwInfoUncerted{},gwOnlineAttrs,"gw_id = ?",[]interface{}{gwId}...)
+
 
 	var GWResult_ActionType_name = map[int32]string{
 		0: "DEFAULT",
@@ -69,33 +65,32 @@ func (t *TopicSubscribeHandler) HanleSubscribeTopicData(topicMsg mqtt.Message) e
 		8: "DEPLOYER",
 		9: "FIRMWARE",
 	}
+	actionTypeName:=GWResult_ActionType_name[int32(vehicleResult.ActionType)]
 
-	//log_util.VlogInfo(log_util.LOG_WEB, "HanleSubscribeTopicData ActionType:[%s],CmdId:[%s],Gwid:[%s]\n", GWResult_ActionType_name[int32(pushReq.ActionType)],pushReq.CmdID,pushReq.GUID)
-	//common_util.Vfmtf(log_util.LOG_WEB, "HanleSubscribeTopicData ActionType:[%s],CmdId:[%s],Gwid:[%s]\n", GWResult_ActionType_name[int32(pushReq.ActionType)],pushReq.CmdID,pushReq.GUID)
+	logger.Logger.Print("hanleSubscribeTopicData action name:%s,vehicleId:%s",actionTypeName,vehicleId)
+	logger.Logger.Info("hanleSubscribeTopicData action name:%s,vehicleId:%s",actionTypeName,vehicleId)
 
 	var handGwResultError error
-	switch actionType := pushReq.ActionType; actionType {
-	case vsubscribe.GWResult_DEVICE: //设备
-		handGwResultError = HandleAssetsManageInfoList(pushReq,gwId)
-	case vsubscribe.GWResult_THREAT: //威胁
-		handGwResultError = HandleThreatInfoList(pushReq,gwId)
-	case vsubscribe.GWResult_GW_INFO: //小v
-		handGwResultError = HandleGwManageInfoList(pushReq,gwId)
-	case vsubscribe.GWResult_DEPLOYER: //小v负责人
-		handGwResultError = HandleGwManageLeaderInfo(pushReq,gwId)
-	case vsubscribe.GWResult_SAMPLE: //样本
-		handGwResultError = HandleSampleManageInfo(pushReq,gwId)
-	case vsubscribe.GWResult_PROTECT: //全局保护
-		handGwResultError = HandleGwProtectInfo(pushReq,gwId)
-	case vsubscribe.GWResult_STRATEGY: //策略
-		handGwResultError = HandleGwStrategy(pushReq,gwId)
-	case vsubscribe.GWResult_PORTREDIRECT: //映射
-		handGwResultError = PushGwPortRedirect(pushReq,gwId)
-	case vsubscribe.GWResult_FIRMWARE: //更新
-		handGwResultError = PushFirware(pushReq,gwId)
+	switch actionType := vehicleResult.ActionType; actionType {
+	case protobuf.GWResult_THREAT: //威胁
+		handGwResultError = HandleVehicleThreat(vehicleResult,vehicleId)
+	case protobuf.GWResult_GW_INFO: //小v
+		handGwResultError = HandleVehicleInfo(vehicleResult,vehicleId)
+	case protobuf.GWResult_STRATEGY: //策略
+		handGwResultError = HandleVehicleStrategy(vehicleResult,vehicleId)
 	default:
-		log_util.VlogInfo(log_util.LOG_WEB, "handleGwPushSvr invalidParam actionType is not exist,gwId:%s",gwId)
-		common_util.Vfmtf(log_util.LOG_WEB, "handleGwPushSvr invalidParam actionType is not exist,gwId:%s",gwId)
+		//log_util.VlogInfo(log_util.LOG_WEB, "handleGwPushSvr invalidParam actionType is not exist,gwId:%s",gwId)
+		//common_util.Vfmtf(log_util.LOG_WEB, "handleGwPushSvr invalidParam actionType is not exist,gwId:%s",gwId)
 	}
 	return  handGwResultError
+}
+
+func HanleSubscribeTopicLineData(topicMsg mqtt.Message) error {
+	//topicSlice:=strings.Split(topicMsg.Topic(),"$SYS/brokers/emqx@127.0.0.1/clients/")
+	subscribeLineTopic := "$SYS/brokers/emqx@127.0.0.1/clients/+/+"
+	topicSlice:=strings.Split(topicMsg.Topic(),subscribeLineTopic)
+	topicSlice_1 :=topicSlice[1]
+	vehicleId := strings.Split(topicSlice_1,"/")[0]
+	err := HandleVehicleOnline(vehicleId,false)
+	return err
 }
