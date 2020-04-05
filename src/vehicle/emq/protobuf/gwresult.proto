@@ -4,50 +4,20 @@ package protobuf;
 message GWResult {
 	enum ActionType {
 		DEFAULT = 0;
-		DEVICE = 1;//设备信息 上报 DeviceParam 类型
-		THREAT = 2;//威胁数据上报 上报 ThreatParam 类型
-		GW_INFO = 3;//网关基础信息(开机上报)，上报 GwInfoParam 类型
-		SAMPLE = 4; //样本采集状态，上报 SampleParam 类型
-		PROTECT = 5; //小V保护状态, 上报 GWProtectInfoParam 类型
-		STRATEGY = 6; //策略状态, 上报 StrategyParam 类型
-		PORTREDIRECT = 7;//端口映射, 上报 PortRedirectParam 类型
-		DEPLOYER = 8;//小V负责人信息, 上报 DeployerParam 类型
-		FIRMWARE = 9;//版本更新信息,上报FirwareParam类型
+		GW_INFO = 1;
+		THREAT = 2;
+		STRATEGY = 3;
 	}
-
 	ActionType action_type = 1;//推送数据类型
 	bytes param = 2;//请求参数
 	string GUID = 3;//小VGUID
-	string cmdID = 4;//结果返回所对应的命令ID. 用于返回Command的cmdID值及结果
 }
 
-message FirwareParam {
-	enum Status {
-		DEFAULT = 0;
-		UPGRADING = 1;//当前已经有一个升级任务正在进行中
-		FIRWARE_INVALID = 2; //软件包无效(boardname, arch-type不符合小V架构要求)
-		URL_INVALID = 3; //url无效
-		DOWNLOAD_ING  = 4; //下载中
-		DOWNLOAD_FINISHED = 5; //下载成功
-		DOWNLOAD_FAIL = 6; //下载失败
-		MD5_ERR = 7;//软件包md5值不一致
-		CHECK_OK = 8; //固件文件校验成功,开始升级,预计升级需要1分组, 期间小V不能断电
-		EXEC_FAIL = 9; //小V内部执行升级固件升级命令, 返回失败结果. 注: 成功不返回结果,需小V重新上线后对照版本与升级目标是否一致.
-	}
-
-	string version = 1; //下载的软件包对应的版本　
-	uint32 upgrade_timestamp = 2;//软件开始下载时间戳
-	Status upgrade_status = 3; //升级状态
-	uint32 timeout = 4; //　下载超时, 单位秒
-}
-
-//小v盒子的基本信息
 message GwInfoParam {
 	message ModuleItem {
 		string name = 1;//模块名称
 		string version = 2;//模块版本号
 	}
-
 	enum Type {
 		DEFAULT = 0;
 		VSMART = 1;
@@ -55,13 +25,11 @@ message GwInfoParam {
 		VWIFI = 3;
 		VENUSHALO = 4;
 	}
-
 	enum DeployMode {
 		DEPLOYMODEDEFAULT = 0;
 		ROUTEMODE = 1; //路由模式
 		SWITCHMODE = 2;//透传(交换)模式
 	}
-
 	string version = 1;//软件版本
 	uint32 start_time = 2;//启动时间
 	string firmware_version = 3;//固件版本
@@ -75,23 +43,6 @@ message GwInfoParam {
 	uint32 timestamp = 11;//时间戳
 	int32 hb_timeout = 12; //心跳超时(秒),用于显示小V在线/离线
 	DeployMode deploy_mode = 13; //网关部署模式
-}
-
-//小v下属关联设备（终端）
-message DeviceParam{
-	message Item{
-		string ip = 1;//ip地址
-		string mac = 2;//mac地址
-		string name = 3;//设备名称
-		string trademark = 4;//品牌名称
-		bool is_online = 5;//是否在线
-		uint32 last_online = 6;//最后在线时间戳
-		bool internet_switch = 7;//是否允许联网
-		bool protect_switch = 8;//是否受小V保护
-		bool lan_visit_switch = 9;//是否可以访问内网,false:访问关闭. true:访问开启
-	}
-
-	repeated Item device_item = 1;
 }
 
 //威胁类型
@@ -110,64 +61,21 @@ message ThreatParam{
 			LANINTRUSION = 8;//网内设备非法访问内网 入侵目标IP为: dst_ip, content:目标设备mac地址
 			UDEVLANINTRUSION = 9; //非法设备访问内网 入侵目标IP为: dst_ip, content:目标设备mac地址
 		}
-
 		enum Status {
 			UNKNOWN = 0;
 			FOUND = 1;//新发现
 			PREVENT = 2;//已阻止(告警并拦截)
 			WARNING = 3;//已(仅)警告
 		}
-
 		string src_mac = 1;//发起网络请求的设备mac
 		Type threat_type = 2;//威胁类型
-
 		string content = 3;//威胁内容，根据类型传, 包括:url/mac
 		Status threat_status = 4;//威胁处理状态
-
 		uint32 attact_time = 5;//威胁发现时间
 		string src_ip = 6;//源ip
 		string dst_ip = 7;//目标ip
 	}
-
 	repeated Item threat_item = 1;//威胁项
-}
-
-// 样本采集任务状态
-message SampleParam {
-	enum Status {
-		STATUSDEFAULT = 0;
-		COLLECTING = 1;//采集中
-		COLLECT_OK = 2;//采集已完成
-		COLLECT_FAILED = 3;//采集失败
-	}
-
-	message Item {
-		string sm = 6;//源终端mac
-		string sip = 7;//源IP
-		uint32 sp = 8;//源端口号
-		string dip = 9;//目标IP
-		uint32 dp = 10;//目标端口号
-		string u = 12;//目标url, 可能会为空
-		string tm = 13;//访问时间
-	}
-
-	string id = 1; //采集任务ID
-	uint32 start_time = 2;//开始采集时间
-	uint32 time_remain = 3;//采集时长时间(单位 秒)
-	Status status = 4;//采集状态
-	repeated Item sample_item = 5;  //采集样本结果, 当采集状态为 COLLECTING 时, 该值为空
-	uint32 timeout = 6; // 采集超时, 单位秒. (超时时间内没有 COLLECTING 且未上报 COLLECT_OK 状态, 则采集失败)
-}
-
-// 小V盒子全局保护状态信息
-message GWProtectInfoParam {
-	enum Status {
-		DEFAULT = 0;
-		PROTECTING = 1;
-		UNPROTECTED = 2;
-	}
-
-	Status protect_status = 1; // 保护状态
 }
 
 // 小V 当前策略的状态
@@ -186,32 +94,4 @@ message StrategyParam {
 	HandleMode handle_mode = 2;//处理方式
 	Type defense_type = 3;//策略模式
 	bool enable = 4;//策略是否启用
-}
-
-// 端口映射状态
-message PortRedirectParam {
-	message Item {
-		enum Protocol { //端口映射网络协议类型
-						UNSET = 0;
-						UDP = 1;
-						TCP = 2;
-						ALL = 3; //支持所有协议, 默认
-		}
-
-		string src_port = 1;//外部端口 索引
-		string dest_port = 2;//内部端口
-		string dest_ip = 3;//映射目标IP:内部终端IP地址
-		bool switch = 4;//是否开启端口映射, false: 关; true: 开
-		Protocol proto = 5;//端口映射的网络协议类型
-		// string id = 5;//端口映射规则ID
-	}
-
-	repeated Item port_redirect = 10; //端口映射表
-}
-
-// 网关昵称和部署负责人信息
-message DeployerParam {
-	string name = 1;//小V负责人姓名
-	string phone = 2;//小V负责人电话
-	string dev_name = 3;//小V部署时设置的昵称
 }

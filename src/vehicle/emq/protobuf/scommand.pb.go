@@ -25,40 +25,22 @@ type Command_TaskType int32
 const (
 	Command_DEFAULT_TASKTYPE Command_TaskType = 0
 	Command_GW_SET           Command_TaskType = 1
-	Command_DEVICE_SET       Command_TaskType = 2
 	Command_STRATEGY_ADD     Command_TaskType = 3
 	Command_STRATEGY_SET     Command_TaskType = 4
-	Command_SAMPLE_SET       Command_TaskType = 5
-	Command_PORTREDIRECT_SET Command_TaskType = 6
-	Command_STATUS_UPDATE    Command_TaskType = 7
-	Command_DEPLOYER_SET     Command_TaskType = 8
-	Command_FIRMWARE_UPGRADE Command_TaskType = 9
 )
 
 var Command_TaskType_name = map[int32]string{
 	0: "DEFAULT_TASKTYPE",
 	1: "GW_SET",
-	2: "DEVICE_SET",
 	3: "STRATEGY_ADD",
 	4: "STRATEGY_SET",
-	5: "SAMPLE_SET",
-	6: "PORTREDIRECT_SET",
-	7: "STATUS_UPDATE",
-	8: "DEPLOYER_SET",
-	9: "FIRMWARE_UPGRADE",
 }
 
 var Command_TaskType_value = map[string]int32{
 	"DEFAULT_TASKTYPE": 0,
 	"GW_SET":           1,
-	"DEVICE_SET":       2,
 	"STRATEGY_ADD":     3,
 	"STRATEGY_SET":     4,
-	"SAMPLE_SET":       5,
-	"PORTREDIRECT_SET": 6,
-	"STATUS_UPDATE":    7,
-	"DEPLOYER_SET":     8,
-	"FIRMWARE_UPGRADE": 9,
 }
 
 func (x Command_TaskType) String() string {
@@ -67,46 +49,6 @@ func (x Command_TaskType) String() string {
 
 func (Command_TaskType) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_1bdf113f3d6e5a7a, []int{0, 0}
-}
-
-type StatusUpdateParam_Type int32
-
-const (
-	StatusUpdateParam_DEFAULT_INFO StatusUpdateParam_Type = 0
-	StatusUpdateParam_GWINFO       StatusUpdateParam_Type = 1
-	StatusUpdateParam_DEVICE       StatusUpdateParam_Type = 2
-	StatusUpdateParam_GWPROTECT    StatusUpdateParam_Type = 3
-	StatusUpdateParam_STRATEGY     StatusUpdateParam_Type = 4
-	StatusUpdateParam_PORTREDIRECT StatusUpdateParam_Type = 5
-	StatusUpdateParam_DEPLOYER     StatusUpdateParam_Type = 6
-)
-
-var StatusUpdateParam_Type_name = map[int32]string{
-	0: "DEFAULT_INFO",
-	1: "GWINFO",
-	2: "DEVICE",
-	3: "GWPROTECT",
-	4: "STRATEGY",
-	5: "PORTREDIRECT",
-	6: "DEPLOYER",
-}
-
-var StatusUpdateParam_Type_value = map[string]int32{
-	"DEFAULT_INFO": 0,
-	"GWINFO":       1,
-	"DEVICE":       2,
-	"GWPROTECT":    3,
-	"STRATEGY":     4,
-	"PORTREDIRECT": 5,
-	"DEPLOYER":     6,
-}
-
-func (x StatusUpdateParam_Type) String() string {
-	return proto.EnumName(StatusUpdateParam_Type_name, int32(x))
-}
-
-func (StatusUpdateParam_Type) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_1bdf113f3d6e5a7a, []int{2, 0}
 }
 
 type GwSetParam_Type int32
@@ -134,41 +76,7 @@ func (x GwSetParam_Type) String() string {
 }
 
 func (GwSetParam_Type) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_1bdf113f3d6e5a7a, []int{3, 0}
-}
-
-type DeviceSetParam_Type int32
-
-const (
-	DeviceSetParam_DEFAULT             DeviceSetParam_Type = 0
-	DeviceSetParam_PROTECT             DeviceSetParam_Type = 1
-	DeviceSetParam_INTERNET            DeviceSetParam_Type = 2
-	DeviceSetParam_GUEST_ACCESS_DEVICE DeviceSetParam_Type = 3
-	DeviceSetParam_LANVISIT            DeviceSetParam_Type = 4
-)
-
-var DeviceSetParam_Type_name = map[int32]string{
-	0: "DEFAULT",
-	1: "PROTECT",
-	2: "INTERNET",
-	3: "GUEST_ACCESS_DEVICE",
-	4: "LANVISIT",
-}
-
-var DeviceSetParam_Type_value = map[string]int32{
-	"DEFAULT":             0,
-	"PROTECT":             1,
-	"INTERNET":            2,
-	"GUEST_ACCESS_DEVICE": 3,
-	"LANVISIT":            4,
-}
-
-func (x DeviceSetParam_Type) String() string {
-	return proto.EnumName(DeviceSetParam_Type_name, int32(x))
-}
-
-func (DeviceSetParam_Type) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_1bdf113f3d6e5a7a, []int{4, 0}
+	return fileDescriptor_1bdf113f3d6e5a7a, []int{1, 0}
 }
 
 type StrategyAddParam_Type int32
@@ -196,7 +104,7 @@ func (x StrategyAddParam_Type) String() string {
 }
 
 func (StrategyAddParam_Type) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_1bdf113f3d6e5a7a, []int{5, 0}
+	return fileDescriptor_1bdf113f3d6e5a7a, []int{2, 0}
 }
 
 type StrategyAddParam_HandleMode int32
@@ -224,7 +132,7 @@ func (x StrategyAddParam_HandleMode) String() string {
 }
 
 func (StrategyAddParam_HandleMode) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_1bdf113f3d6e5a7a, []int{5, 1}
+	return fileDescriptor_1bdf113f3d6e5a7a, []int{2, 1}
 }
 
 type StrategySetParam_HandleMode int32
@@ -252,45 +160,13 @@ func (x StrategySetParam_HandleMode) String() string {
 }
 
 func (StrategySetParam_HandleMode) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_1bdf113f3d6e5a7a, []int{6, 0}
-}
-
-type PortRedirectSetParam_Protocol int32
-
-const (
-	PortRedirectSetParam_UNSET PortRedirectSetParam_Protocol = 0
-	PortRedirectSetParam_UDP   PortRedirectSetParam_Protocol = 1
-	PortRedirectSetParam_TCP   PortRedirectSetParam_Protocol = 2
-	PortRedirectSetParam_ALL   PortRedirectSetParam_Protocol = 3
-)
-
-var PortRedirectSetParam_Protocol_name = map[int32]string{
-	0: "UNSET",
-	1: "UDP",
-	2: "TCP",
-	3: "ALL",
-}
-
-var PortRedirectSetParam_Protocol_value = map[string]int32{
-	"UNSET": 0,
-	"UDP":   1,
-	"TCP":   2,
-	"ALL":   3,
-}
-
-func (x PortRedirectSetParam_Protocol) String() string {
-	return proto.EnumName(PortRedirectSetParam_Protocol_name, int32(x))
-}
-
-func (PortRedirectSetParam_Protocol) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_1bdf113f3d6e5a7a, []int{8, 0}
+	return fileDescriptor_1bdf113f3d6e5a7a, []int{3, 0}
 }
 
 //基础最外层命令
 type Command struct {
 	ItemType             Command_TaskType `protobuf:"varint,1,opt,name=item_type,json=itemType,proto3,enum=protobuf.Command_TaskType" json:"item_type,omitempty"`
 	Param                []byte           `protobuf:"bytes,2,opt,name=param,proto3" json:"param,omitempty"`
-	CmdID                string           `protobuf:"bytes,3,opt,name=cmdID,proto3" json:"cmdID,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
 	XXX_unrecognized     []byte           `json:"-"`
 	XXX_sizecache        int32            `json:"-"`
@@ -335,148 +211,6 @@ func (m *Command) GetParam() []byte {
 	return nil
 }
 
-func (m *Command) GetCmdID() string {
-	if m != nil {
-		return m.CmdID
-	}
-	return ""
-}
-
-type FirmwareUpgradeParam struct {
-	Version              string   `protobuf:"bytes,1,opt,name=version,proto3" json:"version,omitempty"`
-	Size                 uint64   `protobuf:"varint,2,opt,name=size,proto3" json:"size,omitempty"`
-	Url                  string   `protobuf:"bytes,3,opt,name=url,proto3" json:"url,omitempty"`
-	SOCType              string   `protobuf:"bytes,4,opt,name=SOC_type,json=SOCType,proto3" json:"SOC_type,omitempty"`
-	BoardName            string   `protobuf:"bytes,5,opt,name=board_name,json=boardName,proto3" json:"board_name,omitempty"`
-	FirmwareType         string   `protobuf:"bytes,6,opt,name=firmware_type,json=firmwareType,proto3" json:"firmware_type,omitempty"`
-	FirmwareName         string   `protobuf:"bytes,7,opt,name=firmware_name,json=firmwareName,proto3" json:"firmware_name,omitempty"`
-	Md5                  string   `protobuf:"bytes,8,opt,name=md5,proto3" json:"md5,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *FirmwareUpgradeParam) Reset()         { *m = FirmwareUpgradeParam{} }
-func (m *FirmwareUpgradeParam) String() string { return proto.CompactTextString(m) }
-func (*FirmwareUpgradeParam) ProtoMessage()    {}
-func (*FirmwareUpgradeParam) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1bdf113f3d6e5a7a, []int{1}
-}
-
-func (m *FirmwareUpgradeParam) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_FirmwareUpgradeParam.Unmarshal(m, b)
-}
-func (m *FirmwareUpgradeParam) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_FirmwareUpgradeParam.Marshal(b, m, deterministic)
-}
-func (m *FirmwareUpgradeParam) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_FirmwareUpgradeParam.Merge(m, src)
-}
-func (m *FirmwareUpgradeParam) XXX_Size() int {
-	return xxx_messageInfo_FirmwareUpgradeParam.Size(m)
-}
-func (m *FirmwareUpgradeParam) XXX_DiscardUnknown() {
-	xxx_messageInfo_FirmwareUpgradeParam.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_FirmwareUpgradeParam proto.InternalMessageInfo
-
-func (m *FirmwareUpgradeParam) GetVersion() string {
-	if m != nil {
-		return m.Version
-	}
-	return ""
-}
-
-func (m *FirmwareUpgradeParam) GetSize() uint64 {
-	if m != nil {
-		return m.Size
-	}
-	return 0
-}
-
-func (m *FirmwareUpgradeParam) GetUrl() string {
-	if m != nil {
-		return m.Url
-	}
-	return ""
-}
-
-func (m *FirmwareUpgradeParam) GetSOCType() string {
-	if m != nil {
-		return m.SOCType
-	}
-	return ""
-}
-
-func (m *FirmwareUpgradeParam) GetBoardName() string {
-	if m != nil {
-		return m.BoardName
-	}
-	return ""
-}
-
-func (m *FirmwareUpgradeParam) GetFirmwareType() string {
-	if m != nil {
-		return m.FirmwareType
-	}
-	return ""
-}
-
-func (m *FirmwareUpgradeParam) GetFirmwareName() string {
-	if m != nil {
-		return m.FirmwareName
-	}
-	return ""
-}
-
-func (m *FirmwareUpgradeParam) GetMd5() string {
-	if m != nil {
-		return m.Md5
-	}
-	return ""
-}
-
-//更新小V基本信息
-type StatusUpdateParam struct {
-	Type                 StatusUpdateParam_Type `protobuf:"varint,1,opt,name=type,proto3,enum=protobuf.StatusUpdateParam_Type" json:"type,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}               `json:"-"`
-	XXX_unrecognized     []byte                 `json:"-"`
-	XXX_sizecache        int32                  `json:"-"`
-}
-
-func (m *StatusUpdateParam) Reset()         { *m = StatusUpdateParam{} }
-func (m *StatusUpdateParam) String() string { return proto.CompactTextString(m) }
-func (*StatusUpdateParam) ProtoMessage()    {}
-func (*StatusUpdateParam) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1bdf113f3d6e5a7a, []int{2}
-}
-
-func (m *StatusUpdateParam) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_StatusUpdateParam.Unmarshal(m, b)
-}
-func (m *StatusUpdateParam) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_StatusUpdateParam.Marshal(b, m, deterministic)
-}
-func (m *StatusUpdateParam) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_StatusUpdateParam.Merge(m, src)
-}
-func (m *StatusUpdateParam) XXX_Size() int {
-	return xxx_messageInfo_StatusUpdateParam.Size(m)
-}
-func (m *StatusUpdateParam) XXX_DiscardUnknown() {
-	xxx_messageInfo_StatusUpdateParam.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_StatusUpdateParam proto.InternalMessageInfo
-
-func (m *StatusUpdateParam) GetType() StatusUpdateParam_Type {
-	if m != nil {
-		return m.Type
-	}
-	return StatusUpdateParam_DEFAULT_INFO
-}
-
 //小v设置
 type GwSetParam struct {
 	Type                 GwSetParam_Type `protobuf:"varint,1,opt,name=type,proto3,enum=protobuf.GwSetParam_Type" json:"type,omitempty"`
@@ -490,7 +224,7 @@ func (m *GwSetParam) Reset()         { *m = GwSetParam{} }
 func (m *GwSetParam) String() string { return proto.CompactTextString(m) }
 func (*GwSetParam) ProtoMessage()    {}
 func (*GwSetParam) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1bdf113f3d6e5a7a, []int{3}
+	return fileDescriptor_1bdf113f3d6e5a7a, []int{1}
 }
 
 func (m *GwSetParam) XXX_Unmarshal(b []byte) error {
@@ -525,62 +259,6 @@ func (m *GwSetParam) GetSwitch() bool {
 	return false
 }
 
-//设备设置
-type DeviceSetParam struct {
-	DeviceMac            string              `protobuf:"bytes,1,opt,name=device_mac,json=deviceMac,proto3" json:"device_mac,omitempty"`
-	Type                 DeviceSetParam_Type `protobuf:"varint,2,opt,name=type,proto3,enum=protobuf.DeviceSetParam_Type" json:"type,omitempty"`
-	Switch               bool                `protobuf:"varint,3,opt,name=switch,proto3" json:"switch,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
-	XXX_unrecognized     []byte              `json:"-"`
-	XXX_sizecache        int32               `json:"-"`
-}
-
-func (m *DeviceSetParam) Reset()         { *m = DeviceSetParam{} }
-func (m *DeviceSetParam) String() string { return proto.CompactTextString(m) }
-func (*DeviceSetParam) ProtoMessage()    {}
-func (*DeviceSetParam) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1bdf113f3d6e5a7a, []int{4}
-}
-
-func (m *DeviceSetParam) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DeviceSetParam.Unmarshal(m, b)
-}
-func (m *DeviceSetParam) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DeviceSetParam.Marshal(b, m, deterministic)
-}
-func (m *DeviceSetParam) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DeviceSetParam.Merge(m, src)
-}
-func (m *DeviceSetParam) XXX_Size() int {
-	return xxx_messageInfo_DeviceSetParam.Size(m)
-}
-func (m *DeviceSetParam) XXX_DiscardUnknown() {
-	xxx_messageInfo_DeviceSetParam.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_DeviceSetParam proto.InternalMessageInfo
-
-func (m *DeviceSetParam) GetDeviceMac() string {
-	if m != nil {
-		return m.DeviceMac
-	}
-	return ""
-}
-
-func (m *DeviceSetParam) GetType() DeviceSetParam_Type {
-	if m != nil {
-		return m.Type
-	}
-	return DeviceSetParam_DEFAULT
-}
-
-func (m *DeviceSetParam) GetSwitch() bool {
-	if m != nil {
-		return m.Switch
-	}
-	return false
-}
-
 //策略添加
 type StrategyAddParam struct {
 	StrategyId           string                      `protobuf:"bytes,1,opt,name=strategy_id,json=strategyId,proto3" json:"strategy_id,omitempty"`
@@ -598,7 +276,7 @@ func (m *StrategyAddParam) Reset()         { *m = StrategyAddParam{} }
 func (m *StrategyAddParam) String() string { return proto.CompactTextString(m) }
 func (*StrategyAddParam) ProtoMessage()    {}
 func (*StrategyAddParam) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1bdf113f3d6e5a7a, []int{5}
+	return fileDescriptor_1bdf113f3d6e5a7a, []int{2}
 }
 
 func (m *StrategyAddParam) XXX_Unmarshal(b []byte) error {
@@ -675,7 +353,7 @@ func (m *StrategySetParam) Reset()         { *m = StrategySetParam{} }
 func (m *StrategySetParam) String() string { return proto.CompactTextString(m) }
 func (*StrategySetParam) ProtoMessage()    {}
 func (*StrategySetParam) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1bdf113f3d6e5a7a, []int{6}
+	return fileDescriptor_1bdf113f3d6e5a7a, []int{3}
 }
 
 func (m *StrategySetParam) XXX_Unmarshal(b []byte) error {
@@ -717,270 +395,51 @@ func (m *StrategySetParam) GetEnable() bool {
 	return false
 }
 
-// 样本采集任务命令
-type SampleSetParam struct {
-	Id                   string   `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	CollectTimeRemain    uint32   `protobuf:"varint,2,opt,name=collect_time_remain,json=collectTimeRemain,proto3" json:"collect_time_remain,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *SampleSetParam) Reset()         { *m = SampleSetParam{} }
-func (m *SampleSetParam) String() string { return proto.CompactTextString(m) }
-func (*SampleSetParam) ProtoMessage()    {}
-func (*SampleSetParam) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1bdf113f3d6e5a7a, []int{7}
-}
-
-func (m *SampleSetParam) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SampleSetParam.Unmarshal(m, b)
-}
-func (m *SampleSetParam) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SampleSetParam.Marshal(b, m, deterministic)
-}
-func (m *SampleSetParam) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SampleSetParam.Merge(m, src)
-}
-func (m *SampleSetParam) XXX_Size() int {
-	return xxx_messageInfo_SampleSetParam.Size(m)
-}
-func (m *SampleSetParam) XXX_DiscardUnknown() {
-	xxx_messageInfo_SampleSetParam.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_SampleSetParam proto.InternalMessageInfo
-
-func (m *SampleSetParam) GetId() string {
-	if m != nil {
-		return m.Id
-	}
-	return ""
-}
-
-func (m *SampleSetParam) GetCollectTimeRemain() uint32 {
-	if m != nil {
-		return m.CollectTimeRemain
-	}
-	return 0
-}
-
-// 端口映射操作命令
-type PortRedirectSetParam struct {
-	SrcPort  string                        `protobuf:"bytes,1,opt,name=src_port,json=srcPort,proto3" json:"src_port,omitempty"`
-	DestPort string                        `protobuf:"bytes,2,opt,name=dest_port,json=destPort,proto3" json:"dest_port,omitempty"`
-	Switch   bool                          `protobuf:"varint,3,opt,name=switch,proto3" json:"switch,omitempty"`
-	Proto    PortRedirectSetParam_Protocol `protobuf:"varint,4,opt,name=proto,proto3,enum=protobuf.PortRedirectSetParam_Protocol" json:"proto,omitempty"`
-	// string id = 5;//端口映射规则ID
-	DestIp               string   `protobuf:"bytes,6,opt,name=dest_ip,json=destIp,proto3" json:"dest_ip,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *PortRedirectSetParam) Reset()         { *m = PortRedirectSetParam{} }
-func (m *PortRedirectSetParam) String() string { return proto.CompactTextString(m) }
-func (*PortRedirectSetParam) ProtoMessage()    {}
-func (*PortRedirectSetParam) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1bdf113f3d6e5a7a, []int{8}
-}
-
-func (m *PortRedirectSetParam) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_PortRedirectSetParam.Unmarshal(m, b)
-}
-func (m *PortRedirectSetParam) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_PortRedirectSetParam.Marshal(b, m, deterministic)
-}
-func (m *PortRedirectSetParam) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PortRedirectSetParam.Merge(m, src)
-}
-func (m *PortRedirectSetParam) XXX_Size() int {
-	return xxx_messageInfo_PortRedirectSetParam.Size(m)
-}
-func (m *PortRedirectSetParam) XXX_DiscardUnknown() {
-	xxx_messageInfo_PortRedirectSetParam.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_PortRedirectSetParam proto.InternalMessageInfo
-
-func (m *PortRedirectSetParam) GetSrcPort() string {
-	if m != nil {
-		return m.SrcPort
-	}
-	return ""
-}
-
-func (m *PortRedirectSetParam) GetDestPort() string {
-	if m != nil {
-		return m.DestPort
-	}
-	return ""
-}
-
-func (m *PortRedirectSetParam) GetSwitch() bool {
-	if m != nil {
-		return m.Switch
-	}
-	return false
-}
-
-func (m *PortRedirectSetParam) GetProto() PortRedirectSetParam_Protocol {
-	if m != nil {
-		return m.Proto
-	}
-	return PortRedirectSetParam_UNSET
-}
-
-func (m *PortRedirectSetParam) GetDestIp() string {
-	if m != nil {
-		return m.DestIp
-	}
-	return ""
-}
-
-type DeployerSetParam struct {
-	DevName              string   `protobuf:"bytes,1,opt,name=dev_name,json=devName,proto3" json:"dev_name,omitempty"`
-	Name                 string   `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Phone                string   `protobuf:"bytes,3,opt,name=phone,proto3" json:"phone,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *DeployerSetParam) Reset()         { *m = DeployerSetParam{} }
-func (m *DeployerSetParam) String() string { return proto.CompactTextString(m) }
-func (*DeployerSetParam) ProtoMessage()    {}
-func (*DeployerSetParam) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1bdf113f3d6e5a7a, []int{9}
-}
-
-func (m *DeployerSetParam) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DeployerSetParam.Unmarshal(m, b)
-}
-func (m *DeployerSetParam) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DeployerSetParam.Marshal(b, m, deterministic)
-}
-func (m *DeployerSetParam) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DeployerSetParam.Merge(m, src)
-}
-func (m *DeployerSetParam) XXX_Size() int {
-	return xxx_messageInfo_DeployerSetParam.Size(m)
-}
-func (m *DeployerSetParam) XXX_DiscardUnknown() {
-	xxx_messageInfo_DeployerSetParam.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_DeployerSetParam proto.InternalMessageInfo
-
-func (m *DeployerSetParam) GetDevName() string {
-	if m != nil {
-		return m.DevName
-	}
-	return ""
-}
-
-func (m *DeployerSetParam) GetName() string {
-	if m != nil {
-		return m.Name
-	}
-	return ""
-}
-
-func (m *DeployerSetParam) GetPhone() string {
-	if m != nil {
-		return m.Phone
-	}
-	return ""
-}
-
 func init() {
 	proto.RegisterEnum("protobuf.Command_TaskType", Command_TaskType_name, Command_TaskType_value)
-	proto.RegisterEnum("protobuf.StatusUpdateParam_Type", StatusUpdateParam_Type_name, StatusUpdateParam_Type_value)
 	proto.RegisterEnum("protobuf.GwSetParam_Type", GwSetParam_Type_name, GwSetParam_Type_value)
-	proto.RegisterEnum("protobuf.DeviceSetParam_Type", DeviceSetParam_Type_name, DeviceSetParam_Type_value)
 	proto.RegisterEnum("protobuf.StrategyAddParam_Type", StrategyAddParam_Type_name, StrategyAddParam_Type_value)
 	proto.RegisterEnum("protobuf.StrategyAddParam_HandleMode", StrategyAddParam_HandleMode_name, StrategyAddParam_HandleMode_value)
 	proto.RegisterEnum("protobuf.StrategySetParam_HandleMode", StrategySetParam_HandleMode_name, StrategySetParam_HandleMode_value)
-	proto.RegisterEnum("protobuf.PortRedirectSetParam_Protocol", PortRedirectSetParam_Protocol_name, PortRedirectSetParam_Protocol_value)
 	proto.RegisterType((*Command)(nil), "protobuf.Command")
-	proto.RegisterType((*FirmwareUpgradeParam)(nil), "protobuf.FirmwareUpgradeParam")
-	proto.RegisterType((*StatusUpdateParam)(nil), "protobuf.StatusUpdateParam")
 	proto.RegisterType((*GwSetParam)(nil), "protobuf.GwSetParam")
-	proto.RegisterType((*DeviceSetParam)(nil), "protobuf.DeviceSetParam")
 	proto.RegisterType((*StrategyAddParam)(nil), "protobuf.StrategyAddParam")
 	proto.RegisterType((*StrategySetParam)(nil), "protobuf.StrategySetParam")
-	proto.RegisterType((*SampleSetParam)(nil), "protobuf.SampleSetParam")
-	proto.RegisterType((*PortRedirectSetParam)(nil), "protobuf.PortRedirectSetParam")
-	proto.RegisterType((*DeployerSetParam)(nil), "protobuf.DeployerSetParam")
 }
 
 func init() { proto.RegisterFile("scommand.proto", fileDescriptor_1bdf113f3d6e5a7a) }
 
 var fileDescriptor_1bdf113f3d6e5a7a = []byte{
-	// 1039 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x55, 0x4f, 0x6f, 0xe3, 0x44,
-	0x14, 0x5f, 0x3b, 0xff, 0x9c, 0xd7, 0x34, 0xcc, 0xce, 0x56, 0xbb, 0x29, 0xa8, 0xda, 0xca, 0x08,
-	0xd1, 0xcb, 0x46, 0xb0, 0x50, 0x71, 0x02, 0xc9, 0x1b, 0x4f, 0xb3, 0xd6, 0xa6, 0x89, 0x35, 0x1e,
-	0x37, 0xea, 0xc9, 0x72, 0x3d, 0xd3, 0xad, 0x45, 0x1c, 0x47, 0xb6, 0xdb, 0xaa, 0x1c, 0x11, 0x9f,
-	0x88, 0x13, 0x57, 0x3e, 0x02, 0xe2, 0x6b, 0x70, 0xe0, 0x23, 0xa0, 0x19, 0xdb, 0xf9, 0x23, 0xb6,
-	0x70, 0x80, 0x93, 0xdf, 0x7f, 0xff, 0x7e, 0xef, 0xbd, 0x99, 0x81, 0x7e, 0x1e, 0xa5, 0x49, 0x12,
-	0x2e, 0xf9, 0x70, 0x95, 0xa5, 0x45, 0x8a, 0x0d, 0xf5, 0xb9, 0xba, 0xbd, 0x36, 0x7f, 0xd6, 0xa1,
-	0x33, 0x2a, 0x7d, 0xf8, 0x1b, 0xe8, 0xc6, 0x85, 0x48, 0x82, 0xe2, 0x61, 0x25, 0x06, 0xda, 0xb1,
-	0x76, 0xd2, 0x7f, 0xfd, 0xf1, 0xb0, 0x8e, 0x1c, 0x56, 0x51, 0x43, 0x16, 0xe6, 0xdf, 0xb3, 0x87,
-	0x95, 0xa0, 0x86, 0x0c, 0x96, 0x12, 0x3e, 0x80, 0xd6, 0x2a, 0xcc, 0xc2, 0x64, 0xa0, 0x1f, 0x6b,
-	0x27, 0x3d, 0x5a, 0x2a, 0xd2, 0x1a, 0x25, 0xdc, 0xb1, 0x07, 0x8d, 0x63, 0xed, 0xa4, 0x4b, 0x4b,
-	0xc5, 0xfc, 0x55, 0x03, 0xa3, 0x2e, 0x81, 0x0f, 0x00, 0xd9, 0xe4, 0xcc, 0xf2, 0x27, 0x2c, 0x60,
-	0x96, 0xf7, 0x8e, 0x5d, 0xba, 0x04, 0x3d, 0xc1, 0x00, 0xed, 0xf1, 0x3c, 0xf0, 0x08, 0x43, 0x1a,
-	0xee, 0x03, 0xd8, 0xe4, 0xc2, 0x19, 0x11, 0xa5, 0xeb, 0x18, 0x41, 0xcf, 0x63, 0xd4, 0x62, 0x64,
-	0x7c, 0x19, 0x58, 0xb6, 0x8d, 0x1a, 0x3b, 0x16, 0x19, 0xd3, 0x94, 0x39, 0x9e, 0x75, 0xee, 0x4e,
-	0xca, 0x9c, 0x96, 0xfc, 0x8b, 0x3b, 0xa3, 0x8c, 0x12, 0xdb, 0xa1, 0x64, 0xc4, 0x94, 0xb5, 0x8d,
-	0x9f, 0xc2, 0xbe, 0xc7, 0x2c, 0xe6, 0x7b, 0x81, 0xef, 0xda, 0x16, 0x23, 0xa8, 0x23, 0x4b, 0xd9,
-	0xc4, 0x9d, 0xcc, 0x2e, 0x09, 0x55, 0x41, 0x86, 0x4c, 0x3d, 0x73, 0xe8, 0xf9, 0xdc, 0xa2, 0x24,
-	0xf0, 0xdd, 0x31, 0xb5, 0x6c, 0x82, 0xba, 0xe6, 0x1f, 0x1a, 0x1c, 0x9c, 0xc5, 0x59, 0x72, 0x1f,
-	0x66, 0xc2, 0x5f, 0xbd, 0xcf, 0x42, 0x2e, 0x5c, 0x45, 0x79, 0x00, 0x9d, 0x3b, 0x91, 0xe5, 0x71,
-	0xba, 0x54, 0xfd, 0xeb, 0xd2, 0x5a, 0xc5, 0x18, 0x9a, 0x79, 0xfc, 0x83, 0x50, 0x1d, 0x6a, 0x52,
-	0x25, 0x63, 0x04, 0x8d, 0xdb, 0x6c, 0x51, 0xb5, 0x47, 0x8a, 0xf8, 0x10, 0x0c, 0x6f, 0x36, 0x2a,
-	0x07, 0xd0, 0x2c, 0x0b, 0x78, 0xb3, 0x91, 0x6a, 0xd5, 0x11, 0xc0, 0x55, 0x1a, 0x66, 0x3c, 0x58,
-	0x86, 0x89, 0x18, 0xb4, 0x94, 0xb3, 0xab, 0x2c, 0xd3, 0x30, 0x11, 0xf8, 0x53, 0xd8, 0xbf, 0xae,
-	0x10, 0x95, 0xe9, 0x6d, 0x15, 0xd1, 0xab, 0x8d, 0xaa, 0xc6, 0x76, 0x90, 0x2a, 0xd3, 0xd9, 0x0d,
-	0x52, 0x95, 0x10, 0x34, 0x12, 0x7e, 0x3a, 0x30, 0x4a, 0x54, 0x09, 0x3f, 0x35, 0x7f, 0xd1, 0xe0,
-	0xa9, 0x57, 0x84, 0xc5, 0x6d, 0xee, 0xaf, 0x78, 0x58, 0x54, 0x5c, 0xbf, 0x86, 0xe6, 0xd6, 0xa2,
-	0x1c, 0x6f, 0x16, 0xe5, 0x6f, 0xa1, 0x43, 0xb5, 0x2e, 0x2a, 0xda, 0x4c, 0xa0, 0xa9, 0xa0, 0xa8,
-	0x56, 0x97, 0x93, 0x77, 0xa6, 0x67, 0xb3, 0x7a, 0xea, 0x4a, 0xd6, 0xa4, 0x5c, 0x4e, 0x1d, 0xe9,
-	0x78, 0x1f, 0xba, 0xe3, 0xb9, 0x4b, 0x67, 0x8c, 0x8c, 0x18, 0x6a, 0xe0, 0x1e, 0x18, 0xf5, 0xb8,
-	0x51, 0x53, 0x96, 0xd9, 0x1e, 0x2d, 0x6a, 0x49, 0x7f, 0x3d, 0x43, 0xd4, 0x36, 0x7f, 0xd4, 0x00,
-	0xc6, 0xf7, 0x9e, 0x28, 0x4a, 0xcc, 0xaf, 0x76, 0x30, 0x1f, 0x6e, 0x30, 0x6f, 0x62, 0xb6, 0xc0,
-	0xe2, 0xe7, 0xd0, 0xce, 0xef, 0xe3, 0x22, 0xba, 0x51, 0x63, 0x33, 0x68, 0xa5, 0x99, 0xaf, 0x2a,
-	0x12, 0x7b, 0xd0, 0xa9, 0x48, 0xa0, 0x27, 0x52, 0xa9, 0x51, 0x6a, 0x52, 0xa1, 0xc4, 0x63, 0x16,
-	0x65, 0x48, 0x37, 0x7f, 0xd3, 0xa0, 0x6f, 0x8b, 0xbb, 0x38, 0x12, 0x6b, 0x20, 0x47, 0x00, 0x5c,
-	0x59, 0x82, 0x24, 0x8c, 0xaa, 0x5d, 0xe9, 0x96, 0x96, 0xf3, 0x30, 0xc2, 0x5f, 0x56, 0x38, 0x75,
-	0x85, 0xf3, 0x68, 0x83, 0x73, 0xb7, 0xcc, 0x87, 0xb1, 0x36, 0x76, 0xb0, 0xfa, 0xff, 0x8a, 0xb5,
-	0x07, 0x86, 0x33, 0x65, 0x84, 0x4e, 0xd5, 0x01, 0x7b, 0x01, 0xcf, 0xc6, 0x3e, 0xf1, 0x58, 0x60,
-	0x8d, 0x46, 0xc4, 0xf3, 0x82, 0x6a, 0x0e, 0xaa, 0xf1, 0x13, 0x6b, 0x7a, 0xe1, 0x78, 0x0e, 0x43,
-	0x4d, 0xf3, 0xa7, 0x06, 0x20, 0xaf, 0xc8, 0xc2, 0x42, 0xbc, 0x7f, 0xb0, 0x38, 0x2f, 0x59, 0xbd,
-	0x84, 0xbd, 0xbc, 0xb2, 0x05, 0x31, 0xaf, 0x68, 0x41, 0x6d, 0x72, 0x38, 0x3e, 0x83, 0xbd, 0x9b,
-	0x70, 0xc9, 0x17, 0x22, 0x48, 0x52, 0x5e, 0xd3, 0xfb, 0x6c, 0x7b, 0x75, 0x76, 0x2b, 0x0e, 0xdf,
-	0xaa, 0xe8, 0xf3, 0x94, 0x0b, 0x0a, 0x37, 0x6b, 0x19, 0xbf, 0x81, 0x1e, 0x17, 0xd7, 0x62, 0x99,
-	0x57, 0xcb, 0xde, 0x50, 0x85, 0x5e, 0xfe, 0x43, 0x21, 0xd5, 0xa9, 0xbd, 0x2a, 0x49, 0x35, 0xe4,
-	0x10, 0x0c, 0xee, 0xb8, 0xc1, 0x22, 0xce, 0x8b, 0x41, 0xeb, 0xb8, 0x21, 0xcf, 0x1a, 0x77, 0xdc,
-	0x49, 0x9c, 0x17, 0xd2, 0xe5, 0xd3, 0x49, 0xe9, 0x6a, 0x97, 0x2e, 0x9f, 0x4e, 0x94, 0xeb, 0x39,
-	0xb4, 0xc5, 0x32, 0xbc, 0x5a, 0x94, 0x67, 0xc7, 0xa0, 0x95, 0x66, 0x9e, 0x56, 0x6d, 0xfe, 0x08,
-	0xf6, 0xe4, 0x2d, 0xb6, 0x69, 0xf5, 0x3e, 0x74, 0xe7, 0x6f, 0x1d, 0x46, 0xce, 0x67, 0x36, 0x41,
-	0x9a, 0x54, 0xdf, 0x4c, 0xac, 0xd1, 0x3b, 0xa5, 0xea, 0xe6, 0x77, 0x00, 0x1b, 0x8a, 0x32, 0x59,
-	0xda, 0x37, 0xc9, 0x18, 0xfa, 0x2e, 0x25, 0x17, 0x64, 0xca, 0xe6, 0x16, 0x9d, 0x3a, 0xd3, 0x71,
-	0xb9, 0x5a, 0xb5, 0xa2, 0x9b, 0xbf, 0x6b, 0x9b, 0x31, 0xac, 0x97, 0xeb, 0x7f, 0x1b, 0xc3, 0x7a,
-	0xcf, 0x1e, 0x19, 0xc3, 0x63, 0xcd, 0xf8, 0xaf, 0xac, 0x5c, 0xe8, 0x7b, 0x61, 0xb2, 0x5a, 0x6c,
-	0xce, 0x4b, 0x1f, 0xf4, 0x35, 0x13, 0x3d, 0xe6, 0x78, 0x08, 0xcf, 0xa2, 0x74, 0xb1, 0x10, 0x51,
-	0x11, 0x14, 0x71, 0x22, 0x82, 0x4c, 0x24, 0x61, 0xbc, 0x54, 0x4c, 0xf6, 0xe9, 0xd3, 0xca, 0xc5,
-	0xe2, 0x44, 0x50, 0xe5, 0x30, 0xff, 0xd4, 0xe0, 0xc0, 0x4d, 0xb3, 0x82, 0x0a, 0x1e, 0x67, 0x22,
-	0x2a, 0xd6, 0x85, 0x0f, 0xc1, 0xc8, 0xb3, 0x28, 0x58, 0xa5, 0x59, 0x51, 0x5f, 0xd9, 0x79, 0x16,
-	0xc9, 0x50, 0xfc, 0x09, 0x74, 0xb9, 0xc8, 0x8b, 0xd2, 0xa7, 0x2b, 0x9f, 0x21, 0x0d, 0xca, 0xf9,
-	0xc8, 0x71, 0xc3, 0xdf, 0x42, 0x4b, 0xb5, 0x51, 0x5d, 0xdf, 0xfd, 0xd7, 0x9f, 0x6f, 0x9a, 0xfa,
-	0xa1, 0xdf, 0x0f, 0x5d, 0xe9, 0x8d, 0xd2, 0x05, 0x2d, 0xb3, 0xf0, 0x0b, 0xe8, 0xa8, 0x7f, 0xc6,
-	0xab, 0xea, 0x02, 0x6f, 0x4b, 0xd5, 0x59, 0x99, 0x5f, 0x80, 0x51, 0xc7, 0xe2, 0x2e, 0xb4, 0xfc,
-	0xa9, 0x7c, 0x9f, 0x9e, 0xe0, 0x0e, 0x34, 0x7c, 0xdb, 0x45, 0x9a, 0x14, 0xd8, 0xc8, 0x45, 0xba,
-	0x14, 0xac, 0xc9, 0x04, 0x35, 0xcc, 0x39, 0x20, 0x5b, 0xac, 0x16, 0xe9, 0x83, 0xc8, 0xb6, 0xd9,
-	0x72, 0x71, 0x57, 0xde, 0xfd, 0x15, 0x5b, 0x2e, 0xee, 0xd4, 0xb5, 0x8f, 0xa1, 0xa9, 0xcc, 0x25,
-	0x51, 0x25, 0xab, 0x77, 0xfd, 0x26, 0x5d, 0x8a, 0xfa, 0x05, 0x57, 0xca, 0x55, 0x5b, 0x41, 0xfd,
-	0xea, 0xaf, 0x00, 0x00, 0x00, 0xff, 0xff, 0x1a, 0x70, 0xcd, 0x7c, 0x55, 0x08, 0x00, 0x00,
+	// 482 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x92, 0x41, 0x6f, 0xda, 0x30,
+	0x14, 0xc7, 0x1b, 0xa0, 0x49, 0x78, 0x61, 0x2c, 0xb2, 0xaa, 0x8a, 0xee, 0x52, 0x14, 0x69, 0x12,
+	0x97, 0xe6, 0xd0, 0x69, 0xda, 0x6d, 0x52, 0x0a, 0x2e, 0x8d, 0x9a, 0xd2, 0xc8, 0x31, 0x43, 0x3d,
+	0x45, 0xa1, 0x76, 0x47, 0x34, 0x42, 0x10, 0xc9, 0x54, 0x71, 0x9d, 0xf6, 0x69, 0xf6, 0x75, 0xf6,
+	0x85, 0x26, 0xdb, 0x81, 0x6c, 0x93, 0xd8, 0x65, 0x3d, 0xc5, 0xff, 0xf7, 0xfe, 0x76, 0x7e, 0x7e,
+	0x7f, 0x43, 0xb7, 0x78, 0xcc, 0xb3, 0x2c, 0x59, 0x31, 0x77, 0xbd, 0xc9, 0xcb, 0x1c, 0x99, 0xf2,
+	0x33, 0xff, 0xfa, 0xe4, 0xfc, 0xd0, 0xc0, 0x18, 0xaa, 0x1e, 0xfa, 0x00, 0xed, 0xb4, 0xe4, 0x59,
+	0x5c, 0x6e, 0xd7, 0xbc, 0xa7, 0xf5, 0xb5, 0x41, 0xf7, 0xf2, 0x8d, 0xbb, 0x73, 0xba, 0x95, 0xcb,
+	0xa5, 0x49, 0xf1, 0x85, 0x6e, 0xd7, 0x9c, 0x98, 0xc2, 0x2c, 0x56, 0xe8, 0x04, 0x8e, 0xd7, 0xc9,
+	0x26, 0xc9, 0x7a, 0x8d, 0xbe, 0x36, 0xe8, 0x10, 0x25, 0x9c, 0x10, 0xcc, 0x9d, 0x17, 0x9d, 0x80,
+	0x3d, 0xc2, 0xd7, 0xde, 0x34, 0xa0, 0x31, 0xf5, 0xa2, 0x5b, 0xfa, 0x10, 0x62, 0xfb, 0x08, 0x01,
+	0xe8, 0xe3, 0x59, 0x1c, 0x61, 0x6a, 0x6b, 0xc8, 0x86, 0x4e, 0x44, 0x89, 0x47, 0xf1, 0xf8, 0x21,
+	0xf6, 0x46, 0x23, 0xbb, 0xf9, 0x47, 0x45, 0x78, 0x5a, 0xce, 0x37, 0x0d, 0x60, 0xfc, 0x1c, 0xf1,
+	0x32, 0x14, 0x3f, 0x40, 0x17, 0xd0, 0xfa, 0x0d, 0xf5, 0xac, 0x46, 0xad, 0x3d, 0xae, 0x24, 0x95,
+	0x36, 0x74, 0x0a, 0x7a, 0xf1, 0x9c, 0x96, 0x8f, 0x0b, 0x89, 0x69, 0x92, 0x4a, 0x39, 0x17, 0xd0,
+	0x92, 0x8c, 0x16, 0x18, 0x15, 0xa3, 0x7d, 0x24, 0x44, 0x48, 0xee, 0x29, 0x1e, 0x0a, 0x36, 0x0b,
+	0x0c, 0x82, 0x23, 0xea, 0x11, 0x6a, 0x37, 0x9c, 0xef, 0x4d, 0xb0, 0xa3, 0x72, 0x93, 0x94, 0xfc,
+	0xf3, 0xd6, 0x63, 0x4c, 0xa1, 0x9c, 0x83, 0x55, 0x54, 0xb5, 0x38, 0x65, 0x92, 0xa8, 0x4d, 0x60,
+	0x57, 0xf2, 0x19, 0xba, 0x06, 0x6b, 0x91, 0xac, 0xd8, 0x92, 0xc7, 0x59, 0xce, 0xb8, 0x24, 0xe8,
+	0x5e, 0xbe, 0xad, 0x91, 0xff, 0x3e, 0xd1, 0xbd, 0x91, 0xee, 0xbb, 0x9c, 0x71, 0x02, 0x8b, 0xfd,
+	0x1a, 0x5d, 0x41, 0x87, 0xf1, 0x27, 0xbe, 0x2a, 0xb8, 0x8a, 0xa9, 0x29, 0x0f, 0x3a, 0xff, 0xc7,
+	0x41, 0x72, 0x02, 0x56, 0xb5, 0x49, 0x5e, 0xf4, 0x0c, 0x4c, 0xe6, 0x87, 0xf1, 0x32, 0x2d, 0xca,
+	0xde, 0x71, 0xbf, 0x39, 0x68, 0x13, 0x83, 0xf9, 0x61, 0x90, 0x16, 0xa5, 0x68, 0x4d, 0x49, 0xa0,
+	0x5a, 0xba, 0x6a, 0x4d, 0x49, 0x20, 0x5b, 0xa7, 0xa0, 0xf3, 0x55, 0x32, 0x5f, 0xf2, 0x9e, 0xa1,
+	0xc6, 0xa7, 0x94, 0xf3, 0xbe, 0x1a, 0xdf, 0x6b, 0xb0, 0x44, 0xac, 0xf5, 0x08, 0x5f, 0x41, 0x7b,
+	0x76, 0xe3, 0x53, 0x7c, 0x77, 0x3f, 0xc2, 0xb6, 0x26, 0xe4, 0x55, 0xe0, 0x0d, 0x6f, 0xa5, 0x6c,
+	0x38, 0x1f, 0x01, 0xea, 0x2b, 0x8a, 0xcd, 0xa2, 0x5e, 0x6f, 0x46, 0xd0, 0x0d, 0x09, 0xfe, 0x84,
+	0x27, 0x74, 0xe6, 0x91, 0x89, 0x3f, 0x19, 0xab, 0x18, 0x76, 0xa2, 0xe1, 0xfc, 0xd4, 0xea, 0x18,
+	0xf6, 0x2f, 0xe2, 0xc5, 0x62, 0xd8, 0xbf, 0x9f, 0x03, 0x31, 0x1c, 0x1a, 0xc6, 0x7f, 0xde, 0x6a,
+	0xae, 0x4b, 0x92, 0x77, 0xbf, 0x02, 0x00, 0x00, 0xff, 0xff, 0x14, 0xa5, 0x22, 0x35, 0xb1, 0x03,
+	0x00, 0x00,
 }

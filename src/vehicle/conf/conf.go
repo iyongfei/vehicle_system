@@ -117,7 +117,7 @@ func init()  {
 		EmqUser,EmqPassword,MaxReconnectInterval,EmqQos,PublishChanCapa,PublishChanIdle,SubscribeChanCapa,SubscribeChanIdle)
 
 	Expires = iniParser.GetTimeDuration("jwt","expires")
-	SignKey = iniParser.GetString("jwt","vehicle")
+	SignKey = iniParser.GetString("jwt","sign_key")
 
 	logger.Logger.Info("Expires:%d,SignKey:%s",Expires,SignKey)
 	logger.Logger.Print("Expires:%d,SignKey:%s",Expires,SignKey)

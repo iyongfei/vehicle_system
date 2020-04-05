@@ -6,6 +6,8 @@ import (
 	"time"
 	"vehicle_system/src/vehicle/conf"
 	"vehicle_system/src/vehicle/emq/topic_router"
+	"vehicle_system/src/vehicle/logger"
+	"vehicle_system/src/vehicle/util"
 )
 
 const (
@@ -42,23 +44,23 @@ func (m *EmqInstance) InitEmqClient()  {
 	EmqClient = mqtt.NewClient(clientOptions)
 
 	if token := EmqClient.Connect(); token.Wait() && token.Error() != nil {
-		//common_util.Vfmtf(log_util.LOG_WEB,"EmqClient Connect Error:[%s],EmqClient:[%v]\n",token.Error(),&EmqClient)
-		//log_util.VlogInfo(log_util.LOG_WEB,"EmqClient Connect Error:[%s],EmqClient:[%v]\n",token.Error(),&EmqClient)
-		//go EmqTokenError()
+		logger.Logger.Print("%s,err:%s",util.RunFuncName(),token.Error())
+		logger.Logger.Error("%s,err:%s",util.RunFuncName(),token.Error())
+		go EmqConnectTokenError()
 		//return
 	}
 	if token := EmqClient.Subscribe(SUBSCRIBE_MAIN_TOPIC, 0, topic_router.MainTopicRouter); token.Wait() && token.Error() != nil {
-		//common_util.Vfmtf(log_util.LOG_WEB,"EmqClient Subscribe +/s/p Error:%s\n",token.Error())
-		//log_util.VlogInfo(log_util.LOG_WEB,"EmqClient Subscribe +/s/p Error:%s\n",token.Error())
+		logger.Logger.Print("%s,err:%s",util.RunFuncName(),token.Error())
+		logger.Logger.Error("%s,err:%s",util.RunFuncName(),token.Error())
 	}
 	//在离线
 	if token := EmqClient.Subscribe(SUBSCRIBE_LINE_TOPIC, 0, topic_router.LineTopicRouter); token.Wait() && token.Error() != nil {
-		//common_util.Vfmtf(log_util.LOG_WEB,"EmqClient Subscribe OnOffLine Error:%s\n",token.Error())
-		//log_util.VlogInfo(log_util.LOG_WEB,"EmqClient Subscribe OnOffLine Error:%s\n",token.Error())
+		logger.Logger.Print("%s,err:%s",util.RunFuncName(),token.Error())
+		logger.Logger.Error("%s,err:%s",util.RunFuncName(),token.Error())
 	}
 	//SetGWOnlineInfoWithEmqOffline(false)
-	//common_util.Vfmtf(log_util.LOG_WEB, "EmqClient Init Success:[%v]\n",&EmqClient)
-	//log_util.VlogInfo(log_util.LOG_WEB, "EmqClient Init Success:[%v]\n",&EmqClient)
+	logger.Logger.Print("%s,emqClient init success:%v",util.RunFuncName(),&EmqClient)
+	logger.Logger.Info("%s,emqClient init success:%v",util.RunFuncName(),&EmqClient)
 }
 
 func (m *EmqInstance) NewClientOptions()  *mqtt.ClientOptions{
@@ -77,12 +79,27 @@ func (m *EmqInstance) NewClientOptions()  *mqtt.ClientOptions{
 		SetPassword(conf.EmqPassword).SetTLSConfig(NewTLSConfig())
 }
 
+func EmqConnectTokenError()  {
+	t:=time.NewTicker(time.Second *10)
+	select {
+	case <-t.C:
+		if !EmqClient.IsConnected() {
+			logger.Logger.Print("%s,emqClient:%v",util.RunFuncName(),&EmqClient)
+			logger.Logger.Info("%s,emqClient:%v",util.RunFuncName(),&EmqClient)
+			//SetGWOnlineInfoWithEmqOffline(true)
+			GetEmqInstance().InitEmqClient()
+		}
+		t.Stop()
+		return
+	}
+}
 
-//
-//func (m *EmqInstance)GetEmqClient() (emqClient mqtt.Client) {
-//	if EmqClient == nil{
-//		m.InitEmqClient()
-//	}
-//	return EmqClient
-//}
+
+
+func (m *EmqInstance)GetEmqClient() (emqClient mqtt.Client) {
+	if EmqClient == nil{
+		m.InitEmqClient()
+	}
+	return EmqClient
+}
 
