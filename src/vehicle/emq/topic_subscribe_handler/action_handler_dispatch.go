@@ -1,6 +1,7 @@
 package topic_subscribe_handler
 
 import (
+	"fmt"
 	"github.com/eclipse/paho.mqtt.golang"
 	"github.com/golang/protobuf/proto"
 	"strings"
@@ -34,16 +35,14 @@ func (t *TopicSubscribeHandler) HanleSubscribeTopicData(topicMsg mqtt.Message) e
 
 	if disconnected{
 		err :=HanleSubscribeTopicLineData(topicMsg)
-		return err
+		return fmt.Errorf("hanleSubscribeTopicLineData err:%s",err.Error())
 	}
 
 	vehicleResult := protobuf.GWResult{}
 	err := proto.Unmarshal(topicMsg.Payload(), &vehicleResult)
 
 	if err != nil {
-		//log_util.VlogInfo(log_util.LOG_WEB, "HanleSubscribeTopicData proto unmarshal requestBody to GWResult error:[%v]\n", err)
-		//common_util.Vfmtf(log_util.LOG_WEB, "HanleSubscribeTopicData proto unmarshal requestBody to GWResult error:[%v]\n", err)
-		return err
+		return fmt.Errorf("hanleSubscribeTopicData err:%s",err.Error())
 	}
 	vehicleId := vehicleResult.GetGUID()
 
@@ -53,19 +52,7 @@ func (t *TopicSubscribeHandler) HanleSubscribeTopicData(topicMsg mqtt.Message) e
 	//_=mysql_util.UpdateModelOneColumn(&gw.GwInfoUncerted{},gwOnlineAttrs,"gw_id = ?",[]interface{}{gwId}...)
 
 
-	var GWResult_ActionType_name = map[int32]string{
-		0: "DEFAULT",
-		1: "DEVICE",
-		2: "THREAT",
-		3: "GW_INFO",
-		4: "SAMPLE",
-		5: "PROTECT",
-		6: "STRATEGY",
-		7: "PORTREDIRECT",
-		8: "DEPLOYER",
-		9: "FIRMWARE",
-	}
-	actionTypeName:=GWResult_ActionType_name[int32(vehicleResult.ActionType)]
+	actionTypeName:=protobuf.GWResult_ActionType_name[int32(vehicleResult.ActionType)]
 
 	logger.Logger.Print("hanleSubscribeTopicData action name:%s,vehicleId:%s",actionTypeName,vehicleId)
 	logger.Logger.Info("hanleSubscribeTopicData action name:%s,vehicleId:%s",actionTypeName,vehicleId)
@@ -79,8 +66,8 @@ func (t *TopicSubscribeHandler) HanleSubscribeTopicData(topicMsg mqtt.Message) e
 	case protobuf.GWResult_STRATEGY: //策略
 		handGwResultError = HandleVehicleStrategy(vehicleResult,vehicleId)
 	default:
-		//log_util.VlogInfo(log_util.LOG_WEB, "handleGwPushSvr invalidParam actionType is not exist,gwId:%s",gwId)
-		//common_util.Vfmtf(log_util.LOG_WEB, "handleGwPushSvr invalidParam actionType is not exist,gwId:%s",gwId)
+		logger.Logger.Error("vehicleId:%s action type err:%d",vehicleId,int32(vehicleResult.ActionType))
+		logger.Logger.Print("vehicleId:%s action type err:%d",vehicleId,int32(vehicleResult.ActionType))
 	}
 	return  handGwResultError
 }

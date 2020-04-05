@@ -6,6 +6,7 @@ import (
 	"time"
 	"vehicle_system/src/vehicle/conf"
 	"vehicle_system/src/vehicle/emq/topic_subscribe_handler"
+	"vehicle_system/src/vehicle/logger"
 )
 
 var topicRouterDataCh = make(chan mqtt.Message,conf.SubscribeChanCapa)
@@ -33,8 +34,8 @@ func FetchtopicRouterDataCh() {
 		case topicMsg := <-topicRouterDataCh:
 			err := topic_subscribe_handler.GetTopicSubscribeHandler().HanleSubscribeTopicData(topicMsg)
 			if err!=nil{
-				//log_util.VlogInfo(log_util.LOG_WEB, "EmqClient SelectSubscribeTopicData Err:%s\n",err)
-				//common_util.Vfmtf(log_util.LOG_WEB, "EmqClient SelectSubscribeTopicData Err:%s\n",err)
+				logger.Logger.Print("%s hanleSubscribeTopicData err:%s",err.Error())
+				logger.Logger.Error("%s hanleSubscribeTopicData err:%s",err.Error())
 				return
 			}
 			return
