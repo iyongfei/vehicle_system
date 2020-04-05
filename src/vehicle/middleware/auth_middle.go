@@ -47,7 +47,7 @@ func authMiddleHandlerFunc(c *gin.Context)  {
 
 	modelBase:=model_base.ModelBaseImpl(user)
 
-	_,recordNotFound := modelBase.GetModelByCondition(user,
+	_,recordNotFound := modelBase.GetModelByCondition(
 		"user_name = ? and password = ? and user_id = ?",user.UserName,user.Password,user.UserId)
 	if recordNotFound{
 		ret:=response.StructResponseObj(response.VStatusUnauthorized,response.ValidationErrorUnverifiableStr,"")

@@ -27,8 +27,9 @@ func GetWhiteList(c *gin.Context)  {
 	}
 	whiteListObj:= &model.WhiteList{}
 
-	err,recordNotFound:=model_base.ModelBaseImpl(&model.WhiteList{}).
-		GetModelByCondition(whiteListObj,"white_list_id = ?",[]interface{}{whiteListId}...)
+	modelBase := model_base.ModelBaseImpl(whiteListObj)
+
+	err,recordNotFound:=modelBase.GetModelByCondition("white_list_id = ?",[]interface{}{whiteListId}...)
 
 	if err!=nil{
 		logger.Logger.Error("%s white_list_id:%s,err:%s",util.RunFuncName(),whiteListId,err)
@@ -99,7 +100,7 @@ func AddWhiteList(c *gin.Context)  {
 	}
 	modelBase:=model_base.ModelBaseImpl(whiteList)
 
-	if err:=modelBase.InsertModel(whiteList);err!=nil{
+	if err:=modelBase.InsertModel();err!=nil{
 		ret:=response.StructResponseObj(response.VStatusServerError,response.ReqAddWhiteListFailMsg,"")
 		c.JSON(http.StatusOK,ret)
 		return
@@ -127,9 +128,9 @@ func EditWhiteList(c *gin.Context)  {
 	}
 	//查询是否存在
 	whiteListObj:= &model.WhiteList{}
+	modelBase := model_base.ModelBaseImpl(whiteListObj)
 
-	err,recordNotFound:=model_base.ModelBaseImpl(&model.WhiteList{}).
-		GetModelByCondition(whiteListObj,"white_list_id = ?",[]interface{}{whiteListId}...)
+	err,recordNotFound:= modelBase.GetModelByCondition("white_list_id = ?",[]interface{}{whiteListId}...)
 
 	if err!=nil{
 		logger.Logger.Error("%s white_list_id:%s,err:%s",util.RunFuncName(),whiteListId,err)
@@ -184,9 +185,8 @@ func DeleWhiteList(c *gin.Context)  {
 	}
 	//查询是否存在
 	whiteListObj:= &model.WhiteList{}
-
-	err,recordNotFound:=model_base.ModelBaseImpl(&model.WhiteList{}).
-		GetModelByCondition(whiteListObj,"white_list_id = ?",[]interface{}{whiteListId}...)
+	modelBase := model_base.ModelBaseImpl(whiteListObj)
+	err,recordNotFound:=modelBase.GetModelByCondition("white_list_id = ?",[]interface{}{whiteListId}...)
 
 	if err!=nil{
 		logger.Logger.Error("%s white_list_id:%s,err:%s",util.RunFuncName(),whiteListId,err)

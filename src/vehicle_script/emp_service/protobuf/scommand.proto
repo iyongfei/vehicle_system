@@ -1,0 +1,57 @@
+syntax = "proto3";
+package protobuf;
+//基础最外层命令
+message Command {
+    enum TaskType {
+        DEFAULT_TASKTYPE = 0;
+        GW_SET = 1;//网关设置 解析 GwSetParam 类型
+		STRATEGY_ADD = 3; //策略下发, 给小V添加策略 StrategyAddParam 类型
+		STRATEGY_SET = 4; //策略状态修改 用于解析 StrategySetParam 类型
+    }
+    TaskType item_type = 1; //指令类型
+    bytes param = 2;//具体任务内容，根据类型取相应message
+}
+
+
+//小v设置
+message GwSetParam {
+    enum Type {
+        DEFAULT = 0;
+        PROTECT = 1; //全局安全防护
+        RESTART = 2; //重启小V
+	}
+    Type type = 1;// 设置类型
+    bool switch = 2;// 开关
+}
+
+//策略添加
+message StrategyAddParam{
+    enum Type {
+        TYPEDEFAULT = 0;
+        WHITEMODE =1;//白名单模式
+        BLACKMODE =2;//黑名单模式
+    }
+    enum HandleMode {
+        MODEDEFAULT = 0;
+        PREVENTWARNING = 1;//阻断并告警
+        WARNING = 2;//警告
+	}
+    string strategy_id = 1;//策略id
+    HandleMode handle_mode = 2;//处理方式
+	Type defense_type = 3;//策略模式
+	repeated string dIP_list = 5;//策略IP列表
+	repeated string URL_list = 6;//策略URL列表
+	bool enable = 7;//策略是否启用
+}
+
+// 策略修改
+message StrategySetParam{
+	enum HandleMode {
+        MODEDEFAULT = 0;
+        PREVENTWARNING = 1;//阻断并告警
+        WARNING = 2;//警告
+	}
+	string strategy_id = 1;//策略id
+	HandleMode handle_mode = 2;//处理方式
+	bool enable = 7;//策略是否启用
+}

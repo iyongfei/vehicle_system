@@ -28,21 +28,24 @@ Payload:{"clientid":"tianqi-R201b-967E6D9A3001","username":"undefined","reason":
 
 (web)EmqClient LineStatus LineO Topic:$SYS/brokers/emqx@127.0.0.1/clients/tianqi-R201b-967E6D9A3001/connected,
 Payload:{"clean_start":true,"clientid":"tianqi-R201b-967E6D9A3001","connack":0,"ipaddress":"192.168.18.2","keepalive":2,"proto_name":"MQTT","proto_ver":4,"ts":1561184268,"username":"undefined"}
+
+$SYS/brokers/emqx@127.0.0.1/clients/vehicle_test/connected
  */
 func (t *TopicSubscribeHandler) HanleSubscribeTopicData(topicMsg mqtt.Message) error {
 	disconnected:=strings.HasSuffix(topicMsg.Topic(),"disconnected")
+	fmt.Println("topicMsg::",topicMsg.Topic())
 	//_=strings.HasSuffix(topicMsg.Topic(),"connected")
 
 	if disconnected{
 		err :=HanleSubscribeTopicLineData(topicMsg)
-		return fmt.Errorf("hanleSubscribeTopicLineData err:%s",err.Error())
+		return err
 	}
 
 	vehicleResult := protobuf.GWResult{}
 	err := proto.Unmarshal(topicMsg.Payload(), &vehicleResult)
 
 	if err != nil {
-		return fmt.Errorf("hanleSubscribeTopicData err:%s",err.Error())
+		return fmt.Errorf("hanleSubscribeTopicData unmarshal payload err:%s",err)
 	}
 	vehicleId := vehicleResult.GetGUID()
 
@@ -60,11 +63,11 @@ func (t *TopicSubscribeHandler) HanleSubscribeTopicData(topicMsg mqtt.Message) e
 	var handGwResultError error
 	switch actionType := vehicleResult.ActionType; actionType {
 	case protobuf.GWResult_THREAT: //威胁
-		handGwResultError = HandleVehicleThreat(vehicleResult,vehicleId)
+		handGwResultError = HandleVehicleThreat(vehicleResult)
 	case protobuf.GWResult_GW_INFO: //小v
-		handGwResultError = HandleVehicleInfo(vehicleResult,vehicleId)
+		handGwResultError = HandleVehicleInfo(vehicleResult)
 	case protobuf.GWResult_STRATEGY: //策略
-		handGwResultError = HandleVehicleStrategy(vehicleResult,vehicleId)
+		handGwResultError = HandleVehicleStrategy(vehicleResult)
 	default:
 		logger.Logger.Error("vehicleId:%s action type err:%d",vehicleId,int32(vehicleResult.ActionType))
 		logger.Logger.Print("vehicleId:%s action type err:%d",vehicleId,int32(vehicleResult.ActionType))
@@ -74,10 +77,11 @@ func (t *TopicSubscribeHandler) HanleSubscribeTopicData(topicMsg mqtt.Message) e
 
 func HanleSubscribeTopicLineData(topicMsg mqtt.Message) error {
 	//topicSlice:=strings.Split(topicMsg.Topic(),"$SYS/brokers/emqx@127.0.0.1/clients/")
-	subscribeLineTopic := "$SYS/brokers/emqx@127.0.0.1/clients/+/+"
+	subscribeLineTopic := "$SYS/brokers/emqx@127.0.0.1/clients/"
 	topicSlice:=strings.Split(topicMsg.Topic(),subscribeLineTopic)
 	topicSlice_1 :=topicSlice[1]
 	vehicleId := strings.Split(topicSlice_1,"/")[0]
 	err := HandleVehicleOnline(vehicleId,false)
+	fmt.Println(err,err!=nil,"sjdfl")
 	return err
 }

@@ -4,7 +4,7 @@ import (
 	"vehicle_system/src/vehicle/emq/protobuf"
 )
 
-func HandleVehicleStrategy(pushServiceReq protobuf.GWResult,gwId string) error {
+func HandleVehicleStrategy(pushServiceReq protobuf.GWResult) error {
 
 	//gwresult.GWResult{}
 

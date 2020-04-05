@@ -35,7 +35,7 @@ func Auth(c *gin.Context)  {
 	modelBase:=model_base.ModelBaseImpl(user)
 
 
-	err,recordNotFound := modelBase.GetModelByCondition(user,
+	err,recordNotFound := modelBase.GetModelByCondition(
 		"user_name = ? and password = ?",[]interface{}{user.UserName,user.Password}...)
 	if recordNotFound{
 		logger.Logger.Error("%s userName:%s recordNotFound,err:%s",util.RunFuncName(),user.UserName,err)
@@ -101,14 +101,14 @@ func Regist(c *gin.Context)  {
 
 	modelBase:=model_base.ModelBaseImpl(user)
 
-	_,recordNotFound := modelBase.GetModelByCondition(user,"user_name = ?",user.UserName)
+	_,recordNotFound := modelBase.GetModelByCondition("user_name = ?",user.UserName)
 	if !recordNotFound{
 		ret:=response.StructResponseObj(response.VStatusServerError,response.ReqRegistExistMsg,"")
 		c.JSON(http.StatusOK,ret)
 		return
 	}
 
-	if err:=modelBase.InsertModel(user);err!=nil{
+	if err:=modelBase.InsertModel();err!=nil{
 		ret:=response.StructResponseObj(response.VStatusServerError,response.ReqRegistFailMsg,"")
 		c.JSON(http.StatusOK,ret)
 		return

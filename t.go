@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 	"time"
 )
@@ -44,32 +45,54 @@ func isASCIIDigit(c byte) bool {
 	return '0' <= c && c <= '9'
 }
 
-func main()  {
-	msg:="$SYS/brokers/emqx@127.0.0.1/clients/tianqi-R201b-967E6D9A3001/disconnected"
-	set:="$SYS/brokers/emqx@127.0.0.1/clients/"
-
-	topIndex := strings.Index(msg,set)
-	fmt.Println(topIndex)
-
-	topicSlice:=strings.Split(msg,set)
-	fmt.Println("topicSlice::",topicSlice)
-	topicSlice_1 :=topicSlice[1]
-	fmt.Println("topicSlice_1::",topicSlice_1)
-	gwId := strings.Split(topicSlice_1,"/")[0]
-
-	fmt.Println(gwId)
-
-	//fmt.Println(game)
-
-	//fileName := LOGDIR + "/" + "web" + "-" + TimeFormat(TodayFormat) + ".log"
-	//
-	//
-	//_, err := os.OpenFile(fileName, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666)
-	//if err!= nil{
-	//	log.Fatalf("write2File open logFile err:%s",err)
-	//}
-
+type Name struct {
+	Sex string
+	Id int
+	School string
 }
+
+func main()  {
+	name:=Name{
+		Sex:"nv",
+		Id:1,
+		School:"bj",
+	}
+	r:=AA(name)
+	fmt.Println(r)
+	return
+}
+
+func AA(data interface{}) map[interface{}]interface{} {
+	dataValue :=reflect.ValueOf(data)
+	typeF := dataValue.Type()
+	//queryMap:=map[string]interface{}{}
+	queryMap:=map[interface{}]interface{}{}
+	//nFiled:=dataValue.Type().NumField()
+	for i:=0;i<dataValue.NumField();i++{
+		field:=dataValue.Field(i)
+		//fmt.Println(field)
+		fmt.Println(typeF.Field(i).Name, field.Interface())
+		queryMap[field.Interface()] = typeF.Field(i).Name
+	}
+
+	return queryMap
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 func TimeFormat(format string) string {
 	today := time.Now().Format(format)
 	return today

@@ -17,12 +17,12 @@ type User struct {
 	Marks string//备注
 }
 
-func (u *User) InsertModel(model interface{}) error {
-	return mysql.CreateModel(model)
+func (u *User) InsertModel() error {
+	return mysql.CreateModel(u)
 }
 
-func (u *User) GetModelByCondition(model interface{},query interface{}, args ...interface{}) (error,bool) {
-	err,recordNotFound := mysql.QueryModelOneRecordIsExistByWhereCondition(model,query,args...)
+func (u *User) GetModelByCondition(query interface{}, args ...interface{}) (error,bool) {
+	err,recordNotFound := mysql.QueryModelOneRecordIsExistByWhereCondition(u,query,args...)
 	if err!=nil{
 		return err,true
 	}
@@ -39,5 +39,11 @@ func (u *User) DeleModelsByCondition(query interface{}, args ...interface{}) err
 }
 
 func (u *User) GetModelListByCondition(model interface{},query interface{}, args ...interface{}) (error) {
+	return nil
+}
+
+
+func (u *User)  CreateModel(params ...interface{})  interface{}{
+
 	return nil
 }

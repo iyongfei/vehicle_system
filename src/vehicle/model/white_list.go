@@ -19,12 +19,14 @@ type WhiteList struct {
 
 
 
-func (w *WhiteList) InsertModel(model interface{}) error {
-	return mysql.CreateModel(model)
+func (w *WhiteList) InsertModel() error {
+	return mysql.CreateModel(w)
 }
 
-func (w *WhiteList) GetModelByCondition(model interface{},query interface{}, args ...interface{}) (error,bool) {
-	err,recordNotFound := mysql.QueryModelOneRecordIsExistByWhereCondition(model,query,args...)
+
+
+func (w *WhiteList) GetModelByCondition(query interface{}, args ...interface{}) (error,bool) {
+	err,recordNotFound := mysql.QueryModelOneRecordIsExistByWhereCondition(w,query,args...)
 	if err!=nil{
 		return err,true
 	}
@@ -57,23 +59,10 @@ func (w *WhiteList) GetModelListByCondition(model interface{},query interface{},
 	return nil
 }
 
+func (w *WhiteList)  CreateModel(params ...interface{})  interface{}{
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	return nil
+}
 
 
 
