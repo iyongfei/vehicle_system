@@ -1,8 +1,6 @@
 #插入车载信息数量
 insert_vehicle_count=1
 
-#更新车载信息
-update_vehicle_id=dgzeKAoBGbl5E5ajqOq1phksMCVz8S7C
 
 #插入资产
 query_rand_gw=5
@@ -10,8 +8,8 @@ pergw_insert_asset=5
 
 
 #插入威胁
-#query_rand_gw=5
-query_rand_asset=5
+insert_vehicle_id=dgzeKAoBGbl5E5ajqOq1phksMCVz8S7C
+insert_vehicle_threat_count=5
 
 #策略
 strategy_id=RfL4oNP3VpwsFfqOGNDjuC0FeqTynMqV

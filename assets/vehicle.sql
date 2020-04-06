@@ -66,3 +66,25 @@ CREATE TABLE IF NOT EXISTS `vehicle_infos`  (
    UNIQUE KEY `vehicle_id` (`vehicle_id`),
   INDEX `idx_vehicle_infos_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `threats`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+
+  `threat_id` varchar(255) NULL DEFAULT NULL,
+  `vehicle_id` varchar(255) NULL DEFAULT NULL,
+  `src_ip` varchar(255) NULL DEFAULT NULL,
+  `type` int(11) NULL DEFAULT NULL,
+  `content` varchar(255) NULL DEFAULT NULL,
+  `status` int(11) NULL DEFAULT NULL,
+  `attact_time` timestamp NULL DEFAULT NULL,
+  `is_readed` tinyint(1) NULL DEFAULT NULL,
+  `dst_ip` varchar(255) NULL DEFAULT NULL,
+  `dest_type` int(11) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+   UNIQUE KEY `threat_id` (`threat_id`),
+  INDEX `idx_threats_deleted_at`(`deleted_at`) USING BTREE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;

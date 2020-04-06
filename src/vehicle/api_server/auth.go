@@ -18,6 +18,9 @@ func Auth(c *gin.Context)  {
 	userName := c.PostForm("user_name")
 	password := c.PostForm("password")
 
+	logger.Logger.Print("%s userName:%s,password:%s",util.RunFuncName(),userName,password)
+	logger.Logger.Info("%s userName:%s,password:%s",util.RunFuncName(),userName,password)
+
 	argsTrimsEmpty:=util.RrgsTrimsEmpty(userName,password)
 	if argsTrimsEmpty{
 		ret:=response.StructResponseObj(response.VStatusBadRequest,response.ReqArgsIllegalMsg,"")
@@ -116,6 +119,6 @@ func Regist(c *gin.Context)  {
 	retObj:=response.StructResponseObj(response.VStatusOK,response.ReqRegistSuccessMsg,user)
 	c.JSON(http.StatusOK,retObj)
 
-	retMap:=response.StructResponseMap(response.VStatusOK,response.ReqRegistSuccessMsg,user)
-	c.JSON(http.StatusOK,retMap)
+	//retMap:=response.StructResponseMap(response.VStatusOK,response.ReqRegistSuccessMsg,user)
+	//c.JSON(http.StatusOK,retMap)
 }
