@@ -33,7 +33,7 @@ const (
 	ReqRegistAuthSuccessMsg = "该用户授权成功"
 )
 
-//注册
+//白名单
 const (
 
 	ReqAddWhiteListFailMsg = "白名单添加失败"
@@ -53,3 +53,20 @@ const (
 	//ReqRegistAuthSuccessMsg = "该用户授权成功"
 )
 
+//threat
+const (
+	ReqGetThreatInfoFailMsg = "威胁信息获取失败"
+	ReqGetThreatInfoSuccessMsg = "威胁信息获取成功"
+	ReqGetThreatInfoUnExistMsg = "威胁信息不存在"
+	ReqDeleThreatInfoFailMsg = "威胁信息删除失败"
+)
+
+//
+const (
+	ReqGetVehicleFailMsg = "车载信息获取失败"
+	ReqGetVehicleSuccessMsg = "车载信息获取成功"
+	ReqGetVehicleUnExistMsg = "车载信息不存在"
+	ReqDeleVehicleFailMsg = "车载信息删除失败"
+	ReqUpdateVehicleFailMsg = "车载信息更新失败"
+	ReqUpdateVehicleSuccessMsg = "车载信息更新成功"
+)

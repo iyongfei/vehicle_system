@@ -51,8 +51,30 @@ func (u *Threat) DeleModelsByCondition(query interface{}, args ...interface{}) e
 }
 
 func (u *Threat) GetModelListByCondition(model interface{},query interface{}, args ...interface{}) (error) {
+	err := mysql.QueryModelRecordsByWhereCondition(model,query,args...)
+	if err!=nil{
+		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
+	}
 	return nil
 }
+/**
+
+func QueryModelPaginationByWhereCondition(model interface{},pageNum int, pageCount int, totalCount *int,
+	paginModel interface{}, query interface{}, args ...interface{}) error {
+ */
+
+func (u *Threat) GetModelPaginationByCondition(pageIndex int, pageSize int, totalCount *int,
+	paginModel interface{}, query interface{}, args ...interface{})(error){
+
+	err := mysql.QueryModelPaginationByWhereCondition(u,pageIndex,pageSize,totalCount,paginModel,query,args...)
+
+	if err!=nil{
+		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
+	}
+	return nil
+}
+
+
 
 func (threat *Threat)  CreateModel(threatParams ...interface{})  interface{}{
 	threatParam := threatParams[0].(*protobuf.ThreatParam_Item)

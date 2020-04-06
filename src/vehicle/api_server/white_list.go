@@ -1,11 +1,9 @@
 package api_server
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"vehicle_system/src/vehicle/logger"
-	"vehicle_system/src/vehicle/middleware"
 	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
 	"vehicle_system/src/vehicle/response"
@@ -72,9 +70,6 @@ func GetWhiteLists(c *gin.Context)  {
 }
 
 func AddWhiteList(c *gin.Context)  {
-	vehicleClaimsUser,_ := c.Get(middleware.Vuser)
-	fmt.Printf("vehicleClaimsUser%+v\n",vehicleClaimsUser)
-
 	destIp := c.PostForm("dest_ip")
 	url := c.PostForm("url")
 	sourceMac := c.PostForm("source_mac")

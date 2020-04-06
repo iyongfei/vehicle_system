@@ -17,10 +17,15 @@ func V1Router(r *gin.Engine)  {
 		apiV1.DELETE("/white_lists/:white_list_id", api_server.DeleWhiteList)
 
 
-		apiV1.GET("/threats/:id", api_server.GetEvent)
-		apiV1.GET("/threats", api_server.GetEvents)
-		apiV1.POST("/threats", api_server.AddEvent)
-		apiV1.PUT("/threats/:id", api_server.EditEvent)
-		apiV1.DELETE("/threats/:id", api_server.DeleEvent)
+		apiV1.GET("/threats/:threat_id", api_server.GetThreat)
+		apiV1.GET("/threats", api_server.GetThreats)
+		apiV1.GET("/pagination/threats", api_server.GetPaginationThreats)
+		//apiV1.POST("/threats", api_server.AddThreat)
+		//apiV1.PUT("/threats/:threat_id", api_server.EditThreat)
+		apiV1.DELETE("/threats/:threat_id", api_server.DeleThreat)
+
+
+		//需改信息，下发给emq
+		apiV1.PUT("/vehicle/:vehicle_id", api_server.EditVehicle)
 	}
 }

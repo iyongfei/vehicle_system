@@ -10,6 +10,7 @@ message Command {
     }
     TaskType item_type = 1; //指令类型
     bytes param = 2;//具体任务内容，根据类型取相应message
+    string cmdID =3; //该指令发送的ID
 }
 
 
