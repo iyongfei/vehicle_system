@@ -1,4 +1,4 @@
-package emp_service
+package emq_service
 
 import (
 	"crypto/tls"

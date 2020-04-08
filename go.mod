@@ -12,5 +12,6 @@ require (
 	github.com/golang/protobuf v1.3.3
 	github.com/google/uuid v1.1.1
 	github.com/jinzhu/gorm v1.9.12
+	github.com/robfig/cron/v3 v3.0.1 // indirect
 	gopkg.in/ini.v1 v1.55.0
 )

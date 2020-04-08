@@ -25,7 +25,7 @@ func main()  {
 	defaultVehicleThreatCount ,_ := strconv.Atoi(insertVehicleThreatCount)
 	fmt.Println("defaultVehicleCount:",defaultVehicleThreatCount)
 
-	emqx:=emp_service.NewEmqx()
+	emqx:= emq_service.NewEmqx()
 	emqx.Publish(insertVehicleId,creatThreatProtobuf(insertVehicleId,defaultVehicleThreatCount))
 }
 
