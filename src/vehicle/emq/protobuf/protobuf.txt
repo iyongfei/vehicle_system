@@ -1,3 +1,6 @@
 #用法
 /Users/mac/go/vehicle_system/src/vehicle/emq/protobuf
  protoc scommand.proto --go_out=./
+
+set GO111MODULE=on			//打开包管理
+set GOPROXY= https://goproxy.io		//设置下载包代理

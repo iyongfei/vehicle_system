@@ -1,3 +1,7 @@
 #用法
 /Users/mac/go/vehicle_system/src/vehicle/emq/protobuf
  protoc scommand.proto --go_out=./
+
+
+cat ~/.ssh/id_rsa.pub
+pbcopy < ~/.ssh/id_rsa.pub
