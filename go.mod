@@ -3,6 +3,7 @@ module vehicle_system
 go 1.14
 
 require (
+	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/asaskevich/govalidator v0.0.0-20200108200545-475eaeb16496
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/eclipse/paho.mqtt.golang v1.2.0
@@ -13,5 +14,7 @@ require (
 	github.com/google/uuid v1.1.1
 	github.com/jinzhu/gorm v1.9.12
 	github.com/robfig/cron/v3 v3.0.1 // indirect
+	github.com/swaggo/gin-swagger v1.2.0 // indirect
+	github.com/swaggo/swag v1.5.1
 	gopkg.in/ini.v1 v1.55.0
 )
