@@ -52,15 +52,17 @@ type Name struct {
 	School string
 }
 
+func task() {
+	fmt.Println("I am running task.")
+}
+
+func taskWithParams(a int, b string) {
+	fmt.Println(a, b)
+}
+
+
 func main() {
-	name := Name{
-		Sex:    "nv",
-		Id:     1,
-		School: "bj",
-	}
-	r := AA(name)
-	fmt.Println(r)
-	return
+	fmt.Println(int64(time.Second*1))
 }
 
 func AA(data interface{}) map[interface{}]interface{} {
