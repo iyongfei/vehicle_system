@@ -1,0 +1,68 @@
+#gomod用法
+set GO111MODULE=on			//打开包管理
+set GOPROXY= https://goproxy.io		//设置下载包代理
+
+go mod download: 下载依赖的 module 到本地 cache
+go mod edit: 编辑 go.mod
+go mod graph: 打印模块依赖图
+go mod init: 在当前目录下初始化 go.mod(就是会新建一个 go.mod 文件)
+go mod tidy: 整理依赖关系，会添加丢失的 module，删除不需要的 module
+go mod vender: 将依赖复制到 vendor 下
+go mod verify: 校验依赖
+go mod why: 解释为什么需要依赖
+
+
+#protoc用法
+/Users/mac/go/vehicle_system/src/vehicle/emq/protobuf
+ protoc scommand.proto --go_out=./
+
+
+#swag
+
+#mysq
+TINYINT(Length)
+1字节
+范围：-128~127，或者0~255（无符号）
+
+SMALLINT(Length)
+2字节
+范围：-32 768~32 767，或者0~65 535（无符号）
+
+MEDIUMINT(Length)
+3字节
+范围：-8 388 608~8 388 607，或者0~16 777 215（无符号）
+
+INT(Length)
+4字节
+范围：-2 147 483 648~2 147 483 647，或者0~4 294 967 295（无符号）
+
+BIGINT(Length)
+8字节
+范围：-9 223 372 036 854 775 808~9 223 372 036 854 775 807，或者0~18 446 744 073 709 551 615（无符号）
+
+#go
+1	uint8
+无符号 8 位整型 (0 到 255)
+2	uint16
+无符号 16 位整型 (0 到 65535)
+3	uint32
+无符号 32 位整型 (0 到 4294967295)
+
+
+4	uint64
+无符号 64 位整型 (0 到 18446744073709551615)
+5	int8
+有符号 8 位整型 (-128 到 127)
+6	int16
+有符号 16 位整型 (-32768 到 32767)
+7	int32
+有符号 32 位整型 (-2147483648 到 2147483647)
+8	int64
+有符号 64 位整型 (-9223372036854775808 到 9223372036854775807)
+
+int(11) uin32
+
+TINYINT(3) uint8
+
+#rpmbuild
+yum install rpm-build

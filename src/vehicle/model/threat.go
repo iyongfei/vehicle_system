@@ -12,16 +12,16 @@ import (
 type Threat struct {
 	gorm.Model
 	ThreatId       					string
-	VehicleId       						string
-	SrcIP                         string
-	Type                      int//威胁类型\名称
+	VehicleId       			    string
+	AssetId  						string
+	Type                            uint8//威胁类型\名称
 	Content                   string
-	Status                    int //威胁状态
-	AttactTime                time.Time //威胁产生时间
-	IsReaded					bool
+	Status                    uint8 //威胁状态
+	AttactTime                uint32 //威胁产生时间
 
+	SrcIP                         string
 	DstIP                         string
-	DestType                   int
+	IsReaded					bool
 }
 
 

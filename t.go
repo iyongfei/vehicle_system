@@ -59,10 +59,16 @@ func task() {
 func taskWithParams(a int, b string) {
 	fmt.Println(a, b)
 }
+func Stamp2Str(stamp int64) string{
+	timeLayout := "2006-01-02 15:04:05"
+	str:=time.Unix(stamp,0).Format(timeLayout)
+	return str
+}
 
 
 func main() {
-	fmt.Println(int64(time.Second*1))
+	fmt.Println(Stamp2Str(10000000000))
+
 }
 
 func AA(data interface{}) map[interface{}]interface{} {
