@@ -1,3 +1,4 @@
+#gomod
 set GO111MODULE=on			//打开包管理
 set GOPROXY= https://goproxy.io		//设置下载包代理
 
@@ -16,3 +17,4 @@ go mod why: 解释为什么需要依赖
 /Users/mac/go/vehicle_system/src/vehicle/emq/protobuf
  protoc scommand.proto --go_out=./
 
+#swag

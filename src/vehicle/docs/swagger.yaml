@@ -1,5 +1,53 @@
+basePath: /
+definitions:
+  response.Response:
+    properties:
+      code:
+        type: integer
+      data:
+        type: object
+      msg:
+        type: string
+    type: object
+host: localhost:7001
 info:
-  contact: {}
-  license: {}
-paths: {}
+  contact:
+    email: support@swagger.io
+    name: vehicle API Support
+    url: http://www.swagger.io/support
+  description: This is a sample server vehicle server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: vehicle API
+  version: "1.0"
+paths:
+  /auth:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: user_name
+        in: query
+        name: user_name
+        required: true
+        type: string
+      - description: password
+        in: query
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get Auth
 swagger: "2.0"

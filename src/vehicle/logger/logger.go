@@ -8,7 +8,7 @@ import (
 var Logger *VLogger
 var loggerErrInfo = errors.New("vlogger init error")
 
-func init()  {
+func Setup()  {
 	var loggerErr error
 	Logger,loggerErr = NewVLogger()
 	if loggerErr!=nil || Logger == nil{

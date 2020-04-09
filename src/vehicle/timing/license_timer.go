@@ -1,8 +1,8 @@
-package cron
+package timing
 
 import "fmt"
 
-func LicenseCron()  {
+func licenseCron()  {
 	fmt.Println("license....")
 
 

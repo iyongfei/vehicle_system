@@ -6,7 +6,7 @@ import (
 	"vehicle_system/src/vehicle/logger"
 )
 
-func init()  {
+func Setup()  {
 	if gormDb,err:= mysql.GetMysqlInstance().InitDataBase();err != nil{
 		logger.Logger.Error("gorm db connect fail:%+v",gormDb)
 		logger.Logger.Print("gorm db connect fail:%+v",gormDb)

@@ -52,7 +52,7 @@ var (
 	SignKey string
 )
 
-func init()  {
+func Setup()  {
 	iniParser := IniParser{}
 	if err:=iniParser.Load(CONF_SOURCE);err!=nil{
 		logger.Logger.Error("iniParser load ini err:%+v",err)

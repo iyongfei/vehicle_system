@@ -1,4 +1,4 @@
-package cron_lib
+package timing_pkg
 
 import (
     "github.com/google/uuid"

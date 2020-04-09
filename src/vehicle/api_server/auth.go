@@ -13,8 +13,16 @@ import (
 	"vehicle_system/src/vehicle/util"
 )
 
+// @Summary auth
+// @Description auth
+// @Produce json
+// @Accept multipart/form-data
+// @Param user_name formData string true "user_name"
+// @Param password formData string true "password"
+// @Success 200 {object} response.Response
+// @Failure 400 {object} response.Response
+// @Router /auth [post]
 func Auth(c *gin.Context)  {
-
 	userName := c.PostForm("user_name")
 	password := c.PostForm("password")
 
@@ -36,7 +44,6 @@ func Auth(c *gin.Context)  {
 	}
 
 	modelBase:=model_base.ModelBaseImpl(user)
-
 
 	err,recordNotFound := modelBase.GetModelByCondition(
 		"user_name = ? and password = ?",[]interface{}{user.UserName,user.Password}...)
