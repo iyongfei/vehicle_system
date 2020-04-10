@@ -3,9 +3,7 @@ package model
 import (
 	"fmt"
 	"github.com/jinzhu/gorm"
-	"time"
 	"vehicle_system/src/vehicle/db/mysql"
-	"vehicle_system/src/vehicle/emq/protobuf"
 	"vehicle_system/src/vehicle/util"
 )
 
@@ -77,19 +75,19 @@ func (u *Threat) GetModelPaginationByCondition(pageIndex int, pageSize int, tota
 
 
 func (threat *Threat)  CreateModel(threatParams ...interface{})  interface{}{
-	threatParam := threatParams[0].(*protobuf.ThreatParam_Item)
-	threat.SrcIP = threatParam.GetSrcIp()
-	threat.Type = int(threatParam.GetThreatType())
-	threat.Content = threatParam.GetContent()
-	threat.Status = int(threatParam.GetThreatStatus())
-	if threatParam.GetAttactTime() == 0{
-		threat.AttactTime = time.Now()
-	}else{
-		threat.AttactTime = util.StampUnix2Time(int64(threatParam.GetAttactTime()))
-	}
-
-	threat.IsReaded = false
-	threat.DstIP = threatParam.GetDstIp()
+	//threatParam := threatParams[0].(*protobuf.ThreatParam_Item)
+	//threat.SrcIP = threatParam.GetSrcIp()
+	//threat.Type = int(threatParam.GetThreatType())
+	//threat.Content = threatParam.GetContent()
+	//threat.Status = int(threatParam.GetThreatStatus())
+	//if threatParam.GetAttactTime() == 0{
+	//	threat.AttactTime = time.Now()
+	//}else{
+	//	threat.AttactTime = util.StampUnix2Time(int64(threatParam.GetAttactTime()))
+	//}
+	//
+	//threat.IsReaded = false
+	//threat.DstIP = threatParam.GetDstIp()
 	return threat
 }
 

@@ -13,9 +13,9 @@ import (
 type VehicleInfo struct {
 	gorm.Model
 	VehicleId       string `gorm:"unique"` //小v ID
-	Name            string                 //小v名称
+	Name            string              //小v名称
 	Version         string
-	StartTime       uint32 //启动时间
+	StartTime       time.Time //启动时间
 	FirmwareVersion string
 	HardwareModel   string
 	Module          string
@@ -29,6 +29,7 @@ type VehicleInfo struct {
 	HbTimeout uint32 //最近活跃时间戳
 
 	DeployMode uint8 //部署模式
+	FlowIdleTimeSlot uint32
 
 	OnlineStatus  bool   //在线状态
 	ProtectStatus uint8  //保护状态										//保护状态
@@ -39,7 +40,6 @@ type VehicleInfo struct {
 func (u *VehicleInfo) InsertModel() error {
 	return mysql.CreateModel(u)
 }
-
 func (u *VehicleInfo) GetModelByCondition(query interface{}, args ...interface{}) (error, bool) {
 	err, recordNotFound := mysql.QueryModelOneRecordIsExistByWhereCondition(u, query, args...)
 	if err != nil {
@@ -60,26 +60,21 @@ func (u *VehicleInfo) UpdateModelsByCondition(values interface{}, query interfac
 func (u *VehicleInfo) DeleModelsByCondition(query interface{}, args ...interface{}) error {
 	return nil
 }
-
 func (u *VehicleInfo) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) (error) {
 	return nil
 }
 
 func (vehicleInfo *VehicleInfo) CreateModel(vehicleParam ...interface{}) interface{} {
 	vehicleParams := vehicleParam[0].(*protobuf.GwInfoParam)
-	//vehicleInfo:= &VehicleInfo{}
 	vehicleInfo.Version = vehicleParams.GetVersion()
+	if vehicleParams.GetStartTime() == 0 {
+		vehicleInfo.StartTime = time.Now()
+	} else {
+		vehicleInfo.StartTime = util.StampUnix2Time(int64(vehicleParams.GetStartTime()))
+	}
+
 	vehicleInfo.FirmwareVersion = vehicleParams.GetFirmwareVersion()
 	vehicleInfo.HardwareModel = vehicleParams.GetHardwareModel()
-	vehicleInfo.BindIp = vehicleParams.GetIp()
-	vehicleInfo.SupplyId = vehicleParams.GetSupplyId()
-	vehicleInfo.UpRouterIp = vehicleParams.GetUpRouterIp()
-	vehicleInfo.Type = uint8(vehicleParams.GetType())
-	vehicleInfo.Mac = vehicleParams.GetMac()
-	vehicleInfo.RecentActiveTime = uint64(vehicleParams.GetTimestamp())
-	vehicleInfo.DeployMode = int32(vehicleParams.GetDeployMode())
-	vehicleInfo.OnlineStatus = true
-
 	mapModule := make(map[string]string)
 	for _, moduleItem := range vehicleParams.GetModule() {
 		_, ok := mapModule[moduleItem.GetName()]
@@ -91,10 +86,15 @@ func (vehicleInfo *VehicleInfo) CreateModel(vehicleParam ...interface{}) interfa
 	mapModuleMarshal, _ := json.Marshal(mapModule)
 	vehicleInfo.Module = string(mapModuleMarshal)
 
-	if vehicleParams.GetStartTime() == 0 {
-		vehicleInfo.StartTime = time.Now()
-	} else {
-		vehicleInfo.StartTime = util.StampUnix2Time(int64(vehicleParams.GetStartTime()))
-	}
+	vehicleInfo.SupplyId = vehicleParams.GetSupplyId()
+	vehicleInfo.UpRouterIp = vehicleParams.GetUpRouterIp()
+	vehicleInfo.Ip = vehicleParams.GetIp()
+	vehicleInfo.Type = uint8(vehicleParams.GetType())
+	vehicleInfo.Mac = vehicleParams.GetMac()
+	vehicleInfo.TimeStamp = uint32(vehicleParams.GetTimestamp())
+	vehicleInfo.HbTimeout = uint32(vehicleParams.GetHbTimeout())
+	vehicleInfo.DeployMode = uint8(vehicleParams.GetDeployMode())
+	vehicleInfo.FlowIdleTimeSlot = uint32(vehicleParams.GetFlowIdleTimeSlot())
+	vehicleInfo.OnlineStatus = true
 	return vehicleInfo
 }

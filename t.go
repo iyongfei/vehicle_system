@@ -65,8 +65,13 @@ func Stamp2Str(stamp int64) string{
 	return str
 }
 
+type A struct {
+	TT time.Time
+}
 
 func main() {
+	a:=A{}
+	fmt.Println(a.TT)
 	fmt.Println(Stamp2Str(10000000000))
 
 }

@@ -11,7 +11,8 @@ CREATE TABLE IF NOT EXISTS `flows`  (
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
 
-  `flow_id` varchar(255) NULL DEFAULT NULL,
+  `flow_id` int(11) NULL DEFAULT NULL,
+  `vehicle_id` varchar(255) NULL DEFAULT NULL,
   `hash` int(11) NULL DEFAULT NULL,
   `src_ip` int(11) NULL DEFAULT NULL,
   `src_port` int(11) NULL DEFAULT NULL,
@@ -26,6 +27,7 @@ CREATE TABLE IF NOT EXISTS `flows`  (
   `last_seen_time` int(11) NULL DEFAULT NULL,
   `src_dst_bytes` BIGINT(20) NULL DEFAULT NULL,
   `dst_src_bytes` BIGINT(20) NULL DEFAULT NULL,
+  `stat` tinyint(3) NULL DEFAULT NULL,
    PRIMARY KEY (`id`) USING BTREE,
    UNIQUE KEY `flow_id` (`flow_id`),
 
@@ -96,7 +98,7 @@ CREATE TABLE IF NOT EXISTS `vehicle_infos`  (
   `name` varchar(255) NULL DEFAULT NULL,
 
   `version` varchar(255) NULL DEFAULT NULL,
-  `start_time` int(11) NULL DEFAULT NULL,
+  `start_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `firmware_version` varchar(255) NULL DEFAULT NULL,
   `hardware_model` varchar(255) NULL DEFAULT NULL,
   `module` varchar(255) NULL DEFAULT NULL,
@@ -108,6 +110,7 @@ CREATE TABLE IF NOT EXISTS `vehicle_infos`  (
   `time_stamp` int(11) NULL DEFAULT NULL,
   `hb_timeout` int(11) NULL DEFAULT NULL,
   `deploy_mode` tinyint(3) NULL DEFAULT NULL,
+  flow_idle_time_slot int(11) NULL DEFAULT NULL,
 
   `online_status` tinyint(1) NULL DEFAULT NULL,
   `protect_status` tinyint(3) NULL DEFAULT NULL,
