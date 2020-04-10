@@ -111,12 +111,25 @@ CREATE TABLE IF NOT EXISTS `vehicle_infos`  (
 
   `online_status` tinyint(1) NULL DEFAULT NULL,
   `protect_status` tinyint(3) NULL DEFAULT NULL,
+  `leader_id` varchar(255) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
    UNIQUE KEY `vehicle_id` (`vehicle_id`),
   INDEX `idx_vehicle_infos_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 
+
+CREATE TABLE IF NOT EXISTS `vehicle_leaders`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  `leader_id` varchar(255) NULL DEFAULT NULL,
+  `name` varchar(255) NULL DEFAULT NULL,
+  `phone` varchar(255) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_gw_leaders_deleted_at`(`deleted_at`) USING BTREE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 
 -- ----------------------------
@@ -237,4 +250,149 @@ CREATE TABLE IF NOT EXISTS `port_maps`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_port_maps_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `strategies`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  `strategy_id` varchar(255)  NULL DEFAULT NULL,
+  `type` tinyint(3) NULL DEFAULT NULL,
+  `handle_mode` tinyint(3) NULL DEFAULT NULL,
+  `enable` tinyint(1) NULL DEFAULT NULL,
+
+  `name` varchar(255) NULL DEFAULT NULL,
+  `introduce` varchar(255) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_strategies_deleted_at`(`deleted_at`) USING BTREE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+
+
+CREATE TABLE IF NOT EXISTS `strategy_groups`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  `strategy_id` varchar(255)  NULL DEFAULT NULL,
+  `group_id` varchar(255) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_strategy_groups_deleted_at`(`deleted_at`) USING BTREE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+
+
+
+CREATE TABLE IF NOT EXISTS `group_learning_results`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+
+  `group_id` varchar(255) NULL DEFAULT NULL,
+  `learning_result_id` varchar(255)  NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_group_learning_results_deleted_at`(`deleted_at`) USING BTREE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+
+
+CREATE TABLE IF NOT EXISTS `samples`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+
+  `sample_id` varchar(255) NULL DEFAULT NULL,
+  `start_time` timestamp NULL DEFAULT NULL,
+  `remain_time` int(11) NULL DEFAULT NULL,
+  `total_time` int(11) NULL DEFAULT NULL,
+
+
+
+  `status` tinyint(3) UNSIGNED NULL DEFAULT NULL,
+  `time_out` int(11) UNSIGNED NULL DEFAULT NULL,
+  `name` varchar(255) NULL DEFAULT NULL,
+  `introduce` varchar(255) NULL DEFAULT NULL,
+
+  `vehicle_id` varchar(255) NULL DEFAULT NULL,
+  `study_origin_id` varchar(255) NULL DEFAULT NULL,
+
+
+  `check` tinyint(3) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_collect_samples_deleted_at`(`deleted_at`) USING BTREE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+
+
+CREATE TABLE IF NOT EXISTS `sample_items`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+
+  `sample_item_id` varchar(255) NULL DEFAULT NULL,
+  `sample_id` varchar(255) NULL DEFAULT NULL,
+  `src_mac` varchar(255) NULL DEFAULT NULL,
+  `src_ip` varchar(255) NULL DEFAULT NULL,
+  `src_port` int(11) UNSIGNED NULL DEFAULT NULL,
+
+  `dst_ip` varchar(255) NULL DEFAULT NULL,
+  `dst_port` int(11) UNSIGNED NULL DEFAULT NULL,
+  `url` varchar(255) NULL DEFAULT NULL,
+  `fetch_time` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_sample_items_deleted_at`(`deleted_at`) USING BTREE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `study_origins`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+
+  `study_origin_id` varchar(255) NULL DEFAULT NULL,
+  `name` varchar(255) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_study_origins_deleted_at`(`deleted_at`) USING BTREE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+
+
+
+
+CREATE TABLE IF NOT EXISTS `automated_learnings`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+
+  `learning_id` varchar(255) NULL DEFAULT NULL,
+  `sample_id` varchar(255) NULL DEFAULT NULL,
+  `file_name` varchar(255) NULL DEFAULT NULL,
+  `automated_learning_id` varchar(255) NULL DEFAULT NULL,
+  `description` varchar(255) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_automated_learnings_deleted_at`(`deleted_at`) USING BTREE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+
+
+
+
+
+CREATE TABLE IF NOT EXISTS `automated_learning_results`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+
+  `learning_result_id` varchar(255) NULL DEFAULT NULL,
+  `sample_id` varchar(255) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_automated_learning_results_deleted_at`(`deleted_at`) USING BTREE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
 

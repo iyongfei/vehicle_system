@@ -87,7 +87,8 @@ func AA(data interface{}) map[interface{}]interface{} {
 	return queryMap
 }
 
+
 func TimeFormat(format string) string {
-	today := time.Now().Format(format)
+	  today := time.Now().Format(format)
 	return today
 }
