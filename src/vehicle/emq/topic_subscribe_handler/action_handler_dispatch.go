@@ -62,12 +62,36 @@ func (t *TopicSubscribeHandler) HanleSubscribeTopicData(topicMsg mqtt.Message) e
 
 	var handGwResultError error
 	switch actionType := vehicleResult.ActionType; actionType {
-	case protobuf.GWResult_THREAT: //威胁
-		handGwResultError = HandleVehicleThreat(vehicleResult)
-	case protobuf.GWResult_GW_INFO: //小v
+	case protobuf.GWResult_FLOWSTAT: //FlowParam
+		handGwResultError = HandleVehicleFlow(vehicleResult)
+
+	case protobuf.GWResult_FIRMWARE: //FirwareParam
+		handGwResultError = HandleVehicleFirmware(vehicleResult)
+
+	case protobuf.GWResult_GW_INFO: //GwInfoParam
 		handGwResultError = HandleVehicleInfo(vehicleResult)
-	case protobuf.GWResult_STRATEGY: //策略
+
+	case protobuf.GWResult_DEVICE: //DeviceParam
+		handGwResultError = HandleVehicleAsset(vehicleResult)
+
+	case protobuf.GWResult_THREAT: //ThreatParam
+		handGwResultError = HandleVehicleThreat(vehicleResult)
+
+	case protobuf.GWResult_SAMPLE: //SampleParam
+		handGwResultError = HandleVehicleSample(vehicleResult)
+
+	case protobuf.GWResult_STRATEGY: //StrategyParam
 		handGwResultError = HandleVehicleStrategy(vehicleResult)
+
+	case protobuf.GWResult_PROTECT: //GWProtectInfoParam
+		handGwResultError = HandleVehicleProtect(vehicleResult)
+
+	case protobuf.GWResult_PORTREDIRECT: //GWProtectInfoParam
+		handGwResultError = HandleVehiclePortMap(vehicleResult)
+
+	case protobuf.GWResult_DEPLOYER: //DeployerParam
+		handGwResultError = HandleVehicleDeployer(vehicleResult)
+
 	default:
 		logger.Logger.Error("vehicleId:%s action type err:%d",vehicleId,int32(vehicleResult.ActionType))
 		logger.Logger.Print("vehicleId:%s action type err:%d",vehicleId,int32(vehicleResult.ActionType))
