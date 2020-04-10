@@ -17,5 +17,9 @@ gw_id=tianqi-R201i-1A86B1FF1B42
 hand_mode=1
 
 #插入flow
-insert_flow_vehicle_id = "sjdfkl"
+insert_flow_vehicle_id = ff
 insert_flow_count = 5
+
+#端口映射
+insert_port_vehicle_id = "fds"
+port_map_count = 5

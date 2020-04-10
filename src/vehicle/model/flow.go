@@ -73,7 +73,7 @@ func (flow *Flow) CreateModel(flowParam ...interface{}) interface{} {
 	flow.LastSeenTime = flowItemParams.GetLastSeenTime()
 	flow.SrcDstBytes = flowItemParams.GetSrc2DstBytes()
 	flow.DstSrcBytes = flowItemParams.GetDst2SrcBytes()
-	flow.FlowStat = uint8(flowItemParams.GetFlowStat())
+	flow.Stat = uint8(flowItemParams.GetFlowStat())
 	return flow
 }
 

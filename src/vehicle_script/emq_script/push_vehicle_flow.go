@@ -35,23 +35,30 @@ func creatFlowProtobuf(vehicleId string,flowCount int)[]byte{
 	}
 	flowParams := &protobuf.FlowParam{}
 	//添加ThreatItem
-	items:=[]*protobuf.ThreatParam_Item{}
 
+	list:=[]*protobuf.FlowParam_FItem{}
 	for i:=0;i<flowCount;i++{
-		moduleItem := &protobuf.ThreatParam_Item{
-			SrcMac:tool.RandomString(8),
-			ThreatType:protobuf.ThreatParam_Item_SITE,
-			Content:"威胁内容"+tool.RandomString(8),
-			ThreatStatus:protobuf.ThreatParam_Item_PREVENT,
-			AttactTime:tool.TimeNowToUnix(),
-			SrcIp:tool.GenIpAddr(),
-			DstIp:tool.GenIpAddr(),
+		moduleItem := &protobuf.FlowParam_FItem{
+			Hash:uint32(tool.RandomNumber(8)),
+			SrcIp:131,
+			SrcPort:23,
+			DstIp:23,
+			DstPort:23,
+			Protocol:protobuf.FlowProtos(32),
+			FlowInfo:"wklejl",
+			SafeType:protobuf.FlowSafetype(33),
+			SafeInfo:"jwek",
+			StartTime:tool.TimeNowToUnix(),
+			LastSeenTime:tool.TimeNowToUnix(),
+			Src2DstBytes:32,
+			Dst2SrcBytes:434,
+			FlowStat:protobuf.FlowStat(23),
 		}
-		items = append(items,moduleItem)
+		list = append(list,moduleItem)
 	}
-	threatParams.ThreatItem = items
+	flowParams.FlowItem = list
 
-	deviceParamsBytes,_:=proto.Marshal(threatParams)
+	deviceParamsBytes,_:=proto.Marshal(flowParams)
 	pushReq.Param = deviceParamsBytes
 	ret,_ := proto.Marshal(pushReq)
 	return ret

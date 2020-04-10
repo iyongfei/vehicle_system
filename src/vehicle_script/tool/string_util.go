@@ -16,6 +16,12 @@ func RandomString(ln int) string {
 	return string(b)
 }
 
+func RandomNumber(ln int) int32 {
+	r:=rand.New(rand.NewSource(time.Now().UnixNano())).Int31n(1000000)
+	return r
+}
+
+
 func TimeNowToUnix()uint32{
 	t:=time.Now()
 	return  uint32(t.Unix())
