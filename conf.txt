@@ -13,8 +13,7 @@ insert_vehicle_threat_count=5
 
 #策略
 strategy_id=RfL4oNP3VpwsFfqOGNDjuC0FeqTynMqV
-gw_id=tianqi-R201i-1A86B1FF1B42
-hand_mode=1
+insert_strategy_vehicle_id=tianqi-R201i-1A86B1FF1B42
 
 #插入flow
 insert_flow_vehicle_id = ff

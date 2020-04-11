@@ -272,6 +272,19 @@ CREATE TABLE IF NOT EXISTS `strategies`  (
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 
+CREATE TABLE IF NOT EXISTS `strategy_vehicles`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+
+  `strategy_id` varchar(255)  NULL DEFAULT NULL,
+  `vehicle_id` varchar(255) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_strategy_vehicles_deleted_at`(`deleted_at`) USING BTREE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+
 
 CREATE TABLE IF NOT EXISTS `strategy_groups`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
