@@ -61,7 +61,7 @@ func UpdateModelByMapModel(model interface{}, values interface{}, query interfac
 	if err!= nil{
 		return fmt.Errorf("%s open grom err:%v",util.RunFuncName(),err.Error())
 	}
-	err = vgorm.Debug().Model(model).Where(query, queryArgs...).Updates(values).Error
+	err = vgorm.Model(model).Where(query, queryArgs...).Updates(values).Error
 	if err != nil {
 		return fmt.Errorf("%s err %v",util.RunFuncName(),err.Error())
 	}

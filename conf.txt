@@ -21,5 +21,17 @@ insert_flow_vehicle_id = ff
 insert_flow_count = 5
 
 #端口映射
-insert_port_vehicle_id = "fds"
+insert_port_vehicle_id = fds
 port_map_count = 5
+
+
+#状态保护
+insert_protect_vehicle_id = ff
+protect_status = 1
+
+
+#状态保护
+insert_leader_vehicle_id = kQ8XKqP57cNwt0CwXLWoXWF0UfwaYFX8
+name=safly
+phone=13581922339
+dev_name =小V上线

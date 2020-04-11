@@ -36,18 +36,19 @@ func HandleVehicleThreat(vehicleResult protobuf.GWResult) error {
 		return fmt.Errorf("%s insert threat vehicleId recordNotFound", util.RunFuncName())
 	}
 	for _, threatItem := range vehicleParam.GetThreatItem() {
-		threat := &model.Threat{}
-		threat.ThreatId = util.RandomString(32)
-		threat.VehicleId = vehicleId
+		threat := &model.Threat{
+			ThreatId:util.RandomString(32),
+			VehicleId:vehicleId,
+		}
 
 		modelBase := model_base.ModelBaseImpl(threat)
-
+		modelBase.CreateModel(threatItem)
 		_, recordNotFound := modelBase.GetModelByCondition("threat_id = ?", threat.ThreatId)
 		if !recordNotFound {
 			continue
 		}
 
-		modelBase.CreateModel(threatItem)
+
 		err := modelBase.InsertModel()
 		if err != nil {
 			continue
