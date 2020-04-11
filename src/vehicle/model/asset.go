@@ -1,6 +1,12 @@
 package model
 
-import "github.com/jinzhu/gorm"
+import (
+	"fmt"
+	"github.com/jinzhu/gorm"
+	"vehicle_system/src/vehicle/db/mysql"
+	"vehicle_system/src/vehicle/emq/protobuf"
+	"vehicle_system/src/vehicle/util"
+)
 
 type Asset struct {
 	gorm.Model
@@ -23,3 +29,47 @@ type Asset struct {
 	AssetGroup                    string
 	AssetLeader					string
 }
+
+
+func (asset *Asset) InsertModel() error {
+	return mysql.CreateModel(asset)
+}
+func (asset *Asset) GetModelByCondition(query interface{}, args ...interface{}) (error, bool) {
+	err, recordNotFound := mysql.QueryModelOneRecordIsExistByWhereCondition(asset, query, args...)
+	if err != nil {
+		return err, true
+	}
+	if recordNotFound {
+		return nil, true
+	}
+	return nil, false
+}
+func (asset *Asset) UpdateModelsByCondition(values interface{}, query interface{}, queryArgs ...interface{}) error {
+	err := mysql.UpdateModelByMapModel(asset, values, query, queryArgs...)
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
+	}
+	return nil
+}
+func (asset *Asset) DeleModelsByCondition(query interface{}, args ...interface{}) error {
+	return nil
+}
+func (asset *Asset) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) (error) {
+	return nil
+}
+
+func (asset *Asset) CreateModel(assetParams ...interface{}) interface{} {
+	assetParam := assetParams[0].(*protobuf.DeviceParam_Item)
+	asset.IP = assetParam.GetIp()
+	asset.Mac = assetParam.GetMac()
+	asset.Name = assetParam.GetName()
+	asset.TradeMark = assetParam.GetTrademark()
+	asset.TradeMark = assetParam.GetTrademark()
+	asset.OnlineStatus = assetParam.GetIsOnline()
+	asset.LastOnline = assetParam.GetLastOnline()
+	asset.InternetSwitch = assetParam.GetInternetSwitch()
+	asset.ProtectStatus = assetParam.GetProtectSwitch()
+	asset.LanVisitSwitch = assetParam.GetLanVisitSwitch()
+	return asset
+}
+

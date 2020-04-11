@@ -93,13 +93,13 @@ func (t *TopicSubscribeHandler) HanleSubscribeTopicData(topicMsg mqtt.Message) e
 	case protobuf.GWResult_SAMPLE: //SampleParam
 		handGwResultError = HandleVehicleSample(vehicleResult)
 
-	case protobuf.GWResult_STRATEGY: //StrategyParam
+	case protobuf.GWResult_STRATEGY: //StrawtegyParam
 		handGwResultError = HandleVehicleStrategy(vehicleResult)
 
 	case protobuf.GWResult_PROTECT: //GWProtectInfoParam
 		handGwResultError = HandleVehicleProtect(vehicleResult)
 
-	case protobuf.GWResult_PORTREDIRECT: //GWProtectInfoParam
+	case protobuf.GWResult_PORTREDIRECT: //PortRedirectParam
 		handGwResultError = HandleVehiclePortMap(vehicleResult)
 
 	case protobuf.GWResult_DEPLOYER: //DeployerParam

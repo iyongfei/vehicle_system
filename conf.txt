@@ -3,8 +3,8 @@ insert_vehicle_count=1
 
 
 #插入资产
-query_rand_gw=5
-pergw_insert_asset=5
+insert_asset_vehicle_id=kQ8XKqP57cNwt0CwXLWoXWF0UfwaYFX8
+insert_asset_count=5
 
 
 #插入威胁
