@@ -46,6 +46,7 @@ func (t *TopicSubscribeHandler) HanleSubscribeTopicData(topicMsg mqtt.Message) e
 	vehicleResult := protobuf.GWResult{}
 	err := proto.Unmarshal(topicMsg.Payload(), &vehicleResult)
 	if err != nil {
+		//$SYS/brokers/emqx@127.0.0.1/clients/vehicle_test/connected
 		return fmt.Errorf("hanleSubscribeTopicData unmarshal payload err:%s",err)
 	}
 	//vehicleId null

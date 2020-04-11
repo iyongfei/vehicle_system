@@ -21,6 +21,11 @@ func RandomNumber(ln int) int32 {
 	return r
 }
 
+func StampUnix2Time(timestamp int64)time.Time{
+	datetime := time.Unix(timestamp, 0)
+
+	return datetime
+}
 
 func TimeNowToUnix()uint32{
 	t:=time.Now()

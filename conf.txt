@@ -25,13 +25,23 @@ insert_port_vehicle_id = fds
 port_map_count = 5
 
 
+#样本采集
+insert_sample_vehicle_id = kQ8XKqP57cNwt0CwXLWoXWF0UfwaYFX8
+insert_sample_id = kQ8XKqP57cNwt0CwXLWoXWF0UfwaYFX8
+sample_item_count = 5
+
+
 #状态保护
 insert_protect_vehicle_id = ff
 protect_status = 1
 
 
-#状态保护
+#负责人信息
 insert_leader_vehicle_id = kQ8XKqP57cNwt0CwXLWoXWF0UfwaYFX8
 name=safly
 phone=13581922339
 dev_name =小V上线
+
+#更新
+insert_firm_vehicle_id = kQ8XKqP57cNwt0CwXLWoXWF0UfwaYFX8
+deploy_id=1jllwe

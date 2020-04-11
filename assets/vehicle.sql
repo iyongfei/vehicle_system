@@ -315,7 +315,7 @@ CREATE TABLE IF NOT EXISTS `samples`  (
 
 
   `status` tinyint(3) UNSIGNED NULL DEFAULT NULL,
-  `time_out` int(11) UNSIGNED NULL DEFAULT NULL,
+  `timeout` int(11) UNSIGNED NULL DEFAULT NULL,
   `name` varchar(255) NULL DEFAULT NULL,
   `introduce` varchar(255) NULL DEFAULT NULL,
 
