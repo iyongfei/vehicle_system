@@ -1,6 +1,6 @@
 package flow
 
-func getFlowReq() (url string ){
+func getFlowReqUrl() (url string ){
 	url="http://localhost:7001/t_flow"
 	return
 }

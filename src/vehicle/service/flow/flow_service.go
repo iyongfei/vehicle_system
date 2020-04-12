@@ -1,7 +1,6 @@
 package flow
 
 import (
-	"context"
 	"encoding/json"
 	"reflect"
 	"time"
@@ -15,6 +14,7 @@ var VFlowService *FlowService
 func Setup()  {
 	flowService := CreatFlowService()
 	flowImpl:=FlowImpl(flowService)
+
 	flowImpl.ReadFlow()
 }
 //get
@@ -27,68 +27,37 @@ func GetFlowService()  (service *FlowService) {
 type FlowService struct {
 	FlowChan chan map[string]interface{}
 	FlowData map[string]interface{}
-	Timeout time.Duration
+	WriteTimeout time.Duration
+	ReadIdleFlag bool
 }
 //creat
 func CreatFlowService()  (service *FlowService) {
 	if VFlowService == nil{
 		VFlowService = &FlowService{
 			FlowChan: make(chan map[string]interface{},GetFlowChanLength(flowChanDefaultLength)),
-			Timeout:GetWriteChanDuration(2*time.Second),
+			WriteTimeout:GetWriteChanDuration(2*time.Second),
 		}
 	}
 	return VFlowService
-}
-//chanLength
-func GetFlowChanLength(chanLength int)int{
-	if chanLength <= 0{
-		return flowChanDefaultLength
-	}
-	return chanLength
-}
-//timeout
-func GetWriteChanDuration(timer time.Duration)time.Duration{
-	if timer <= 0{
-		return timer*time.Second
-	}
-	return writChanDuration
 }
 //setData
 func  (fservce *FlowService) SetFlowData(FlowData map[string]interface{})  *FlowService{
 	fservce.FlowData = FlowData
-	return VFlowService
+	return fservce
 }
 //readFlowGo
 func (fservce *FlowService) ReadFlow()  {
-	go ReadFlowGo(fservce)
-
+	startReadFlowG(fservce)
 }
-func ReadFlowGo(fService *FlowService)  {
-	for {
-		select {
-		case flowData := <-fService.FlowChan:
 
-			//发送请求
-			fService.SendFlow(flowData)
-		}
-	}
-}
 //writeFlowGo
 func (fservce *FlowService)  WriteFlow()  {
-	go WriteFlowGo(fservce)
-}
-func WriteFlowGo(fservice *FlowService)  {
-	fservice.FlowChan <- fservice.FlowData
-	ctx, cancel := context.WithTimeout(context.Background(), fservice.Timeout)
-	defer cancel()
-	select {
-	case <-ctx.Done():
-		return
-	}
+	startWriteFlowG(fservce)
+
 }
 func (f *FlowService)  SendFlow(data interface{})  {
 	logger.Logger.Print("%s send flow info %+v",util.RunFuncName(),data)
-	url:= getFlowReq()
+	url:= getFlowReqUrl()
 	switch data.(type) {
 	case map[string]interface{}:
 		postData := data.(map[string]interface{})
