@@ -7,6 +7,7 @@ import (
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
+	"vehicle_system/src/vehicle/service/flow"
 	"vehicle_system/src/vehicle/util"
 )
 
@@ -28,7 +29,8 @@ func HandleVehicleFlow(vehicleResult protobuf.GWResult) error {
 			VehicleId:vehicleId,
 		}
 		modelBase := model_base.ModelBaseImpl(flowInfo)
-		_,recordNotFound :=modelBase.GetModelByCondition("flow_id = ?",flowInfo.FlowId)
+		_,recordNotFound :=modelBase.GetModelByCondition(
+			"flow_id = ? and vehicle_id = ?",[]interface{}{flowInfo.FlowId,flowInfo.VehicleId}...)
 		modelBase.CreateModel(flowItem)
 
 		if recordNotFound{
@@ -55,11 +57,21 @@ func HandleVehicleFlow(vehicleResult protobuf.GWResult) error {
 				"dst_src_bytes":flowInfo.DstSrcBytes,
 				"stat":flowInfo.Stat,
 			}
-			if err:=modelBase.UpdateModelsByCondition(attrs,"flow_id = ?",flowInfo.FlowId);err!=nil{
+			if err:=modelBase.UpdateModelsByCondition(attrs,
+				"flow_id = ? and vehicle_id = ?",[]interface{}{flowInfo.FlowId,flowInfo.VehicleId}...);err!=nil{
 				//return fmt.Errorf("%s update flow err:%s",util.RunFuncName(),err.Error())
 				continue
 			}
 		}
+
+		//会话状态
+		if flowInfo.Stat == uint8(protobuf.FlowStat_FST_FINISH){
+			logger.Logger.Print("%s flow info %+v",util.RunFuncName(),flowInfo)
+			flowMap := map[string]interface{}{}
+			flowMap[flowInfo.VehicleId] = []*model.Flow{flowInfo}
+			flow.GetFlowService().SetFlowData(flowMap).WriteFlow()
+		}
 	}
+
 	return nil
 }

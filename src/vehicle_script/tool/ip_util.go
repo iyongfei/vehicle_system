@@ -1,12 +1,14 @@
-package util
+package tool
 
 import (
 	"bytes"
 	"fmt"
+	"math/rand"
 	"net"
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
 
@@ -14,6 +16,13 @@ const (
 	XForwardedFor = "X-Forwarded-For"
 	XRealIP       = "X-Real-IP"
 )
+
+//[0,n)
+func GenIpAddr() string {
+	rand.Seed(time.Now().UnixNano())
+	ip := fmt.Sprintf("%d.%d.%d.%d", rand.Intn(255), rand.Intn(255), rand.Intn(255), rand.Intn(255))
+	return ip
+}
 
 
 // RemoteIp 返回远程客户端的 IP，如 192.168.1.1

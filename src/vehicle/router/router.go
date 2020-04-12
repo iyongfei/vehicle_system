@@ -17,6 +17,7 @@ func RouterHandler()  {
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	router.Use(cors.Default())
+	router.POST("/t_flow", api_server.TFlow)
 	router.POST("/auth", api_server.Auth)
 	router.POST("/regist", api_server.Regist)
 

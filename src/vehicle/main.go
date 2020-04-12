@@ -3,12 +3,12 @@ package main
 import (
 	"vehicle_system/src/vehicle/conf"
 	"vehicle_system/src/vehicle/cron"
+	"vehicle_system/src/vehicle/db"
 	"vehicle_system/src/vehicle/emq"
 	"vehicle_system/src/vehicle/logger"
-	"vehicle_system/src/vehicle/db"
-	"vehicle_system/src/vehicle/timing"
-
 	"vehicle_system/src/vehicle/router"
+	"vehicle_system/src/vehicle/service/flow"
+	"vehicle_system/src/vehicle/timing"
 )
 
 func init() {
@@ -18,7 +18,9 @@ func init() {
 	db.Setup()
 	emq.Setup()
 	cron.Setup()
+	flow.Setup()
 }
+
 
 
 // @title vehicle API

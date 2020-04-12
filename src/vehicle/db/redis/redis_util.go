@@ -28,6 +28,18 @@ func (rConn *RedisConn) KeyExist(key string)(error,int64){
 	return nil,sessionRedis.Exists(key).Val()
 }
 
+
+func (rConn *RedisConn) VFlushDb()(error){
+	sessionRedis,err := rConn.GetRedisDB()
+	if err!=nil{
+		return fmt.Errorf("%s open redis db err:%v",util.RunFuncName(),err.Error())
+	}
+
+	err= sessionRedis.FlushDB().Err()
+	return err
+}
+
+
 /**需要时候在补充*/
 
 /***************************************
@@ -190,5 +202,16 @@ func (rConn RedisConn) VBLPop(key string,timeout time.Duration)([]string,error) 
 	if err!=nil{
 		return nil,fmt.Errorf("%s vblpop key:%s,err:%v",util.RunFuncName(),key,err.Error())
 	}
+	return result,err
+}
+
+
+func (rConn RedisConn) VBRPop(key string,timeout time.Duration)([]string,error)  {
+	sessionRedis,err :=rConn.GetRedisDB()
+	if err!=nil{
+		return nil,fmt.Errorf("%s open redis db err:%v",util.RunFuncName(),err.Error())
+	}
+	result,err :=sessionRedis.BRPop(timeout,key).Result()
+
 	return result,err
 }

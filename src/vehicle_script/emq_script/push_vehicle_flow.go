@@ -36,10 +36,11 @@ func creatFlowProtobuf(vehicleId string,flowCount int)[]byte{
 	flowParams := &protobuf.FlowParam{}
 	//添加ThreatItem
 
+	hashList:=[]uint32{1,2,3,4,5}
 	list:=[]*protobuf.FlowParam_FItem{}
 	for i:=0;i<flowCount;i++{
 		moduleItem := &protobuf.FlowParam_FItem{
-			Hash:uint32(tool.RandomNumber(8)),
+			Hash:hashList[i],
 			SrcIp:131,
 			SrcPort:23,
 			DstIp:23,
@@ -50,9 +51,9 @@ func creatFlowProtobuf(vehicleId string,flowCount int)[]byte{
 			SafeInfo:"jwek",
 			StartTime:tool.TimeNowToUnix(),
 			LastSeenTime:tool.TimeNowToUnix(),
-			Src2DstBytes:32,
-			Dst2SrcBytes:434,
-			FlowStat:protobuf.FlowStat(23),
+			Src2DstBytes:3233,
+			Dst2SrcBytes:43444,
+			FlowStat:protobuf.FlowStat_FST_FINISH,
 		}
 		list = append(list,moduleItem)
 	}
