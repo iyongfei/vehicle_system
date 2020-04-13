@@ -1,5 +1,21 @@
 车载后端系统目前运用到如下的技术点：(后续看需求会继续有新东西引入)
+
 gin、goredis、gorm、restfulapi、protobuf、emq、jwt、gomod、cron、swagger
+
+
+### gomod用法：
+
+set GO111MODULE=on			//打开包管理
+set GOPROXY= https://goproxy.io		//设置下载包代理
+
+go mod download: 下载依赖的 module 到本地 cache
+go mod edit: 编辑 go.mod
+go mod graph: 打印模块依赖图
+go mod init: 在当前目录下初始化 go.mod(就是会新建一个 go.mod 文件)
+go mod tidy: 整理依赖关系，会添加丢失的 module，删除不需要的 module
+go mod vender: 将依赖复制到 vendor 下
+go mod verify: 校验依赖
+go mod why: 解释为什么需要依赖
 
 ```
 .
