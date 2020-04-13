@@ -6,7 +6,7 @@ import (
 )
 
 const (
-    TASK_SPACING_LICENSE = time.Second * 60//一天测试86400
+    TASK_SPACING_LICENSE = time.Second * 600//一天测试86400
     TASK_EXPIRED = time.Hour * 24 * 365 * 10 //10年
     TASK_SPACING_DEPLOY = 60 //60秒测试
 )

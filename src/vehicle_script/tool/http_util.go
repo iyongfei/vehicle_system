@@ -8,33 +8,8 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-	"time"
 )
-func PostJSON(url string, body map[string]interface{}) (map[string]interface{}, error) {
-	jsonBytes, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
 
-	httpClient := &http.Client{Timeout: 5 * time.Second}
-	resp, err := httpClient.Post(url, "application/json", bytes.NewReader(jsonBytes))
-	if err != nil {
-		return nil, err
-	}
-
-	buf, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil,err
-	}
-
-	var p map[string]interface{}
-	err = json.Unmarshal(buf, &p)
-	if err != nil {
-		return nil, err
-	}
-
-	return p, nil
-}
 
 /**
 模拟表单请求
@@ -94,14 +69,20 @@ func Get(url string,token string)(map[string]interface{}, error) {
 	return p, nil
 }
 
-func Post(url string, body map[string]interface{})(map[string]interface{}, error) {
+
+func Post(url string, body map[string]interface{},token string)(map[string]interface{}, error) {
 	jsonBytes, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 
 	client := http.Client{}
-	rsp, err := client.Post(url, "application/x-www-form-urlencoded", bytes.NewReader(jsonBytes))
+
+	reqest, err := http.NewRequest("POST", url, bytes.NewReader(jsonBytes))
+	reqest.Header.Add("token", token)
+	reqest.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	rsp, _ := client.Do(reqest)
 	if err != nil {
 		return nil,err
 	}
@@ -118,6 +99,7 @@ func Post(url string, body map[string]interface{})(map[string]interface{}, error
 	}
 	return p, nil
 }
+
 
 func put(url string, reqBody string) {
 	fmt.Println("PUT REQ...")

@@ -21,8 +21,8 @@ func HandleVehicleFlow(vehicleResult protobuf.GWResult) error {
 		logger.Logger.Error("%s unmarshal flowParam err:%s",util.RunFuncName(),err.Error())
 		return fmt.Errorf("%s unmarshal flowParam err:%s",util.RunFuncName(),err.Error())
 	}
-
 	for _,flowItem:=  range flowParams.FlowItem{
+
 		flowItemId := flowItem.GetHash()
 		flowInfo:=&model.Flow{
 			FlowId:flowItemId,
@@ -33,8 +33,12 @@ func HandleVehicleFlow(vehicleResult protobuf.GWResult) error {
 			"flow_id = ? and vehicle_id = ?",[]interface{}{flowInfo.FlowId,flowInfo.VehicleId}...)
 		modelBase.CreateModel(flowItem)
 
+		logger.Logger.Print("%s flowInfo：%+v",util.RunFuncName(),flowInfo)
 		if recordNotFound{
 			if err:=modelBase.InsertModel();err!=nil{
+				logger.Logger.Print("%s insert flowParam err:%s",util.RunFuncName(),err.Error())
+				logger.Logger.Error("%s insert flowParam err:%s",util.RunFuncName(),err.Error())
+				logger.Logger.Print("%s insert flowInfo:%+v, err：%+v",util.RunFuncName(),flowInfo,err.Error())
 				//return fmt.Errorf("%s insert flow err:%s",util.RunFuncName(),err.Error())
 				continue
 			}
@@ -59,6 +63,9 @@ func HandleVehicleFlow(vehicleResult protobuf.GWResult) error {
 			}
 			if err:=modelBase.UpdateModelsByCondition(attrs,
 				"flow_id = ? and vehicle_id = ?",[]interface{}{flowInfo.FlowId,flowInfo.VehicleId}...);err!=nil{
+				logger.Logger.Print("%s update flowParam err:%s",util.RunFuncName(),err.Error())
+				logger.Logger.Error("%s update flowParam err:%s",util.RunFuncName(),err.Error())
+
 				//return fmt.Errorf("%s update flow err:%s",util.RunFuncName(),err.Error())
 				continue
 			}
@@ -67,6 +74,7 @@ func HandleVehicleFlow(vehicleResult protobuf.GWResult) error {
 		//会话状态
 		if flowInfo.Stat == uint8(protobuf.FlowStat_FST_FINISH){
 			logger.Logger.Print("%s flow info %+v",util.RunFuncName(),flowInfo)
+			logger.Logger.Info("%s flow info %+v",util.RunFuncName(),flowInfo)
 			flowMap := map[string]interface{}{}
 			flowMap[flowInfo.VehicleId] = []*model.Flow{flowInfo}
 			flow.GetFlowService().SetFlowData(flowMap).WriteFlow()

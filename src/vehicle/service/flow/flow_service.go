@@ -62,7 +62,7 @@ func (f *FlowService)  SendFlow(data interface{})  {
 	case map[string]interface{}:
 		postData := data.(map[string]interface{})
 
-		resp,_:= util.Post(url,postData)
+		resp,_:= util.Post(url,postData,"")
 		respJsonBys,_:=json.Marshal(resp)
 
 		logger.Logger.Print("%s sendFlow resp json:%s, type:%+v",util.RunFuncName(),string(respJsonBys),reflect.TypeOf(data))

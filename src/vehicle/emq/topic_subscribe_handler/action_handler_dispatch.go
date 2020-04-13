@@ -52,7 +52,7 @@ func (t *TopicSubscribeHandler) HanleSubscribeTopicData(topicMsg mqtt.Message) e
 	//vehicleId null
 	vehicleId := vehicleResult.GetGUID()
 	if util.RrgsTrimEmpty(vehicleId) {
-		return fmt.Errorf("vehicleResult  vehicle id null")
+		return fmt.Errorf("vehicleResult vehicle id null")
 	}
 
 	//vehicleId exist

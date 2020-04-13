@@ -89,6 +89,17 @@ func (flow *Flow) CreateModel(flowParam ...interface{}) interface{} {
 
 
 
+func (flow *Flow) GetModelPaginationByCondition(pageIndex int, pageSize int, totalCount *int,
+	paginModel interface{}, query interface{}, args ...interface{})(error){
+
+	err := mysql.QueryModelPaginationByWhereCondition(flow,pageIndex,pageSize,totalCount,paginModel,query,args...)
+
+	if err!=nil{
+		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
+	}
+	return nil
+}
+
 
 
 
