@@ -1,24 +1,10 @@
 车载后端系统目前运用到如下的技术点：(后续看需求会继续有新东西引入)
 
-gin web框架
+gin web框架、goredis 缓存、gorm 数据库orm
 
-goredis 缓存
+restfulapi api风格、protobuf 数据通讯协议、emq 长连接
 
-gorm 数据库orm
-
-restfulapi api风格
-
-protobuf 数据通讯协议
-
-emq 长连接
-
-jwt鉴权
-
-gomod 本地管理依赖库
-
-cron 定时任务
-
-swagger 测试人员使用
+jwt鉴权、gomod 本地管理依赖库、cron 定时任务、swagger 测试人员使用
 
 
 ### gomod用法：
