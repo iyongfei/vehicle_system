@@ -65,11 +65,11 @@ func (f *FlowService)  SendFlow(data interface{})  {
 		resp,_:= util.Post(url,postData)
 		respJsonBys,_:=json.Marshal(resp)
 
-		logger.Logger.Print("%s sendFlow resp json err%+v",util.RunFuncName(),string(respJsonBys),reflect.TypeOf(data))
-		logger.Logger.Info("%s sendFlow resp json err%+v",util.RunFuncName(),string(respJsonBys),reflect.TypeOf(data))
+		logger.Logger.Print("%s sendFlow resp json:%s, type:%+v",util.RunFuncName(),string(respJsonBys),reflect.TypeOf(data))
+		logger.Logger.Info("%s sendFlow resp json:%s, type:%+v",util.RunFuncName(),string(respJsonBys),reflect.TypeOf(data))
 	default:
-		logger.Logger.Print("%s send flow info type err%+v",util.RunFuncName(),reflect.TypeOf(data))
-		logger.Logger.Info("%s send flow info type err%+v",util.RunFuncName(),reflect.TypeOf(data))
+		logger.Logger.Print("%s send flow info err type:%+v",util.RunFuncName(),reflect.TypeOf(data))
+		logger.Logger.Info("%s send flow info err type:%+v",util.RunFuncName(),reflect.TypeOf(data))
 	}
 }
 

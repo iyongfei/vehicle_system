@@ -38,28 +38,6 @@ func PostJSON(url string, body map[string]interface{}) (map[string]interface{}, 
 
 /**
 模拟表单请求
-/**
- apiUrl := "http://127.0.0.1"
-    resource := "/tpost"
-    data := url.Values{}
-    data.Set("name", "rnben")
-
-    u, _ := url.ParseRequestURI(apiUrl)
-    u.Path = resource
-    urlStr := u.String() // "http://127.0.0.1/tpost"
-
-    client := &http.Client{}
-    r, _ := http.NewRequest("POST", urlStr, strings.NewReader(data.Encode())) // URL-encoded payload
-    r.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-    r.Header.Add("Content-Length", strconv.Itoa(len(data.Encode())))
-
-    resp, err := client.Do(r)
-    if err != nil {
-        fmt.Println(err.Error())
-        return
-    }
-    defer resp.Body.Close()
-    fmt.Println("post send success")
  */
 func PostForm(urlParam string,bodyParms map[string]interface{}) (map[string]interface{}, error) {
 	u,err:=url.Parse(urlParam)
@@ -91,12 +69,17 @@ func PostForm(urlParam string,bodyParms map[string]interface{}) (map[string]inte
 	return p,nil
 }
 
-func Get(url string)(map[string]interface{}, error) {
+func Get(url string,token string)(map[string]interface{}, error) {
 	client := http.Client{}
-	rsp, err := client.Get(url)
+
+	reqest, err := http.NewRequest("GET", url, nil)
+	reqest.Header.Add("token", token)
+
 	if err != nil {
 		return nil,err
 	}
+	rsp, _ := client.Do(reqest)
+
 	defer rsp.Body.Close()
 
 	body, err := ioutil.ReadAll(rsp.Body)
@@ -111,14 +94,14 @@ func Get(url string)(map[string]interface{}, error) {
 	return p, nil
 }
 
-func Post(url string, contentType string, body map[string]interface{})(map[string]interface{}, error) {
+func Post(url string, body map[string]interface{})(map[string]interface{}, error) {
 	jsonBytes, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 
 	client := http.Client{}
-	rsp, err := client.Post(url, contentType, bytes.NewReader(jsonBytes))
+	rsp, err := client.Post(url, "application/x-www-form-urlencoded", bytes.NewReader(jsonBytes))
 	if err != nil {
 		return nil,err
 	}

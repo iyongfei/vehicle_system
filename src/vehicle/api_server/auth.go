@@ -61,6 +61,8 @@ func Auth(c *gin.Context)  {
 		PassWord:user.Password,
 		StandardClaims:jwt.StandardClaims{
 			ExpiresAt: service.ExpiresAt,
+			//ExpiresAt = time.Now().Add(conf.Expires * time.Hour).Unix()
+			//ExpiresAt: time.Now().Add(time.Hour * time.Duration(1)).Unix(),
 			Issuer:    conf.SignKey,
 		},
 	}

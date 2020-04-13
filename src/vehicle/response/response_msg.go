@@ -52,6 +52,12 @@ const (
 	//ReqRegistAuthFailMsg = "该用户授权失败"
 	//ReqRegistAuthSuccessMsg = "该用户授权成功"
 )
+//
+const (
+	ReqGetFlowFailMsg = "会话消息获取失败"
+	ReqGetFlowSuccessMsg = "会话消息获取成功"
+	ReqGetFlowUnExistMsg = "会话消息不存在"
+)
 
 //threat
 const (

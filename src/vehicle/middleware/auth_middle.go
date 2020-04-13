@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"vehicle_system/src/vehicle/logger"
@@ -23,6 +24,7 @@ func AuthMiddle() gin.HandlerFunc {
 func authMiddleHandlerFunc(c *gin.Context)  {
 	var token string
 	token = c.Request.Header.Get(Vtoken)
+	fmt.Println("auth token:",token)
 
 	if token == "" {
 		ret:=response.StructResponseObj(response.VStatusUnauthorized,response.AuthTokenLost,"")
@@ -32,10 +34,12 @@ func authMiddleHandlerFunc(c *gin.Context)  {
 	}
 
 	claims,err := service.Jwt.ParseToken(token)
+
 	if err != nil {
 		ret:=response.StructResponseObj(response.VStatusUnauthorized,response.AuthTokenResignin,"")
 		c.JSON(http.StatusOK,ret)
 		c.Abort()
+		logger.Logger.Print("token err %+v",err.Error())
 		return
 	}
 

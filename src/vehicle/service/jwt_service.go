@@ -46,7 +46,8 @@ var encodedString = base64UrlEncode(header) + '.' + base64UrlEncode(payload);
 var signature = HMACSHA256(encodedString, 'secret');
  */
 var (
-	ExpiresAt = time.Now().Add(conf.Expires * time.Hour).Unix()
+	ExpiresAt = time.Now().Add(100 * time.Hour).Unix()
+
 	//token过期
 	TokenExpired      = errors.New(response.TokenExpiredStr)
 	//token未激活
@@ -102,6 +103,7 @@ func (j *JWT) ParseToken(tokenString string) (*VehicleClaims, error) {
 			if ve.Errors&jwt.ValidationErrorMalformed != 0 {
 				return nil, TokenMalformed
 			} else if ve.Errors&jwt.ValidationErrorExpired != 0 {
+
 				return nil, TokenExpired
 			} else if ve.Errors&jwt.ValidationErrorNotValidYet != 0 {
 				return nil, TokenNotValidYet

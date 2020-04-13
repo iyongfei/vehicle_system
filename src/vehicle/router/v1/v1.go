@@ -27,5 +27,12 @@ func V1Router(r *gin.Engine)  {
 
 		//需改信息，下发给emq
 		apiV1.PUT("/vehicle/:vehicle_id", api_server.EditVehicle)
+
+		//flow
+		apiV1.GET("/flows/:flow_id", api_server.GetFlow)
+		apiV1.GET("/flows", api_server.GetFlows)
+		//apiV1.POST("/flows", api_server.AddFlow)
+		//apiV1.PUT("/flows/:flow_id", api_server.EditFlow)
+		//apiV1.DELETE("/flows/:flow_id", api_server.DeleFlow)
 	}
 }

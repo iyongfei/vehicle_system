@@ -25,22 +25,46 @@ type Command_TaskType int32
 const (
 	Command_DEFAULT_TASKTYPE Command_TaskType = 0
 	Command_GW_SET           Command_TaskType = 1
+	Command_DEVICE_SET       Command_TaskType = 2
 	Command_STRATEGY_ADD     Command_TaskType = 3
 	Command_STRATEGY_SET     Command_TaskType = 4
+	Command_SAMPLE_SET       Command_TaskType = 5
+	Command_PORTREDIRECT_SET Command_TaskType = 6
+	Command_STATUS_UPDATE    Command_TaskType = 7
+	Command_DEPLOYER_SET     Command_TaskType = 8
+	Command_FIRMWARE_UPGRADE Command_TaskType = 9
+	Command_FLOWSTRATEGY_ADD Command_TaskType = 10
+	Command_FLOWSTRATEGY_SET Command_TaskType = 11
 )
 
 var Command_TaskType_name = map[int32]string{
-	0: "DEFAULT_TASKTYPE",
-	1: "GW_SET",
-	3: "STRATEGY_ADD",
-	4: "STRATEGY_SET",
+	0:  "DEFAULT_TASKTYPE",
+	1:  "GW_SET",
+	2:  "DEVICE_SET",
+	3:  "STRATEGY_ADD",
+	4:  "STRATEGY_SET",
+	5:  "SAMPLE_SET",
+	6:  "PORTREDIRECT_SET",
+	7:  "STATUS_UPDATE",
+	8:  "DEPLOYER_SET",
+	9:  "FIRMWARE_UPGRADE",
+	10: "FLOWSTRATEGY_ADD",
+	11: "FLOWSTRATEGY_SET",
 }
 
 var Command_TaskType_value = map[string]int32{
 	"DEFAULT_TASKTYPE": 0,
 	"GW_SET":           1,
+	"DEVICE_SET":       2,
 	"STRATEGY_ADD":     3,
 	"STRATEGY_SET":     4,
+	"SAMPLE_SET":       5,
+	"PORTREDIRECT_SET": 6,
+	"STATUS_UPDATE":    7,
+	"DEPLOYER_SET":     8,
+	"FIRMWARE_UPGRADE": 9,
+	"FLOWSTRATEGY_ADD": 10,
+	"FLOWSTRATEGY_SET": 11,
 }
 
 func (x Command_TaskType) String() string {
@@ -49,6 +73,46 @@ func (x Command_TaskType) String() string {
 
 func (Command_TaskType) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_1bdf113f3d6e5a7a, []int{0, 0}
+}
+
+type StatusUpdateParam_Type int32
+
+const (
+	StatusUpdateParam_DEFAULT_INFO StatusUpdateParam_Type = 0
+	StatusUpdateParam_GWINFO       StatusUpdateParam_Type = 1
+	StatusUpdateParam_DEVICE       StatusUpdateParam_Type = 2
+	StatusUpdateParam_GWPROTECT    StatusUpdateParam_Type = 3
+	StatusUpdateParam_STRATEGY     StatusUpdateParam_Type = 4
+	StatusUpdateParam_PORTREDIRECT StatusUpdateParam_Type = 5
+	StatusUpdateParam_DEPLOYER     StatusUpdateParam_Type = 6
+)
+
+var StatusUpdateParam_Type_name = map[int32]string{
+	0: "DEFAULT_INFO",
+	1: "GWINFO",
+	2: "DEVICE",
+	3: "GWPROTECT",
+	4: "STRATEGY",
+	5: "PORTREDIRECT",
+	6: "DEPLOYER",
+}
+
+var StatusUpdateParam_Type_value = map[string]int32{
+	"DEFAULT_INFO": 0,
+	"GWINFO":       1,
+	"DEVICE":       2,
+	"GWPROTECT":    3,
+	"STRATEGY":     4,
+	"PORTREDIRECT": 5,
+	"DEPLOYER":     6,
+}
+
+func (x StatusUpdateParam_Type) String() string {
+	return proto.EnumName(StatusUpdateParam_Type_name, int32(x))
+}
+
+func (StatusUpdateParam_Type) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_1bdf113f3d6e5a7a, []int{2, 0}
 }
 
 type GwSetParam_Type int32
@@ -76,7 +140,41 @@ func (x GwSetParam_Type) String() string {
 }
 
 func (GwSetParam_Type) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_1bdf113f3d6e5a7a, []int{1, 0}
+	return fileDescriptor_1bdf113f3d6e5a7a, []int{3, 0}
+}
+
+type DeviceSetParam_Type int32
+
+const (
+	DeviceSetParam_DEFAULT             DeviceSetParam_Type = 0
+	DeviceSetParam_PROTECT             DeviceSetParam_Type = 1
+	DeviceSetParam_INTERNET            DeviceSetParam_Type = 2
+	DeviceSetParam_GUEST_ACCESS_DEVICE DeviceSetParam_Type = 3
+	DeviceSetParam_LANVISIT            DeviceSetParam_Type = 4
+)
+
+var DeviceSetParam_Type_name = map[int32]string{
+	0: "DEFAULT",
+	1: "PROTECT",
+	2: "INTERNET",
+	3: "GUEST_ACCESS_DEVICE",
+	4: "LANVISIT",
+}
+
+var DeviceSetParam_Type_value = map[string]int32{
+	"DEFAULT":             0,
+	"PROTECT":             1,
+	"INTERNET":            2,
+	"GUEST_ACCESS_DEVICE": 3,
+	"LANVISIT":            4,
+}
+
+func (x DeviceSetParam_Type) String() string {
+	return proto.EnumName(DeviceSetParam_Type_name, int32(x))
+}
+
+func (DeviceSetParam_Type) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_1bdf113f3d6e5a7a, []int{4, 0}
 }
 
 type StrategyAddParam_Type int32
@@ -104,7 +202,7 @@ func (x StrategyAddParam_Type) String() string {
 }
 
 func (StrategyAddParam_Type) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_1bdf113f3d6e5a7a, []int{2, 0}
+	return fileDescriptor_1bdf113f3d6e5a7a, []int{5, 0}
 }
 
 type StrategyAddParam_HandleMode int32
@@ -132,7 +230,7 @@ func (x StrategyAddParam_HandleMode) String() string {
 }
 
 func (StrategyAddParam_HandleMode) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_1bdf113f3d6e5a7a, []int{2, 1}
+	return fileDescriptor_1bdf113f3d6e5a7a, []int{5, 1}
 }
 
 type StrategySetParam_HandleMode int32
@@ -160,7 +258,122 @@ func (x StrategySetParam_HandleMode) String() string {
 }
 
 func (StrategySetParam_HandleMode) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_1bdf113f3d6e5a7a, []int{3, 0}
+	return fileDescriptor_1bdf113f3d6e5a7a, []int{6, 0}
+}
+
+type FlowStrategyAddParam_Type int32
+
+const (
+	FlowStrategyAddParam_FLWOTYPEDEFAULT FlowStrategyAddParam_Type = 0
+	FlowStrategyAddParam_FLWOWHITEMODE   FlowStrategyAddParam_Type = 1
+	FlowStrategyAddParam_FLWOBLACKMODE   FlowStrategyAddParam_Type = 2
+)
+
+var FlowStrategyAddParam_Type_name = map[int32]string{
+	0: "FLWOTYPEDEFAULT",
+	1: "FLWOWHITEMODE",
+	2: "FLWOBLACKMODE",
+}
+
+var FlowStrategyAddParam_Type_value = map[string]int32{
+	"FLWOTYPEDEFAULT": 0,
+	"FLWOWHITEMODE":   1,
+	"FLWOBLACKMODE":   2,
+}
+
+func (x FlowStrategyAddParam_Type) String() string {
+	return proto.EnumName(FlowStrategyAddParam_Type_name, int32(x))
+}
+
+func (FlowStrategyAddParam_Type) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_1bdf113f3d6e5a7a, []int{7, 0}
+}
+
+type FlowStrategyAddParam_HandleMode int32
+
+const (
+	FlowStrategyAddParam_MODEDEFAULT    FlowStrategyAddParam_HandleMode = 0
+	FlowStrategyAddParam_PREVENTWARNING FlowStrategyAddParam_HandleMode = 1
+	FlowStrategyAddParam_WARNING        FlowStrategyAddParam_HandleMode = 2
+)
+
+var FlowStrategyAddParam_HandleMode_name = map[int32]string{
+	0: "MODEDEFAULT",
+	1: "PREVENTWARNING",
+	2: "WARNING",
+}
+
+var FlowStrategyAddParam_HandleMode_value = map[string]int32{
+	"MODEDEFAULT":    0,
+	"PREVENTWARNING": 1,
+	"WARNING":        2,
+}
+
+func (x FlowStrategyAddParam_HandleMode) String() string {
+	return proto.EnumName(FlowStrategyAddParam_HandleMode_name, int32(x))
+}
+
+func (FlowStrategyAddParam_HandleMode) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_1bdf113f3d6e5a7a, []int{7, 1}
+}
+
+type FlowStrategySetParam_HandleMode int32
+
+const (
+	FlowStrategySetParam_MODEDEFAULT    FlowStrategySetParam_HandleMode = 0
+	FlowStrategySetParam_PREVENTWARNING FlowStrategySetParam_HandleMode = 1
+	FlowStrategySetParam_WARNING        FlowStrategySetParam_HandleMode = 2
+)
+
+var FlowStrategySetParam_HandleMode_name = map[int32]string{
+	0: "MODEDEFAULT",
+	1: "PREVENTWARNING",
+	2: "WARNING",
+}
+
+var FlowStrategySetParam_HandleMode_value = map[string]int32{
+	"MODEDEFAULT":    0,
+	"PREVENTWARNING": 1,
+	"WARNING":        2,
+}
+
+func (x FlowStrategySetParam_HandleMode) String() string {
+	return proto.EnumName(FlowStrategySetParam_HandleMode_name, int32(x))
+}
+
+func (FlowStrategySetParam_HandleMode) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_1bdf113f3d6e5a7a, []int{8, 0}
+}
+
+type PortRedirectSetParam_Protocol int32
+
+const (
+	PortRedirectSetParam_UNSET PortRedirectSetParam_Protocol = 0
+	PortRedirectSetParam_UDP   PortRedirectSetParam_Protocol = 1
+	PortRedirectSetParam_TCP   PortRedirectSetParam_Protocol = 2
+	PortRedirectSetParam_ALL   PortRedirectSetParam_Protocol = 3
+)
+
+var PortRedirectSetParam_Protocol_name = map[int32]string{
+	0: "UNSET",
+	1: "UDP",
+	2: "TCP",
+	3: "ALL",
+}
+
+var PortRedirectSetParam_Protocol_value = map[string]int32{
+	"UNSET": 0,
+	"UDP":   1,
+	"TCP":   2,
+	"ALL":   3,
+}
+
+func (x PortRedirectSetParam_Protocol) String() string {
+	return proto.EnumName(PortRedirectSetParam_Protocol_name, int32(x))
+}
+
+func (PortRedirectSetParam_Protocol) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_1bdf113f3d6e5a7a, []int{10, 0}
 }
 
 //基础最外层命令
@@ -219,6 +432,141 @@ func (m *Command) GetCmdID() string {
 	return ""
 }
 
+type FirmwareUpgradeParam struct {
+	Version              string   `protobuf:"bytes,1,opt,name=version,proto3" json:"version,omitempty"`
+	Size                 uint64   `protobuf:"varint,2,opt,name=size,proto3" json:"size,omitempty"`
+	Url                  string   `protobuf:"bytes,3,opt,name=url,proto3" json:"url,omitempty"`
+	SOCType              string   `protobuf:"bytes,4,opt,name=SOC_type,json=SOCType,proto3" json:"SOC_type,omitempty"`
+	BoardName            string   `protobuf:"bytes,5,opt,name=board_name,json=boardName,proto3" json:"board_name,omitempty"`
+	FirmwareType         string   `protobuf:"bytes,6,opt,name=firmware_type,json=firmwareType,proto3" json:"firmware_type,omitempty"`
+	FirmwareName         string   `protobuf:"bytes,7,opt,name=firmware_name,json=firmwareName,proto3" json:"firmware_name,omitempty"`
+	Md5                  string   `protobuf:"bytes,8,opt,name=md5,proto3" json:"md5,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *FirmwareUpgradeParam) Reset()         { *m = FirmwareUpgradeParam{} }
+func (m *FirmwareUpgradeParam) String() string { return proto.CompactTextString(m) }
+func (*FirmwareUpgradeParam) ProtoMessage()    {}
+func (*FirmwareUpgradeParam) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1bdf113f3d6e5a7a, []int{1}
+}
+
+func (m *FirmwareUpgradeParam) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_FirmwareUpgradeParam.Unmarshal(m, b)
+}
+func (m *FirmwareUpgradeParam) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_FirmwareUpgradeParam.Marshal(b, m, deterministic)
+}
+func (m *FirmwareUpgradeParam) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_FirmwareUpgradeParam.Merge(m, src)
+}
+func (m *FirmwareUpgradeParam) XXX_Size() int {
+	return xxx_messageInfo_FirmwareUpgradeParam.Size(m)
+}
+func (m *FirmwareUpgradeParam) XXX_DiscardUnknown() {
+	xxx_messageInfo_FirmwareUpgradeParam.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_FirmwareUpgradeParam proto.InternalMessageInfo
+
+func (m *FirmwareUpgradeParam) GetVersion() string {
+	if m != nil {
+		return m.Version
+	}
+	return ""
+}
+
+func (m *FirmwareUpgradeParam) GetSize() uint64 {
+	if m != nil {
+		return m.Size
+	}
+	return 0
+}
+
+func (m *FirmwareUpgradeParam) GetUrl() string {
+	if m != nil {
+		return m.Url
+	}
+	return ""
+}
+
+func (m *FirmwareUpgradeParam) GetSOCType() string {
+	if m != nil {
+		return m.SOCType
+	}
+	return ""
+}
+
+func (m *FirmwareUpgradeParam) GetBoardName() string {
+	if m != nil {
+		return m.BoardName
+	}
+	return ""
+}
+
+func (m *FirmwareUpgradeParam) GetFirmwareType() string {
+	if m != nil {
+		return m.FirmwareType
+	}
+	return ""
+}
+
+func (m *FirmwareUpgradeParam) GetFirmwareName() string {
+	if m != nil {
+		return m.FirmwareName
+	}
+	return ""
+}
+
+func (m *FirmwareUpgradeParam) GetMd5() string {
+	if m != nil {
+		return m.Md5
+	}
+	return ""
+}
+
+//更新小V基本信息
+type StatusUpdateParam struct {
+	Type                 StatusUpdateParam_Type `protobuf:"varint,1,opt,name=type,proto3,enum=protobuf.StatusUpdateParam_Type" json:"type,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}               `json:"-"`
+	XXX_unrecognized     []byte                 `json:"-"`
+	XXX_sizecache        int32                  `json:"-"`
+}
+
+func (m *StatusUpdateParam) Reset()         { *m = StatusUpdateParam{} }
+func (m *StatusUpdateParam) String() string { return proto.CompactTextString(m) }
+func (*StatusUpdateParam) ProtoMessage()    {}
+func (*StatusUpdateParam) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1bdf113f3d6e5a7a, []int{2}
+}
+
+func (m *StatusUpdateParam) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_StatusUpdateParam.Unmarshal(m, b)
+}
+func (m *StatusUpdateParam) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_StatusUpdateParam.Marshal(b, m, deterministic)
+}
+func (m *StatusUpdateParam) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_StatusUpdateParam.Merge(m, src)
+}
+func (m *StatusUpdateParam) XXX_Size() int {
+	return xxx_messageInfo_StatusUpdateParam.Size(m)
+}
+func (m *StatusUpdateParam) XXX_DiscardUnknown() {
+	xxx_messageInfo_StatusUpdateParam.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_StatusUpdateParam proto.InternalMessageInfo
+
+func (m *StatusUpdateParam) GetType() StatusUpdateParam_Type {
+	if m != nil {
+		return m.Type
+	}
+	return StatusUpdateParam_DEFAULT_INFO
+}
+
 //小v设置
 type GwSetParam struct {
 	Type                 GwSetParam_Type `protobuf:"varint,1,opt,name=type,proto3,enum=protobuf.GwSetParam_Type" json:"type,omitempty"`
@@ -232,7 +580,7 @@ func (m *GwSetParam) Reset()         { *m = GwSetParam{} }
 func (m *GwSetParam) String() string { return proto.CompactTextString(m) }
 func (*GwSetParam) ProtoMessage()    {}
 func (*GwSetParam) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1bdf113f3d6e5a7a, []int{1}
+	return fileDescriptor_1bdf113f3d6e5a7a, []int{3}
 }
 
 func (m *GwSetParam) XXX_Unmarshal(b []byte) error {
@@ -267,6 +615,62 @@ func (m *GwSetParam) GetSwitch() bool {
 	return false
 }
 
+//设备设置
+type DeviceSetParam struct {
+	DeviceMac            string              `protobuf:"bytes,1,opt,name=device_mac,json=deviceMac,proto3" json:"device_mac,omitempty"`
+	Type                 DeviceSetParam_Type `protobuf:"varint,2,opt,name=type,proto3,enum=protobuf.DeviceSetParam_Type" json:"type,omitempty"`
+	Switch               bool                `protobuf:"varint,3,opt,name=switch,proto3" json:"switch,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
+	XXX_unrecognized     []byte              `json:"-"`
+	XXX_sizecache        int32               `json:"-"`
+}
+
+func (m *DeviceSetParam) Reset()         { *m = DeviceSetParam{} }
+func (m *DeviceSetParam) String() string { return proto.CompactTextString(m) }
+func (*DeviceSetParam) ProtoMessage()    {}
+func (*DeviceSetParam) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1bdf113f3d6e5a7a, []int{4}
+}
+
+func (m *DeviceSetParam) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeviceSetParam.Unmarshal(m, b)
+}
+func (m *DeviceSetParam) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeviceSetParam.Marshal(b, m, deterministic)
+}
+func (m *DeviceSetParam) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeviceSetParam.Merge(m, src)
+}
+func (m *DeviceSetParam) XXX_Size() int {
+	return xxx_messageInfo_DeviceSetParam.Size(m)
+}
+func (m *DeviceSetParam) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeviceSetParam.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeviceSetParam proto.InternalMessageInfo
+
+func (m *DeviceSetParam) GetDeviceMac() string {
+	if m != nil {
+		return m.DeviceMac
+	}
+	return ""
+}
+
+func (m *DeviceSetParam) GetType() DeviceSetParam_Type {
+	if m != nil {
+		return m.Type
+	}
+	return DeviceSetParam_DEFAULT
+}
+
+func (m *DeviceSetParam) GetSwitch() bool {
+	if m != nil {
+		return m.Switch
+	}
+	return false
+}
+
 //策略添加
 type StrategyAddParam struct {
 	StrategyId           string                      `protobuf:"bytes,1,opt,name=strategy_id,json=strategyId,proto3" json:"strategy_id,omitempty"`
@@ -284,7 +688,7 @@ func (m *StrategyAddParam) Reset()         { *m = StrategyAddParam{} }
 func (m *StrategyAddParam) String() string { return proto.CompactTextString(m) }
 func (*StrategyAddParam) ProtoMessage()    {}
 func (*StrategyAddParam) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1bdf113f3d6e5a7a, []int{2}
+	return fileDescriptor_1bdf113f3d6e5a7a, []int{5}
 }
 
 func (m *StrategyAddParam) XXX_Unmarshal(b []byte) error {
@@ -361,7 +765,7 @@ func (m *StrategySetParam) Reset()         { *m = StrategySetParam{} }
 func (m *StrategySetParam) String() string { return proto.CompactTextString(m) }
 func (*StrategySetParam) ProtoMessage()    {}
 func (*StrategySetParam) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1bdf113f3d6e5a7a, []int{3}
+	return fileDescriptor_1bdf113f3d6e5a7a, []int{6}
 }
 
 func (m *StrategySetParam) XXX_Unmarshal(b []byte) error {
@@ -403,51 +807,461 @@ func (m *StrategySetParam) GetEnable() bool {
 	return false
 }
 
+// 会话策略添加
+type FlowStrategyAddParam struct {
+	FlowStrategyId       string                                   `protobuf:"bytes,1,opt,name=flow_strategy_id,json=flowStrategyId,proto3" json:"flow_strategy_id,omitempty"`
+	HandleMode           FlowStrategyAddParam_HandleMode          `protobuf:"varint,2,opt,name=handle_mode,json=handleMode,proto3,enum=protobuf.FlowStrategyAddParam_HandleMode" json:"handle_mode,omitempty"`
+	DefenseType          FlowStrategyAddParam_Type                `protobuf:"varint,3,opt,name=defense_type,json=defenseType,proto3,enum=protobuf.FlowStrategyAddParam_Type" json:"defense_type,omitempty"`
+	DIPList              []*FlowStrategyAddParam_FlowStrategyItem `protobuf:"bytes,5,rep,name=dIP_list,json=dIPList,proto3" json:"dIP_list,omitempty"`
+	Enable               bool                                     `protobuf:"varint,7,opt,name=enable,proto3" json:"enable,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                                 `json:"-"`
+	XXX_unrecognized     []byte                                   `json:"-"`
+	XXX_sizecache        int32                                    `json:"-"`
+}
+
+func (m *FlowStrategyAddParam) Reset()         { *m = FlowStrategyAddParam{} }
+func (m *FlowStrategyAddParam) String() string { return proto.CompactTextString(m) }
+func (*FlowStrategyAddParam) ProtoMessage()    {}
+func (*FlowStrategyAddParam) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1bdf113f3d6e5a7a, []int{7}
+}
+
+func (m *FlowStrategyAddParam) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_FlowStrategyAddParam.Unmarshal(m, b)
+}
+func (m *FlowStrategyAddParam) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_FlowStrategyAddParam.Marshal(b, m, deterministic)
+}
+func (m *FlowStrategyAddParam) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_FlowStrategyAddParam.Merge(m, src)
+}
+func (m *FlowStrategyAddParam) XXX_Size() int {
+	return xxx_messageInfo_FlowStrategyAddParam.Size(m)
+}
+func (m *FlowStrategyAddParam) XXX_DiscardUnknown() {
+	xxx_messageInfo_FlowStrategyAddParam.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_FlowStrategyAddParam proto.InternalMessageInfo
+
+func (m *FlowStrategyAddParam) GetFlowStrategyId() string {
+	if m != nil {
+		return m.FlowStrategyId
+	}
+	return ""
+}
+
+func (m *FlowStrategyAddParam) GetHandleMode() FlowStrategyAddParam_HandleMode {
+	if m != nil {
+		return m.HandleMode
+	}
+	return FlowStrategyAddParam_MODEDEFAULT
+}
+
+func (m *FlowStrategyAddParam) GetDefenseType() FlowStrategyAddParam_Type {
+	if m != nil {
+		return m.DefenseType
+	}
+	return FlowStrategyAddParam_FLWOTYPEDEFAULT
+}
+
+func (m *FlowStrategyAddParam) GetDIPList() []*FlowStrategyAddParam_FlowStrategyItem {
+	if m != nil {
+		return m.DIPList
+	}
+	return nil
+}
+
+func (m *FlowStrategyAddParam) GetEnable() bool {
+	if m != nil {
+		return m.Enable
+	}
+	return false
+}
+
+type FlowStrategyAddParam_FlowStrategyItem struct {
+	DstIp                uint32   `protobuf:"varint,1,opt,name=dst_ip,json=dstIp,proto3" json:"dst_ip,omitempty"`
+	DstPort              uint32   `protobuf:"varint,2,opt,name=dst_port,json=dstPort,proto3" json:"dst_port,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *FlowStrategyAddParam_FlowStrategyItem) Reset()         { *m = FlowStrategyAddParam_FlowStrategyItem{} }
+func (m *FlowStrategyAddParam_FlowStrategyItem) String() string { return proto.CompactTextString(m) }
+func (*FlowStrategyAddParam_FlowStrategyItem) ProtoMessage()    {}
+func (*FlowStrategyAddParam_FlowStrategyItem) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1bdf113f3d6e5a7a, []int{7, 0}
+}
+
+func (m *FlowStrategyAddParam_FlowStrategyItem) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_FlowStrategyAddParam_FlowStrategyItem.Unmarshal(m, b)
+}
+func (m *FlowStrategyAddParam_FlowStrategyItem) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_FlowStrategyAddParam_FlowStrategyItem.Marshal(b, m, deterministic)
+}
+func (m *FlowStrategyAddParam_FlowStrategyItem) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_FlowStrategyAddParam_FlowStrategyItem.Merge(m, src)
+}
+func (m *FlowStrategyAddParam_FlowStrategyItem) XXX_Size() int {
+	return xxx_messageInfo_FlowStrategyAddParam_FlowStrategyItem.Size(m)
+}
+func (m *FlowStrategyAddParam_FlowStrategyItem) XXX_DiscardUnknown() {
+	xxx_messageInfo_FlowStrategyAddParam_FlowStrategyItem.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_FlowStrategyAddParam_FlowStrategyItem proto.InternalMessageInfo
+
+func (m *FlowStrategyAddParam_FlowStrategyItem) GetDstIp() uint32 {
+	if m != nil {
+		return m.DstIp
+	}
+	return 0
+}
+
+func (m *FlowStrategyAddParam_FlowStrategyItem) GetDstPort() uint32 {
+	if m != nil {
+		return m.DstPort
+	}
+	return 0
+}
+
+// 会话策略修改
+type FlowStrategySetParam struct {
+	StrategyId           string                          `protobuf:"bytes,1,opt,name=strategy_id,json=strategyId,proto3" json:"strategy_id,omitempty"`
+	HandleMode           FlowStrategySetParam_HandleMode `protobuf:"varint,2,opt,name=handle_mode,json=handleMode,proto3,enum=protobuf.FlowStrategySetParam_HandleMode" json:"handle_mode,omitempty"`
+	Enable               bool                            `protobuf:"varint,7,opt,name=enable,proto3" json:"enable,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                        `json:"-"`
+	XXX_unrecognized     []byte                          `json:"-"`
+	XXX_sizecache        int32                           `json:"-"`
+}
+
+func (m *FlowStrategySetParam) Reset()         { *m = FlowStrategySetParam{} }
+func (m *FlowStrategySetParam) String() string { return proto.CompactTextString(m) }
+func (*FlowStrategySetParam) ProtoMessage()    {}
+func (*FlowStrategySetParam) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1bdf113f3d6e5a7a, []int{8}
+}
+
+func (m *FlowStrategySetParam) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_FlowStrategySetParam.Unmarshal(m, b)
+}
+func (m *FlowStrategySetParam) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_FlowStrategySetParam.Marshal(b, m, deterministic)
+}
+func (m *FlowStrategySetParam) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_FlowStrategySetParam.Merge(m, src)
+}
+func (m *FlowStrategySetParam) XXX_Size() int {
+	return xxx_messageInfo_FlowStrategySetParam.Size(m)
+}
+func (m *FlowStrategySetParam) XXX_DiscardUnknown() {
+	xxx_messageInfo_FlowStrategySetParam.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_FlowStrategySetParam proto.InternalMessageInfo
+
+func (m *FlowStrategySetParam) GetStrategyId() string {
+	if m != nil {
+		return m.StrategyId
+	}
+	return ""
+}
+
+func (m *FlowStrategySetParam) GetHandleMode() FlowStrategySetParam_HandleMode {
+	if m != nil {
+		return m.HandleMode
+	}
+	return FlowStrategySetParam_MODEDEFAULT
+}
+
+func (m *FlowStrategySetParam) GetEnable() bool {
+	if m != nil {
+		return m.Enable
+	}
+	return false
+}
+
+// 样本采集任务命令
+type SampleSetParam struct {
+	Id                   string   `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	CollectTimeRemain    uint32   `protobuf:"varint,2,opt,name=collect_time_remain,json=collectTimeRemain,proto3" json:"collect_time_remain,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SampleSetParam) Reset()         { *m = SampleSetParam{} }
+func (m *SampleSetParam) String() string { return proto.CompactTextString(m) }
+func (*SampleSetParam) ProtoMessage()    {}
+func (*SampleSetParam) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1bdf113f3d6e5a7a, []int{9}
+}
+
+func (m *SampleSetParam) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SampleSetParam.Unmarshal(m, b)
+}
+func (m *SampleSetParam) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SampleSetParam.Marshal(b, m, deterministic)
+}
+func (m *SampleSetParam) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SampleSetParam.Merge(m, src)
+}
+func (m *SampleSetParam) XXX_Size() int {
+	return xxx_messageInfo_SampleSetParam.Size(m)
+}
+func (m *SampleSetParam) XXX_DiscardUnknown() {
+	xxx_messageInfo_SampleSetParam.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SampleSetParam proto.InternalMessageInfo
+
+func (m *SampleSetParam) GetId() string {
+	if m != nil {
+		return m.Id
+	}
+	return ""
+}
+
+func (m *SampleSetParam) GetCollectTimeRemain() uint32 {
+	if m != nil {
+		return m.CollectTimeRemain
+	}
+	return 0
+}
+
+// 端口映射操作命令
+type PortRedirectSetParam struct {
+	SrcPort  string                        `protobuf:"bytes,1,opt,name=src_port,json=srcPort,proto3" json:"src_port,omitempty"`
+	DestPort string                        `protobuf:"bytes,2,opt,name=dest_port,json=destPort,proto3" json:"dest_port,omitempty"`
+	Switch   bool                          `protobuf:"varint,3,opt,name=switch,proto3" json:"switch,omitempty"`
+	Proto    PortRedirectSetParam_Protocol `protobuf:"varint,4,opt,name=proto,proto3,enum=protobuf.PortRedirectSetParam_Protocol" json:"proto,omitempty"`
+	// string id = 5;//端口映射规则ID
+	DestIp               string   `protobuf:"bytes,6,opt,name=dest_ip,json=destIp,proto3" json:"dest_ip,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *PortRedirectSetParam) Reset()         { *m = PortRedirectSetParam{} }
+func (m *PortRedirectSetParam) String() string { return proto.CompactTextString(m) }
+func (*PortRedirectSetParam) ProtoMessage()    {}
+func (*PortRedirectSetParam) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1bdf113f3d6e5a7a, []int{10}
+}
+
+func (m *PortRedirectSetParam) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_PortRedirectSetParam.Unmarshal(m, b)
+}
+func (m *PortRedirectSetParam) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_PortRedirectSetParam.Marshal(b, m, deterministic)
+}
+func (m *PortRedirectSetParam) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PortRedirectSetParam.Merge(m, src)
+}
+func (m *PortRedirectSetParam) XXX_Size() int {
+	return xxx_messageInfo_PortRedirectSetParam.Size(m)
+}
+func (m *PortRedirectSetParam) XXX_DiscardUnknown() {
+	xxx_messageInfo_PortRedirectSetParam.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_PortRedirectSetParam proto.InternalMessageInfo
+
+func (m *PortRedirectSetParam) GetSrcPort() string {
+	if m != nil {
+		return m.SrcPort
+	}
+	return ""
+}
+
+func (m *PortRedirectSetParam) GetDestPort() string {
+	if m != nil {
+		return m.DestPort
+	}
+	return ""
+}
+
+func (m *PortRedirectSetParam) GetSwitch() bool {
+	if m != nil {
+		return m.Switch
+	}
+	return false
+}
+
+func (m *PortRedirectSetParam) GetProto() PortRedirectSetParam_Protocol {
+	if m != nil {
+		return m.Proto
+	}
+	return PortRedirectSetParam_UNSET
+}
+
+func (m *PortRedirectSetParam) GetDestIp() string {
+	if m != nil {
+		return m.DestIp
+	}
+	return ""
+}
+
+type DeployerSetParam struct {
+	DevName              string   `protobuf:"bytes,1,opt,name=dev_name,json=devName,proto3" json:"dev_name,omitempty"`
+	Name                 string   `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Phone                string   `protobuf:"bytes,3,opt,name=phone,proto3" json:"phone,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *DeployerSetParam) Reset()         { *m = DeployerSetParam{} }
+func (m *DeployerSetParam) String() string { return proto.CompactTextString(m) }
+func (*DeployerSetParam) ProtoMessage()    {}
+func (*DeployerSetParam) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1bdf113f3d6e5a7a, []int{11}
+}
+
+func (m *DeployerSetParam) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeployerSetParam.Unmarshal(m, b)
+}
+func (m *DeployerSetParam) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeployerSetParam.Marshal(b, m, deterministic)
+}
+func (m *DeployerSetParam) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeployerSetParam.Merge(m, src)
+}
+func (m *DeployerSetParam) XXX_Size() int {
+	return xxx_messageInfo_DeployerSetParam.Size(m)
+}
+func (m *DeployerSetParam) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeployerSetParam.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeployerSetParam proto.InternalMessageInfo
+
+func (m *DeployerSetParam) GetDevName() string {
+	if m != nil {
+		return m.DevName
+	}
+	return ""
+}
+
+func (m *DeployerSetParam) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *DeployerSetParam) GetPhone() string {
+	if m != nil {
+		return m.Phone
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterEnum("protobuf.Command_TaskType", Command_TaskType_name, Command_TaskType_value)
+	proto.RegisterEnum("protobuf.StatusUpdateParam_Type", StatusUpdateParam_Type_name, StatusUpdateParam_Type_value)
 	proto.RegisterEnum("protobuf.GwSetParam_Type", GwSetParam_Type_name, GwSetParam_Type_value)
+	proto.RegisterEnum("protobuf.DeviceSetParam_Type", DeviceSetParam_Type_name, DeviceSetParam_Type_value)
 	proto.RegisterEnum("protobuf.StrategyAddParam_Type", StrategyAddParam_Type_name, StrategyAddParam_Type_value)
 	proto.RegisterEnum("protobuf.StrategyAddParam_HandleMode", StrategyAddParam_HandleMode_name, StrategyAddParam_HandleMode_value)
 	proto.RegisterEnum("protobuf.StrategySetParam_HandleMode", StrategySetParam_HandleMode_name, StrategySetParam_HandleMode_value)
+	proto.RegisterEnum("protobuf.FlowStrategyAddParam_Type", FlowStrategyAddParam_Type_name, FlowStrategyAddParam_Type_value)
+	proto.RegisterEnum("protobuf.FlowStrategyAddParam_HandleMode", FlowStrategyAddParam_HandleMode_name, FlowStrategyAddParam_HandleMode_value)
+	proto.RegisterEnum("protobuf.FlowStrategySetParam_HandleMode", FlowStrategySetParam_HandleMode_name, FlowStrategySetParam_HandleMode_value)
+	proto.RegisterEnum("protobuf.PortRedirectSetParam_Protocol", PortRedirectSetParam_Protocol_name, PortRedirectSetParam_Protocol_value)
 	proto.RegisterType((*Command)(nil), "protobuf.Command")
+	proto.RegisterType((*FirmwareUpgradeParam)(nil), "protobuf.FirmwareUpgradeParam")
+	proto.RegisterType((*StatusUpdateParam)(nil), "protobuf.StatusUpdateParam")
 	proto.RegisterType((*GwSetParam)(nil), "protobuf.GwSetParam")
+	proto.RegisterType((*DeviceSetParam)(nil), "protobuf.DeviceSetParam")
 	proto.RegisterType((*StrategyAddParam)(nil), "protobuf.StrategyAddParam")
 	proto.RegisterType((*StrategySetParam)(nil), "protobuf.StrategySetParam")
+	proto.RegisterType((*FlowStrategyAddParam)(nil), "protobuf.FlowStrategyAddParam")
+	proto.RegisterType((*FlowStrategyAddParam_FlowStrategyItem)(nil), "protobuf.FlowStrategyAddParam.FlowStrategyItem")
+	proto.RegisterType((*FlowStrategySetParam)(nil), "protobuf.FlowStrategySetParam")
+	proto.RegisterType((*SampleSetParam)(nil), "protobuf.SampleSetParam")
+	proto.RegisterType((*PortRedirectSetParam)(nil), "protobuf.PortRedirectSetParam")
+	proto.RegisterType((*DeployerSetParam)(nil), "protobuf.DeployerSetParam")
 }
 
 func init() { proto.RegisterFile("scommand.proto", fileDescriptor_1bdf113f3d6e5a7a) }
 
 var fileDescriptor_1bdf113f3d6e5a7a = []byte{
-	// 494 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x52, 0xc1, 0x6e, 0xda, 0x40,
-	0x10, 0x8d, 0x81, 0x00, 0x1e, 0x53, 0x6a, 0xad, 0xa2, 0xc8, 0xe9, 0x25, 0xc8, 0x52, 0x25, 0x2e,
-	0xf1, 0x21, 0x55, 0xd5, 0x5b, 0x25, 0x07, 0x6f, 0x88, 0x15, 0x87, 0x58, 0xeb, 0xa5, 0x28, 0x27,
-	0xcb, 0xb0, 0x9b, 0x62, 0x15, 0x63, 0x84, 0x5d, 0x45, 0x5c, 0xab, 0x7e, 0x58, 0xff, 0xa1, 0x3f,
-	0x54, 0xed, 0xae, 0xc1, 0x6d, 0xa5, 0xf4, 0xd2, 0x9c, 0xbc, 0x6f, 0xe6, 0xed, 0xf8, 0xcd, 0x7b,
-	0x0b, 0xfd, 0x62, 0x91, 0x67, 0x59, 0xb2, 0x66, 0xce, 0x66, 0x9b, 0x97, 0x39, 0xea, 0xca, 0xcf,
-	0xfc, 0xeb, 0xa3, 0xfd, 0x43, 0x83, 0xce, 0x48, 0xf5, 0xd0, 0x07, 0xd0, 0xd3, 0x92, 0x67, 0x71,
-	0xb9, 0xdb, 0x70, 0x4b, 0x1b, 0x68, 0xc3, 0xfe, 0xe5, 0x1b, 0x67, 0xcf, 0x74, 0x2a, 0x96, 0x43,
-	0x93, 0xe2, 0x0b, 0xdd, 0x6d, 0x38, 0xe9, 0x0a, 0xb2, 0x38, 0xa1, 0x13, 0x38, 0xde, 0x24, 0xdb,
-	0x24, 0xb3, 0x1a, 0x03, 0x6d, 0xd8, 0x23, 0x0a, 0x88, 0xea, 0x22, 0x63, 0xbe, 0x67, 0x35, 0x07,
-	0xda, 0x50, 0x27, 0x0a, 0xd8, 0x21, 0x74, 0xf7, 0x13, 0xd0, 0x09, 0x98, 0x1e, 0xbe, 0x76, 0xa7,
-	0x01, 0x8d, 0xa9, 0x1b, 0xdd, 0xd2, 0x87, 0x10, 0x9b, 0x47, 0x08, 0xa0, 0x3d, 0x9e, 0xc5, 0x11,
-	0xa6, 0xa6, 0x86, 0x4c, 0xe8, 0x45, 0x94, 0xb8, 0x14, 0x8f, 0x1f, 0x62, 0xd7, 0xf3, 0xcc, 0xe6,
-	0x1f, 0x15, 0xc1, 0x69, 0xd9, 0xdf, 0x34, 0x80, 0xf1, 0x53, 0xc4, 0xcb, 0x50, 0xfe, 0xf6, 0x02,
-	0x5a, 0xbf, 0x2d, 0x70, 0x56, 0x2f, 0x50, 0x73, 0x1c, 0xa9, 0x5f, 0xd2, 0xd0, 0x29, 0xb4, 0x8b,
-	0xa7, 0xb4, 0x5c, 0x2c, 0xa5, 0xf8, 0x2e, 0xa9, 0x90, 0x7d, 0x01, 0x2d, 0xa9, 0xd1, 0x80, 0x4e,
-	0xa5, 0xd1, 0x3c, 0x12, 0x20, 0x24, 0xf7, 0x14, 0x8f, 0x84, 0x36, 0x03, 0x3a, 0x04, 0x47, 0xd4,
-	0x25, 0xd4, 0x6c, 0xd8, 0xdf, 0x9b, 0x60, 0x46, 0xe5, 0x36, 0x29, 0xf9, 0xe7, 0x9d, 0xcb, 0x98,
-	0x92, 0x72, 0x0e, 0x46, 0x51, 0xd5, 0xe2, 0x94, 0x49, 0x45, 0x3a, 0x81, 0x7d, 0xc9, 0x67, 0xe8,
-	0x1a, 0x8c, 0x65, 0xb2, 0x66, 0x2b, 0x1e, 0x67, 0x39, 0xe3, 0x52, 0x41, 0xff, 0xf2, 0x6d, 0x2d,
-	0xf9, 0xef, 0x89, 0xce, 0x8d, 0x64, 0xdf, 0xe5, 0x8c, 0x13, 0x58, 0x1e, 0xce, 0xe8, 0x0a, 0x7a,
-	0x8c, 0x3f, 0xf2, 0x75, 0xc1, 0x55, 0x78, 0x4d, 0x39, 0xe8, 0xfc, 0x1f, 0x83, 0xa4, 0x03, 0x46,
-	0x75, 0x49, 0x2e, 0x7a, 0x06, 0x5d, 0xe6, 0x87, 0xf1, 0x2a, 0x2d, 0x4a, 0xeb, 0x78, 0xd0, 0x1c,
-	0xea, 0xa4, 0xc3, 0xfc, 0x30, 0x48, 0x8b, 0x52, 0xb4, 0xa6, 0x24, 0x50, 0xad, 0xb6, 0x6a, 0x4d,
-	0x49, 0x20, 0x5b, 0xa7, 0xd0, 0xe6, 0xeb, 0x64, 0xbe, 0xe2, 0x56, 0x47, 0xd9, 0xa7, 0x90, 0xfd,
-	0xbe, 0xb2, 0xef, 0x35, 0x18, 0x22, 0xd6, 0xda, 0xc2, 0x57, 0xa0, 0xcf, 0x6e, 0x7c, 0x8a, 0xef,
-	0xee, 0x3d, 0x6c, 0x6a, 0x02, 0x5e, 0x05, 0xee, 0xe8, 0x56, 0xc2, 0x86, 0xfd, 0x11, 0xa0, 0x5e,
-	0x51, 0x5c, 0x16, 0xf5, 0xfa, 0x32, 0x82, 0x7e, 0x48, 0xf0, 0x27, 0x3c, 0xa1, 0x33, 0x97, 0x4c,
-	0xfc, 0xc9, 0x58, 0xc5, 0xb0, 0x07, 0x0d, 0xfb, 0xa7, 0x56, 0xc7, 0x70, 0x78, 0x11, 0x2f, 0x16,
-	0xc3, 0xe1, 0xfd, 0x3c, 0x13, 0xc3, 0x73, 0x66, 0xfc, 0xe7, 0x56, 0xf3, 0xb6, 0x54, 0xf2, 0xee,
-	0x57, 0x00, 0x00, 0x00, 0xff, 0xff, 0x43, 0xd4, 0x05, 0xc6, 0xc7, 0x03, 0x00, 0x00,
+	// 1194 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x56, 0xdd, 0x8e, 0xdb, 0x44,
+	0x14, 0xae, 0xf3, 0xeb, 0x9c, 0x6c, 0xd2, 0xd9, 0xe9, 0xd2, 0x66, 0x8b, 0xaa, 0xae, 0x5c, 0x21,
+	0x96, 0x8b, 0x06, 0x28, 0x54, 0x5c, 0x81, 0xe4, 0xc6, 0x4e, 0xea, 0x36, 0x9b, 0x58, 0xe3, 0x49,
+	0xa3, 0x5e, 0x59, 0xde, 0xcc, 0x6c, 0xd7, 0x22, 0x8e, 0x2d, 0xdb, 0xdd, 0xd5, 0x72, 0x07, 0xe2,
+	0xa1, 0x78, 0x0d, 0xc4, 0x25, 0x12, 0x4f, 0x00, 0x12, 0x8f, 0x80, 0x66, 0x6c, 0xc7, 0x49, 0x77,
+	0x97, 0x05, 0x51, 0x89, 0xab, 0x9d, 0xf3, 0x9d, 0x1f, 0x7f, 0xe7, 0x9c, 0x6f, 0x36, 0x03, 0xdd,
+	0x64, 0x11, 0x06, 0x81, 0xb7, 0x62, 0xfd, 0x28, 0x0e, 0xd3, 0x10, 0xab, 0xf2, 0xcf, 0xf1, 0xdb,
+	0x13, 0xed, 0xb7, 0x0a, 0x34, 0x07, 0x99, 0x0f, 0x7f, 0x05, 0x2d, 0x3f, 0xe5, 0x81, 0x9b, 0x5e,
+	0x44, 0xbc, 0xa7, 0x1c, 0x28, 0x87, 0xdd, 0x27, 0xf7, 0xfb, 0x45, 0x64, 0x3f, 0x8f, 0xea, 0x53,
+	0x2f, 0xf9, 0x96, 0x5e, 0x44, 0x9c, 0xa8, 0x22, 0x58, 0x9c, 0xf0, 0x1e, 0xd4, 0x23, 0x2f, 0xf6,
+	0x82, 0x5e, 0xe5, 0x40, 0x39, 0xdc, 0x21, 0x99, 0x21, 0xd0, 0x45, 0xc0, 0x2c, 0xa3, 0x57, 0x3d,
+	0x50, 0x0e, 0x5b, 0x24, 0x33, 0xb4, 0x3f, 0x14, 0x50, 0x8b, 0x12, 0x78, 0x0f, 0x90, 0x61, 0x0e,
+	0xf5, 0xd9, 0x98, 0xba, 0x54, 0x77, 0x5e, 0xd2, 0xd7, 0xb6, 0x89, 0x6e, 0x61, 0x80, 0xc6, 0x68,
+	0xee, 0x3a, 0x26, 0x45, 0x0a, 0xee, 0x02, 0x18, 0xe6, 0x2b, 0x6b, 0x60, 0x4a, 0xbb, 0x82, 0x11,
+	0xec, 0x38, 0x94, 0xe8, 0xd4, 0x1c, 0xbd, 0x76, 0x75, 0xc3, 0x40, 0xd5, 0x2d, 0x44, 0xc4, 0xd4,
+	0x44, 0x8e, 0xa3, 0x1f, 0xd9, 0xe3, 0x2c, 0xa7, 0x2e, 0xbe, 0x62, 0x4f, 0x09, 0x25, 0xa6, 0x61,
+	0x11, 0x73, 0x40, 0x25, 0xda, 0xc0, 0xbb, 0xd0, 0x71, 0xa8, 0x4e, 0x67, 0x8e, 0x3b, 0xb3, 0x0d,
+	0x9d, 0x9a, 0xa8, 0x29, 0x4a, 0x19, 0xa6, 0x3d, 0x9e, 0xbe, 0x36, 0x89, 0x0c, 0x52, 0x45, 0xea,
+	0xd0, 0x22, 0x47, 0x73, 0x9d, 0x98, 0xee, 0xcc, 0x1e, 0x11, 0xdd, 0x30, 0x51, 0x4b, 0xa2, 0xe3,
+	0xe9, 0x7c, 0x8b, 0x08, 0x5c, 0x42, 0x45, 0x85, 0xb6, 0xf6, 0xbb, 0x02, 0x7b, 0x43, 0x3f, 0x0e,
+	0xce, 0xbd, 0x98, 0xcf, 0xa2, 0x37, 0xb1, 0xc7, 0xb8, 0x2d, 0xc7, 0xd3, 0x83, 0xe6, 0x19, 0x8f,
+	0x13, 0x3f, 0x5c, 0xc9, 0x59, 0xb7, 0x48, 0x61, 0x62, 0x0c, 0xb5, 0xc4, 0xff, 0x8e, 0xcb, 0x69,
+	0xd6, 0x88, 0x3c, 0x63, 0x04, 0xd5, 0xb7, 0xf1, 0x32, 0x1f, 0xa5, 0x38, 0xe2, 0x7d, 0x50, 0x9d,
+	0xe9, 0x20, 0x5b, 0x56, 0x2d, 0x2b, 0xe0, 0x4c, 0x07, 0x72, 0xac, 0x0f, 0x00, 0x8e, 0x43, 0x2f,
+	0x66, 0xee, 0xca, 0x0b, 0x78, 0xaf, 0x2e, 0x9d, 0x2d, 0x89, 0x4c, 0xbc, 0x80, 0xe3, 0x47, 0xd0,
+	0x39, 0xc9, 0x19, 0x65, 0xe9, 0x0d, 0x19, 0xb1, 0x53, 0x80, 0xb2, 0xc6, 0x66, 0x90, 0x2c, 0xd3,
+	0xdc, 0x0e, 0x92, 0x95, 0x10, 0x54, 0x03, 0xf6, 0xb4, 0xa7, 0x66, 0xac, 0x02, 0xf6, 0x54, 0xfb,
+	0x49, 0x81, 0x5d, 0x27, 0xf5, 0xd2, 0xb7, 0xc9, 0x2c, 0x62, 0x5e, 0x9a, 0xf7, 0xfa, 0x25, 0xd4,
+	0x36, 0x44, 0x75, 0x50, 0x8a, 0xea, 0x52, 0x68, 0x5f, 0x4a, 0x4b, 0x46, 0x6b, 0x01, 0xd4, 0x24,
+	0x15, 0xb9, 0x96, 0x4c, 0x25, 0xd6, 0x64, 0x38, 0x2d, 0x14, 0x22, 0xcf, 0x8a, 0x38, 0x67, 0x0a,
+	0x41, 0x15, 0xdc, 0x81, 0xd6, 0x68, 0x6e, 0x93, 0x29, 0x35, 0x07, 0x14, 0x55, 0xf1, 0x0e, 0xa8,
+	0xc5, 0x36, 0x50, 0x4d, 0x94, 0xd9, 0x94, 0x01, 0xaa, 0x0b, 0x7f, 0xb1, 0x6f, 0xd4, 0xd0, 0x7e,
+	0x50, 0x00, 0x46, 0xe7, 0x0e, 0x4f, 0x33, 0xce, 0x8f, 0xb7, 0x38, 0xef, 0x97, 0x9c, 0xcb, 0x98,
+	0x0d, 0xb2, 0xf8, 0x2e, 0x34, 0x92, 0x73, 0x3f, 0x5d, 0x9c, 0xca, 0xb5, 0xa9, 0x24, 0xb7, 0xb4,
+	0xc7, 0x79, 0x13, 0x6d, 0x68, 0xe6, 0x4d, 0xa0, 0x5b, 0xc2, 0x28, 0x58, 0x2a, 0xc2, 0x20, 0xa6,
+	0x43, 0x75, 0x42, 0x51, 0x45, 0xfb, 0x59, 0x81, 0xae, 0xc1, 0xcf, 0xfc, 0x05, 0x5f, 0x13, 0x79,
+	0x00, 0xc0, 0x24, 0xe2, 0x06, 0xde, 0x22, 0xd7, 0x4a, 0x2b, 0x43, 0x8e, 0xbc, 0x05, 0xfe, 0x3c,
+	0xe7, 0x59, 0x91, 0x3c, 0x1f, 0x94, 0x3c, 0xb7, 0xcb, 0x5c, 0xcd, 0xb5, 0xba, 0xc5, 0x75, 0x76,
+	0x23, 0xd7, 0x1d, 0x50, 0xad, 0x09, 0x35, 0xc9, 0x44, 0x5e, 0xc6, 0x7b, 0x70, 0x67, 0x34, 0x33,
+	0x1d, 0xea, 0xea, 0x83, 0x81, 0xe9, 0x38, 0x6e, 0xbe, 0x07, 0x39, 0xf8, 0xb1, 0x3e, 0x79, 0x65,
+	0x39, 0x16, 0x45, 0x35, 0xed, 0xc7, 0x2a, 0x20, 0x27, 0x8d, 0xbd, 0x94, 0xbf, 0xb9, 0xd0, 0x19,
+	0xcb, 0xba, 0x7a, 0x08, 0xed, 0x24, 0xc7, 0x5c, 0x9f, 0xe5, 0x6d, 0x41, 0x01, 0x59, 0x0c, 0x0f,
+	0xa1, 0x7d, 0xea, 0xad, 0xd8, 0x92, 0xbb, 0x41, 0xc8, 0x8a, 0xf6, 0x3e, 0xda, 0x94, 0xce, 0x76,
+	0xc5, 0xfe, 0x73, 0x19, 0x7d, 0x14, 0x32, 0x4e, 0xe0, 0x74, 0x7d, 0xc6, 0xcf, 0x60, 0x87, 0xf1,
+	0x13, 0xbe, 0x4a, 0x72, 0xb1, 0x57, 0x65, 0xa1, 0x87, 0x7f, 0x53, 0x48, 0x4e, 0xaa, 0x9d, 0x27,
+	0xc9, 0x81, 0xec, 0x83, 0xca, 0x2c, 0xdb, 0x5d, 0xfa, 0x49, 0xda, 0xab, 0x1f, 0x54, 0xc5, 0x5d,
+	0x63, 0x96, 0x3d, 0xf6, 0x93, 0x54, 0xb8, 0x66, 0x64, 0x9c, 0xb9, 0x1a, 0x99, 0x6b, 0x46, 0xc6,
+	0xd2, 0x75, 0x17, 0x1a, 0x7c, 0xe5, 0x1d, 0x2f, 0xb3, 0xbb, 0xa3, 0x92, 0xdc, 0xd2, 0x9e, 0xe6,
+	0x63, 0xbe, 0x0d, 0x6d, 0xf1, 0x1f, 0xaf, 0x1c, 0x75, 0x07, 0x5a, 0xf3, 0xe7, 0x16, 0x35, 0x8f,
+	0xa6, 0x86, 0x89, 0x14, 0x61, 0x3e, 0x1b, 0xeb, 0x83, 0x97, 0xd2, 0xac, 0x68, 0xdf, 0x00, 0x94,
+	0x2d, 0x8a, 0x64, 0x81, 0x97, 0xc9, 0x18, 0xba, 0x36, 0x31, 0x5f, 0x99, 0x13, 0x3a, 0xd7, 0xc9,
+	0xc4, 0x9a, 0x8c, 0x32, 0x69, 0x15, 0x46, 0x45, 0xfb, 0x45, 0x29, 0xd7, 0xb0, 0x16, 0xd7, 0x7b,
+	0x5b, 0xc3, 0x5a, 0x67, 0xd7, 0xac, 0xe1, 0xba, 0x61, 0xfc, 0xd7, 0xae, 0xbe, 0xaf, 0xc1, 0xde,
+	0x70, 0x19, 0x9e, 0x5f, 0x12, 0xd8, 0x21, 0xa0, 0x93, 0x65, 0x78, 0xee, 0x5e, 0x6e, 0xaf, 0x7b,
+	0xb2, 0x11, 0x6f, 0x31, 0xfc, 0xe2, 0xaa, 0x16, 0x3f, 0x29, 0x5b, 0xbc, 0xaa, 0xfc, 0x75, 0x6d,
+	0x0e, 0xaf, 0x54, 0xdb, 0xa3, 0x1b, 0x8a, 0x5d, 0x56, 0xdc, 0x8b, 0x77, 0x14, 0xd7, 0x7e, 0xf2,
+	0xe9, 0x0d, 0x35, 0x36, 0x41, 0x2b, 0xe5, 0x41, 0x29, 0xd1, 0x6b, 0x46, 0x7f, 0xdf, 0x00, 0xf4,
+	0x6e, 0x12, 0xfe, 0x00, 0x1a, 0x2c, 0x49, 0x5d, 0x3f, 0x92, 0xb3, 0xea, 0x90, 0x3a, 0x4b, 0x52,
+	0x2b, 0x92, 0x17, 0x20, 0x49, 0xdd, 0x28, 0x8c, 0x53, 0x39, 0x9f, 0x0e, 0x69, 0xb2, 0x24, 0xb5,
+	0xc3, 0x38, 0xd5, 0xf4, 0x5c, 0xcd, 0x77, 0xe0, 0xf6, 0x70, 0x3c, 0x9f, 0x6e, 0x2b, 0x7a, 0x17,
+	0x3a, 0x02, 0xdc, 0x54, 0x75, 0x0e, 0xbd, 0x4f, 0x65, 0xff, 0xaa, 0x6c, 0x6b, 0xe0, 0x9f, 0xab,
+	0xfb, 0xdf, 0xac, 0xfe, 0xff, 0x52, 0xb8, 0x0d, 0x5d, 0xc7, 0x0b, 0xa2, 0x65, 0xf9, 0x8b, 0xd0,
+	0x85, 0xca, 0xba, 0x9b, 0x8a, 0xcf, 0x70, 0x1f, 0xee, 0x2c, 0xc2, 0xe5, 0x92, 0x2f, 0x52, 0x37,
+	0xf5, 0x03, 0xee, 0xc6, 0x3c, 0xf0, 0xfc, 0x55, 0xbe, 0xa8, 0xdd, 0xdc, 0x45, 0xfd, 0x80, 0x13,
+	0xe9, 0xd0, 0xfe, 0x54, 0x60, 0x4f, 0xec, 0x8e, 0x70, 0xe6, 0xc7, 0x7c, 0x91, 0xae, 0x0b, 0xef,
+	0x83, 0x9a, 0xc4, 0x8b, 0x6c, 0xcd, 0xf9, 0xa3, 0x24, 0x89, 0x17, 0x22, 0x14, 0x7f, 0x08, 0x2d,
+	0xc6, 0x37, 0x25, 0xd0, 0x22, 0xaa, 0x00, 0xa4, 0xf3, 0x9a, 0x1f, 0x14, 0xfc, 0x35, 0xd4, 0xe5,
+	0x28, 0xe5, 0x03, 0xa5, 0xfb, 0xe4, 0xe3, 0x72, 0xb0, 0x57, 0x7d, 0xbe, 0x6f, 0x0b, 0xef, 0x22,
+	0x5c, 0x92, 0x2c, 0x0b, 0xdf, 0x83, 0xa6, 0xfc, 0xa6, 0x1f, 0xe5, 0x4f, 0x94, 0x86, 0x30, 0xad,
+	0x48, 0xfb, 0x0c, 0xd4, 0x22, 0x16, 0xb7, 0xa0, 0x3e, 0x9b, 0x88, 0xb7, 0xd6, 0x2d, 0xdc, 0x84,
+	0xea, 0xcc, 0xb0, 0x91, 0x22, 0x0e, 0x74, 0x60, 0xa3, 0x8a, 0x38, 0xe8, 0xe3, 0x31, 0xaa, 0x6a,
+	0x73, 0x40, 0x06, 0x8f, 0x96, 0xe1, 0x05, 0x8f, 0x37, 0xbb, 0x65, 0xfc, 0x2c, 0x7b, 0xdd, 0xe4,
+	0xdd, 0x32, 0x7e, 0x26, 0x1f, 0x36, 0x18, 0x6a, 0x12, 0xce, 0x1a, 0x95, 0x67, 0xf9, 0xca, 0x3d,
+	0x0d, 0x57, 0xbc, 0x78, 0xcf, 0x4a, 0xe3, 0xb8, 0x21, 0xa9, 0x7e, 0xf1, 0x57, 0x00, 0x00, 0x00,
+	0xff, 0xff, 0x9a, 0x1c, 0x3e, 0x2b, 0x63, 0x0b, 0x00, 0x00,
 }

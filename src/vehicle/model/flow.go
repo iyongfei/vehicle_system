@@ -34,6 +34,7 @@ type Flow struct {
 func (f *Flow) InsertModel() error {
 	return mysql.CreateModel(f)
 }
+
 func (f *Flow) GetModelByCondition(query interface{}, args ...interface{}) (error, bool) {
 	err, recordNotFound := mysql.QueryModelOneRecordIsExistByWhereCondition(f, query, args...)
 	if err != nil {
@@ -44,6 +45,7 @@ func (f *Flow) GetModelByCondition(query interface{}, args ...interface{}) (erro
 	}
 	return nil, false
 }
+
 func (f *Flow) UpdateModelsByCondition(values interface{}, query interface{}, queryArgs ...interface{}) error {
 	err := mysql.UpdateModelByMapModel(f, values, query, queryArgs...)
 	if err != nil {
@@ -54,7 +56,12 @@ func (f *Flow) UpdateModelsByCondition(values interface{}, query interface{}, qu
 func (f *Flow) DeleModelsByCondition(query interface{}, args ...interface{}) error {
 	return nil
 }
+
 func (f *Flow) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) (error) {
+	err := mysql.QueryModelRecordsByWhereCondition(model,query,args...)
+	if err!=nil{
+		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
+	}
 	return nil
 }
 
