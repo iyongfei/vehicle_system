@@ -1,3 +1,5 @@
+### 技术点
+
 车载后端系统目前运用到如下的技术点：(后续看需求会继续有新东西引入)
 
 gin web框架、goredis 缓存、gorm 数据库orm
@@ -28,6 +30,8 @@ go mod vender: 将依赖复制到 vendor 下
 go mod verify: 校验依赖
 
 go mod why: 解释为什么需要依赖
+
+### 项目目录层级结构：
 
 ```
 .
