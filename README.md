@@ -9,6 +9,7 @@ restfulapi api风格、protobuf 数据通讯协议、emq 长连接
 jwt鉴权、gomod 本地管理依赖库、cron 定时任务、swagger 测试人员使用
 
 
+
 ### gomod用法：
 
 set GO111MODULE=on			//打开包管理
