@@ -9,7 +9,7 @@ func GetVehicleToken() string {
 		"user_name":"safly",
 		"password":"838facfab6e49cd2d54d064864ceeb00",
 	}
-	resp,_:=PostForm(reqUrl,bodyParams)
+	resp,_:=PostForm(reqUrl,bodyParams,"")
 
 	var token string
 	switch resp["data"].(type) {

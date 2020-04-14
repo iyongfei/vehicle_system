@@ -12,7 +12,7 @@ func main()  {
 		"user_name":"safly",
 		"password":"saflyer",
 	}
-	resp,_:=tool.PostForm(req_url,bodyParams)
+	resp,_:=tool.PostForm(req_url,bodyParams,"")
 	respMarshal ,_:= json.Marshal(resp)
 	fmt.Printf("resp %+v",string(respMarshal))
 }

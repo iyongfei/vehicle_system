@@ -124,119 +124,168 @@ func GetPaginationFlows(c *gin.Context)  {
 	c.JSON(http.StatusOK,retObj)
 }
 
-
-//
-//
-
 func AddFlow(c *gin.Context)  {
-	//flowId:=c.PostForm("flow_id")
-	//vehicleId:=c.PostForm("vehicle_id")
+	vehicleId:=c.PostForm("vehicle_id")
+	hashP:=c.PostForm("hash")
+	srcIpArp:=c.PostForm("src_ip")
+	dstIpArg:=c.PostForm("dst_ip")
 
-	//argsTrimsEmpty:=util.RrgsTrimsEmpty(vehicleId,flowId)
-	//if argsTrimsEmpty{
-	//	ret:=response.StructResponseObj(response.VStatusBadRequest,response.ReqArgsIllegalMsg,"")
-	//	c.JSON(http.StatusOK,ret)
-	//	logger.Logger.Error("%s argsTrimsEmpty flowId:%s,vehicleId:%s argsTrimsEmpty",util.RunFuncName(),flowId,vehicleId)
-	//	logger.Logger.Print("%s argsTrimsEmpty flowId:%s,vehicleId:%s argsTrimsEmpty",util.RunFuncName(),flowId,vehicleId)
-	//}
-	//whiteListObj:= &model.Flow{}
-	//
-	//modelBase := model_base.ModelBaseImpl(whiteListObj)
-	//
-	//err,recordNotFound:=modelBase.GetModelByCondition("white_list_id = ?",[]interface{}{whiteListId}...)
-	//
-	//if err!=nil{
-	//	logger.Logger.Error("%s white_list_id:%s,err:%s",util.RunFuncName(),whiteListId,err)
-	//	logger.Logger.Print("%s white_list_id:%s,err:%s",util.RunFuncName(),whiteListId,err)
-	//	ret:=response.StructResponseObj(response.VStatusServerError,response.ReqGetWhiteListFailMsg,"")
-	//	c.JSON(http.StatusOK,ret)
-	//	return
-	//}
-	//
-	//if recordNotFound{
-	//	logger.Logger.Error("%s white_list_id:%s,recordNotFound",util.RunFuncName(),whiteListId)
-	//	logger.Logger.Print("%s white_list_id:%s,recordNotFound",util.RunFuncName(),whiteListId)
-	//	ret:=response.StructResponseObj(response.VStatusServerError,response.ReqGetWhiteListUnExistMsg,"")
-	//	c.JSON(http.StatusOK,ret)
-	//	return
-	//}
-	//
-	//retObj:=response.StructResponseObj(response.VStatusOK,response.ReqGetWhiteListSuccessMsg,whiteListObj)
-	//c.JSON(http.StatusOK,retObj)
+	logger.Logger.Print("%s vehicleId:%s,hash:%s,srcIpArp:%s,dstIpArg:%s",util.RunFuncName(),vehicleId,hashP,srcIpArp,dstIpArg)
+
+
+	argsTrimsEmpty:=util.RrgsTrimsEmpty(vehicleId,hashP,srcIpArp,dstIpArg)
+	if argsTrimsEmpty{
+		ret:=response.StructResponseObj(response.VStatusBadRequest,response.ReqArgsIllegalMsg,"")
+		c.JSON(http.StatusOK,ret)
+		logger.Logger.Error("%s argsTrimsEmpty vehicleId:%s,hash:%s argsTrimsEmpty",util.RunFuncName(),vehicleId,hashP)
+		logger.Logger.Print("%s argsTrimsEmpty vehicleId:%s,hash:%s argsTrimsEmpty",util.RunFuncName(),vehicleId,hashP)
+	}
+
+	hash,_:= strconv.Atoi(hashP)
+	srcIp,_:= strconv.Atoi(srcIpArp)
+	dstIp,_:= strconv.Atoi(dstIpArg)
+
+	flowObj:= &model.Flow{
+		VehicleId:vehicleId,
+		Hash:uint32(hash),
+		SrcIp:uint32(srcIp),
+		DstIp:uint32(dstIp),
+		FlowId:uint32(hash),
+	}
+	modelBase := model_base.ModelBaseImpl(flowObj)
+	err,recordNotFound:=modelBase.GetModelByCondition("vehicle_id = ? and hash = ?",[]interface{}{vehicleId,hash}...)
+
+	if err!=nil{
+		logger.Logger.Error("%s vehicleId:%s,hash:%d,get flow info err:%s",util.RunFuncName(),vehicleId,hash,err)
+		logger.Logger.Print("%s vehicleId:%s,hash:%d,get flow info err:%s",util.RunFuncName(),vehicleId,hash,err)
+		ret:=response.StructResponseObj(response.VStatusServerError,response.ReqAddFlowFailMsg,"")
+		c.JSON(http.StatusOK,ret)
+		return
+	}
+	if !recordNotFound{
+		logger.Logger.Error("%s vehicleId:%s,hash:%d,record exist",util.RunFuncName(),vehicleId,hash)
+		logger.Logger.Print("%s vehicleId:%s,hash:%d,record exist",util.RunFuncName(),vehicleId,hash)
+		ret:=response.StructResponseObj(response.VStatusServerError,response.ReqGetFlowExistMsg,"")
+		c.JSON(http.StatusOK,ret)
+		return
+	}
+
+	if err:=modelBase.InsertModel();err!=nil{
+		ret:=response.StructResponseObj(response.VStatusServerError,response.ReqAddFlowFailMsg,"")
+		c.JSON(http.StatusOK,ret)
+		return
+	}
+	retObj:=response.StructResponseObj(response.VStatusOK,response.ReqAddFlowSuccessMsg,flowObj)
+	c.JSON(http.StatusOK,retObj)
 }
 
-//
-//func EditFlow(c *gin.Context)  {
-//	flowId:=c.Param("flow_id")
-//	vehicleId:=c.Param("vehicle_id")
-//
-//	argsTrimsEmpty:=util.RrgsTrimsEmpty(vehicleId,flowId)
-//	if argsTrimsEmpty{
-//		ret:=response.StructResponseObj(response.VStatusBadRequest,response.ReqArgsIllegalMsg,"")
-//		c.JSON(http.StatusOK,ret)
-//		logger.Logger.Error("%s argsTrimsEmpty flowId:%s,vehicleId:%s argsTrimsEmpty",util.RunFuncName(),flowId,vehicleId)
-//		logger.Logger.Print("%s argsTrimsEmpty flowId:%s,vehicleId:%s argsTrimsEmpty",util.RunFuncName(),flowId,vehicleId)
-//	}
-//	whiteListObj:= &model.WhiteList{}
-//
-//	modelBase := model_base.ModelBaseImpl(whiteListObj)
-//
-//	err,recordNotFound:=modelBase.GetModelByCondition("white_list_id = ?",[]interface{}{whiteListId}...)
-//
-//	if err!=nil{
-//		logger.Logger.Error("%s white_list_id:%s,err:%s",util.RunFuncName(),whiteListId,err)
-//		logger.Logger.Print("%s white_list_id:%s,err:%s",util.RunFuncName(),whiteListId,err)
-//		ret:=response.StructResponseObj(response.VStatusServerError,response.ReqGetWhiteListFailMsg,"")
-//		c.JSON(http.StatusOK,ret)
-//		return
-//	}
-//
-//	if recordNotFound{
-//		logger.Logger.Error("%s white_list_id:%s,recordNotFound",util.RunFuncName(),whiteListId)
-//		logger.Logger.Print("%s white_list_id:%s,recordNotFound",util.RunFuncName(),whiteListId)
-//		ret:=response.StructResponseObj(response.VStatusServerError,response.ReqGetWhiteListUnExistMsg,"")
-//		c.JSON(http.StatusOK,ret)
-//		return
-//	}
-//
-//	retObj:=response.StructResponseObj(response.VStatusOK,response.ReqGetWhiteListSuccessMsg,whiteListObj)
-//	c.JSON(http.StatusOK,retObj)
-//}
-//
-//
-//func DeleFlow(c *gin.Context)  {
-//	flowId:=c.Param("flow_id")
-//	vehicleId:=c.Param("vehicle_id")
-//
-//	argsTrimsEmpty:=util.RrgsTrimsEmpty(vehicleId,flowId)
-//	if argsTrimsEmpty{
-//		ret:=response.StructResponseObj(response.VStatusBadRequest,response.ReqArgsIllegalMsg,"")
-//		c.JSON(http.StatusOK,ret)
-//		logger.Logger.Error("%s argsTrimsEmpty flowId:%s,vehicleId:%s argsTrimsEmpty",util.RunFuncName(),flowId,vehicleId)
-//		logger.Logger.Print("%s argsTrimsEmpty flowId:%s,vehicleId:%s argsTrimsEmpty",util.RunFuncName(),flowId,vehicleId)
-//	}
-//	whiteListObj:= &model.WhiteList{}
-//
-//	modelBase := model_base.ModelBaseImpl(whiteListObj)
-//
-//	err,recordNotFound:=modelBase.GetModelByCondition("white_list_id = ?",[]interface{}{whiteListId}...)
-//
-//	if err!=nil{
-//		logger.Logger.Error("%s white_list_id:%s,err:%s",util.RunFuncName(),whiteListId,err)
-//		logger.Logger.Print("%s white_list_id:%s,err:%s",util.RunFuncName(),whiteListId,err)
-//		ret:=response.StructResponseObj(response.VStatusServerError,response.ReqGetWhiteListFailMsg,"")
-//		c.JSON(http.StatusOK,ret)
-//		return
-//	}
-//
-//	if recordNotFound{
-//		logger.Logger.Error("%s white_list_id:%s,recordNotFound",util.RunFuncName(),whiteListId)
-//		logger.Logger.Print("%s white_list_id:%s,recordNotFound",util.RunFuncName(),whiteListId)
-//		ret:=response.StructResponseObj(response.VStatusServerError,response.ReqGetWhiteListUnExistMsg,"")
-//		c.JSON(http.StatusOK,ret)
-//		return
-//	}
-//
-//	retObj:=response.StructResponseObj(response.VStatusOK,response.ReqGetWhiteListSuccessMsg,whiteListObj)
-//	c.JSON(http.StatusOK,retObj)
-//}
+func EditFlow(c *gin.Context)  {
+	hashP:=c.Param("flow_id")
+	vehicleId:=c.PostForm("vehicle_id")
+	srcIpArp:=c.PostForm("src_ip")
+	dstIpArg:=c.PostForm("dst_ip")
+
+	logger.Logger.Print("%s vehicleId:%s,hash:%s,srcIpArp:%s,dstIpArg:%s",util.RunFuncName(),vehicleId,hashP,srcIpArp,dstIpArg)
+
+
+	argsTrimsEmpty:=util.RrgsTrimsEmpty(vehicleId,hashP,srcIpArp,dstIpArg)
+	if argsTrimsEmpty{
+		ret:=response.StructResponseObj(response.VStatusBadRequest,response.ReqArgsIllegalMsg,"")
+		c.JSON(http.StatusOK,ret)
+		logger.Logger.Error("%s argsTrimsEmpty vehicleId:%s,hash:%s argsTrimsEmpty",util.RunFuncName(),vehicleId,hashP)
+		logger.Logger.Print("%s argsTrimsEmpty vehicleId:%s,hash:%s argsTrimsEmpty",util.RunFuncName(),vehicleId,hashP)
+	}
+
+	hash,_:= strconv.Atoi(hashP)
+	srcIp,_:= strconv.Atoi(srcIpArp)
+	dstIp,_:= strconv.Atoi(dstIpArg)
+
+	flowObj:= &model.Flow{
+		VehicleId:vehicleId,
+		Hash:uint32(hash),
+	}
+
+	modelBase := model_base.ModelBaseImpl(flowObj)
+	err,recordNotFound:=modelBase.GetModelByCondition("vehicle_id = ? and hash = ?",[]interface{}{vehicleId,hash}...)
+
+	if err!=nil{
+		logger.Logger.Error("%s vehicleId:%s,hash:%d,get flow info err:%s",util.RunFuncName(),vehicleId,hash,err)
+		logger.Logger.Print("%s vehicleId:%s,hash:%d,get flow info err:%s",util.RunFuncName(),vehicleId,hash,err)
+		ret:=response.StructResponseObj(response.VStatusServerError,response.ReqEditFlowFailMsg,"")
+		c.JSON(http.StatusOK,ret)
+		return
+	}
+	if recordNotFound{
+		logger.Logger.Error("%s vehicleId:%s,hash:%d,record not exist",util.RunFuncName(),vehicleId,hash)
+		logger.Logger.Print("%s vehicleId:%s,hash:%d,record not exist",util.RunFuncName(),vehicleId,hash)
+		ret:=response.StructResponseObj(response.VStatusServerError,response.ReqGetFlowUnExistMsg,"")
+		c.JSON(http.StatusOK,ret)
+		return
+	}
+
+	//赋值
+	flowObj.SrcIp = uint32(srcIp)
+	flowObj.DstIp = uint32(dstIp)
+
+	attrs := map[string]interface{}{
+		"src_ip": flowObj.SrcIp,
+		"dst_ip": flowObj.DstIp,
+	}
+	if err:=modelBase.UpdateModelsByCondition(attrs,"vehicle_id = ? and hash = ?",
+		[]interface{}{flowObj.VehicleId,flowObj.Hash}...);err!=nil{
+		ret:=response.StructResponseObj(response.VStatusServerError,response.ReqEditFlowFailMsg,"")
+		c.JSON(http.StatusOK,ret)
+		return
+	}
+
+	retObj:=response.StructResponseObj(response.VStatusOK,response.ReqEditFlowSuccessMsg,flowObj)
+	c.JSON(http.StatusOK,retObj)
+}
+
+
+func DeleFlow(c *gin.Context)  {
+	hashP:=c.Param("flow_id")
+	vehicleId:=c.Query("vehicle_id")
+
+	fmt.Println(hashP,vehicleId,"param::::::::::")
+
+	argsTrimsEmpty:=util.RrgsTrimsEmpty(vehicleId,hashP)
+	if argsTrimsEmpty{
+		ret:=response.StructResponseObj(response.VStatusBadRequest,response.ReqArgsIllegalMsg,"")
+		c.JSON(http.StatusOK,ret)
+		logger.Logger.Error("%s argsTrimsEmpty vehicleId:%s,hash:%s argsTrimsEmpty",util.RunFuncName(),vehicleId,hashP)
+		logger.Logger.Print("%s argsTrimsEmpty vehicleId:%s,hash:%s argsTrimsEmpty",util.RunFuncName(),vehicleId,hashP)
+		return
+	}
+
+	hash,_:= strconv.Atoi(hashP)
+
+	flowObj:= &model.Flow{
+		VehicleId:vehicleId,
+		Hash:uint32(hash),
+	}
+
+	modelBase := model_base.ModelBaseImpl(flowObj)
+	err,recordNotFound:=modelBase.GetModelByCondition("vehicle_id = ? and hash = ?",[]interface{}{vehicleId,hash}...)
+
+	if err!=nil{
+		logger.Logger.Error("%s vehicleId:%s,hash:%d,get flow info err:%s",util.RunFuncName(),vehicleId,hash,err)
+		logger.Logger.Print("%s vehicleId:%s,hash:%d,get flow info err:%s",util.RunFuncName(),vehicleId,hash,err)
+		ret:=response.StructResponseObj(response.VStatusServerError,response.ReqDeleFlowFailMsg,"")
+		c.JSON(http.StatusOK,ret)
+		return
+	}
+	if recordNotFound{
+		logger.Logger.Error("%s vehicleId:%s,hash:%d,record not exist",util.RunFuncName(),vehicleId,hash)
+		logger.Logger.Print("%s vehicleId:%s,hash:%d,record not exist",util.RunFuncName(),vehicleId,hash)
+		ret:=response.StructResponseObj(response.VStatusServerError,response.ReqGetFlowUnExistMsg,"")
+		c.JSON(http.StatusOK,ret)
+		return
+	}
+	if err:=modelBase.DeleModelsByCondition("vehicle_id = ? and hash = ?",
+		[]interface{}{flowObj.VehicleId,flowObj.Hash}...);err!=nil{
+	}
+
+	retObj:=response.StructResponseObj(response.VStatusOK,response.ReqGetWhiteListSuccessMsg,flowObj)
+	c.JSON(http.StatusOK,retObj)
+}

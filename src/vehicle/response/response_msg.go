@@ -57,6 +57,12 @@ const (
 	ReqGetFlowFailMsg = "会话消息获取失败"
 	ReqGetFlowSuccessMsg = "会话消息获取成功"
 	ReqGetFlowUnExistMsg = "会话消息不存在"
+	ReqGetFlowExistMsg = "会话消息已存在"
+	ReqAddFlowFailMsg = "会话消息添加失败"
+	ReqAddFlowSuccessMsg = "会话消息添加成功"
+	ReqEditFlowSuccessMsg = "会话消息更新成功"
+	ReqEditFlowFailMsg = "会话消息更新失败"
+	ReqDeleFlowFailMsg = "会话消息删除失败"
 )
 
 //threat

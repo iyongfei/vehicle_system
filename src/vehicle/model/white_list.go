@@ -45,7 +45,7 @@ func (w *WhiteList) UpdateModelsByCondition( values interface{}, query interface
 
 
 func (w *WhiteList) DeleModelsByCondition(query interface{}, args ...interface{}) error {
-err := mysql.HardDeleteModelB(w,query,args...)
+	err := mysql.HardDeleteModelB(w,query,args...)
 	if err!=nil{
 		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
 	}

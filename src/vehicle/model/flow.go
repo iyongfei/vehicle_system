@@ -30,7 +30,6 @@ type Flow struct {
 }
 
 
-
 func (f *Flow) InsertModel() error {
 	return mysql.CreateModel(f)
 }
@@ -54,6 +53,10 @@ func (f *Flow) UpdateModelsByCondition(values interface{}, query interface{}, qu
 	return nil
 }
 func (f *Flow) DeleModelsByCondition(query interface{}, args ...interface{}) error {
+	err := mysql.HardDeleteModelB(f,query,args...)
+	if err!=nil{
+		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
+	}
 	return nil
 }
 

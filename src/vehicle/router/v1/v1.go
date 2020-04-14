@@ -33,7 +33,7 @@ func V1Router(r *gin.Engine)  {
 		apiV1.GET("/flows", api_server.GetFlows)
 		apiV1.GET("/pagination/flows", api_server.GetPaginationFlows)
 		apiV1.POST("/flows", api_server.AddFlow)
-		//apiV1.PUT("/flows/:flow_id", api_server.EditFlow)
-		//apiV1.DELETE("/flows/:flow_id", api_server.DeleFlow)
+		apiV1.PUT("/flows/:flow_id", api_server.EditFlow)
+		apiV1.DELETE("/flows/:flow_id", api_server.DeleFlow)
 	}
 }
