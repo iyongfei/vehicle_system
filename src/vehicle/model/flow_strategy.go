@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"vehicle_system/src/vehicle/db/mysql"
+	"vehicle_system/src/vehicle/emq/protobuf"
 	"vehicle_system/src/vehicle/util"
 )
 
@@ -50,11 +51,10 @@ func (flowStrategy *FlowStrategy) GetModelListByCondition(model interface{}, que
 }
 
 func (flowStrategy *FlowStrategy) CreateModel(flowStrategyParams ...interface{}) interface{} {
-	//flowStrategyParam := flowStrategyParams[0].(*protobuf.FlowStrategyParam)
-	//
-	//strategy.Type = uint8(strategyParam.GetDefenseType())
-	//strategy.HandleMode = uint8(strategyParam.GetHandleMode())
-	//strategy.Enable = strategyParam.GetEnable()
+	flowStrategyParam := flowStrategyParams[0].(*protobuf.FlowStrategyParam)
+	flowStrategy.Type = uint8(flowStrategyParam.GetDefenseType())
+	flowStrategy.HandleMode = uint8(flowStrategyParam.GetHandleMode())
+	flowStrategy.Enable = flowStrategyParam.GetEnable()
 	return flowStrategy
 }
 
@@ -76,11 +76,31 @@ type FlowStrategyRelateItem struct {
 	FlowStrategyItemId string
 }
 
+
+
 type FlowStrategyVehicle struct {
 	gorm.Model
 	FlowStrategyId string
 	VehicleId  string
 }
+
+
+
+func (flowStrategyVehicle *FlowStrategyVehicle) InsertModel() error {
+	return mysql.CreateModel(flowStrategyVehicle)
+}
+
+func (flowStrategyVehicle *FlowStrategyVehicle) GetModelByCondition(query interface{}, args ...interface{}) (error, bool) {
+	err, recordNotFound := mysql.QueryModelOneRecordIsExistByWhereCondition(flowStrategyVehicle, query, args...)
+	if err != nil {
+		return err, true
+	}
+	if recordNotFound {
+		return nil, true
+	}
+	return nil, false
+}
+
 
 /******************************分组扩展****************************/
 //分组扩展
