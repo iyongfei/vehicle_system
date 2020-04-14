@@ -7,20 +7,18 @@ import (
 	"vehicle_system/src/vehicle/emq/protobuf"
 	"vehicle_system/src/vehicle/util"
 )
-
+///////////////////////////Strategy//////////////////////////////////////
 type Strategy struct {
 	gorm.Model
 	StrategyId string
 
-	Type uint8 //策略模式
+	Type       uint8 //策略模式
 	HandleMode uint8 //处理方式
-	Enable  bool//策略启用状态
+	Enable     bool  //策略启用状态
 
-	Name string//策略名称
-	Introduce string//策略说明
+	Name      string //策略名称
+	Introduce string //策略说明
 }
-
-
 
 func (strategy *Strategy) InsertModel() error {
 	return mysql.CreateModel(strategy)
@@ -57,23 +55,12 @@ func (strategy *Strategy) CreateModel(strategyParams ...interface{}) interface{}
 	strategy.Enable = strategyParam.GetEnable()
 	return strategy
 }
-
-
-
-
-
-
-
-
-
+///////////////////////////StrategyVehicle//////////////////////////////////////
 type StrategyVehicle struct {
 	gorm.Model
 	StrategyId string
-	VehicleId string
+	VehicleId  string
 }
-
-
-
 
 func (strategyVehicle *StrategyVehicle) InsertModel() error {
 	return mysql.CreateModel(strategyVehicle)
@@ -106,19 +93,15 @@ func (strategyVehicle *StrategyVehicle) CreateModel(strategyParams ...interface{
 	return strategyVehicle
 }
 
-
-
-
+/******************************分组扩展****************************/
 type StrategyGroup struct {
 	gorm.Model
 	StrategyId string
-	GroupId string //终端分组
+	GroupId    string //终端分组
 }
-
-
 
 type GroupLearningResult struct {
 	gorm.Model
-	GroupId string
-	LearningResultId string//id
+	GroupId          string
+	LearningResultId string //id
 }

@@ -49,20 +49,20 @@ func HandleVehicleStrategy(vehicleResult protobuf.GWResult) error {
 	}
 
 	//StrategyVehicle
-	strategyVehicle := &model.StrategyVehicle{
-		StrategyId:strategyInfo.StrategyId,
-		VehicleId:vehicleId,
-	}
-
-	strategyVehicleModelBase := model_base.ModelBaseImpl(strategyVehicle)
-
-	_,strategyVehicleRecordNotFound :=strategyVehicleModelBase.GetModelByCondition(
-		"strategy_id = ? and vehicle_id = ?",[]interface{}{strategyVehicle.StrategyId,strategyVehicle.VehicleId}...)
-	if strategyVehicleRecordNotFound{
-		if err:=strategyVehicleModelBase.InsertModel();err!=nil{
-			return fmt.Errorf("%s insert vehicle strategyVehicle err:%s",util.RunFuncName(),err.Error())
-		}
-	}
+	//strategyVehicle := &model.StrategyVehicle{
+	//	StrategyId:strategyInfo.StrategyId,
+	//	VehicleId:vehicleId,
+	//}
+	//
+	//strategyVehicleModelBase := model_base.ModelBaseImpl(strategyVehicle)
+	//
+	//_,strategyVehicleRecordNotFound :=strategyVehicleModelBase.GetModelByCondition(
+	//	"strategy_id = ? and vehicle_id = ?",[]interface{}{strategyVehicle.StrategyId,strategyVehicle.VehicleId}...)
+	//if strategyVehicleRecordNotFound{
+	//	if err:=strategyVehicleModelBase.InsertModel();err!=nil{
+	//		return fmt.Errorf("%s insert vehicle strategyVehicle err:%s",util.RunFuncName(),err.Error())
+	//	}
+	//}
 
 	return nil
 }

@@ -19,6 +19,7 @@ type AutomatedLearning  struct {
 SampleId,GwId任务采集学习
 RuleId自定义规则
 ThreatWhiteId事件加白
+
 */
 type AutomatedLearningResult struct {
 	gorm.Model
