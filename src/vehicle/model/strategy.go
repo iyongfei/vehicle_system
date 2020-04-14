@@ -100,7 +100,7 @@ type StrategyGroup struct {
 	GroupId    string //终端分组
 }
 
-type GroupLearningResult struct {
+type StrategyGroupLearningResult struct {
 	gorm.Model
 	GroupId          string
 	LearningResultId string //id
