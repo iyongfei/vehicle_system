@@ -1,17 +1,19 @@
 package api_server
 
 import (
+	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 	"vehicle_system/src/vehicle/emq/emq_cmd"
+	"vehicle_system/src/vehicle/emq/protobuf"
 	"vehicle_system/src/vehicle/emq/topic_publish_handler"
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
 	"vehicle_system/src/vehicle/response"
 	"vehicle_system/src/vehicle/util"
-	"vehicle_system/src/vehicle/emq/protobuf"
 )
 
 func EditVehicle(c *gin.Context)  {
@@ -158,4 +160,104 @@ func GetVehicle(c *gin.Context)  {
 	retObj:=response.StructResponseObj(response.VStatusOK,response.ReqGetVehicleSuccessMsg,responseData)
 	c.JSON(http.StatusOK,retObj)
 }
+
+/**
+添加
+
+type VehicleInfo struct {
+	gorm.Model
+	VehicleId       string `gorm:"unique"` //小v ID
+	Name            string              //小v名称
+	Version         string
+	StartTime       model_base.UnixTime //启动时间
+	FirmwareVersion string
+	HardwareModel   string
+	Module          string
+	SupplyId        string
+	UpRouterIp      string
+
+	Ip        string
+	Type      uint8
+	Mac       string //Mac地址
+	TimeStamp uint32 //最近活跃时间戳
+	HbTimeout uint32 //最近活跃时间戳
+
+	DeployMode uint8 //部署模式
+	FlowIdleTimeSlot uint32
+
+	OnlineStatus  bool   //在线状态
+	ProtectStatus uint8  //保护状态										//保护状态
+	LeaderId      string //保护状态 // 保护状态
+	GroupId string
+}
+
+ */
+
+func AddVehicle(c *gin.Context)  {
+	body,_:= ioutil.ReadAll(c.Request.Body)
+
+	vehicleInfo := &model.VehicleInfo{
+
+	}
+	err:=json.Unmarshal(body,vehicleInfo)
+
+
+	if err!=nil{
+		logger.Logger.Error("%s unmarshal vehicle err:%s",util.RunFuncName(),err.Error())
+		logger.Logger.Print("%s unmarshal vehicle err:%s",util.RunFuncName(),err.Error())
+		ret:=response.StructResponseObj(response.VStatusServerError,response.ReqArgsIllegalMsg,"")
+		c.JSON(http.StatusOK,ret)
+		return
+	}
+
+	modelBase := model_base.ModelBaseImpl(vehicleInfo)
+
+	err,recordNotFound:=modelBase.GetModelByCondition("vehicle_id = ?",[]interface{}{vehicleInfo.VehicleId}...)
+
+	if !recordNotFound{
+		logger.Logger.Error("%s vehicleId:%s exist",util.RunFuncName(),vehicleInfo.VehicleId)
+		logger.Logger.Print("%s vehicleId:%s exist",util.RunFuncName(),vehicleInfo.VehicleId)
+		ret:=response.StructResponseObj(response.VStatusServerError,response.ReqGetVehicleExistMsg,"")
+		c.JSON(http.StatusOK,ret)
+		return
+	}
+
+	if err:=modelBase.InsertModel();err!=nil{
+		logger.Logger.Error("%s add vehicleId:%s err:%s",util.RunFuncName(),vehicleInfo.VehicleId,err.Error())
+		logger.Logger.Print("%s add vehicleId:%s err:%s",util.RunFuncName(),vehicleInfo.VehicleId,err.Error())
+		ret:=response.StructResponseObj(response.VStatusServerError,response.ReqAddVehicleFailMsg,"")
+		c.JSON(http.StatusOK,ret)
+		return
+	}
+
+	responseData:= map[string]interface{}{
+		"vehicle":vehicleInfo,
+	}
+
+	ret:=response.StructResponseObj(response.VStatusOK,response.ReqAddVehicleSuccessMsg,responseData)
+	c.JSON(http.StatusOK,ret)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

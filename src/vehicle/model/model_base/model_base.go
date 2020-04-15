@@ -1,7 +1,7 @@
 package model_base
 
 import (
-	"fmt"
+	"strconv"
 	"time"
 )
 
@@ -54,15 +54,51 @@ type CreateModelImpl interface {
 	CreateModel(args ...interface{}) interface{}
 }
 
-
-
 type UnixTime time.Time
 
-func (t UnixTime) MarshalJSON() ([]byte, error) {
-	stamp := fmt.Sprintf("%d", time.Time(t).Unix())
-	return []byte(stamp), nil
+func (ut *UnixTime) MarshalJSON() (data []byte, err error) {
+	t := strconv.FormatInt(time.Time(*ut).Unix(), 10)
+	data = []byte(t)
+	return
 }
 
+func (ut *UnixTime) UnmarshalJSON(data []byte) (err error) {
+	i, err := strconv.ParseInt(string(data), 10, 64)
+	if err != nil {
+		return
+	}
+	t := time.Unix(i, 0)
+	*ut = UnixTime(t)
+	return
+}
+
+
+//或者如下的方法
+//func (u *MyUser) MarshalJSON() ([]byte, error) {
+//	type Alias MyUser
+//	return json.Marshal(&struct {
+//		LastSeen int64 `json:"lastSeen"`
+//		*Alias
+//	}{
+//		LastSeen: u.LastSeen.Unix(),
+//		Alias:    (*Alias)(u),
+//	})
+//}
+//
+//func (u *MyUser) UnmarshalJSON(data []byte) error {
+//	type Alias MyUser
+//	aux := &struct {
+//		LastSeen int64 `json:"lastSeen"`
+//		*Alias
+//	}{
+//		Alias: (*Alias)(u),
+//	}
+//	if err := json.Unmarshal(data, &aux); err != nil {
+//		return err
+//	}
+//	u.LastSeen = time.Unix(aux.LastSeen, 0)
+//	return nil
+//}
 
 
 
