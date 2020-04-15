@@ -1,7 +1,6 @@
 package api_server
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -73,7 +72,6 @@ func GetThreats(c *gin.Context)  {
 
 /*
 获取所有事件
-GetModelPaginationByCondition
  */
 func GetPaginationThreats(c *gin.Context)  {
 
@@ -81,8 +79,6 @@ func GetPaginationThreats(c *gin.Context)  {
 	status, _ := strconv.Atoi(c.Query("status"))
 	pageSize, _ := strconv.Atoi(c.Query("page_size"))
 	pageIndex, _ := strconv.Atoi(c.Query("page_index"))
-
-	fmt.Println("GetPaginationThreats",threatType,status,pageSize,pageIndex)
 
 	//argsTrimsEmpty:=util.RrgsTrimsEmpty(threatId)
 	//if argsTrimsEmpty{

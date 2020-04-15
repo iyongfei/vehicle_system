@@ -79,12 +79,17 @@ const (
 	ReqDeleThreatInfoFailMsg = "威胁信息删除失败"
 )
 
-//
+//车载
 const (
 	ReqGetVehicleFailMsg = "车载信息获取失败"
 	ReqGetVehicleSuccessMsg = "车载信息获取成功"
 	ReqGetVehicleUnExistMsg = "车载信息不存在"
+
 	ReqDeleVehicleFailMsg = "车载信息删除失败"
 	ReqUpdateVehicleFailMsg = "车载信息更新失败"
 	ReqUpdateVehicleSuccessMsg = "车载信息更新成功"
+
+
+	ReqGetVehiclesFailMsg = "车载列表获取失败"
+	ReqGetVehiclesSuccessMsg = "车载列表获取成功"
 )

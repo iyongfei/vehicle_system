@@ -1,5 +1,10 @@
 package model_base
 
+import (
+	"fmt"
+	"time"
+)
+
 type ModelBaseImpl interface {
 	//插入
 	InsertModel() error
@@ -51,12 +56,12 @@ type CreateModelImpl interface {
 
 
 
+type UnixTime time.Time
 
-
-
-
-
-
+func (t UnixTime) MarshalJSON() ([]byte, error) {
+	stamp := fmt.Sprintf("%d", time.Time(t).Unix())
+	return []byte(stamp), nil
+}
 
 
 

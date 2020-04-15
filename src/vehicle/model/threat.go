@@ -55,11 +55,6 @@ func (u *Threat) GetModelListByCondition(model interface{},query interface{}, ar
 	}
 	return nil
 }
-/**
-
-func QueryModelPaginationByWhereCondition(model interface{},pageNum int, pageCount int, totalCount *int,
-	paginModel interface{}, query interface{}, args ...interface{}) error {
- */
 
 func (u *Threat) GetModelPaginationByCondition(pageIndex int, pageSize int, totalCount *int,
 	paginModel interface{}, query interface{}, args ...interface{})(error){

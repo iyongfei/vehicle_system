@@ -41,29 +41,6 @@ func QueryRawsqlScanVariable(tname string,selectColumn string,variable  interfac
 }
 
 
-/**
-获取记录
-
-//func PaginationT(whichPageNum int, perPageNum int, count *int, totalModel interface{},
-//	paginModel interface{}, query interface{}, args interface{}) error {
-//	vgorm, err := mysql.GetMysqlInstance().GetMysqlDB()
-//	if err != nil {
-//		return errors.Wrapf(err, "Pagination open gorm error %v", err)
-//	}
-//
-//	//这里判断的不严谨
-//	if whichPageNum < 1 && perPageNum < 1 {
-//		return err
-//	}
-//
-//	err = vgorm.Offset((whichPageNum-1)*perPageNum).Limit(perPageNum).Where(query, args).Find(paginModel).
-//		Offset(-1).Find(totalModel).Count(count).Error
-//
-//	return err
-//}
- */
-//db.Model(&User{}).Where("name = ?", "jinzhu").Count(&count)
-
 func QueryModelPaginationByWhereCondition(model interface{},pageIndex int, pageSize int, totalCount *int,
 	paginModel interface{}, query interface{}, args ...interface{}) error {
 
@@ -80,6 +57,7 @@ func QueryModelPaginationByWhereCondition(model interface{},pageIndex int, pageS
 	}
 	return nil
 }
+
 
 
 

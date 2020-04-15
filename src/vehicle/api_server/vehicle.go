@@ -73,3 +73,89 @@ func EditVehicle(c *gin.Context)  {
 	retObj:=response.StructResponseObj(response.VStatusOK,response.ReqUpdateWhiteListSuccessMsg,"")
 	c.JSON(http.StatusOK,retObj)
 }
+
+
+
+func GetVehicles(c *gin.Context)  {
+	pageSizeP := c.Query("page_size")
+	pageIndexP := c.Query("page_index")
+
+	argsTrimsEmpty:=util.RrgsTrimsEmpty(pageSizeP,pageIndexP)
+	if argsTrimsEmpty{
+		ret:=response.StructResponseObj(response.VStatusBadRequest,response.ReqArgsIllegalMsg,"")
+		c.JSON(http.StatusOK,ret)
+		logger.Logger.Error("%s argsTrimsEmpty pageSizeP:%s,pageIndexP:%s",util.RunFuncName(),pageSizeP,pageIndexP)
+		logger.Logger.Print("%s argsTrimsEmpty pageSizeP:%s,pageIndexP:%s",util.RunFuncName(),pageSizeP,pageIndexP)
+	}
+
+	pageSize, _ := strconv.Atoi(pageSizeP)
+	pageIndex, _ := strconv.Atoi(pageIndexP)
+
+
+	vehicleInfos:= []*model.VehicleInfo{}
+	var total int
+
+	modelBase := model_base.ModelBaseImplPagination(&model.VehicleInfo{})
+
+	err := modelBase.GetModelPaginationByCondition(pageIndex,pageSize,
+		&total,&vehicleInfos, "",
+		[]interface{}{}...)
+
+	if err!=nil{
+		ret:=response.StructResponseObj(response.VStatusServerError,response.ReqGetVehiclesFailMsg,"")
+		c.JSON(http.StatusOK,ret)
+		return
+	}
+
+
+	responseData:= map[string]interface{}{
+		"vehicles":vehicleInfos,
+		"totalCount":total,
+	}
+
+	retObj:=response.StructResponseObj(response.VStatusOK,response.ReqGetVehiclesSuccessMsg,responseData)
+	c.JSON(http.StatusOK,retObj)
+}
+
+
+
+func GetVehicle(c *gin.Context)  {
+	vehicleId:=c.Param("vehicle_id")
+	argsTrimsEmpty:=util.RrgsTrimsEmpty(vehicleId)
+	if argsTrimsEmpty{
+		ret:=response.StructResponseObj(response.VStatusBadRequest,response.ReqArgsIllegalMsg,"")
+		c.JSON(http.StatusOK,ret)
+		logger.Logger.Error("%s argsTrimsEmpty vehicle_id:%s",util.RunFuncName(),vehicleId)
+		logger.Logger.Print("%s argsTrimsEmpty vehicle_id:%s",util.RunFuncName(),vehicleId)
+	}
+	vehicleInfo:= &model.VehicleInfo{
+		VehicleId:vehicleId,
+	}
+
+	modelBase := model_base.ModelBaseImpl(vehicleInfo)
+
+	err,recordNotFound:=modelBase.GetModelByCondition("vehicle_id = ?",[]interface{}{vehicleInfo.VehicleId}...)
+
+	if err!=nil{
+		logger.Logger.Error("%s vehicle_id:%s,err:%s",util.RunFuncName(),vehicleId,err)
+		logger.Logger.Print("%s vehicle_id:%s,err:%s",util.RunFuncName(),vehicleId,err)
+		ret:=response.StructResponseObj(response.VStatusServerError,response.ReqGetVehicleFailMsg,"")
+		c.JSON(http.StatusOK,ret)
+		return
+	}
+
+	if recordNotFound{
+		logger.Logger.Error("%s vehicle_id:%s,recordNotFound",util.RunFuncName(),vehicleId)
+		logger.Logger.Print("%s vehicle_id:%s,recordNotFound",util.RunFuncName(),vehicleId)
+		ret:=response.StructResponseObj(response.VStatusServerError,response.ReqGetVehicleUnExistMsg,"")
+		c.JSON(http.StatusOK,ret)
+		return
+	}
+	responseData:= map[string]interface{}{
+		"vehicle":vehicleInfo,
+	}
+
+	retObj:=response.StructResponseObj(response.VStatusOK,response.ReqGetVehicleSuccessMsg,responseData)
+	c.JSON(http.StatusOK,retObj)
+}
+

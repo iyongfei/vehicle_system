@@ -131,6 +131,7 @@ CREATE TABLE IF NOT EXISTS `vehicle_infos`  (
   `online_status` tinyint(1) NULL DEFAULT NULL,
   `protect_status` tinyint(3) NULL DEFAULT NULL,
   `leader_id` varchar(255) NULL DEFAULT NULL,
+  `group_id` varchar(255) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
    UNIQUE KEY `vehicle_id` (`vehicle_id`),
   INDEX `idx_vehicle_infos_deleted_at`(`deleted_at`) USING BTREE

@@ -7,15 +7,17 @@ import (
 	"time"
 	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/emq/protobuf"
+	"vehicle_system/src/vehicle/model/model_base"
 	"vehicle_system/src/vehicle/util"
 )
+
 
 type VehicleInfo struct {
 	gorm.Model
 	VehicleId       string `gorm:"unique"` //小v ID
 	Name            string              //小v名称
 	Version         string
-	StartTime       time.Time //启动时间
+	StartTime       model_base.UnixTime //启动时间
 	FirmwareVersion string
 	HardwareModel   string
 	Module          string
@@ -33,8 +35,10 @@ type VehicleInfo struct {
 
 	OnlineStatus  bool   //在线状态
 	ProtectStatus uint8  //保护状态										//保护状态
-	LeaderId      string //保护状态										//保护状态
+	LeaderId      string //保护状态 // 保护状态
+	GroupId string
 }
+
 
 
 func (u *VehicleInfo) InsertModel() error {
@@ -68,9 +72,9 @@ func (vehicleInfo *VehicleInfo) CreateModel(vehicleParam ...interface{}) interfa
 	vehicleParams := vehicleParam[0].(*protobuf.GwInfoParam)
 	vehicleInfo.Version = vehicleParams.GetVersion()
 	if vehicleParams.GetStartTime() == 0 {
-		vehicleInfo.StartTime = time.Now()
+		vehicleInfo.StartTime = model_base.UnixTime(time.Now())
 	} else {
-		vehicleInfo.StartTime = util.StampUnix2Time(int64(vehicleParams.GetStartTime()))
+		vehicleInfo.StartTime = model_base.UnixTime(util.StampUnix2Time(int64(vehicleParams.GetStartTime())))
 	}
 
 	vehicleInfo.FirmwareVersion = vehicleParams.GetFirmwareVersion()
@@ -97,4 +101,17 @@ func (vehicleInfo *VehicleInfo) CreateModel(vehicleParam ...interface{}) interfa
 	vehicleInfo.FlowIdleTimeSlot = uint32(vehicleParams.GetFlowIdleTimeSlot())
 	vehicleInfo.OnlineStatus = true
 	return vehicleInfo
+}
+
+
+
+func (vehicleInfo *VehicleInfo) GetModelPaginationByCondition(pageIndex int, pageSize int, totalCount *int,
+	paginModel interface{}, query interface{}, args ...interface{})(error){
+
+	err := mysql.QueryModelPaginationByWhereCondition(vehicleInfo,pageIndex,pageSize,totalCount,paginModel,query,args...)
+
+	if err!=nil{
+		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
+	}
+	return nil
 }

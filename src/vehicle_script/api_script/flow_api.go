@@ -6,8 +6,6 @@ import (
 	"vehicle_system/src/vehicle_script/tool"
 )
 
-//https://www.cnblogs.com/zhaof/p/11346412.html
-
 var urls = map[string]string{
 	"get_flow":"http://localhost:7001/api/v1/flows/6656653",
 	"get_flows":"http://localhost:7001/api/v1/flows",

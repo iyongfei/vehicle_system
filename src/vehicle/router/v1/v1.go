@@ -25,8 +25,7 @@ func V1Router(r *gin.Engine)  {
 		apiV1.DELETE("/threats/:threat_id", api_server.DeleThreat)
 
 
-		//需改信息，下发给emq
-		apiV1.PUT("/vehicle/:vehicle_id", api_server.EditVehicle)
+
 
 		//flow
 		apiV1.GET("/flows/:flow_id", api_server.GetFlow)
@@ -35,5 +34,16 @@ func V1Router(r *gin.Engine)  {
 		apiV1.POST("/flows", api_server.AddFlow)
 		apiV1.PUT("/flows/:flow_id", api_server.EditFlow)
 		apiV1.DELETE("/flows/:flow_id", api_server.DeleFlow)
+
+		//车载
+		apiV1.GET("/vehicles", api_server.GetVehicles)
+		apiV1.GET("/vehicles/:vehicle_id", api_server.GetVehicle)
+
+		apiV1.POST("/vehicles", api_server.AddFlow)
+		apiV1.PUT("/vehicle/:vehicle_id", api_server.EditVehicle)
+		apiV1.DELETE("/vehicles/:vehicle_id", api_server.DeleFlow)
+
+
+
 	}
 }

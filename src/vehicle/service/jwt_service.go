@@ -103,7 +103,6 @@ func (j *JWT) ParseToken(tokenString string) (*VehicleClaims, error) {
 			if ve.Errors&jwt.ValidationErrorMalformed != 0 {
 				return nil, TokenMalformed
 			} else if ve.Errors&jwt.ValidationErrorExpired != 0 {
-
 				return nil, TokenExpired
 			} else if ve.Errors&jwt.ValidationErrorNotValidYet != 0 {
 				return nil, TokenNotValidYet
@@ -125,7 +124,6 @@ func (j *JWT) ParseToken(tokenString string) (*VehicleClaims, error) {
 // 更新token
 func (j *JWT) RefreshToken(tokenStr string) (string, error) {
 	token, err := jwt.ParseWithClaims(tokenStr, &VehicleClaims{},j.keyFunc)
-
 	if err != nil {
 		return "", err
 	}
