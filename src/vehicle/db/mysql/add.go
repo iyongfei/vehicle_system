@@ -18,19 +18,28 @@ func CreateModel(model interface{}) error  {
 }
 
 
-func CreatTable(model interface{})error{
+func CreatTable(model interface{})(error,int64){
 	vgorm,err := GetMysqlInstance().GetMysqlDB()
 	if err!= nil{
-		return fmt.Errorf("%s open grom err:%v",util.RunFuncName(),err.Error())
+		return fmt.Errorf("%s open grom err:%v",util.RunFuncName(),err.Error()),0
 	}
 
 	tExist := vgorm.HasTable(model)
 
 	if !tExist{
-		if err := vgorm.Set("gorm:table_options", "ENGINE=InnoDB").CreateTable(model).Error;err!= nil{
-			return fmt.Errorf("%s err %v",util.RunFuncName(),err.Error())
+		db := vgorm.Set("gorm:table_options", "ENGINE=InnoDB").CreateTable(model)
+
+
+		rowsAffected := db.RowsAffected
+		err := db.Error
+
+		if err!=nil{
+			return fmt.Errorf("%s err %v",util.RunFuncName(),err.Error()),0
 		}
+		return nil,rowsAffected
 	}
-	return nil
+
+
+	return nil,0
 }
 

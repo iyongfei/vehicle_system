@@ -29,7 +29,6 @@ type Flow struct {
 	Stat        uint8
 }
 
-
 func (f *Flow) InsertModel() error {
 	return mysql.CreateModel(f)
 }

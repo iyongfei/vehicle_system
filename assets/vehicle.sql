@@ -2,6 +2,22 @@
 create Database IF NOT EXISTS `vehicle`;
 USE vehicle;
 
+
+
+CREATE TABLE IF NOT EXISTS `area_groups`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  `area_code` varchar(255) NULL DEFAULT NULL,
+  `area_name` varchar(255) NULL DEFAULT NULL,
+  `parent_area_code` varchar(255) NULL DEFAULT NULL,
+   `tree_area_code` varchar(255) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_area_groups_deleted_at`(`deleted_at`) USING BTREE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+
 -- ----------------------------
 -- Table structure for flows
 -- ----------------------------
@@ -402,8 +418,6 @@ CREATE TABLE IF NOT EXISTS `samples`  (
   `remain_time` int(11) NULL DEFAULT NULL,
   `total_time` int(11) NULL DEFAULT NULL,
 
-
-
   `status` tinyint(3) UNSIGNED NULL DEFAULT NULL,
   `timeout` int(11) UNSIGNED NULL DEFAULT NULL,
   `name` varchar(255) NULL DEFAULT NULL,
@@ -411,7 +425,6 @@ CREATE TABLE IF NOT EXISTS `samples`  (
 
   `vehicle_id` varchar(255) NULL DEFAULT NULL,
   `study_origin_id` varchar(255) NULL DEFAULT NULL,
-
 
   `check` tinyint(3) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,

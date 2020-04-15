@@ -20,6 +20,13 @@ const (
 	AuthTokenResignin = "请重新登录"
 )
 
+//分组
+const (
+	UnGroupName = "未分组"
+	ReqAddGroupExistMsg = "分组已存在"
+	ReqAddGroupSuccessMsg = "分组添加成功"
+	ReqAddGroupFailMsg = "分组添加失败"
+)
 //注册
 const (
 
@@ -48,7 +55,6 @@ const (
 	//ReqRegistSuccessMsg = "用户注册成功"
 	//ReqRegistExistMsg = "该用户已注册"
 	//ReqRegistUnAuthMsg = "该用户未注册"
-	//
 	//ReqRegistAuthFailMsg = "该用户授权失败"
 	//ReqRegistAuthSuccessMsg = "该用户授权成功"
 )
