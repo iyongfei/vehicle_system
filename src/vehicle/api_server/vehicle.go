@@ -2,6 +2,7 @@ package api_server
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
@@ -18,9 +19,10 @@ import (
 
 func EditVehicle(c *gin.Context)  {
 	vehicleId:=c.Param("vehicle_id")
-	setTypeP:=c.PostForm("set_type")
-	setSwitchP:=c.PostForm("set_switch")
+	setTypeP:=c.PostForm("type")
+	setSwitchP:=c.PostForm("switch")
 
+	fmt.Println(vehicleId,setTypeP,setSwitchP,"jsldfksl")
 	argsTrimsEmpty:=util.RrgsTrimsEmpty(vehicleId,setTypeP,setSwitchP)
 	if argsTrimsEmpty{
 		ret:=response.StructResponseObj(response.VStatusBadRequest,response.ReqArgsIllegalMsg,"")
@@ -72,7 +74,7 @@ func EditVehicle(c *gin.Context)  {
 
 	topic_publish_handler.GetPublishService().PutMsg2PublicChan(vehicleCmd)
 
-	retObj:=response.StructResponseObj(response.VStatusOK,response.ReqUpdateWhiteListSuccessMsg,"")
+	retObj:=response.StructResponseObj(response.VStatusOK,response.ReqUpdateVehicleSuccessMsg,"")
 	c.JSON(http.StatusOK,retObj)
 }
 
@@ -248,6 +250,49 @@ func AddVehicle(c *gin.Context)  {
 
 
 
+
+func DeleVehicle(c *gin.Context)  {
+	vehicleId:=c.Param("vehicle_id")
+
+	argsTrimsEmpty:=util.RrgsTrimsEmpty(vehicleId)
+	if argsTrimsEmpty{
+		ret:=response.StructResponseObj(response.VStatusBadRequest,response.ReqArgsIllegalMsg,"")
+		c.JSON(http.StatusOK,ret)
+		logger.Logger.Error("%s argsTrimsEmpty vehicleId:%s argsTrimsEmpty",util.RunFuncName(),vehicleId)
+		logger.Logger.Print("%s argsTrimsEmpty vehicleId:%s argsTrimsEmpty",util.RunFuncName(),vehicleId)
+		return
+	}
+
+	fmt.Println(vehicleId,"jsldfjs")
+
+	vehicleObj:= &model.VehicleInfo{
+		VehicleId:vehicleId,
+	}
+
+	modelBase := model_base.ModelBaseImpl(vehicleObj)
+	err,recordNotFound:=modelBase.GetModelByCondition("vehicle_id = ?",[]interface{}{vehicleObj.VehicleId}...)
+
+	if err!=nil{
+		logger.Logger.Error("%s vehicleId:%s err:%s",util.RunFuncName(),vehicleId,err)
+		logger.Logger.Print("%s vehicleId:%s err:%s",util.RunFuncName(),vehicleId,err)
+		ret:=response.StructResponseObj(response.VStatusServerError,response.ReqDeleVehicleFailMsg,"")
+		c.JSON(http.StatusOK,ret)
+		return
+	}
+	if recordNotFound{
+		logger.Logger.Error("%s vehicleId:%s,record not exist",util.RunFuncName(),vehicleId)
+		logger.Logger.Print("%s vehicleId:%s,record not exist",util.RunFuncName(),vehicleId)
+		ret:=response.StructResponseObj(response.VStatusServerError,response.ReqGetVehicleUnExistMsg,"")
+		c.JSON(http.StatusOK,ret)
+		return
+	}
+	if err:=modelBase.DeleModelsByCondition("vehicle_id = ?",
+		[]interface{}{vehicleObj.VehicleId}...);err!=nil{
+	}
+
+	retObj:=response.StructResponseObj(response.VStatusOK,response.ReqDeleVehicleSuccessMsg,"")
+	c.JSON(http.StatusOK,retObj)
+}
 
 
 

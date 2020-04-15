@@ -40,8 +40,8 @@ func V1Router(r *gin.Engine)  {
 		apiV1.GET("/vehicles/:vehicle_id", api_server.GetVehicle)
 		apiV1.POST("/vehicles", api_server.AddVehicle)
 
-		apiV1.PUT("/vehicle/:vehicle_id", api_server.EditVehicle)
-		apiV1.DELETE("/vehicles/:vehicle_id", api_server.DeleFlow)
+		apiV1.PUT("/vehicles/:vehicle_id", api_server.EditVehicle)
+		apiV1.DELETE("/vehicles/:vehicle_id", api_server.DeleVehicle)
 
 
 

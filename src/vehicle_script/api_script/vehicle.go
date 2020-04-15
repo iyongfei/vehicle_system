@@ -15,18 +15,51 @@ var vehicleUrls = map[string]string{
 
 	"post_vehicles":"http://localhost:7001/api/v1/vehicles",
 
-	"edit_vehicles":"http://localhost:7001/api/v1/vehicles/1111",
-	"dele_vehicles":"http://localhost:7001/api/v1/vehicles/113907034",
+	"edit_vehicles":"http://localhost:7001/api/v1/vehicles/Qo3dbvFqzbMxJ9S563Hz7BltEtSfj0RP",
+	"dele_vehicles":"http://localhost:7001/api/v1/vehicles/WDHIAeGImCklIqrzQ2fBfojPL0kg4D7d",
 }
 
 
 func main()  {
 	//getVehicles()
 	//getVehicle()
-	addVehicle()
-	//editFlows()
-	//deleFlows()
+	//addVehicle()
+
+
+	//deleVehicles()
+	editVehicles()
 }
+
+
+
+func editVehicles()  {
+	token := tool.GetVehicleToken()
+	urlReq, _ := vehicleUrls["edit_vehicles"]
+
+	bodyParams := map[string]interface{}{
+		"type":"1",
+		"switch":"true",
+	}
+	resp,_:=tool.PutForm(urlReq,bodyParams,token)
+
+	respMarshal ,_:= json.Marshal(resp)
+	fmt.Printf("resp %+v",string(respMarshal))
+}
+
+func deleVehicles()  {
+	token := tool.GetVehicleToken()
+
+	queryParams:=map[string]interface{}{
+	}
+
+	reqUrl:=vehicleUrls["dele_vehicles"]
+
+	resp,_:=tool.Delete(reqUrl,queryParams,token)
+
+	respMarshal ,_:= json.Marshal(resp)
+	fmt.Printf("resp %+v",string(respMarshal))
+}
+
 
 func addVehicle()  {
 	token := tool.GetVehicleToken()

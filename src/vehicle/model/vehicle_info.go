@@ -62,6 +62,10 @@ func (u *VehicleInfo) UpdateModelsByCondition(values interface{}, query interfac
 	return nil
 }
 func (u *VehicleInfo) DeleModelsByCondition(query interface{}, args ...interface{}) error {
+	err := mysql.HardDeleteModelB(u,query,args...)
+	if err!=nil{
+		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
+	}
 	return nil
 }
 func (u *VehicleInfo) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) (error) {
