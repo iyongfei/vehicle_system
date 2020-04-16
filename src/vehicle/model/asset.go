@@ -10,24 +10,36 @@ import (
 
 type Asset struct {
 	gorm.Model
-	VehicleId       						string 						//关联的小v ID
+	VehicleId       				string 						//关联的小v ID
 	AssetId  						string 			`gorm:"unique"`//资产id
 
-	IP         			string       			//小v资产 IP
-	Mac        				string       		//资产Mac地址
-	Name       				string 					//小v资产名称
-	TradeMark                    string //资产品牌
+	IP         						string       			//小v资产 IP
+	Mac        						string       		//资产Mac地址
+	Name       						string 					//小v资产名称
+	TradeMark                    	string //资产品牌
 
-	OnlineStatus      		bool 	//在线状态
-	LastOnline        uint32 //最近活跃时间
+	OnlineStatus      				bool 	//在线状态
+	LastOnline        				uint32 //最近活跃时间
 
-	InternetSwitch                bool//是否允许联网
-	ProtectStatus   		bool //是否受小V保护
-	LanVisitSwitch                bool//是否可以访问内网
+	InternetSwitch                	bool//是否允许联网
+	ProtectStatus   				bool //是否受小V保护
+	LanVisitSwitch                	bool//是否可以访问内网
 
-	//GwAssetCategory                 int  //资产类别
-	AssetGroup                    string
-	AssetLeader					string
+	AssetGroup                    	string
+	AssetLeader						string
+}
+
+
+
+func (asset *Asset) GetModelPaginationByCondition(pageIndex int, pageSize int, totalCount *int,
+	paginModel interface{}, query interface{}, args ...interface{})(error){
+
+	err := mysql.QueryModelPaginationByWhereCondition(asset,pageIndex,pageSize,totalCount,paginModel,query,args...)
+
+	if err!=nil{
+		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
+	}
+	return nil
 }
 
 
@@ -52,6 +64,10 @@ func (asset *Asset) UpdateModelsByCondition(values interface{}, query interface{
 	return nil
 }
 func (asset *Asset) DeleModelsByCondition(query interface{}, args ...interface{}) error {
+	err := mysql.HardDeleteModelB(asset,query,args...)
+	if err!=nil{
+		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
+	}
 	return nil
 }
 func (asset *Asset) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) (error) {

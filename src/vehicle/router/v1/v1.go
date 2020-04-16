@@ -39,11 +39,14 @@ func V1Router(r *gin.Engine)  {
 		apiV1.GET("/vehicles", api_server.GetVehicles)
 		apiV1.GET("/vehicles/:vehicle_id", api_server.GetVehicle)
 		apiV1.POST("/vehicles", api_server.AddVehicle)
-
 		apiV1.PUT("/vehicles/:vehicle_id", api_server.EditVehicle)
 		apiV1.DELETE("/vehicles/:vehicle_id", api_server.DeleVehicle)
 
-
-
+		//资产
+		apiV1.GET("/assets", api_server.GetAssets)
+		apiV1.GET("/assets/:asset_id", api_server.GetAsset)
+		apiV1.POST("/assets", api_server.AddAsset)
+		apiV1.PUT("/assets/:asset_id", api_server.EditAsset)
+		apiV1.DELETE("/assets/:asset_id", api_server.DeleAsset)
 	}
 }

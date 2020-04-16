@@ -25,8 +25,9 @@ func HandleVehicleAsset(vehicleResult protobuf.GWResult) error {
 	logger.Logger.Print("%s unmarshal assetParam:%+v", util.RunFuncName(), assetParam)
 	logger.Logger.Info("%s unmarshal assetParam:%+v", util.RunFuncName(), assetParam)
 	//create
-	vehicleInfo := &model.VehicleInfo{}
-	vehicleInfo.VehicleId = vehicleId
+	vehicleInfo := &model.VehicleInfo{
+		VehicleId:vehicleId,
+	}
 	modelBase := model_base.ModelBaseImpl(vehicleInfo)
 
 	_, recordNotFound := modelBase.GetModelByCondition("vehicle_id = ?", vehicleInfo.VehicleId)

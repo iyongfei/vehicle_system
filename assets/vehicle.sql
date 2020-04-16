@@ -176,6 +176,21 @@ CREATE TABLE IF NOT EXISTS `users`  (
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 
+
+CREATE TABLE IF NOT EXISTS `asset_leaders`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  `leader_id` varchar(255) NULL DEFAULT NULL,
+  `name` varchar(255) NULL DEFAULT NULL,
+  `phone` varchar(255) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_asset_leaders_deleted_at`(`deleted_at`) USING BTREE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+
+
 CREATE TABLE IF NOT EXISTS `assets` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `created_at` timestamp NULL DEFAULT NULL,

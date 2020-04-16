@@ -102,3 +102,24 @@ const (
 	ReqGetVehiclesFailMsg    = "车载列表获取失败"
 	ReqGetVehiclesSuccessMsg = "车载列表获取成功"
 )
+
+//asset
+const (
+	ReqGetAssetFailMsg    = "设备信息获取失败"
+	ReqGetAssetSuccessMsg = "设备信息获取成功"
+
+	ReqGetAssetUnExistMsg = "设备信息不存在"
+	ReqGetAssetExistMsg = "设备信息已存在"
+
+	ReqDeleAssetFailMsg      = "设备信息删除失败"
+	ReqDeleAssetSuccessMsg      = "设备信息删除成功"
+
+	ReqUpdateAssetFailMsg    = "设备信息更新失败"
+	ReqUpdateAssetSuccessMsg = "设备信息更新成功"
+
+	ReqAddAssetFailMsg    = "设备信息添加失败"
+	ReqAddAssetSuccessMsg = "设备信息添加成功"
+
+	ReqGetAssetListFailMsg    = "设备列表获取失败"
+	ReqGetAssetListSuccessMsg = "设备列表获取成功"
+)
