@@ -3,8 +3,6 @@ package emq_cmd
 import (
 	"github.com/golang/protobuf/proto"
 	"vehicle_system/src/vehicle/emq/protobuf"
-	"strconv"
-	"strings"
 )
 
 type VehicleSetCmd struct {
@@ -27,11 +25,29 @@ func (setCmd *VehicleSetCmd) CreateProtoTopicMsg() interface{}{
 	gwSetParams.Switch = setCmd.Switch
 	publishItem.Param, _ = proto.Marshal(gwSetParams)
 	//CmdID
-	resultcmdItemKey := strings.Join([]string{strconv.Itoa(setCmd.CmdId),
-		strconv.Itoa(setCmd.Type)}, "_")
+	var resultcmdItemKey string
+
+	switch setCmd.Type {
+	case int(protobuf.GwSetParam_PROTECT):
+		taskTypeName:=protobuf.Command_TaskType_name[int32(setCmd.TaskType)]
+		taskTypeAction:=protobuf.GwSetParam_Type_name[int32(protobuf.GwSetParam_PROTECT)]
+		resultcmdItemKey = createCmdId(taskTypeName,taskTypeAction)
+
+	case int(protobuf.GwSetParam_RESTART):
+		taskTypeName:=protobuf.Command_TaskType_name[int32(setCmd.TaskType)]
+		taskTypeAction:=protobuf.GwSetParam_Type_name[int32(protobuf.GwSetParam_RESTART)]
+		resultcmdItemKey = createCmdId(taskTypeName,taskTypeAction)
+	case int(protobuf.GwSetParam_DEFAULT):
+		taskTypeName:=protobuf.Command_TaskType_name[int32(setCmd.TaskType)]
+		taskTypeAction:=protobuf.GwSetParam_Type_name[int32(protobuf.GwSetParam_DEFAULT)]
+		resultcmdItemKey = createCmdId(taskTypeName,taskTypeAction)
+	default:
+		//类型不对
+	}
 	publishItem.CmdID = resultcmdItemKey
 
 	resultcmdItemsBys, _ := proto.Marshal(publishItem)
+
 	return resultcmdItemsBys
 }
 

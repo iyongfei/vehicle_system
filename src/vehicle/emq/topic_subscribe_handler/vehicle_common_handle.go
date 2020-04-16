@@ -29,7 +29,8 @@ func HandleVehicleCommonAction(vehicleResult protobuf.GWResult) error {
 
 	vehicleInfo:=&model.VehicleInfo{
 		VehicleId:vehicleId,
-		StartTime:model_base.UnixTime(time.Now()),
+		//StartTime:model_base.UnixTime(time.Now()),
+		StartTime:time.Now(),
 		GroupId:areaGroup.AreaCode,
 	}
 	modelBase := model_base.ModelBaseImpl(vehicleInfo)

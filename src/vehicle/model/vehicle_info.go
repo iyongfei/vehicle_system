@@ -7,7 +7,6 @@ import (
 	"time"
 	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/emq/protobuf"
-	"vehicle_system/src/vehicle/model/model_base"
 	"vehicle_system/src/vehicle/util"
 )
 
@@ -17,7 +16,8 @@ type VehicleInfo struct {
 	VehicleId       string `gorm:"unique"` //小v ID
 	Name            string              //小v名称
 	Version         string
-	StartTime       model_base.UnixTime //启动时间
+	//StartTime       model_base.UnixTime //启动时间
+	StartTime       time.Time //启动时间
 	FirmwareVersion string
 	HardwareModel   string
 	Module          string
@@ -38,6 +38,37 @@ type VehicleInfo struct {
 	LeaderId      string //保护状态 // 保护状态
 	GroupId string
 }
+
+
+
+//序列化为数字类型
+func (vehicle *VehicleInfo) MarshalJSON() ([]byte, error) {
+	type VehicleType VehicleInfo
+	return json.Marshal(&struct {
+		StartTime int64
+		*VehicleType
+	}{
+		StartTime: time.Time(vehicle.StartTime).Unix(),
+		VehicleType:    (*VehicleType)(vehicle),
+	})
+}
+
+
+func (vehicle *VehicleInfo) UnmarshalJSON(data []byte) error {
+	type VehicleType VehicleInfo
+	aux := &struct {
+		StartTime int64
+		*VehicleType
+	}{
+		VehicleType: (*VehicleType)(vehicle),
+	}
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+	vehicle.StartTime = time.Unix(aux.StartTime, 0)
+	return nil
+}
+
 
 
 
@@ -76,9 +107,11 @@ func (vehicleInfo *VehicleInfo) CreateModel(vehicleParam ...interface{}) interfa
 	vehicleParams := vehicleParam[0].(*protobuf.GwInfoParam)
 	vehicleInfo.Version = vehicleParams.GetVersion()
 	if vehicleParams.GetStartTime() == 0 {
-		vehicleInfo.StartTime = model_base.UnixTime(time.Now())
+		//vehicleInfo.StartTime = model_base.UnixTime(time.Now())
+		vehicleInfo.StartTime = time.Now()
 	} else {
-		vehicleInfo.StartTime = model_base.UnixTime(util.StampUnix2Time(int64(vehicleParams.GetStartTime())))
+		//vehicleInfo.StartTime = model_base.UnixTime(util.StampUnix2Time(int64(vehicleParams.GetStartTime())))
+		vehicleInfo.StartTime = util.StampUnix2Time(int64(vehicleParams.GetStartTime()))
 	}
 
 	vehicleInfo.FirmwareVersion = vehicleParams.GetFirmwareVersion()

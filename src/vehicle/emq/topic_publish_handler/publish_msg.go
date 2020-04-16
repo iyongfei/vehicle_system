@@ -5,6 +5,8 @@ import (
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"vehicle_system/src/vehicle/emq/emq_client"
 	"vehicle_system/src/vehicle/emq/emq_cmd"
+	"vehicle_system/src/vehicle/logger"
+	"vehicle_system/src/vehicle/util"
 )
 
 func GetEmqClient()  mqtt.Client {
@@ -16,21 +18,22 @@ func GetEmqClient()  mqtt.Client {
 func PublishTopicMsg(data interface{}){
 	emqClient := GetEmqClient()
 
-	var bys interface{}
+	var payload interface{}
 	var vehicleId string
 
 	switch data.(type) {
 	case *emq_cmd.VehicleSetCmd:
 		vehicleSetCmd := data.(*emq_cmd.VehicleSetCmd)
- 		bys = vehicleSetCmd.CreateProtoTopicMsg()
+		payload = vehicleSetCmd.CreateProtoTopicMsg()
 		vehicleId = vehicleSetCmd.VehicleId
 	default:
 	}
 
-	if token := emqClient.Publish(fmt.Sprintf("s/%s/p",vehicleId), 0, false, bys);
+	logger.Logger.Print("%s publishTopicMsg payload:%+v",util.RunFuncName(),payload)
+	if token := emqClient.Publish(fmt.Sprintf("s/%s/p",vehicleId), 0, false, payload);
 		token.Wait() && token.Error() != nil {
-		//common_util.Vfmtf(log_util.LOG_WEB,"EmqClient PublishTopicMsg error:%s\n",token.Error())
-		//log_util.VlogInfo(log_util.LOG_WEB,"EmqClient PublishTopicMsg error:%s\n",token.Error())
+		logger.Logger.Error("%s publishTopicMsg err:%s",util.RunFuncName(),token.Error())
+		logger.Logger.Print("%s publishTopicMsg err:%s",util.RunFuncName(),token.Error())
 	}
 }
 
