@@ -24,7 +24,7 @@ func PublishTopicMsg(data interface{}){
 	switch data.(type) {
 	case *emq_cmd.VehicleSetCmd:
 		vehicleSetCmd := data.(*emq_cmd.VehicleSetCmd)
-		payload = vehicleSetCmd.CreateProtoTopicMsg()
+		payload = vehicleSetCmd.CreateVehicleTopicMsg()
 		vehicleId = vehicleSetCmd.VehicleId
 	default:
 	}

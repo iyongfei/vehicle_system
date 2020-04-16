@@ -5,13 +5,14 @@ import (
 	"github.com/eclipse/paho.mqtt.golang"
 	"time"
 	"vehicle_system/src/vehicle/conf"
+	"vehicle_system/src/vehicle/emq/subscribe_server_test"
 	"vehicle_system/src/vehicle/emq/topic_router"
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/util"
 )
 
 const (
-	SUBSCRIBESEEVERTOPIC = "s/+/p"
+	SUBSCRIBE_SEEVER_TOPIC = "s/+/p"
 	SUBSCRIBE_MAIN_TOPIC = "+/s/p"
 	SUBSCRIBE_LINE_TOPIC = "$SYS/brokers/emqx@127.0.0.1/clients/+/+"
 )
@@ -58,6 +59,14 @@ func (m *EmqInstance) InitEmqClient()  {
 		logger.Logger.Print("%s,err:%s",util.RunFuncName(),token.Error())
 		logger.Logger.Error("%s,err:%s",util.RunFuncName(),token.Error())
 	}
+
+	//command测试
+	if token := EmqClient.Subscribe(SUBSCRIBE_SEEVER_TOPIC, 0, subscribe_server_test.SubscribeServerTest); token.Wait() && token.Error() != nil {
+		logger.Logger.Print("%s,err:%s",util.RunFuncName(),token.Error())
+		logger.Logger.Error("%s,err:%s",util.RunFuncName(),token.Error())
+	}
+
+
 	//SetGWOnlineInfoWithEmqOffline(false)
 	logger.Logger.Print("%s,emqClient init success:%v",util.RunFuncName(),&EmqClient)
 	logger.Logger.Info("%s,emqClient init success:%v",util.RunFuncName(),&EmqClient)

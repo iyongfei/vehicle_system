@@ -3,6 +3,8 @@ package emq_cmd
 import (
 	"github.com/golang/protobuf/proto"
 	"vehicle_system/src/vehicle/emq/protobuf"
+	"vehicle_system/src/vehicle/logger"
+	"vehicle_system/src/vehicle/util"
 )
 
 type VehicleSetCmd struct {
@@ -14,7 +16,7 @@ type VehicleSetCmd struct {
 	Switch bool
 }
 
-func (setCmd *VehicleSetCmd) CreateProtoTopicMsg() interface{}{
+func (setCmd *VehicleSetCmd) CreateVehicleTopicMsg() interface{}{
 	publishItem := &protobuf.Command{}
 
 	//ItemType
@@ -37,6 +39,7 @@ func (setCmd *VehicleSetCmd) CreateProtoTopicMsg() interface{}{
 		taskTypeName:=protobuf.Command_TaskType_name[int32(setCmd.TaskType)]
 		taskTypeAction:=protobuf.GwSetParam_Type_name[int32(protobuf.GwSetParam_RESTART)]
 		resultcmdItemKey = createCmdId(taskTypeName,taskTypeAction)
+
 	case int(protobuf.GwSetParam_DEFAULT):
 		taskTypeName:=protobuf.Command_TaskType_name[int32(setCmd.TaskType)]
 		taskTypeAction:=protobuf.GwSetParam_Type_name[int32(protobuf.GwSetParam_DEFAULT)]
@@ -45,8 +48,10 @@ func (setCmd *VehicleSetCmd) CreateProtoTopicMsg() interface{}{
 		//类型不对
 	}
 	publishItem.CmdID = resultcmdItemKey
-
 	resultcmdItemsBys, _ := proto.Marshal(publishItem)
+
+	logger.Logger.Info("%s createVehicleTopicMsg publishItem:%+v",util.RunFuncName(),publishItem)
+	logger.Logger.Print("%s createVehicleTopicMsg publishItem:%+v",util.RunFuncName(),publishItem)
 
 	return resultcmdItemsBys
 }

@@ -3,7 +3,6 @@ package emq_cmd
 import (
 	"bytes"
 	"strings"
-	"vehicle_system/src/vehicle/util"
 )
 
 const (
@@ -42,22 +41,18 @@ const (
 )
 
 
-func getCmdId(action string) string{
-	buffer:= bytes.NewBufferString(action)
-	buffer.WriteString("_")
-
-	cmdSuffix := util.RandomString(32)
-	buffer.WriteString(cmdSuffix)
-	return buffer.String()
-}
-
 func createCmdId(args ...string) string {
 	var buffer bytes.Buffer
-
 	for _,arg:=range args{
 		if strings.Trim(arg, " ") != ""{
 			buffer.WriteString(arg)
 		}
 	}
 	return buffer.String()
+}
+
+func ParseCmdPayload()  {
+
+
+
 }
