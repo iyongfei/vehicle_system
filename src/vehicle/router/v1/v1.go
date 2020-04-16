@@ -48,5 +48,7 @@ func V1Router(r *gin.Engine)  {
 		apiV1.POST("/assets", api_server.AddAsset)
 		apiV1.PUT("/assets/:asset_id", api_server.EditAsset)
 		apiV1.DELETE("/assets/:asset_id", api_server.DeleAsset)
+
+
 	}
 }

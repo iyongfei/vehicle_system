@@ -6,6 +6,9 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"vehicle_system/src/vehicle/emq/emq_cmd"
+	"vehicle_system/src/vehicle/emq/protobuf"
+	"vehicle_system/src/vehicle/emq/topic_publish_handler"
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
@@ -15,16 +18,26 @@ import (
 
 func EditAsset(c *gin.Context) {
 	assetId := c.Param("asset_id")
-	name := c.PostForm("name")
-	tradeMark := c.PostForm("trade_mark")
+	setTypeP := c.PostForm("type")
+	setSwitchP := c.PostForm("switch")
 
-	argsTrimsEmpty := util.RrgsTrimsEmpty(assetId, name, tradeMark)
+	argsTrimsEmpty := util.RrgsTrimsEmpty(assetId, setTypeP, setSwitchP)
 	if argsTrimsEmpty {
 		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
 		c.JSON(http.StatusOK, ret)
 		logger.Logger.Error("%s argsTrimsEmpty", util.RunFuncName())
 		logger.Logger.Print("%s argsTrimsEmpty", util.RunFuncName())
 	}
+
+	setType, _ := strconv.Atoi(setTypeP)
+	setSwitch := true
+	switch setSwitchP {
+	case "true":
+		setSwitch = true
+	case "false":
+		setSwitch = false
+	}
+
 
 	//查询是否存在
 	assetInfo := &model.Asset{
@@ -50,19 +63,21 @@ func EditAsset(c *gin.Context) {
 		return
 	}
 
-	attrs := map[string]interface{}{
-		"name": name,
-		"trade_mark": tradeMark,
+	//更新
+	assetCmd := &emq_cmd.AssetSetCmd{
+		VehicleId: assetInfo.VehicleId,
+		TaskType:  int(protobuf.Command_DEVICE_SET),
+
+		Switch: setSwitch,
+		Type:      setType,
+		Mac:assetId,
 	}
-	if err:=modelBase.UpdateModelsByCondition(attrs,"asset_id = ?",
-		[]interface{}{assetInfo.AssetId}...);err!=nil{
-		ret:=response.StructResponseObj(response.VStatusServerError,response.ReqEditFlowFailMsg,"")
-		c.JSON(http.StatusOK,ret)
-		return
-	}
+
+	topic_publish_handler.GetPublishService().PutMsg2PublicChan(assetCmd)
 
 	retObj := response.StructResponseObj(response.VStatusOK, response.ReqUpdateAssetSuccessMsg, "")
 	c.JSON(http.StatusOK, retObj)
+
 }
 
 func GetAssets(c *gin.Context) {

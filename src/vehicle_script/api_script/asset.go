@@ -12,7 +12,7 @@ var assetUrls = map[string]string{
 	"get_asset":  "http://localhost:7001/api/v1/assets/YP4wZffU",
 	"post_assets": "http://localhost:7001/api/v1/assets",
 
-	"edit_assets": "http://localhost:7001/api/v1/assets/ypBH0VIQ",
+	"edit_assets": "http://localhost:7001/api/v1/assets/XdUylhnx",
 	"dele_assets": "http://localhost:7001/api/v1/assets/ypBH0VIQ",
 }
 
@@ -20,8 +20,8 @@ func main() {
 	//getAssets()
 	//getAsset()
 	//addAsset()
-	deleAsset()
-	//editAsset()
+	//deleAsset()
+	editAsset()
 }
 
 
@@ -45,8 +45,8 @@ func editAsset() {
 	urlReq, _ := assetUrls["edit_assets"]
 
 	bodyParams := map[string]interface{}{
-		"name":   "name...",
-		"trade_mark": "werwe",
+		"type":   "1",
+		"switch": "true",
 	}
 	resp, _ := tool.PutForm(urlReq, bodyParams, token)
 

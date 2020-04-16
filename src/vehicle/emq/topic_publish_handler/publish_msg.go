@@ -26,14 +26,17 @@ func PublishTopicMsg(data interface{}){
 		vehicleSetCmd := data.(*emq_cmd.VehicleSetCmd)
 		payload = vehicleSetCmd.CreateVehicleTopicMsg()
 		vehicleId = vehicleSetCmd.VehicleId
+
+	case *emq_cmd.AssetSetCmd:
+		assetSetCmd := data.(*emq_cmd.AssetSetCmd)
+		payload = assetSetCmd.CreateAssetTopicMsg()
+		vehicleId = assetSetCmd.VehicleId
 	default:
 	}
 
-	logger.Logger.Print("%s publishTopicMsg payload:%+v",util.RunFuncName(),payload)
 	if token := emqClient.Publish(fmt.Sprintf("s/%s/p",vehicleId), 0, false, payload);
 		token.Wait() && token.Error() != nil {
 		logger.Logger.Error("%s publishTopicMsg err:%s",util.RunFuncName(),token.Error())
 		logger.Logger.Print("%s publishTopicMsg err:%s",util.RunFuncName(),token.Error())
 	}
 }
-

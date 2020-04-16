@@ -60,15 +60,13 @@ func EditVehicle(c *gin.Context) {
 		c.JSON(http.StatusOK, ret)
 		return
 	}
-
 	//更新
 	vehicleCmd := &emq_cmd.VehicleSetCmd{
 		VehicleId: vehicleId,
-		Type:      setType,
 		TaskType:  int(protobuf.Command_GW_SET),
 
+		Type:      setType,
 		Switch: setSwitch,
-		CmdId:  int(protobuf.Command_GW_SET),
 	}
 
 	topic_publish_handler.GetPublishService().PutMsg2PublicChan(vehicleCmd)
