@@ -300,8 +300,6 @@ CREATE TABLE IF NOT EXISTS `strategies`  (
   `handle_mode` tinyint(3) NULL DEFAULT NULL,
   `enable` tinyint(1) NULL DEFAULT NULL,
 
-  `name` varchar(255) NULL DEFAULT NULL,
-  `introduce` varchar(255) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_strategies_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
@@ -319,6 +317,18 @@ CREATE TABLE IF NOT EXISTS `strategy_vehicles`  (
   INDEX `idx_strategy_vehicles_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS `strategy_vehicle_learning_results`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+
+  `vehicle_id` varchar(255) NULL DEFAULT NULL,
+  `learning_result_id` varchar(255)  NULL DEFAULT NULL,
+
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_strategy_vehicle_learning_results_deleted_at`(`deleted_at`) USING BTREE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE IF NOT EXISTS `strategy_groups`  (
@@ -334,7 +344,7 @@ CREATE TABLE IF NOT EXISTS `strategy_groups`  (
 
 
 
-CREATE TABLE IF NOT EXISTS `strategy_groups_learning_results`  (
+CREATE TABLE IF NOT EXISTS `strategy_group_learning_results`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -343,7 +353,7 @@ CREATE TABLE IF NOT EXISTS `strategy_groups_learning_results`  (
   `group_id` varchar(255) NULL DEFAULT NULL,
   `learning_result_id` varchar(255)  NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx_strategy_groups_learning_results_deleted_at`(`deleted_at`) USING BTREE
+  INDEX `idx_strategy_group_learning_results_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------

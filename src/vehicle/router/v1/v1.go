@@ -49,6 +49,35 @@ func V1Router(r *gin.Engine)  {
 		apiV1.PUT("/assets/:asset_id", api_server.EditAsset)
 		apiV1.DELETE("/assets/:asset_id", api_server.DeleAsset)
 
+		//策略
+		apiV1.POST("/strategys", api_server.AddStrategy)
+		apiV1.GET("/strategys", api_server.GetStrategys)
+		apiV1.GET("/strategys/:strategy_id", api_server.GetStrategy)
+		apiV1.DELETE("/strategys/:strategy_id", api_server.DeleStrategy)
+		apiV1.PUT("/strategys/:strategy_id", api_server.EditStrategy)
+
+		apiV1.GET("/strategy_vehicles/:strategy_id", api_server.GetStrategyVehicle)
+		apiV1.GET("/strategy_vehicle_lresults/:vehicle_id", api_server.GetStrategyVehicleLearningResults)
 
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

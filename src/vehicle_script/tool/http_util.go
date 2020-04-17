@@ -92,6 +92,7 @@ func PostForm(urlParam string,bodyParms map[string]interface{},token string) (ma
 	}
 	q := u.Query()
 	for k,v:= range bodyParms{
+
 		q.Set(k,v.(string))
 	}
 
@@ -160,7 +161,7 @@ func PutForm(urlParam string,bodyParms map[string]interface{},token string) (map
 	}
 	return p,nil
 }
-/************************************************************************************/
+
 func PostJson(url string, body interface{},token string)(map[string]interface{}, error) {
 	jsonBytes, err := json.Marshal(body)
 	if err != nil {
@@ -191,6 +192,7 @@ func PostJson(url string, body interface{},token string)(map[string]interface{},
 	}
 	return p, nil
 }
+/************************************************************************************/
 
 func delete(url string, reqBody string) {
 	fmt.Println("DELETE REQ...")

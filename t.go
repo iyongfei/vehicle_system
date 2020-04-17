@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"strings"
 )
@@ -10,8 +11,9 @@ var TaskTypeFlowStrategySet = "flowstrategyset"
 
 func main() {
 
-	fmt.Println(createCmdId("sdf","wej"))
-
+	a:=[]interface{}{"s","sd"}
+	r,_:=json.Marshal(a)
+	fmt.Println(string(r))
 }
 
 //会话策略设置
