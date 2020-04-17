@@ -14,7 +14,8 @@ var strategyUrls = map[string]string{
 	"edit_strategy": "http://localhost:7001/api/v1/strategys/xer1bSYURVf7NgSIOwTveBtnvl0dErrH",
 
 	"get_strategy_vehicles": "http://localhost:7001/api/v1/strategy_vehicles/opeuBHjxvP3EW16gD5VXJus7RbrJPNb3",
-	"get_strategy_vehicle_results": "http://localhost:7001/api/v1/strategy_vehicle_lresults/vidwjeklflw",
+	"get_vehicle_results": "http://localhost:7001/api/v1/vehicle_lresults/vidwjeklflw",
+	"get_strategy_vehicle_results": "http://localhost:7001/api/v1/strategy_vehicle_lresults/xer1bSYURVf7NgSIOwTveBtnvl0dErrH",
 }
 
 func main() {
@@ -26,19 +27,33 @@ func main() {
 	//editStrategy()
 
 	//getStrategyVehicle()
+	//getVehicleLearningResults()
 	getStrategyVehicleLearningResults()
 }
 
 
-/**
-获取每一条StrategyVehicle信息
-*/
 func getStrategyVehicleLearningResults() {
 	token := tool.GetVehicleToken()
 	queryParams := map[string]interface{}{
 
 	}
 	reqUrl := strategyUrls["get_strategy_vehicle_results"]
+	resp, _ := tool.Get(reqUrl, queryParams, token)
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+}
+
+
+
+/**
+获取每一条StrategyVehicle信息
+*/
+func getVehicleLearningResults() {
+	token := tool.GetVehicleToken()
+	queryParams := map[string]interface{}{
+
+	}
+	reqUrl := strategyUrls["get_vehicle_results"]
 	resp, _ := tool.Get(reqUrl, queryParams, token)
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))

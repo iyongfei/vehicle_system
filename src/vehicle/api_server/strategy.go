@@ -1,6 +1,7 @@
 package api_server
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -314,7 +315,7 @@ func GetStrategyVehicle(c *gin.Context) {
 
 /****************************************StrategyVehicleResult********************************************************/
 
-func GetStrategyVehicleLearningResults(c *gin.Context) {
+func GetVehicleLearningResults(c *gin.Context) {
 	vehicleId := c.Param("vehicle_id")
 	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId)
 	if argsTrimsEmpty {
@@ -342,6 +343,29 @@ func GetStrategyVehicleLearningResults(c *gin.Context) {
 
 	responseData := map[string]interface{}{
 		"strategy_vehicle_results": strategyVehicleLearnResultInfos,
+	}
+
+	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetStrategyVehicleResultListSuccessMsg, responseData)
+	c.JSON(http.StatusOK, retObj)
+}
+
+
+
+func GetStrategyVehicleLearningResults(c *gin.Context) {
+	strategyId := c.Param("strategy_id")
+	fmt.Println("strategyId::::::::",strategyId)
+	argsTrimsEmpty := util.RrgsTrimsEmpty(strategyId)
+	if argsTrimsEmpty {
+		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+		c.JSON(http.StatusOK, ret)
+		logger.Logger.Error("%s argsTrimsEmpty strategy_id:%s", util.RunFuncName(), strategyId)
+		logger.Logger.Print("%s argsTrimsEmpty strategy_id:%s", util.RunFuncName(), strategyId)
+	}
+
+	results,_ := model.GetStrategyVehicleLearningResults()
+
+	responseData := map[string]interface{}{
+		"strategy_vehicle_results": results,
 	}
 
 	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetStrategyVehicleResultListSuccessMsg, responseData)

@@ -16,19 +16,6 @@ type Strategy struct {
 	HandleMode    uint8 //处理方式
 	Enable        bool  //策略启用状态
 }
-
-
-func (strategy *Strategy) GetModelPaginationByCondition(pageIndex int, pageSize int, totalCount *int,
-	paginModel interface{}, query interface{}, args ...interface{})(error){
-
-	err := mysql.QueryModelPaginationByWhereCondition(strategy,pageIndex,pageSize,totalCount,paginModel,query,args...)
-
-	if err!=nil{
-		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
-	}
-	return nil
-}
-
 func (strategy *Strategy) InsertModel() error {
 	return mysql.CreateModel(strategy)
 }
@@ -64,6 +51,7 @@ func (strategy *Strategy) GetModelListByCondition(model interface{}, query inter
 	return nil
 }
 func (strategy *Strategy) CreateModel(strategyParams ...interface{}) interface{} {
+
 	strategyParam := strategyParams[0].(*protobuf.StrategyParam)
 
 	strategy.Type = uint8(strategyParam.GetDefenseType())
@@ -71,13 +59,23 @@ func (strategy *Strategy) CreateModel(strategyParams ...interface{}) interface{}
 	strategy.Enable = strategyParam.GetEnable()
 	return strategy
 }
+func (strategy *Strategy) GetModelPaginationByCondition(pageIndex int, pageSize int, totalCount *int,
+	paginModel interface{}, query interface{}, args ...interface{})(error){
+
+	err := mysql.QueryModelPaginationByWhereCondition(strategy,pageIndex,pageSize,totalCount,paginModel,query,args...)
+
+	if err!=nil{
+		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
+	}
+	return nil
+}
+
 ///////////////////////////StrategyVehicle//////////////////////////////////////
 type StrategyVehicle struct {
 	gorm.Model
 	StrategyId string
 	VehicleId  string
 }
-
 func (strategyVehicle *StrategyVehicle) InsertModel() error {
 	return mysql.CreateModel(strategyVehicle)
 }
@@ -112,19 +110,16 @@ func (strategyVehicle *StrategyVehicle) GetModelListByCondition(model interface{
 	}
 	return nil
 }
-
 func (strategyVehicle *StrategyVehicle) CreateModel(strategyParams ...interface{}) interface{} {
 	return strategyVehicle
 }
-///////////////////////////StrategyVehicleLearningResult//////////////////////////////////////
+///////////////////////////VehicleLearningResult//////////////////////////////////////
 
 type StrategyVehicleLearningResult struct {
 	gorm.Model
 	VehicleId          string
 	LearningResultId string
 }
-
-
 func (strategyVehicleLearningResult *StrategyVehicleLearningResult) InsertModel() error {
 	return mysql.CreateModel(strategyVehicleLearningResult)
 }
@@ -155,12 +150,47 @@ func (strategyVehicleLearningResult *StrategyVehicleLearningResult) GetModelList
 	}
 	return nil
 }
-
 func (strategyVehicleLearningResult *StrategyVehicleLearningResult) CreateModel(strategyParams ...interface{}) interface{} {
 	return strategyVehicleLearningResult
 }
 
+///////////////////////////StrategyVehicleLearningResult//////////////////////////////////////
 
+/**
+获取一条策略信息
+SELECT strategies.*,strategy_vehicles.vehicle_id ,strategy_vehicle_learning_results.learning_result_id FROM strategies
+inner JOIN strategy_vehicles ON strategies.strategy_id = strategy_vehicles.strategy_id
+inner JOIN strategy_vehicle_learning_results ON strategy_vehicles.vehicle_id = strategy_vehicle_learning_results.vehicle_id
+ */
+
+type StrategyVehicleLearningResultJoin struct {
+	gorm.Model
+	StrategyId    string
+
+	Type          uint8
+	HandleMode    uint8
+	Enable        bool
+
+	VehicleId  string  //join
+	LearningResultId string //join
+}
+
+
+func GetStrategyVehicleLearningResults() (interface{},error) {
+	vgorm,err := mysql.GetMysqlInstance().GetMysqlDB()
+	if err!= nil{
+		return nil,fmt.Errorf("%s open grom err:%v",util.RunFuncName(),err.Error())
+	}
+	strategyVehicleLearningResultJoins := []*StrategyVehicleLearningResultJoin{}
+	err = vgorm.Debug().
+		Table("strategies").
+		Select("strategies.*,strategy_vehicles.vehicle_id ,strategy_vehicle_learning_results.learning_result_id").
+		Joins("inner join strategy_vehicles ON strategies.strategy_id = strategy_vehicles.strategy_id").
+		Joins("inner join strategy_vehicle_learning_results ON strategy_vehicles.vehicle_id = strategy_vehicle_learning_results.vehicle_id")	.
+		Scan(&strategyVehicleLearningResultJoins).
+		Error
+	return strategyVehicleLearningResultJoins,err
+}
 /******************************分组扩展****************************/
 type StrategyGroup struct {
 	gorm.Model
