@@ -36,7 +36,6 @@ func partition(array []int, left, right int) int {
 
 //切片去重
 //var arr = []string{"hello", "hi", "world", "hi", "china", "hello", "hi"}
-//fmt.Println(RemoveRepeatedElement(arr))
 func RemoveRepeatedForSlice(arr []string) (newArr []string) {
 	newArr = make([]string, 0)
 	for i := 0; i < len(arr); i++ {

@@ -492,9 +492,6 @@ CREATE TABLE IF NOT EXISTS `study_origins`  (
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 
-
-
-
 CREATE TABLE IF NOT EXISTS `automated_learnings`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -511,10 +508,6 @@ CREATE TABLE IF NOT EXISTS `automated_learnings`  (
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 
-
-
-
-
 CREATE TABLE IF NOT EXISTS `automated_learning_results`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -522,7 +515,9 @@ CREATE TABLE IF NOT EXISTS `automated_learning_results`  (
   `deleted_at` timestamp NULL DEFAULT NULL,
 
   `learning_result_id` varchar(255) NULL DEFAULT NULL,
-  `sample_id` varchar(255) NULL DEFAULT NULL,
+  `origin_id` varchar(255) NULL DEFAULT NULL,
+  `origin_type` tinyint(3) NULL DEFAULT NULL,
+
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_automated_learning_results_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;

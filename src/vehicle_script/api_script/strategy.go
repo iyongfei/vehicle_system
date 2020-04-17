@@ -20,7 +20,7 @@ var strategyUrls = map[string]string{
 }
 
 func main() {
-	//addStrategy()
+	addStrategy()
 	//getStrategys()
 	//getStrategy()
 
@@ -29,7 +29,7 @@ func main() {
 
 	//getStrategyVehicle()
 	//getVehicleLearningResults()
-	getStrategyVehicleLearningResults()
+	//getStrategyVehicleLearningResults()
 }
 func getStrategyVehicleLearningResults() {
 	token := tool.GetVehicleToken()

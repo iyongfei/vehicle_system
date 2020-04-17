@@ -402,7 +402,7 @@ func GetStrategyVehicleLearningResults(c *gin.Context) {
 		logger.Logger.Print("%s argsTrimsEmpty strategy_id:%s", util.RunFuncName(), strategyId)
 	}
 
-	results,_ := model.GetStrategyVehicleLearningResults()
+	results,_ := model.GetStrategyVehicleLearningResults("strategy_vehicles.strategy_id = ?",[]interface{}{strategyId}...)
 
 	responseData := map[string]interface{}{
 		"strategy_vehicle_results": results,

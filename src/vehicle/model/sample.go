@@ -10,26 +10,26 @@ import (
 	"vehicle_system/src/vehicle_script/tool"
 )
 
+/*************************************Sample*******************************************/
+
 type Sample struct {
 	gorm.Model
-	SampleId            string // 采集样本id
-	StartTime    	time.Time//启动时间
-	RemainTime    uint32 //剩余时间
-	TotalTime    uint32 //剩余时间
+	SampleId   string    // 采集样本id
+	StartTime  time.Time //启动时间
+	RemainTime uint32    //剩余时间
+	TotalTime  uint32    //剩余时间
 
-	Status       uint8 //采集状态
-	Timeout                uint32//超时时间
+	Status  uint8  //采集状态
+	Timeout uint32 //超时时间
 
-	Name          string //采集名称
-	Introduce           string     //采集说明
+	Name      string //采集名称
+	Introduce string //采集说明
 
 	Check uint8
 
-	VehicleId       			string
-	StudyOriginId        string
+	VehicleId     string
+	StudyOriginId string
 }
-
-
 
 func (sample *Sample) InsertModel() error {
 	return mysql.CreateModel(sample)
@@ -57,14 +57,6 @@ func (sample *Sample) DeleModelsByCondition(query interface{}, args ...interface
 func (sample *Sample) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) (error) {
 	return nil
 }
-/**
-Id                   string              `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	StartTime            uint32              `protobuf:"varint,2,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
-	TimeRemain           uint32              `protobuf:"varint,3,opt,name=time_remain,json=timeRemain,proto3" json:"time_remain,omitempty"`
-	Status               SampleParam_Status  `protobuf:"varint,4,opt,name=status,proto3,enum=protobuf.SampleParam_Status" json:"status,omitempty"`
-	SampleItem           []*SampleParam_Item `protobuf:"bytes,5,rep,name=sample_item,json=sampleItem,proto3" json:"sample_item,omitempty"`
-	Timeout
- */
 func (sample *Sample) CreateModel(sampleParams ...interface{}) interface{} {
 	sampleParam := sampleParams[0].(*protobuf.SampleParam)
 
@@ -76,23 +68,23 @@ func (sample *Sample) CreateModel(sampleParams ...interface{}) interface{} {
 	return sample
 }
 
-
+/*************************************SampleItem*******************************************/
 
 type SampleItem struct {
 	gorm.Model
-	SampleItemId string//id
+	SampleItemId string //id
 
 	SampleId string
 
-	SrcMac    string//源mac sm
-	SrcIp     string//源ip sip
-	SrcPort   uint32//源端口 sp
+	SrcMac  string //源mac sm
+	SrcIp   string //源ip sip
+	SrcPort uint32 //源端口 sp
 
-	DstIp       string///////////////目标ip  dip
-	DstPort     uint32//目标端口  dp
-	Url          string/////////////////目标url u
+	DstIp   string ///////////////目标ip  dip
+	DstPort uint32 //目标端口  dp
+	Url     string /////////////////目标url u
 
-	FetchTime  time.Time//访问时间tm
+	FetchTime time.Time //访问时间tm
 }
 
 func (item *SampleItem) InsertModel() error {
@@ -119,6 +111,10 @@ func (item *SampleItem) DeleModelsByCondition(query interface{}, args ...interfa
 	return nil
 }
 func (item *SampleItem) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) (error) {
+	err := mysql.QueryModelRecordsByWhereCondition(model,query,args...)
+	if err!=nil{
+		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
+	}
 	return nil
 }
 func (item *SampleItem) CreateModel(sampleItemParams ...interface{}) interface{} {
@@ -134,5 +130,3 @@ func (item *SampleItem) CreateModel(sampleItemParams ...interface{}) interface{}
 
 	return item
 }
-
-
