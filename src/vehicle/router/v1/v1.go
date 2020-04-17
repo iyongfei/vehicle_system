@@ -57,9 +57,8 @@ func V1Router(r *gin.Engine)  {
 		apiV1.PUT("/strategys/:strategy_id", api_server.EditStrategy)
 
 		apiV1.GET("/strategy_vehicles/:strategy_id", api_server.GetStrategyVehicle)
-		apiV1.GET("/vehicle_lresults/:vehicle_id", api_server.GetVehicleLearningResults)
+		apiV1.GET("/vehicle_lresults/:strategy_vehicle_id", api_server.GetVehicleLearningResults)
 		apiV1.GET("/strategy_vehicle_lresults/:strategy_id", api_server.GetStrategyVehicleLearningResults)
-
 	}
 }
 

@@ -1,29 +1,26 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"strings"
 )
-var TaskTypeFlowStrategySet = "flowstrategyset"
+
+type Data struct {
+	offLine string
+
+
+}
 
 
 func main() {
 
-	a:=[]interface{}{"s","sd"}
-	r,_:=json.Marshal(a)
-	fmt.Println(string(r))
-}
+	jsonRet := `{"offline-qaxnet-lan-168": [{"addr": "1.249.171.83", "version": 4, "OS-EXT-IPS:type": "fixed", "OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:8e:f6:3e"}]}`
 
-//会话策略设置
-func createCmdId(args ...string) string {
-	var buffer bytes.Buffer
+	tempMap := map[string]interface{}{}
+	_ = json.Unmarshal([]byte(jsonRet), &tempMap)
 
-	for _,arg:=range args{
-		if strings.Trim(arg, " ") != ""{
-			buffer.WriteString(arg)
-		}
+
+	for k,_:=range tempMap{
+		fmt.Println(k)
 	}
-	return buffer.String()
 }

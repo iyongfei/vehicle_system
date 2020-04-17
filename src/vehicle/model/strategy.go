@@ -73,8 +73,9 @@ func (strategy *Strategy) GetModelPaginationByCondition(pageIndex int, pageSize 
 ///////////////////////////StrategyVehicle//////////////////////////////////////
 type StrategyVehicle struct {
 	gorm.Model
-	StrategyId string
-	VehicleId  string
+	StrategyVehicleId string
+	StrategyId        string
+	VehicleId  		  string
 }
 func (strategyVehicle *StrategyVehicle) InsertModel() error {
 	return mysql.CreateModel(strategyVehicle)
@@ -117,8 +118,8 @@ func (strategyVehicle *StrategyVehicle) CreateModel(strategyParams ...interface{
 
 type StrategyVehicleLearningResult struct {
 	gorm.Model
-	VehicleId          string
-	LearningResultId string
+	StrategyVehicleId  string
+	LearningResultId   string
 }
 func (strategyVehicleLearningResult *StrategyVehicleLearningResult) InsertModel() error {
 	return mysql.CreateModel(strategyVehicleLearningResult)
@@ -171,7 +172,7 @@ type StrategyVehicleLearningResultJoin struct {
 	HandleMode    uint8
 	Enable        bool
 
-	VehicleId  string  //join
+	StrategyVehicleId  string  //join
 	LearningResultId string //join
 }
 
@@ -186,7 +187,7 @@ func GetStrategyVehicleLearningResults() (interface{},error) {
 		Table("strategies").
 		Select("strategies.*,strategy_vehicles.vehicle_id ,strategy_vehicle_learning_results.learning_result_id").
 		Joins("inner join strategy_vehicles ON strategies.strategy_id = strategy_vehicles.strategy_id").
-		Joins("inner join strategy_vehicle_learning_results ON strategy_vehicles.vehicle_id = strategy_vehicle_learning_results.vehicle_id")	.
+		Joins("inner JOIN strategy_vehicle_learning_results ON strategy_vehicles.strategy_vehicle_id = strategy_vehicle_learning_results.strategy_vehicle_id")	.
 		Scan(&strategyVehicleLearningResultJoins).
 		Error
 	return strategyVehicleLearningResultJoins,err

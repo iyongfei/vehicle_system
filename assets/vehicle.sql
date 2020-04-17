@@ -311,6 +311,7 @@ CREATE TABLE IF NOT EXISTS `strategy_vehicles`  (
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
 
+  `strategy_vehicle_id` varchar(255)  NULL DEFAULT NULL,
   `strategy_id` varchar(255)  NULL DEFAULT NULL,
   `vehicle_id` varchar(255) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
@@ -323,9 +324,8 @@ CREATE TABLE IF NOT EXISTS `strategy_vehicle_learning_results`  (
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
 
-  `vehicle_id` varchar(255) NULL DEFAULT NULL,
+  `strategy_vehicle_id` varchar(255) NULL DEFAULT NULL,
   `learning_result_id` varchar(255)  NULL DEFAULT NULL,
-
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_strategy_vehicle_learning_results_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
