@@ -79,6 +79,13 @@ func (t *TopicSubscribeHandler) HanleSubscribeTopicData(topicMsg mqtt.Message) e
 	case protobuf.GWResult_GW_INFO: //GwInfoParam
 		handGwResultError = HandleVehicleInfo(vehicleResult)
 
+	case protobuf.GWResult_DEPLOYER: //DeployerParam
+		handGwResultError = HandleVehicleDeployer(vehicleResult)
+
+	case protobuf.GWResult_PROTECT: //GWProtectInfoParam
+		handGwResultError = HandleVehicleProtect(vehicleResult)
+
+		//////////////////////////////////////////////
 	case protobuf.GWResult_FLOWSTAT: //FlowParam
 		handGwResultError = HandleVehicleFlow(vehicleResult)
 
@@ -100,14 +107,12 @@ func (t *TopicSubscribeHandler) HanleSubscribeTopicData(topicMsg mqtt.Message) e
 	case protobuf.GWResult_FLOWSTRATEGYSTAT: //StrawtegyParam
 		handGwResultError = HandleVehicleFlowStrategy(vehicleResult)
 
-	case protobuf.GWResult_PROTECT: //GWProtectInfoParam
-		handGwResultError = HandleVehicleProtect(vehicleResult)
+
 
 	case protobuf.GWResult_PORTREDIRECT: //PortRedirectParam
 		handGwResultError = HandleVehiclePortMap(vehicleResult)
 
-	case protobuf.GWResult_DEPLOYER: //DeployerParam
-		handGwResultError = HandleVehicleDeployer(vehicleResult)
+
 
 	default:
 		logger.Logger.Error("vehicleId:%s action type err:%d",vehicleId,int32(vehicleResult.ActionType))

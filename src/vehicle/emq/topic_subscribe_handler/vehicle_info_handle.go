@@ -25,8 +25,9 @@ func HandleVehicleInfo(vehicleResult protobuf.GWResult) error {
 	logger.Logger.Print("%s unmarshal vehicleParam:%+v",util.RunFuncName(),vehicleParam)
 	logger.Logger.Info("%s unmarshal vehicleParam:%+v",util.RunFuncName(),vehicleParam)
 	//create
-	vehicleInfo:=&model.VehicleInfo{}
-	vehicleInfo.VehicleId = vehicleId
+	vehicleInfo:=&model.VehicleInfo{
+		VehicleId:vehicleId,
+	}
 	modelBase := model_base.ModelBaseImpl(vehicleInfo)
 
 	_,recordNotFound :=modelBase.GetModelByCondition("vehicle_id = ?",vehicleInfo.VehicleId)

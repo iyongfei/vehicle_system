@@ -1,25 +1,28 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
+	"strings"
 )
 
 func main() {
 
-	jsonRet := `{"offline-qaxnet-lan-168": [{"addr": "1.249.171.83", "version": 4, "OS-EXT-IPS:type": "fixed", "OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:8e:f6:3e"},
-{"addr": "1.249.171.99", "version": 4, "OS-EXT-IPS:type": "fixed", "OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:8e:f6:3e"}]}`
+	rt:=RrgsTrimsAllEmpty(" "," d ","")
+	fmt.Println(rt)
+}
 
-	tempMap := map[string][]map[string]interface{}{}
-	_ = json.Unmarshal([]byte(jsonRet), &tempMap)
 
-	var addrList []string
-
-	for _,ListMapV:=range tempMap{
-		for _,obj:=range ListMapV{
-			addrList = append(addrList,obj["addr"].(string))
+func RrgsTrimsAllEmpty(args... string) bool {
+	nullCount := 0
+	var flag = false
+	for _,arg:=range args{
+		if strings.Trim(arg, " ") == ""{
+			nullCount ++
 		}
 	}
+	if nullCount == len(args){
+		flag = true
+	}
 
-	fmt.Printf("addr ret:%+v",addrList)
+	return flag
 }

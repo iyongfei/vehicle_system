@@ -29,6 +29,20 @@ func RrgsTrimsEmpty(args... string) bool {
 	return flag
 }
 
+func RrgsTrimsAllEmpty(args... string) bool {
+	nullCount := 0
+	var flag = false
+	for _,arg:=range args{
+		if strings.Trim(arg, " ") == ""{
+			nullCount ++
+		}
+	}
+	if nullCount == len(args){
+		flag = true
+	}
+
+	return flag
+}
 
 
 func CamelCase(s string) string {

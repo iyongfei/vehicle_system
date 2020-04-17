@@ -33,7 +33,7 @@ func HandleVehicleProtect(vehicleResult protobuf.GWResult) error {
 	_,recordNotFound :=modelBase.GetModelByCondition("vehicle_id = ?",vehicleInfo.VehicleId)
 
 	if recordNotFound{
-
+		return fmt.Errorf("%s handleVehicleProtect vehicle:%s recordNotFound",util.RunFuncName(),vehicleId)
 	}else {
 		//更新
 		attrs := map[string]interface{}{

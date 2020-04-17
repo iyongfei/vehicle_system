@@ -103,6 +103,11 @@ const (
 	ReqGetVehiclesSuccessMsg = "车载列表获取成功"
 )
 
+const (
+	ReqGetVehicleBindLeaderUnExistMsg = "车载没有绑定管理人员信息"
+	ReqGetVehicleBindLeaderFailMsg = "车载绑定管理人员信息获取失败"
+	ReqUpdateVehicleBindLeaderSuccessMsg = "车载绑定管理人员信息更新成功"
+)
 //asset
 const (
 	ReqGetAssetFailMsg    = "设备信息获取失败"

@@ -59,10 +59,12 @@ func V1Router(r *gin.Engine)  {
 		apiV1.GET("/strategy_vehicles/:strategy_id", api_server.GetStrategyVehicle)
 		apiV1.GET("/vehicle_lresults/:strategy_vehicle_id", api_server.GetVehicleLearningResults)
 		apiV1.GET("/strategy_vehicle_lresults/:strategy_id", api_server.GetStrategyVehicleLearningResults)
+
+
+		//设置小V信息
+		apiV1.PUT("/deployer/:deployer_id", api_server.EditDeployer)
 	}
 }
-
-
 
 
 

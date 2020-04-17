@@ -34,5 +34,15 @@ func SubscribeServerTest(client mqtt.Client, msg mqtt.Message)  {
 		logger.Logger.Info("%s assetSetModel:%+v",util.RunFuncName(),assetSetModel)
 		logger.Logger.Print("%s assetSetModel:%+v",util.RunFuncName(),assetSetModel)
 
+
+	case protobuf.Command_DEPLOYER_SET:
+		deploySetModel := &protobuf.DeployerSetParam{}
+		param := command.GetParam()
+		_ = proto.Unmarshal(param,deploySetModel)
+
+		logger.Logger.Info("%s deploySetModel:%+v",util.RunFuncName(),deploySetModel)
+		logger.Logger.Print("%s deploySetModel:%+v",util.RunFuncName(),deploySetModel)
+
+
 	}
 }

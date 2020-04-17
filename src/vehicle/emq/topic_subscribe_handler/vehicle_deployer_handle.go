@@ -62,7 +62,7 @@ func HandleVehicleDeployer(vehicleResult protobuf.GWResult) error {
 	vehicleModelBase := model_base.ModelBaseImpl(vehicleInfo)
 	vehicleLeaderAttrs := map[string]interface{}{
 		"leader_id": leaderInfo.LeaderId,
-		"name": vehicleDeployerParam.GetName(),
+		"name": vehicleDeployerParam.GetDevName(),
 	}
 
 	err= vehicleModelBase.UpdateModelsByCondition(vehicleLeaderAttrs,"vehicle_id = ?",vehicleInfo.VehicleId)
