@@ -18,10 +18,11 @@ import (
 
 func EditStrategy(c *gin.Context) {
 	strategyId := c.Param("strategy_id")
+	vehicleId := c.PostForm("vehicle_id")
 	setTypeP := c.PostForm("type")
 	handleModeP := c.PostForm("handle_mode")
 
-	argsTrimsEmpty := util.RrgsTrimsEmpty(strategyId, setTypeP, handleModeP)
+	argsTrimsEmpty := util.RrgsTrimsEmpty(strategyId, setTypeP, handleModeP,vehicleId)
 	if argsTrimsEmpty {
 		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
 		c.JSON(http.StatusOK, ret)
@@ -32,12 +33,23 @@ func EditStrategy(c *gin.Context) {
 	setType, _ := strconv.Atoi(setTypeP)
 	handleMode, _ := strconv.Atoi(handleModeP)
 
+	strategyVehicleLearningResultJoins ,err := model.GetStrategyJoinVehicles(
+		"strategy_vehicles.strategy_id = ? and strategy_vehicles.vehicle_id = ?",
+		[]interface{}{strategyId,vehicleId}...)
+
+	if err!=nil ||strategyVehicleLearningResultJoins.StrategyId == "" || strategyVehicleLearningResultJoins.VehicleId == ""{
+		logger.Logger.Error("%s strategyId:%s,recordNotFounder", util.RunFuncName(), strategyId)
+		logger.Logger.Print("%s strategyId:%s,recordNotFounder", util.RunFuncName(), strategyId)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetStrtegyUnExistMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
 	//查询是否存在
 	strategyInfo := &model.Strategy{
-		StrategyId: strategyId,
+		StrategyId: strategyVehicleLearningResultJoins.StrategyId,
 	}
 	modelBase := model_base.ModelBaseImpl(strategyInfo)
-
 	err, recordNotFound := modelBase.GetModelByCondition("strategy_id = ?", []interface{}{strategyInfo.StrategyId}...)
 
 	if err != nil {
@@ -71,16 +83,17 @@ func EditStrategy(c *gin.Context) {
 	}
 
 	//更新
-	//assetCmd := &emq_cmd.AssetSetCmd{
-	//	VehicleId: assetInfo.VehicleId,
-	//	TaskType:  int(protobuf.Command_DEVICE_SET),
-	//
-	//	Switch: setSwitch,
-	//	Type:   setType,
-	//	Mac:    assetId,
-	//}
-	//
-	//topic_publish_handler.GetPublishService().PutMsg2PublicChan(assetCmd)
+	strategyCmd := &emq_cmd.StrategySetCmd{
+		VehicleId:vehicleId ,
+		TaskType:  int(protobuf.Command_STRATEGY_ADD),
+
+		StrategyId:strategyId,
+		Type:      setType,
+		HandleMode:handleMode,
+		Enable:true,
+		GroupId:"", //目前不实现
+	}
+	topic_publish_handler.GetPublishService().PutMsg2PublicChan(strategyCmd)
 
 	retObj := response.StructResponseObj(response.VStatusOK, response.ReqUpdateStrategySuccessMsg, "")
 	c.JSON(http.StatusOK, retObj)
@@ -258,18 +271,6 @@ func AddStrategy(c *gin.Context) {
 		topic_publish_handler.GetPublishService().PutMsg2PublicChan(strategyCmd)
 	}
 
-
-	type StrategySetCmd struct {
-		VehicleId   	string
-		CmdId 			int
-		TaskType 		int
-
-		StrategyId 		string
-		Type       		int
-		HandleMode 		int
-		Enable        	bool
-		GroupId         string
-	}
 
 	retObj := response.StructResponseObj(response.VStatusOK, response.ReqAddStrategySuccessMsg, strategy)
 	c.JSON(http.StatusOK, retObj)

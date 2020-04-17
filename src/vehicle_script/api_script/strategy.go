@@ -20,17 +20,19 @@ var strategyUrls = map[string]string{
 }
 
 func main() {
-	addStrategy()
+	//addStrategy()
 	//getStrategys()
 	//getStrategy()
 
 	//deleStrategy()//协议部分没有处理
-	//editStrategy()//协议部分没有处理
+	//editStrategy()//
 
 	//getStrategyVehicle()
 	//getVehicleLearningResults()
-	//getStrategyVehicleLearningResults()
+	getStrategyVehicleLearningResults()
 }
+
+
 func getStrategyVehicleLearningResults() {
 	token := tool.GetVehicleToken()
 	queryParams := map[string]interface{}{
@@ -41,6 +43,23 @@ func getStrategyVehicleLearningResults() {
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))
 }
+
+
+func editStrategy() {
+	token := tool.GetVehicleToken()
+	urlReq, _ := strategyUrls["edit_strategy"]
+
+	bodyParams := map[string]interface{}{
+		"type":   "22",
+		"handle_mode": "11",
+		"vehicle_id": "dTtR4sFMYfDJzGAVTv4KWSc9KYLTA64d",
+	}
+	resp, _ := tool.PutForm(urlReq, bodyParams, token)
+
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+}
+
 
 /**
 获取每一条StrategyVehicle信息
@@ -106,20 +125,6 @@ func getStrategyVehicle() {
 
 
 
-
-func editStrategy() {
-	token := tool.GetVehicleToken()
-	urlReq, _ := strategyUrls["edit_strategy"]
-
-	bodyParams := map[string]interface{}{
-		"type":   "2",
-		"handle_mode": "1",
-	}
-	resp, _ := tool.PutForm(urlReq, bodyParams, token)
-
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
-}
 
 
 func deleStrategy() {

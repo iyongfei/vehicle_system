@@ -172,6 +172,8 @@ type StrategyVehicleLearningResultJoin struct {
 	HandleMode    uint8
 	Enable        bool
 
+	VehicleId string
+
 	StrategyVehicleId  string  //join
 	LearningResultId string //join
 }
@@ -190,6 +192,24 @@ func GetStrategyVehicleLearningResults(query string,args ...interface{}) ([]*Str
 		Joins("inner join strategy_vehicles ON strategies.strategy_id = strategy_vehicles.strategy_id").
 		Joins("inner JOIN strategy_vehicle_learning_results ON strategy_vehicles.strategy_vehicle_id = strategy_vehicle_learning_results.strategy_vehicle_id")	.
 		Scan(&strategyVehicleLearningResultJoins).
+		Error
+	return strategyVehicleLearningResultJoins,err
+}
+
+
+
+func GetStrategyJoinVehicles(query string,args ...interface{}) (*StrategyVehicleLearningResultJoin,error) {
+	vgorm,err := mysql.GetMysqlInstance().GetMysqlDB()
+	if err!= nil{
+		return nil,fmt.Errorf("%s open grom err:%v",util.RunFuncName(),err.Error())
+	}
+	strategyVehicleLearningResultJoins := &StrategyVehicleLearningResultJoin{}
+	err = vgorm.Debug().
+		Table("strategies").
+		Select("strategies.*,strategy_vehicles.vehicle_id").
+		Where(query,args...).
+		Joins("inner join strategy_vehicles ON strategies.strategy_id = strategy_vehicles.strategy_id").
+		Scan(strategyVehicleLearningResultJoins).
 		Error
 	return strategyVehicleLearningResultJoins,err
 }
