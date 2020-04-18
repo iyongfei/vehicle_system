@@ -12,7 +12,6 @@ type PortMapSetCmd struct {
 	CmdId int
 	TaskType int
 
-
 	DestPort string
 	SrcPort  string
 	Switch   bool
@@ -26,36 +25,23 @@ func (setCmd *PortMapSetCmd) CreatePortMapSetCmdTopicMsg() interface{}{
 	//ItemType
 	publishItem.ItemType = protobuf.Command_TaskType(setCmd.TaskType)
 	//param
-	gwSetParams := &protobuf.GwSetParam{}
-	gwSetParams.Type = protobuf.GwSetParam_Type(setCmd.Type)
-	gwSetParams.Switch = setCmd.Switch
-	publishItem.Param, _ = proto.Marshal(gwSetParams)
+	portMapSetParams := &protobuf.PortRedirectSetParam{}
+	portMapSetParams.DestIp = setCmd.DestIp
+	portMapSetParams.DestPort = setCmd.DestPort
+	portMapSetParams.SrcPort = setCmd.SrcPort
+	portMapSetParams.Switch = setCmd.Switch
+	portMapSetParams.Proto = protobuf.PortRedirectSetParam_Protocol(setCmd.Protocol)
+	publishItem.Param, _ = proto.Marshal(portMapSetParams)
 	//CmdID
 	var resultcmdItemKey string
-
-	switch setCmd.Type {
-	case int(protobuf.GwSetParam_PROTECT):
-		taskTypeName:=protobuf.Command_TaskType_name[int32(setCmd.TaskType)]
-		taskTypeAction:=protobuf.GwSetParam_Type_name[int32(protobuf.GwSetParam_PROTECT)]
-		resultcmdItemKey = createCmdId(taskTypeName,taskTypeAction)
-
-	case int(protobuf.GwSetParam_RESTART):
-		taskTypeName:=protobuf.Command_TaskType_name[int32(setCmd.TaskType)]
-		taskTypeAction:=protobuf.GwSetParam_Type_name[int32(protobuf.GwSetParam_RESTART)]
-		resultcmdItemKey = createCmdId(taskTypeName,taskTypeAction)
-
-	case int(protobuf.GwSetParam_DEFAULT):
-		taskTypeName:=protobuf.Command_TaskType_name[int32(setCmd.TaskType)]
-		taskTypeAction:=protobuf.GwSetParam_Type_name[int32(protobuf.GwSetParam_DEFAULT)]
-		resultcmdItemKey = createCmdId(taskTypeName,taskTypeAction)
-	default:
-		//类型不对
-	}
+	taskTypeName := protobuf.Command_TaskType_name[int32(setCmd.TaskType)]
+	cmdRandom := util.RandomString(16)
+	resultcmdItemKey = createCmdId(taskTypeName, cmdRandom)
 	publishItem.CmdID = resultcmdItemKey
 	resultcmdItemsBys, _ := proto.Marshal(publishItem)
 
-	logger.Logger.Info("%s createVehicleTopicMsg publishItem:%+v",util.RunFuncName(),publishItem)
-	logger.Logger.Print("%s createVehicleTopicMsg publishItem:%+v",util.RunFuncName(),publishItem)
+	logger.Logger.Info("%s createPortMapSetCmdTopicMsg publishItem:%+v",util.RunFuncName(),publishItem)
+	logger.Logger.Print("%s createPortMapSetCmdTopicMsg publishItem:%+v",util.RunFuncName(),publishItem)
 
 	return resultcmdItemsBys
 }

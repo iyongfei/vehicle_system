@@ -41,6 +41,11 @@ func PublishTopicMsg(data interface{}){
 		deployerSetCmd := data.(*emq_cmd.DeployerSetCmd)
 		payload = deployerSetCmd.CreateDeployerTopicMsg()
 		vehicleId = deployerSetCmd.VehicleId
+
+	case *emq_cmd.PortMapSetCmd:
+		portMapSetCmd := data.(*emq_cmd.PortMapSetCmd)
+		payload = portMapSetCmd.CreatePortMapSetCmdTopicMsg()
+		vehicleId = portMapSetCmd.VehicleId
 	default:
 	}
 

@@ -44,5 +44,14 @@ func SubscribeServerTest(client mqtt.Client, msg mqtt.Message)  {
 		logger.Logger.Print("%s deploySetModel:%+v",util.RunFuncName(),deploySetModel)
 
 
+	case protobuf.Command_PORTREDIRECT_SET:
+		portMapSetModel := &protobuf.PortRedirectSetParam{}
+		param := command.GetParam()
+		_ = proto.Unmarshal(param,portMapSetModel)
+
+		logger.Logger.Info("%s portMapSetModel:%+v",util.RunFuncName(),portMapSetModel)
+		logger.Logger.Print("%s portMapSetModel:%+v",util.RunFuncName(),portMapSetModel)
+
+
 	}
 }

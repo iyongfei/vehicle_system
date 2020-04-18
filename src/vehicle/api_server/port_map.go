@@ -1,6 +1,7 @@
 package api_server
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -41,10 +42,13 @@ func EditPortMap(c *gin.Context) {
 
 	switchFlagValid := util.IsEleExistInSlice(switchFlag,[]interface{}{response.FalseFlag,response.TrueFlag})
 	protoValid := util.IsEleExistInSlice(protocol,[]interface{}{
-		string(protobuf.PortRedirectSetParam_UNSET),
-		string(protobuf.PortRedirectSetParam_UDP),
-		string(protobuf.PortRedirectSetParam_TCP),
-		string(protobuf.PortRedirectSetParam_ALL),})
+		strconv.Itoa(int(protobuf.PortRedirectSetParam_UNSET)),
+		strconv.Itoa(int(protobuf.PortRedirectSetParam_UDP)),
+		strconv.Itoa(int(protobuf.PortRedirectSetParam_TCP)),
+		strconv.Itoa(int(protobuf.PortRedirectSetParam_ALL))})
+
+
+	fmt.Println(argsTrimsEmpty,srcPortValid,destPortValid,destIpValid,switchFlagValid,protoValid,)
 
 	if argsTrimsEmpty ||
 		!srcPortValid ||
@@ -56,6 +60,7 @@ func EditPortMap(c *gin.Context) {
 		c.JSON(http.StatusOK, ret)
 		logger.Logger.Error("%s argsTrimsEmpty", util.RunFuncName())
 		logger.Logger.Print("%s argsTrimsEmpty", util.RunFuncName())
+		return
 	}
 	//转换switchFlag
 	switchFlagParseBool,_ := strconv.ParseBool(switchFlag)
@@ -95,7 +100,7 @@ func EditPortMap(c *gin.Context) {
 		"src_port": srcPort,
 		"dst_port": destPort,
 		"dst_ip": destIp,
-		"switch": switchFlag,
+		"switch": switchFlagParseBool,
 		"protocol_type": protocolParseInt,
 	}
 	if err:=modelBase.UpdateModelsByCondition(attrs,"vehicle_id = ? and port_map_id = ?",
@@ -104,8 +109,6 @@ func EditPortMap(c *gin.Context) {
 		c.JSON(http.StatusOK,ret)
 		return
 	}
-
-	//发布消息
 	//更新
 	strategyCmd := &emq_cmd.PortMapSetCmd{
 		VehicleId:vehicleId ,
