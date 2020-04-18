@@ -84,26 +84,35 @@ func FetchDipUrlList(setCmd *StrategySetCmd) ([]string, []string) {
 
 	for _, learningResult := range automatedLearningResultModelList {
 		switch learningResult.OriginType {
-		case 1: //sample
-			sampleId := learningResult.OriginId
-			collectSampleItems := []*model.SampleItem{}
-			_ = model_base.ModelBaseImpl(&model.SampleItem{}).GetModelListByCondition(&collectSampleItems, "sample_id = ?", []interface{}{sampleId}...)
-			for _, sampleItems := range collectSampleItems {
-				dip := sampleItems.DstIp
-				url := sampleItems.Url
-				fmt.Println("dip",dip,",url:",url)
+		case 1:
+			originId := learningResult.OriginId
+			flows := []*model.Flow{}
+			_ = model_base.ModelBaseImpl(&model.Flow{}).GetModelListByCondition(&flows,
+				"stat = ? and vehicle_id = ?", []interface{}{protobuf.FlowStat_FST_FINISH,originId}...)
+			for _, flowItem := range flows {
+				dip := util.InetNtoa(int64(flowItem.DstIp))
+				fmt.Println("dip",dip)
 
 				if strings.Trim(dip, " ") != "" {
 					dipMap[dip] = dip
-				}
-				if strings.Trim(url, " ") != "" {
-					urlMap[url] = url
 				}
 			}
 
 		case 2:
 
+			//dip := util.InetNtoa(int64(flowItem.DstIp))
+			////url := sampleItems.Url
+			//fmt.Println("dip",dip)
+			//
+			//if strings.Trim(dip, " ") != "" {
+			//	dipMap[dip] = dip
+			//}
+			////if strings.Trim(url, " ") != "" {
+			////	urlMap[url] = url
+			////}
 		case 3:
+
+		case 4:
 
 		}
 	}
