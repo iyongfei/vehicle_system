@@ -24,8 +24,8 @@ func main()  {
 
 	emqx:= emq_service.NewEmqx()
 	for i:=0;i< defaultVehicleCount;i++{
-		vid:=tool.RandomString(32)
-		//vid:="dgzeKAoBGbl5E5ajqOq1phksMCVz8S7C"
+		//vid:=tool.RandomString(32)
+		vid:="TDavCZX6IyE3NDa2OVRaMlt92pMOG3Hw"
 		emqx.Publish(vid,createGwProbuf(vid))
 	}
 }

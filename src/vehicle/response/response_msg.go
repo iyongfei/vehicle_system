@@ -9,6 +9,15 @@ const (
 	TrueFlag = "true"
 	FalseFlag = "false"
 )
+
+const (
+	OriginTypeSelf = 1
+	OriginTypeSample = 2
+	OriginTypeRule = 3
+	OriginTypeWhiteList = 4
+)
+
+
 const (
 	TokenExpiredStr                    = "token过期"
 	TokenNotValidYetStr                = "token未激活"

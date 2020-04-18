@@ -209,7 +209,8 @@ func AddStrategy(c *gin.Context) {
 	//找出合法的learning_result_id
 	learningResultIdSlice := strings.Split(learningResultIdsP,",")
 	var learningResultIds []string
-	_ = mysql.QueryPluckByModelWhere(&model.AutomatedLearningResult{},"learning_result_id",&learningResultIds,"learning_result_id in (?)",learningResultIdSlice)
+	_ = mysql.QueryPluckByModelWhere(&model.AutomatedLearningResult{},
+	"learning_result_id",&learningResultIds,"learning_result_id in (?)",learningResultIdSlice)
 
 
 	//strategy table
