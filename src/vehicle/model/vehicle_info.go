@@ -7,6 +7,7 @@ import (
 	"time"
 	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/emq/protobuf"
+	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/util"
 )
 
@@ -37,6 +38,17 @@ type VehicleInfo struct {
 	ProtectStatus uint8  //保护状态										//保护状态
 	LeaderId      string //保护状态 // 保护状态
 	GroupId string
+}
+func (vehicle *VehicleInfo) AfterCreate(tx *gorm.DB) ( error) {
+	logger.Logger.Print("%s afterCreate vehicle_id:%s",util.RunFuncName(),vehicle.VehicleId)
+	logger.Logger.Info("%s afterCreate vehicle_id:%s",util.RunFuncName(),vehicle.VehicleId)
+
+	err := HandleVehicleStrategyInitAction(vehicle.VehicleId)
+	if err!=nil{
+		logger.Logger.Print("%s afterCreate vehicle_id:%s,init strategy err:%s",util.RunFuncName(),vehicle.VehicleId,err)
+		logger.Logger.Info("%s afterCreate vehicle_id:%s,init strategy err:%s",util.RunFuncName(),vehicle.VehicleId,err)
+	}
+	return nil
 }
 
 
