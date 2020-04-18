@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"vehicle_system/src/vehicle/emq/protobuf"
 	"vehicle_system/src/vehicle/model/model_base"
 	"vehicle_system/src/vehicle/util"
@@ -52,6 +53,8 @@ func GetVehicleRecentStrategy(vehicleId string) *StrategySetCmd {
 			return nil
 		}
 
+		fmt.Printf("strategy%+v",strategy)
+		fmt.Printf("strategyVehicle%+v",strategyVehicle)
 		strategySetCmd.VehicleId = vehicleId
 		strategySetCmd.TaskType = int(protobuf.Command_STRATEGY_ADD)
 		strategySetCmd.StrategyId = strategy.StrategyId

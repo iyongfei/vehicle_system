@@ -6,6 +6,7 @@ import (
 	"vehicle_system/src/vehicle/emq/emq_client"
 	"vehicle_system/src/vehicle/emq/emq_cmd"
 	"vehicle_system/src/vehicle/logger"
+	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/util"
 )
 
@@ -46,6 +47,8 @@ func PublishTopicMsg(data interface{}){
 		portMapSetCmd := data.(*emq_cmd.PortMapSetCmd)
 		payload = portMapSetCmd.CreatePortMapSetCmdTopicMsg()
 		vehicleId = portMapSetCmd.VehicleId
+
+	case *model.StrategySetCmd:
 	default:
 	}
 
