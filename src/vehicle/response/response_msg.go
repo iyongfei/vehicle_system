@@ -6,6 +6,10 @@ const (
 )
 
 const (
+	TrueFlag = "true"
+	FalseFlag = "false"
+)
+const (
 	TokenExpiredStr                    = "token过期"
 	TokenNotValidYetStr                = "token未激活"
 	TokenMalformedStr                  = "token不合法"
@@ -102,12 +106,22 @@ const (
 	ReqGetVehiclesFailMsg    = "车载列表获取失败"
 	ReqGetVehiclesSuccessMsg = "车载列表获取成功"
 )
-
+//depolyer
 const (
 	ReqGetVehicleBindLeaderUnExistMsg = "车载没有绑定管理人员信息"
 	ReqGetVehicleBindLeaderFailMsg = "车载绑定管理人员信息获取失败"
 	ReqUpdateVehicleBindLeaderSuccessMsg = "车载绑定管理人员信息更新成功"
 )
+
+//portMap
+const (
+	ReqGetPortMapUnExistMsg = "端口映射信息不存在"
+	ReqGetPortMapFailMsg = "端口映射信息获取失败"
+	ReqGetPortMapSuccessMsg = "端口映射信息获取成功"
+	ReqUpdatePortMapSuccessMsg = "端口映射信息更新成功"
+	ReqUpdatePortMapFailMsg = "端口映射信息更新失败"
+)
+
 //asset
 const (
 	ReqGetAssetFailMsg    = "设备信息获取失败"

@@ -107,12 +107,8 @@ func (t *TopicSubscribeHandler) HanleSubscribeTopicData(topicMsg mqtt.Message) e
 	case protobuf.GWResult_FLOWSTRATEGYSTAT: //StrawtegyParam
 		handGwResultError = HandleVehicleFlowStrategy(vehicleResult)
 
-
-
 	case protobuf.GWResult_PORTREDIRECT: //PortRedirectParam
 		handGwResultError = HandleVehiclePortMap(vehicleResult)
-
-
 
 	default:
 		logger.Logger.Error("vehicleId:%s action type err:%d",vehicleId,int32(vehicleResult.ActionType))

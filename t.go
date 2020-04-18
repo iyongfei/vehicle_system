@@ -1,28 +1,19 @@
 package main
 
-import (
-	"fmt"
-	"strings"
-)
+import "fmt"
 
 func main() {
 
-	rt:=RrgsTrimsAllEmpty(" "," d ","")
-	fmt.Println(rt)
+	r:=IsStringExistInSlice(true,[]interface{}{1,"1",true})
+	fmt.Println(r)
 }
 
 
-func RrgsTrimsAllEmpty(args... string) bool {
-	nullCount := 0
-	var flag = false
-	for _,arg:=range args{
-		if strings.Trim(arg, " ") == ""{
-			nullCount ++
+func IsStringExistInSlice(valueParam interface{}, array []interface{}) bool {
+	for _, value := range array {
+		if value == valueParam {
+			return true
 		}
 	}
-	if nullCount == len(args){
-		flag = true
-	}
-
-	return flag
+	return false
 }

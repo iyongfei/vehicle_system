@@ -12,7 +12,7 @@ var deployerUrls = map[string]string{
 	//"get_strategy":  "http://localhost:7001/api/v1/strategys/9xR5vYZweMb3aRoGGEQYaIw6xhRetYV8",
 	//
 	//"dele_strategy": "http://localhost:7001/api/v1/strategys/9xR5vYZweMb3aRoGGEQYaIw6xhRetYV8",
-	"edit_deployer": "http://localhost:7001/api/v1/deployer/9PaWCc7wbEhg2UNQuACGPSyV5BNPRFll",
+	"edit_deployer": "http://localhost:7001/api/v1/deployers/9PaWCc7wbEhg2UNQuACGPSyV5BNPRFll",
 }
 
 func main()  {
