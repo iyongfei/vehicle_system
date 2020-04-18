@@ -17,6 +17,10 @@ type MysqlConn struct {}
 
 var MysqlConnInstance *MysqlConn
 
+func GET() *gorm.DB {
+	GormDb, _ = gorm.Open("mysql",getConnectParams())
+	return GormDb
+}
 func GetMysqlInstance() *MysqlConn{
 	connectOnce.Do(NewMysqlConn)
 	return MysqlConnInstance

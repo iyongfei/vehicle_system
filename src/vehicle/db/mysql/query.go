@@ -61,7 +61,17 @@ func QueryModelPaginationByWhereCondition(model interface{},pageIndex int, pageS
 
 
 
-
+func QueryModelRecordsByWhereConditionOrderBy(models interface{},orderBy interface{}, query interface{}, args ...interface{}) error {
+	vgorm, err := GetMysqlInstance().GetMysqlDB()
+	if err != nil {
+		return fmt.Errorf("%s open grom err:%v",util.RunFuncName(),err.Error())
+	}
+	err = vgorm.Where(query, args...).Order(orderBy).Find(models).Error
+	if err != nil {
+		return fmt.Errorf("%s err %v",util.RunFuncName(),err.Error())
+	}
+	return nil
+}
 /**
 获取记录
  */

@@ -72,7 +72,7 @@ func FetchDipUrlList(setCmd *StrategySetCmd) ([]string, []string) {
 	//去重learning_result_ids
 	fAutomatedLearningResultIds := util.RemoveRepeatedForSlice(automatedLearningResultIds)
 
-	//获取automatedLearningResultModelList
+	//获取automatedLearningResultM=[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[q3odelList
 	automatedLearningResultModelList := []*model.AutomatedLearningResult{}
 
 	_ = model_base.ModelBaseImpl(&model.AutomatedLearningResult{}).

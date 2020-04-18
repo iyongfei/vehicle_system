@@ -9,6 +9,7 @@ import (
 	"vehicle_system/src/vehicle/router"
 	"vehicle_system/src/vehicle/service/flow"
 	"vehicle_system/src/vehicle/timing"
+	"vehicle_system/src/vehicle/vgo"
 )
 
 func init() {
@@ -19,6 +20,7 @@ func init() {
 	emq.Setup()
 	cron.Setup()
 	flow.Setup()
+	vgo.Setup()
 }
 
 

@@ -1,19 +1,39 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/jinzhu/gorm"
+	"vehicle_system/src/vehicle/conf"
+	"vehicle_system/src/vehicle/model"
+)
 
-func main() {
+func main()  {
 
-	r:=IsStringExistInSlice(true,[]interface{}{1,"1",true})
-	fmt.Println(r)
+	vgorm := InitDataBase()
+
+	strategyVehicleLearningResultJoins := []*model.StrategyVehicleLearningResultJoin{}
+	_ = vgorm.Debug().
+		Table("strategies").
+		Select("strategies.*,strategy_vehicles.vehicle_id").
+		Where("strategy_vehicles.vehicle_id = ?","TDavCZX6IyE3NDa2OVRaMlt92pMOG3Hw").
+		Joins("inner join strategy_vehicles ON strategies.strategy_id = strategy_vehicles.strategy_id").
+		Order("strategies.created_at desc").
+		Scan(&strategyVehicleLearningResultJoins).
+		Error
+	for k,v:=range strategyVehicleLearningResultJoins{
+		fmt.Println(k,v.StrategyId)
+	}
+
 }
 
 
-func IsStringExistInSlice(valueParam interface{}, array []interface{}) bool {
-	for _, value := range array {
-		if value == valueParam {
-			return true
-		}
-	}
-	return false
+
+
+func InitDataBase()(*gorm.DB){
+	GormDb, _ := gorm.Open("mysql","root:root@tcp(127.0.0.1:3306)/vehicle?charset=utf8&parseTime=True&loc=Local")
+	//GormDb.LogMode(true)
+
+	GormDb.DB().SetMaxIdleConns(conf.MaxIdleConns)
+	GormDb.DB().SetMaxOpenConns(conf.MaxOpenConns)
+	return GormDb
 }
