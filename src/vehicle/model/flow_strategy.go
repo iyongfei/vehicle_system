@@ -210,34 +210,34 @@ inner JOIN strategy_vehicle_learning_results ON strategy_vehicles.vehicle_id = s
 
 type FlowStrategyVehicleItemJoin struct {
 	gorm.Model
-	FlowStrategyId     		string
+	FstrategyId    string
 
-	Type               		uint8
-	HandleMode         		uint8
-	Enable             		bool
+	Type          uint8 //策略模式
+	HandleMode    uint8 //处理方式
+	Enable        bool  //策略启用状态
 
 	VehicleId 				string
 
-	FlowStrategyVehicleId  	string  //join
-	FlowStrategyItemId 		string //join
+	FstrategyVehicleId  string
+	FstrategyItemId   string
 }
 
 
-func GetFlowStrategyVehicleItems(query string,args ...interface{}) ([]*StrategyVehicleLearningResultJoin,error) {
+func GetFlowStrategyVehicleItems(query string,args ...interface{}) ([]*FlowStrategyVehicleItemJoin,error) {
 	vgorm,err := mysql.GetMysqlInstance().GetMysqlDB()
 	if err!= nil{
 		return nil,fmt.Errorf("%s open grom err:%v",util.RunFuncName(),err.Error())
 	}
-	strategyVehicleLearningResultJoins := []*StrategyVehicleLearningResultJoin{}
+	fstrategyVehicleItemJoin := []*FlowStrategyVehicleItemJoin{}
 	err = vgorm.Debug().
-		Table("strategies").
-		Select("strategies.*,strategy_vehicles.vehicle_id ,strategy_vehicle_learning_results.learning_result_id").
+		Table("fstrategies").
+		Select("fstrategies.*,fstrategy_vehicles.vehicle_id ,fstrategy_vehicle_items.fstrategy_item_id").
 		Where(query,args...).
-		Joins("inner join strategy_vehicles ON strategies.strategy_id = strategy_vehicles.strategy_id").
-		Joins("inner JOIN strategy_vehicle_learning_results ON strategy_vehicles.strategy_vehicle_id = strategy_vehicle_learning_results.strategy_vehicle_id")	.
-		Scan(&strategyVehicleLearningResultJoins).
+		Joins("inner join fstrategy_vehicles ON fstrategies.fstrategy_id = fstrategy_vehicles.fstrategy_id").
+		Joins("inner JOIN fstrategy_vehicle_items ON fstrategy_vehicles.fstrategy_vehicle_id = fstrategy_vehicle_items.fstrategy_vehicle_id")	.
+		Scan(&fstrategyVehicleItemJoin).
 		Error
-	return strategyVehicleLearningResultJoins,err
+	return fstrategyVehicleItemJoin,err
 }
 
 

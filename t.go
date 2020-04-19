@@ -1,9 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"github.com/jinzhu/gorm"
 	"vehicle_system/src/vehicle/conf"
-	"vehicle_system/src/vehicle/db/redis"
+	"vehicle_system/src/vehicle/util"
 )
 
 func main()  {
@@ -23,22 +24,25 @@ func main()  {
 	//	fmt.Println(k,v.StrategyId)
 	//}
 
-
-
-
-
-
-	//re,_:=redis.GetRedisInstance()
-	//for k,v:=range re{
-	//	fmt.Println(k,v,reflect.TypeOf(v))
+	//fdportSlice := []uint32{}
+	//ori:="1,3,4,5,5"
+	//
+	//dstPortSlice := strings.Split(ori, ",")
+	//for _, dport := range dstPortSlice {
+	//	destPortValid := util.VerifyIpPort(dport)
+	//	dpInt,_:=strconv.Atoi(dport)
+	//	if destPortValid && !util.IsExistInSlice(dpInt,fdportSlice)  {
+	//		fmt.Println(dpInt)
+	//		fdportSlice = append(fdportSlice, uint32(dpInt))
+	//	}
 	//}
 
-	//redis.GetRedisInstance().VHGet()
+	aaa:=[]uint32{1,3,4}
 
-	//redis.GetRedisInstance().Vkeys()
-
-	redis.GetRedisInstance().VSet("sdf",[]byte("sdfsd"),0)
+	a:=util.IsExistInSlice(uint32(3),aaa)
+	fmt.Println(a)
 }
+
 
 
 

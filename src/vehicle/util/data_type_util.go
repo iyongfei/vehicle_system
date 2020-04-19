@@ -147,6 +147,7 @@ func JoinSlice(slice []string, condition string) string {
 func IsExistInSlice(valueParam interface{}, array interface{}) bool {
 	switch reflect.TypeOf(array).Kind() {
 	case reflect.Slice:
+
 		arraySlice := reflect.ValueOf(array)
 		for i := 0; i < arraySlice.Len(); i++ {
 			if reflect.DeepEqual(valueParam, arraySlice.Index(i).Interface()) {

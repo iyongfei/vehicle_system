@@ -38,6 +38,11 @@ func PublishTopicMsg(data interface{}){
 		payload = strategySetCmd.CreateStrategyTopicMsg()
 		vehicleId = strategySetCmd.VehicleId
 
+	case *emq_cmd.FStrategySetCmd:
+		fstrategySetCmd := data.(*emq_cmd.FStrategySetCmd)
+		payload = fstrategySetCmd.CreateFStrategyTopicMsg()
+		vehicleId = fstrategySetCmd.VehicleId
+
 	case *emq_cmd.DeployerSetCmd:
 		deployerSetCmd := data.(*emq_cmd.DeployerSetCmd)
 		payload = deployerSetCmd.CreateDeployerTopicMsg()
