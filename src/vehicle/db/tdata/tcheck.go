@@ -46,8 +46,7 @@ func getTables() []interface{} {
 	flowStrategy:=&model.FlowStrategy{}
 	flowStrategyVehicles:=&model.FlowStrategyVehicle{}
 	flowStrategyTtem:=&model.FlowStrategyItem{}
-	flowStrategyRelateItem:=&model.FlowStrategyRelateItem{}
-	flowStrategyGroup:=&model.FlowStrategyGroup{}
+	flowStrategyRelateItem:=&model.FlowStrategyVehicleItem{}
 	sample:=&model.Sample{}
 	sampleItem:=&model.SampleItem{}
 	studyOrigin:=&model.StudyOrigin{}
@@ -58,7 +57,7 @@ func getTables() []interface{} {
 		flow,firmwareUpdate,firmwareInfo,vehicleInfo,vehicleLeader,
 		user,asset,threat,whiteList,portMap,strategy,strategyVehicle,strategyGroup,
 		strategyGroupsLearningResult,flowStrategy,flowStrategyVehicles,flowStrategyVehicles,
-		flowStrategyTtem,flowStrategyRelateItem,flowStrategyGroup,sample,
+		flowStrategyTtem,flowStrategyRelateItem,sample,
 		sampleItem,studyOrigin,automatedLearning,automatedLearningResult,
 	}
 

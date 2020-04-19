@@ -2,6 +2,7 @@ package redis
 
 import (
 	"fmt"
+	"reflect"
 	"time"
 	"vehicle_system/src/vehicle/util"
 )
@@ -214,4 +215,19 @@ func (rConn RedisConn) VBRPop(key string,timeout time.Duration)([]string,error) 
 	result,err :=sessionRedis.BRPop(timeout,key).Result()
 
 	return result,err
+}
+
+func (rConn *RedisConn) Publish() error{
+	sessionRedis,err := rConn.GetRedisDB()
+	if err!=nil{
+		return err
+	}
+
+	//data:=map[string]interface{}{
+	//	"a":1,
+	//}
+	a:=[]byte("sdfsd")
+	fmt.Println(reflect.TypeOf(a))
+	sessionRedis.Publish("chan",a)
+	return nil
 }

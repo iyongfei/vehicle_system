@@ -1,12 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"github.com/jinzhu/gorm"
 	"vehicle_system/src/vehicle/conf"
-	"vehicle_system/src/vehicle/model"
-	"vehicle_system/src/vehicle/model/model_base"
-	"vehicle_system/src/vehicle/emq/protobuf"
+	"vehicle_system/src/vehicle/db/redis"
 )
 
 func main()  {
@@ -29,15 +26,18 @@ func main()  {
 
 
 
-	originId := "TDav"
-	flows := []*model.Flow{}
-	_ = model_base.ModelBaseImpl(&model.Flow{}).GetModelListByCondition(&flows,
-		"stat = ? and vehicle_id = ?", []interface{}{protobuf.FlowStat_FST_FINISH,originId}...)
 
-	for k,v:=range flows{
-		fmt.Println(k,v.FlowId)
-	}
 
+	//re,_:=redis.GetRedisInstance()
+	//for k,v:=range re{
+	//	fmt.Println(k,v,reflect.TypeOf(v))
+	//}
+
+	//redis.GetRedisInstance().VHGet()
+
+	//redis.GetRedisInstance().Vkeys()
+
+	redis.GetRedisInstance().VSet("sdf",[]byte("sdfsd"),0)
 }
 
 

@@ -369,8 +369,6 @@ CREATE TABLE IF NOT EXISTS `flow_strategies`  (
   `type` tinyint(3) NULL DEFAULT NULL,
   `handle_mode` tinyint(3) NULL DEFAULT NULL,
   `enable` tinyint(1) NULL DEFAULT NULL,
-  `name` varchar(255) NULL DEFAULT NULL,
-  `introduce` varchar(255) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_flow_strategies_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
@@ -382,6 +380,7 @@ CREATE TABLE IF NOT EXISTS `flow_strategy_vehicles`  (
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
 
+  `flow_strategy_vehicle_id` varchar(255)  NULL DEFAULT NULL,
   `flow_strategy_id` varchar(255)  NULL DEFAULT NULL,
   `vehicle_id` varchar(255) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
@@ -397,20 +396,22 @@ CREATE TABLE IF NOT EXISTS `flow_strategy_items`  (
   `deleted_at` timestamp NULL DEFAULT NULL,
 
   `flow_strategy_item_id` varchar(255)  NULL DEFAULT NULL,
-  `dst_ip` int(11) UNSIGNED NULL DEFAULT NULL,
+  `vehicle_id` varchar(255)  NULL DEFAULT NULL,
+  `dst_ip` varchar(255) NULL DEFAULT NULL,
   `dst_port` int(11) UNSIGNED NULL DEFAULT NULL,
+
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_flow_strategy_items_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE IF NOT EXISTS `flow_strategy_relate_items`  (
+CREATE TABLE IF NOT EXISTS `flow_strategy_vehicle_items`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
 
-  `flow_strategy_id` varchar(255)  NULL DEFAULT NULL,
+  `flow_strategy_vehicle_id` varchar(255)  NULL DEFAULT NULL,
   `flow_strategy_item_id` varchar(255) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_flow_strategy_relate_items_deleted_at`(`deleted_at`) USING BTREE
