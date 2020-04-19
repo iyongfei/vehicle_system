@@ -52,6 +52,14 @@ func SubscribeServerTest(client mqtt.Client, msg mqtt.Message)  {
 		logger.Logger.Info("%s portMapSetModel:%+v",util.RunFuncName(),portMapSetModel)
 		logger.Logger.Print("%s portMapSetModel:%+v",util.RunFuncName(),portMapSetModel)
 
+	case protobuf.Command_FLOWSTRATEGY_ADD:
+		fstrategySetModel := &protobuf.FlowStrategyAddParam{}
+		param := command.GetParam()
+		_ = proto.Unmarshal(param,fstrategySetModel)
+
+		logger.Logger.Info("%s fstrategySetModel:%+v",util.RunFuncName(),fstrategySetModel)
+		logger.Logger.Print("%s fstrategySetModel:%+v",util.RunFuncName(),fstrategySetModel)
+
 
 	}
 }

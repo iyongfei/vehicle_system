@@ -73,15 +73,33 @@ func FetchDipPortList(setCmd *FStrategySetCmd) []*protobuf.FlowStrategyAddParam_
 
 
 	fProtobufStrategyVehicleItems := []*protobuf.FlowStrategyAddParam_FlowStrategyItem{}
+	mapper := map[string][]uint32{}
 	for _, fItem := range fstrategyVehicleItems {
-		fProtobufStrategyVehicleItem := &protobuf.FlowStrategyAddParam_FlowStrategyItem{}
-
+		//去重
 		dip:=fItem.DstIp
 		dport:=fItem.DstPort
-		fProtobufStrategyVehicleItem.DstPort = dport
-		fProtobufStrategyVehicleItem.DstIp = uint32(util.InetAton(dip))
-		fProtobufStrategyVehicleItems = append(fProtobufStrategyVehicleItems,fProtobufStrategyVehicleItem)
+
+		if len(mapper[dip]) == 0{
+
+			mapper[dip] = []uint32{dport}
+		}else {
+			util.IsExistInSlice(dport,mapper[dip])
+
+			mapper[dip] = append(mapper[dip],dport)
+		}
+
 	}
+
+	for dip,ports:=range mapper{
+		for _,port:=range ports{
+			fProtobufStrategyVehicleItem := &protobuf.FlowStrategyAddParam_FlowStrategyItem{}
+			fProtobufStrategyVehicleItem.DstIp = uint32(util.InetAton(dip))
+			fProtobufStrategyVehicleItem.DstPort = port
+
+			fProtobufStrategyVehicleItems = append(fProtobufStrategyVehicleItems,fProtobufStrategyVehicleItem)
+		}
+	}
+
 	return fProtobufStrategyVehicleItems
 }
 

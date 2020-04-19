@@ -1,10 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"github.com/jinzhu/gorm"
 	"vehicle_system/src/vehicle/conf"
-	"vehicle_system/src/vehicle/util"
 )
 
 func main()  {
@@ -37,10 +35,9 @@ func main()  {
 	//	}
 	//}
 
-	aaa:=[]uint32{1,3,4}
+	mapper := map[string][]interface{}{}
 
-	a:=util.IsExistInSlice(uint32(3),aaa)
-	fmt.Println(a)
+	println(len(mapper["sd"]))
 }
 
 
