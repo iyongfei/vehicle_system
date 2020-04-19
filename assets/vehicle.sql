@@ -360,74 +360,65 @@ CREATE TABLE IF NOT EXISTS `strategy_group_learning_results`  (
 -- Table structure for FlowStrategy
 -- ----------------------------
 
-CREATE TABLE IF NOT EXISTS `flow_strategies`  (
-  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  `deleted_at` timestamp NULL DEFAULT NULL,
-  `flow_strategy_id` varchar(255)  NULL DEFAULT NULL,
-  `type` tinyint(3) NULL DEFAULT NULL,
-  `handle_mode` tinyint(3) NULL DEFAULT NULL,
-  `enable` tinyint(1) NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx_flow_strategies_deleted_at`(`deleted_at`) USING BTREE
-) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
-
-CREATE TABLE IF NOT EXISTS `flow_strategy_vehicles`  (
+CREATE TABLE IF NOT EXISTS `fstrategy_items`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
 
-  `flow_strategy_vehicle_id` varchar(255)  NULL DEFAULT NULL,
-  `flow_strategy_id` varchar(255)  NULL DEFAULT NULL,
-  `vehicle_id` varchar(255) NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx_flow_strategy_vehicles_deleted_at`(`deleted_at`) USING BTREE
-) ENGINE = InnoDB DEFAULT CHARSET=utf8;
-
-
-
-CREATE TABLE IF NOT EXISTS `flow_strategy_items`  (
-  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  `deleted_at` timestamp NULL DEFAULT NULL,
-
-  `flow_strategy_item_id` varchar(255)  NULL DEFAULT NULL,
+  `fstrategy_item_id` varchar(255)  NULL DEFAULT NULL,
   `vehicle_id` varchar(255)  NULL DEFAULT NULL,
   `dst_ip` varchar(255) NULL DEFAULT NULL,
   `dst_port` int(11) UNSIGNED NULL DEFAULT NULL,
 
   PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx_flow_strategy_items_deleted_at`(`deleted_at`) USING BTREE
+  INDEX `idx_fstrategy_items_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE IF NOT EXISTS `flow_strategy_vehicle_items`  (
+CREATE TABLE IF NOT EXISTS `fstrategies`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  `fstrategy_id` varchar(255)  NULL DEFAULT NULL,
+  `type` tinyint(3) NULL DEFAULT NULL,
+  `handle_mode` tinyint(3) NULL DEFAULT NULL,
+  `enable` tinyint(1) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_fstrategies_deleted_at`(`deleted_at`) USING BTREE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `fstrategy_vehicles`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
 
-  `flow_strategy_vehicle_id` varchar(255)  NULL DEFAULT NULL,
-  `flow_strategy_item_id` varchar(255) NULL DEFAULT NULL,
+  `fstrategy_vehicle_id` varchar(255)  NULL DEFAULT NULL,
+  `fstrategy_id` varchar(255)  NULL DEFAULT NULL,
+  `vehicle_id` varchar(255) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx_flow_strategy_relate_items_deleted_at`(`deleted_at`) USING BTREE
+  INDEX `idx_fstrategy_vehicles_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE IF NOT EXISTS `flow_strategy_groups`  (
+
+
+CREATE TABLE IF NOT EXISTS `fstrategy_vehicle_items`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
-  `flow_strategy_id` varchar(255)  NULL DEFAULT NULL,
-  `group_id` varchar(255) NULL DEFAULT NULL,
+
+  `fstrategy_vehicle_id` varchar(255)  NULL DEFAULT NULL,
+  `fstrategy_item_id` varchar(255) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx_flow_strategy_groups_deleted_at`(`deleted_at`) USING BTREE
+  INDEX `idx_fstrategy_vehicle_items_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
 
 
 

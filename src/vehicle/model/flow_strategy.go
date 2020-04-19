@@ -8,9 +8,9 @@ import (
 	"vehicle_system/src/vehicle/util"
 )
 ///////////////////////////FlowStrategy//////////////////////////////////////
-type FlowStrategy struct {
+type Fstrategy struct {
 	gorm.Model
-	FlowStrategyId    string
+	FstrategyId    string
 
 	Type          uint8 //策略模式
 	HandleMode    uint8 //处理方式
@@ -18,10 +18,10 @@ type FlowStrategy struct {
 }
 
 
-func (flowStrategy *FlowStrategy) InsertModel() error {
+func (flowStrategy *Fstrategy) InsertModel() error {
 	return mysql.CreateModel(flowStrategy)
 }
-func (flowStrategy *FlowStrategy) GetModelByCondition(query interface{}, args ...interface{}) (error, bool) {
+func (flowStrategy *Fstrategy) GetModelByCondition(query interface{}, args ...interface{}) (error, bool) {
 	err, recordNotFound := mysql.QueryModelOneRecordIsExistByWhereCondition(flowStrategy, query, args...)
 	if err != nil {
 		return err, true
@@ -31,28 +31,28 @@ func (flowStrategy *FlowStrategy) GetModelByCondition(query interface{}, args ..
 	}
 	return nil, false
 }
-func (flowStrategy *FlowStrategy) UpdateModelsByCondition(values interface{}, query interface{}, queryArgs ...interface{}) error {
+func (flowStrategy *Fstrategy) UpdateModelsByCondition(values interface{}, query interface{}, queryArgs ...interface{}) error {
 	err := mysql.UpdateModelByMapModel(flowStrategy, values, query, queryArgs...)
 	if err != nil {
 		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
 	}
 	return nil
 }
-func (flowStrategy *FlowStrategy) DeleModelsByCondition(query interface{}, args ...interface{}) error {
+func (flowStrategy *Fstrategy) DeleModelsByCondition(query interface{}, args ...interface{}) error {
 	err := mysql.HardDeleteModelB(flowStrategy,query,args...)
 	if err!=nil{
 		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
 	}
 	return nil
 }
-func (flowStrategy *FlowStrategy) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) (error) {
+func (flowStrategy *Fstrategy) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) (error) {
 	err := mysql.QueryModelRecordsByWhereCondition(model,query,args...)
 	if err!=nil{
 		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
 	}
 	return nil
 }
-func (flowStrategy *FlowStrategy) CreateModel(flowStrategyParams ...interface{}) interface{} {
+func (flowStrategy *Fstrategy) CreateModel(flowStrategyParams ...interface{}) interface{} {
 
 	strategyParam := flowStrategyParams[0].(*protobuf.FlowStrategyParam)
 
@@ -61,7 +61,7 @@ func (flowStrategy *FlowStrategy) CreateModel(flowStrategyParams ...interface{})
 	flowStrategy.Enable = strategyParam.GetEnable()
 	return flowStrategy
 }
-func (flowStrategy *FlowStrategy) GetModelPaginationByCondition(pageIndex int, pageSize int, totalCount *int,
+func (flowStrategy *Fstrategy) GetModelPaginationByCondition(pageIndex int, pageSize int, totalCount *int,
 	paginModel interface{}, query interface{}, args ...interface{})(error){
 
 	err := mysql.QueryModelPaginationByWhereCondition(flowStrategy,pageIndex,pageSize,totalCount,paginModel,query,args...)
@@ -73,16 +73,16 @@ func (flowStrategy *FlowStrategy) GetModelPaginationByCondition(pageIndex int, p
 }
 
 ///////////////////////////FlowStrategyVehicle//////////////////////////////////////
-type FlowStrategyVehicle struct {
+type FstrategyVehicle struct {
 	gorm.Model
-	FlowStrategyVehicleId string
-	FlowStrategyId        string
+	FstrategyVehicleId string
+	FstrategyId        string
 	VehicleId  		      string
 }
-func (flowStrategyVehicle *FlowStrategyVehicle) InsertModel() error {
+func (flowStrategyVehicle *FstrategyVehicle) InsertModel() error {
 	return mysql.CreateModel(flowStrategyVehicle)
 }
-func (flowStrategyVehicle *FlowStrategyVehicle) GetModelByCondition(query interface{}, args ...interface{}) (error, bool) {
+func (flowStrategyVehicle *FstrategyVehicle) GetModelByCondition(query interface{}, args ...interface{}) (error, bool) {
 	err, recordNotFound := mysql.QueryModelOneRecordIsExistByWhereCondition(flowStrategyVehicle, query, args...)
 	if err != nil {
 		return err, true
@@ -92,41 +92,41 @@ func (flowStrategyVehicle *FlowStrategyVehicle) GetModelByCondition(query interf
 	}
 	return nil, false
 }
-func (flowStrategyVehicle *FlowStrategyVehicle) UpdateModelsByCondition(values interface{}, query interface{}, queryArgs ...interface{}) error {
+func (flowStrategyVehicle *FstrategyVehicle) UpdateModelsByCondition(values interface{}, query interface{}, queryArgs ...interface{}) error {
 	err := mysql.UpdateModelByMapModel(flowStrategyVehicle, values, query, queryArgs...)
 	if err != nil {
 		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
 	}
 	return nil
 }
-func (flowStrategyVehicle *FlowStrategyVehicle) DeleModelsByCondition(query interface{}, args ...interface{}) error {
+func (flowStrategyVehicle *FstrategyVehicle) DeleModelsByCondition(query interface{}, args ...interface{}) error {
 	err := mysql.HardDeleteModelB(flowStrategyVehicle,query,args...)
 	if err!=nil{
 		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
 	}
 	return nil
 }
-func (flowStrategyVehicle *FlowStrategyVehicle) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) (error) {
+func (flowStrategyVehicle *FstrategyVehicle) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) (error) {
 	err := mysql.QueryModelRecordsByWhereCondition(model,query,args...)
 	if err!=nil{
 		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
 	}
 	return nil
 }
-func (flowStrategyVehicle *FlowStrategyVehicle) CreateModel(strategyParams ...interface{}) interface{} {
+func (flowStrategyVehicle *FstrategyVehicle) CreateModel(strategyParams ...interface{}) interface{} {
 	return flowStrategyVehicle
 }
 ///////////////////////////VehicleLearningResult//////////////////////////////////////
 
-type FlowStrategyVehicleItem struct {
+type FstrategyVehicleItem struct {
 	gorm.Model
-	FlowStrategyVehicleId  string
-	FlowStrategyItemId   string
+	FstrategyVehicleId  string
+	FstrategyItemId   string
 }
-func (flowStrategyVehicleItem *FlowStrategyVehicleItem) InsertModel() error {
+func (flowStrategyVehicleItem *FstrategyVehicleItem) InsertModel() error {
 	return mysql.CreateModel(flowStrategyVehicleItem)
 }
-func (flowStrategyVehicleItem *FlowStrategyVehicleItem) GetModelByCondition(query interface{}, args ...interface{}) (error, bool) {
+func (flowStrategyVehicleItem *FstrategyVehicleItem) GetModelByCondition(query interface{}, args ...interface{}) (error, bool) {
 	err, recordNotFound := mysql.QueryModelOneRecordIsExistByWhereCondition(flowStrategyVehicleItem, query, args...)
 	if err != nil {
 		return err, true
@@ -136,40 +136,40 @@ func (flowStrategyVehicleItem *FlowStrategyVehicleItem) GetModelByCondition(quer
 	}
 	return nil, false
 }
-func (flowStrategyVehicleItem *FlowStrategyVehicleItem) UpdateModelsByCondition(values interface{}, query interface{}, queryArgs ...interface{}) error {
+func (flowStrategyVehicleItem *FstrategyVehicleItem) UpdateModelsByCondition(values interface{}, query interface{}, queryArgs ...interface{}) error {
 	err := mysql.UpdateModelByMapModel(flowStrategyVehicleItem, values, query, queryArgs...)
 	if err != nil {
 		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
 	}
 	return nil
 }
-func (flowStrategyVehicleItem *FlowStrategyVehicleItem) DeleModelsByCondition(query interface{}, args ...interface{}) error {
+func (flowStrategyVehicleItem *FstrategyVehicleItem) DeleModelsByCondition(query interface{}, args ...interface{}) error {
 	return nil
 }
-func (flowStrategyVehicleItem *FlowStrategyVehicleItem) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) (error) {
+func (flowStrategyVehicleItem *FstrategyVehicleItem) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) (error) {
 	err := mysql.QueryModelRecordsByWhereCondition(model,query,args...)
 	if err!=nil{
 		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
 	}
 	return nil
 }
-func (flowStrategyVehicleItem *FlowStrategyVehicleItem) CreateModel(strategyParams ...interface{}) interface{} {
+func (flowStrategyVehicleItem *FstrategyVehicleItem) CreateModel(strategyParams ...interface{}) interface{} {
 	return flowStrategyVehicleItem
 }
 
 ///////////////////////////flow_strategy_items//////////////////////////////////////
 
-type FlowStrategyItem struct {
+type FstrategyItem struct {
 	gorm.Model
-	FlowStrategyItemId string
+	FstrategyItemId string
 	VehicleId  string
 	DstIp   string
 	DstPort   uint32
 }
-func (flowStrategyItem *FlowStrategyItem) InsertModel() error {
+func (flowStrategyItem *FstrategyItem) InsertModel() error {
 	return mysql.CreateModel(flowStrategyItem)
 }
-func (flowStrategyItem *FlowStrategyItem) GetModelByCondition(query interface{}, args ...interface{}) (error, bool) {
+func (flowStrategyItem *FstrategyItem) GetModelByCondition(query interface{}, args ...interface{}) (error, bool) {
 	err, recordNotFound := mysql.QueryModelOneRecordIsExistByWhereCondition(flowStrategyItem, query, args...)
 	if err != nil {
 		return err, true
@@ -179,24 +179,24 @@ func (flowStrategyItem *FlowStrategyItem) GetModelByCondition(query interface{},
 	}
 	return nil, false
 }
-func (flowStrategyItem *FlowStrategyItem) UpdateModelsByCondition(values interface{}, query interface{}, queryArgs ...interface{}) error {
+func (flowStrategyItem *FstrategyItem) UpdateModelsByCondition(values interface{}, query interface{}, queryArgs ...interface{}) error {
 	err := mysql.UpdateModelByMapModel(flowStrategyItem, values, query, queryArgs...)
 	if err != nil {
 		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
 	}
 	return nil
 }
-func (flowStrategyItem *FlowStrategyItem) DeleModelsByCondition(query interface{}, args ...interface{}) error {
+func (flowStrategyItem *FstrategyItem) DeleModelsByCondition(query interface{}, args ...interface{}) error {
 	return nil
 }
-func (flowStrategyItem *FlowStrategyItem) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) (error) {
+func (flowStrategyItem *FstrategyItem) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) (error) {
 	err := mysql.QueryModelRecordsByWhereCondition(model,query,args...)
 	if err!=nil{
 		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
 	}
 	return nil
 }
-func (flowStrategyItem *FlowStrategyItem) CreateModel(strategyParams ...interface{}) interface{} {
+func (flowStrategyItem *FstrategyItem) CreateModel(strategyParams ...interface{}) interface{} {
 	return flowStrategyItem
 }
 

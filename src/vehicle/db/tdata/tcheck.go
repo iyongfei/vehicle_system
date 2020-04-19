@@ -43,10 +43,10 @@ func getTables() []interface{} {
 	strategyVehicle:=&model.StrategyVehicle{}
 	strategyGroup:=&model.StrategyGroup{}
 	strategyGroupsLearningResult:=&model.StrategyGroupLearningResult{}
-	flowStrategy:=&model.FlowStrategy{}
-	flowStrategyVehicles:=&model.FlowStrategyVehicle{}
-	flowStrategyTtem:=&model.FlowStrategyItem{}
-	flowStrategyRelateItem:=&model.FlowStrategyVehicleItem{}
+	flowStrategy:=&model.Fstrategy{}
+	flowStrategyVehicles:=&model.FstrategyVehicle{}
+	flowStrategyTtem:=&model.FstrategyItem{}
+	flowStrategyRelateItem:=&model.FstrategyVehicleItem{}
 	sample:=&model.Sample{}
 	sampleItem:=&model.SampleItem{}
 	studyOrigin:=&model.StudyOrigin{}

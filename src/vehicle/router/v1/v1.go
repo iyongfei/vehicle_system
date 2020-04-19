@@ -60,6 +60,17 @@ func V1Router(r *gin.Engine)  {
 		apiV1.GET("/vehicle_lresults/:strategy_vehicle_id", api_server.GetVehicleLearningResults)
 		apiV1.GET("/strategy_vehicle_lresults/:strategy_id", api_server.GetStrategyVehicleLearningResults)
 
+		//flowStrategy
+		apiV1.POST("/fstrategys", api_server.AddStrategy)
+		apiV1.GET("/fstrategys", api_server.GetStrategys)
+		apiV1.GET("/fstrategys/:fstrategy_id", api_server.GetStrategy)
+		apiV1.DELETE("/fstrategys/:fstrategy_id", api_server.DeleStrategy)
+		apiV1.PUT("/fstrategys/:fstrategy_id", api_server.EditStrategy)
+
+		//apiV1.GET("/fstrategy_vehicles/:fstrategy_id", api_server.GetStrategyVehicle)
+		apiV1.GET("/fstrategy_vehicle_items/:fstrategy_vehicle_id", api_server.GetVehicleLearningResults)
+		//apiV1.GET("/fstrategy_items/:fstrategy_id", api_server.GetStrategyVehicleLearningResults)
+
 
 		//车载管理信息
 		apiV1.PUT("/deployers/:deployer_id", api_server.EditDeployer)

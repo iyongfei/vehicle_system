@@ -25,12 +25,12 @@ func HandleVehicleFlowStrategy(vehicleResult protobuf.GWResult) error {
 	logger.Logger.Print("%s unmarshal vehicle flow strategy:%+v",util.RunFuncName(),flowStrategyParam)
 	logger.Logger.Info("%s unmarshal vehicle flow strategy:%+v",util.RunFuncName(),flowStrategyParam)
 	//create
-	flowStrategyInfo:=&model.FlowStrategy{
-		FlowStrategyId:flowStrategyParam.GetFlowStrategyId(),
+	flowStrategyInfo:=&model.Fstrategy{
+		FstrategyId:flowStrategyParam.GetFlowStrategyId(),
 	}
 	modelBase := model_base.ModelBaseImpl(flowStrategyInfo)
 
-	_,recordNotFound :=modelBase.GetModelByCondition("flow_strategy_id = ?",flowStrategyInfo.FlowStrategyId)
+	_,recordNotFound :=modelBase.GetModelByCondition("flow_strategy_id = ?",flowStrategyInfo.FstrategyId)
 
 	modelBase.CreateModel(flowStrategyParam)
 	if recordNotFound {
@@ -43,14 +43,14 @@ func HandleVehicleFlowStrategy(vehicleResult protobuf.GWResult) error {
 			"handle_mode":flowStrategyInfo.HandleMode,
 			"enable":flowStrategyInfo.Enable,
 		}
-		if err:=modelBase.UpdateModelsByCondition(attrs,"flow_strategy_id = ?",flowStrategyInfo.FlowStrategyId);err!=nil{
+		if err:=modelBase.UpdateModelsByCondition(attrs,"flow_strategy_id = ?",flowStrategyInfo.FstrategyId);err!=nil{
 			return fmt.Errorf("%s update vehicle flow strategy err:%s",util.RunFuncName(),err.Error())
 		}
 	}
 
 	//StrategyVehicle
-	flowStrategyVehicle := &model.FlowStrategyVehicle{
-		FlowStrategyId:flowStrategyInfo.FlowStrategyId,
+	flowStrategyVehicle := &model.FstrategyVehicle{
+		FstrategyId:flowStrategyInfo.FstrategyId,
 		VehicleId:vehicleId,
 	}
 
@@ -58,7 +58,7 @@ func HandleVehicleFlowStrategy(vehicleResult protobuf.GWResult) error {
 	flowStrategyVehicleGetModelBase := model_base.GetModelImpl(flowStrategyVehicle)
 
 	_,strategyVehicleRecordNotFound :=flowStrategyVehicleGetModelBase.GetModelByCondition(
-		"flow_strategy_id = ? and vehicle_id = ?",[]interface{}{flowStrategyVehicle.FlowStrategyId,flowStrategyVehicle.VehicleId}...)
+		"flow_strategy_id = ? and vehicle_id = ?",[]interface{}{flowStrategyVehicle.FstrategyId,flowStrategyVehicle.VehicleId}...)
 	if strategyVehicleRecordNotFound{
 		if err:=flowStrategyVehicleModelBase.InsertModel();err!=nil{
 			return fmt.Errorf("%s insert vehicle flowStrategyVehicle err:%s",util.RunFuncName(),err.Error())
