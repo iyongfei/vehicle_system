@@ -12,7 +12,7 @@ import "github.com/robfig/cron/v3"
 
 const (
 	//每隔一分钟
-	PerMinuteSpec  = "*/1 * * * *"
+	PerMinuteSpec  = "*/10 * * * *"
 	//从第49分钟开始，每隔1分钟
 	FromMinute_DisMinuteSpec = "49/1 * * * *"
 	//从第几小时，第54分钟开始，每隔1分钟
