@@ -1,8 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"github.com/jinzhu/gorm"
 	"vehicle_system/src/vehicle/conf"
+	"vehicle_system/src/vehicle/model"
+	"vehicle_system/src/vehicle/util"
 )
 
 func main()  {
@@ -35,9 +38,48 @@ func main()  {
 	//	}
 	//}
 
-	mapper := map[string][]interface{}{}
 
-	println(len(mapper["sd"]))
+
+	//fstrategyVehicleItems := []*model.FstrategyItem{}
+	//mapper := map[string][]uint32{}
+	//_ = model_base.ModelBaseImpl(&model.AutomatedLearningResult{}).
+	//	GetModelListByCondition(&fstrategyVehicleItems,
+	//		"fstrategy_item_id in (?)",
+	//		[]interface{}{"Anvl7c2xEdm85wVwstHfNDj6TJeruWpZ","vmtsrkxsI87EoCLOtxag5Dh9V4CkW9GN"}...)
+
+	model1:= &model.FstrategyItem{
+		DstIp:"1",
+		DstPort:12,
+	}
+	model2:= &model.FstrategyItem{
+		DstIp:"1",
+		DstPort:12,
+	}
+
+	ss:=[]*model.FstrategyItem{
+		model1,model2,
+	}
+	mapper := map[string][]uint32{}
+
+	for _, fItem := range ss {
+		//去重
+		dip:=fItem.DstIp
+		dport:=fItem.DstPort
+
+		if len(mapper[dip]) == 0{
+
+			mapper[dip] = []uint32{dport}
+		}else {
+			if !util.IsExistInSlice(dport,mapper[dip]){
+				mapper[dip] = append(mapper[dip],dport)
+			}
+
+
+		}
+
+	}
+
+	fmt.Println(mapper)
 }
 
 

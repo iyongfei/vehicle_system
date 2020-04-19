@@ -259,10 +259,22 @@ func AddFStrategy(c *gin.Context) {
 					DstPort:     		dport,
 				}
 				modelBase := model_base.ModelBaseImpl(fstrategyItem)
-				if err := modelBase.InsertModel(); err != nil {
+
+				err,fstrategyItemrecordNotFound :=modelBase.GetModelByCondition(
+					"vehicle_id = ? and dst_ip = ? and dst_port = ?",
+					[]interface{}{fstrategyItem.VehicleId,fstrategyItem.DstIp,fstrategyItem.DstPort}...)
+				if err!=nil{
 					continue
 				}
-				vehicleFstrategyItems = append(vehicleFstrategyItems,fstrategyItem.FstrategyItemId)
+
+				if fstrategyItemrecordNotFound{
+					if err := modelBase.InsertModel(); err != nil {
+						continue
+					}
+				}
+				if !util.IsExistInSlice(fstrategyItem.FstrategyItemId,vehicleFstrategyItems){
+					vehicleFstrategyItems = append(vehicleFstrategyItems,fstrategyItem.FstrategyItemId)
+				}
 			}
 		}
 		fstrategyItems[vehicleId] = vehicleFstrategyItems

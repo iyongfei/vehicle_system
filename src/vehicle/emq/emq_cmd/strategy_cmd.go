@@ -1,7 +1,6 @@
 package emq_cmd
 
 import (
-	"fmt"
 	"github.com/golang/protobuf/proto"
 	"strings"
 	"vehicle_system/src/vehicle/emq/protobuf"
@@ -91,7 +90,6 @@ func FetchDipUrlList(setCmd *StrategySetCmd) ([]string, []string) {
 				"stat = ? and vehicle_id = ?", []interface{}{protobuf.FlowStat_FST_FINISH,originId}...)
 			for _, flowItem := range flows {
 				dip := util.InetNtoa(int64(flowItem.DstIp))
-				fmt.Println("dip",dip)
 
 				if strings.Trim(dip, " ") != "" {
 					dipMap[dip] = dip

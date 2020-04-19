@@ -83,11 +83,10 @@ func FetchDipPortList(setCmd *FStrategySetCmd) []*protobuf.FlowStrategyAddParam_
 
 			mapper[dip] = []uint32{dport}
 		}else {
-			util.IsExistInSlice(dport,mapper[dip])
-
-			mapper[dip] = append(mapper[dip],dport)
+			if !util.IsExistInSlice(dport,mapper[dip]){
+				mapper[dip] = append(mapper[dip],dport)
+			}
 		}
-
 	}
 
 	for dip,ports:=range mapper{
