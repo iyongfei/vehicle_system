@@ -17,7 +17,6 @@ type Fstrategy struct {
 	Enable        bool  //策略启用状态
 }
 
-
 func (flowStrategy *Fstrategy) InsertModel() error {
 	return mysql.CreateModel(flowStrategy)
 }
@@ -171,8 +170,6 @@ type FstrategyItem struct {
 	DstPort   uint32
 }
 
-
-
 func (flowStrategyItem *FstrategyItem) SoftDeleModelImpl(query interface{}, args ...interface{}) error {
 	err := mysql.SoftDeleteModelB(flowStrategyItem,query,args...)
 	if err!=nil{
@@ -180,8 +177,6 @@ func (flowStrategyItem *FstrategyItem) SoftDeleModelImpl(query interface{}, args
 	}
 	return nil
 }
-
-
 func (flowStrategyItem *FstrategyItem) InsertModel() error {
 	return mysql.CreateModel(flowStrategyItem)
 }
@@ -218,7 +213,6 @@ func (flowStrategyItem *FstrategyItem) CreateModel(strategyParams ...interface{}
 
 
 /**
-获取一条策略信息
 SELECT strategies.*,strategy_vehicles.vehicle_id ,strategy_vehicle_learning_results.learning_result_id FROM strategies
 inner JOIN strategy_vehicles ON strategies.strategy_id = strategy_vehicles.strategy_id
 inner JOIN strategy_vehicle_learning_results ON strategy_vehicles.vehicle_id = strategy_vehicle_learning_results.vehicle_id
@@ -274,6 +268,27 @@ func GetFStrategyVehicles(query string,args ...interface{}) ([]*FlowStrategyVehi
 		Error
 	return fstrategyVehicles,err
 }
+
+
+/**
+ 获取某会话策略下的车载
+ */
+func GetVehicleFStrategy(query string,args ...interface{}) (*FlowStrategyVehicleItemJoin,error) {
+	vgorm,err := mysql.GetMysqlInstance().GetMysqlDB()
+	if err!= nil{
+		return nil,fmt.Errorf("%s open grom err:%v",util.RunFuncName(),err.Error())
+	}
+	vehiclesFstrategy := &FlowStrategyVehicleItemJoin{}
+	err = vgorm.Debug().
+		Table("fstrategies").
+		Select("fstrategies.*,fstrategy_vehicles.vehicle_id，fstrategy_vehicles.fstrategy_vehicle_id").
+		Where(query,args...).
+		Joins("inner join fstrategy_vehicles ON fstrategies.fstrategy_id = fstrategy_vehicles.fstrategy_id").
+		Scan(&vehiclesFstrategy).
+		Error
+	return vehiclesFstrategy,err
+}
+
 //
 //
 //

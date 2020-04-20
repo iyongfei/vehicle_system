@@ -49,10 +49,10 @@ type CreateModelImpl interface {
 	CreateModel(args ...interface{}) interface{}
 }
 
-//软删除
-type SoftDeleModelImpl interface {
-	SoftDeleModelsByCondition(query interface{}, args ...interface{})(error)
-}
+////软删除
+//type SoftDeleModelImpl interface {
+//	SoftDeleModelsByCondition(query interface{}, args ...interface{})(error)
+//}
 
 
 

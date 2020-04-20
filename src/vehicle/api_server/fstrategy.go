@@ -17,14 +17,38 @@ import (
 	"vehicle_system/src/vehicle/util"
 )
 
+/**
+queryParams := map[string]interface{}{
+		"vehicle_id":"TDav",
+		"type":"1",
+		"handle_mode":"2",
+		"dips":"192.168.1.1,192.168.1.3",
+		"dst_ports":"234,345",
+	}
+ */
 func EditFStrategy(c *gin.Context) {
-	strategyId := c.Param("strategy_id")
 	vehicleId := c.PostForm("vehicle_id")
+
+	fstrategyId := c.Param("fstrategy_id")
 	setTypeP := c.PostForm("type")
 	handleModeP := c.PostForm("handle_mode")
 
-	argsTrimsEmpty := util.RrgsTrimsEmpty(strategyId, setTypeP, handleModeP, vehicleId)
-	if argsTrimsEmpty {
+	dips := c.PostForm("dips")
+	dstPorts := c.PostForm("dst_ports")
+
+	argsTrimsEmpty := util.RrgsTrimsEmpty(fstrategyId, vehicleId, setTypeP, handleModeP, dips, dstPorts)
+
+	sTypeValid := util.IsEleExistInSlice(setTypeP, []interface{}{
+		strconv.Itoa(int(protobuf.FlowStrategyAddParam_FLWOTYPEDEFAULT)),
+		strconv.Itoa(int(protobuf.FlowStrategyAddParam_FLWOWHITEMODE)),
+		strconv.Itoa(int(protobuf.FlowStrategyAddParam_FLWOBLACKMODE))})
+
+	handleModeValid := util.IsEleExistInSlice(handleModeP, []interface{}{
+		strconv.Itoa(int(protobuf.FlowStrategyAddParam_MODEDEFAULT)),
+		strconv.Itoa(int(protobuf.FlowStrategyAddParam_PREVENTWARNING)),
+		strconv.Itoa(int(protobuf.FlowStrategyAddParam_WARNING))})
+
+	if argsTrimsEmpty || !sTypeValid || !handleModeValid {
 		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
 		c.JSON(http.StatusOK, ret)
 		logger.Logger.Error("%s argsTrimsEmpty", util.RunFuncName())
@@ -34,67 +58,145 @@ func EditFStrategy(c *gin.Context) {
 	setType, _ := strconv.Atoi(setTypeP)
 	handleMode, _ := strconv.Atoi(handleModeP)
 
-	strategyVehicleLearningResultJoins, err := model.GetStrategyJoinVehicles(
-		"strategy_vehicles.strategy_id = ? and strategy_vehicles.vehicle_id = ?",
-		[]interface{}{strategyId, vehicleId}...)
+	fdipSlice := []string{}
+	//筛选dip
+	dipSlice := strings.Split(dips, ",")
+	for _, dip := range dipSlice {
+		destIpValid := util.IpFormat(dip)
+		if destIpValid && !util.IsExistInSlice(dip, fdipSlice) {
+			fdipSlice = append(fdipSlice, dip)
+		}
+	}
 
-	if err != nil || strategyVehicleLearningResultJoins.StrategyId == "" || strategyVehicleLearningResultJoins.VehicleId == "" {
-		logger.Logger.Error("%s strategyId:%s,recordNotFounder", util.RunFuncName(), strategyId)
-		logger.Logger.Print("%s strategyId:%s,recordNotFounder", util.RunFuncName(), strategyId)
-		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetStrtegyUnExistMsg, "")
+	fdportSlice := []uint32{}
+	//筛选dstPort
+	dstPortSlice := strings.Split(dstPorts, ",")
+
+	for _, dport := range dstPortSlice {
+		destPortValid := util.VerifyIpPort(dport)
+		dpInt, _ := strconv.Atoi(dport)
+		if destPortValid && !util.IsExistInSlice(uint32(dpInt), fdportSlice) {
+			fdportSlice = append(fdportSlice, uint32(dpInt))
+		}
+	}
+
+	//////////////////////////////////////////////////////////////
+	//查看该vehicle是否存在
+	vehicleFStrategy, err := model.GetVehicleFStrategy(
+		"fstrategy_vehicles.vehicle_id = ? and fstrategies.fstrategy_id = ?", []interface{}{vehicleId, fstrategyId}...)
+	if vehicleFStrategy.FstrategyVehicleId == "" {
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetFStrtegyUnExistMsg, "")
 		c.JSON(http.StatusOK, ret)
 		return
 	}
 
-	//查询是否存在
-	strategyInfo := &model.Strategy{
-		StrategyId: strategyVehicleLearningResultJoins.StrategyId,
+	//更新策略信息
+	vehicleFstrategy := &model.Fstrategy{
+		FstrategyId: fstrategyId,
+		Type:        uint8(setType),
+		HandleMode:  uint8(handleMode),
 	}
-	modelBase := model_base.ModelBaseImpl(strategyInfo)
-	err, recordNotFound := modelBase.GetModelByCondition("strategy_id = ?", []interface{}{strategyInfo.StrategyId}...)
-
-	if err != nil {
-		logger.Logger.Error("%s strategy_id:%s,err:%s", util.RunFuncName(), strategyId, err)
-		logger.Logger.Print("%s strategy_id:%s,err:%s", util.RunFuncName(), strategyId, err)
-		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetStrategyFailMsg, "")
-		c.JSON(http.StatusOK, ret)
-		return
-	}
-
-	if recordNotFound {
-		logger.Logger.Error("%s strategyId:%s,recordNotFound", util.RunFuncName(), strategyId)
-		logger.Logger.Print("%s strategyId:%s,recordNotFound", util.RunFuncName(), strategyId)
-		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetStrtegyUnExistMsg, "")
-		c.JSON(http.StatusOK, ret)
-		return
-	}
-
-	strategyInfo.HandleMode = uint8(handleMode)
-	strategyInfo.Type = uint8(setType)
+	vehicleFstrategyModelBase := model_base.ModelBaseImpl(vehicleFstrategy)
 
 	attrs := map[string]interface{}{
-		"handle_mode": strategyInfo.HandleMode,
-		"type":        strategyInfo.Type,
+		"handle_mode": vehicleFstrategy.HandleMode,
+		"type":        vehicleFstrategy.Type,
 	}
-	if err := modelBase.UpdateModelsByCondition(attrs, "strategy_id = ?",
-		[]interface{}{strategyInfo.StrategyId}...); err != nil {
+
+	if err := vehicleFstrategyModelBase.UpdateModelsByCondition(attrs, "fstrategy_id = ?",
+		[]interface{}{vehicleFstrategy.FstrategyId}...); err != nil {
 		ret := response.StructResponseObj(response.VStatusServerError, response.ReqUpdateStrategyFailMsg, "")
 		c.JSON(http.StatusOK, ret)
 		return
 	}
+	//FstrategyVehicle不更改
+
+	//遍历FstrategyVehicleItem表
+	fstrategyItems := map[string][]string{}
+	var vehicleFstrategyItems []string
+
+	for _, dip := range fdipSlice {
+		for _, dport := range fdportSlice {
+			fstrategyItem := &model.FstrategyItem{
+				FstrategyItemId: util.RandomString(32),
+				VehicleId:       vehicleId,
+				DstIp:           dip,
+				DstPort:         dport,
+			}
+			modelBase := model_base.ModelBaseImpl(fstrategyItem)
+
+			err, fstrategyItemRecordNotFound := modelBase.GetModelByCondition(
+				"vehicle_id = ? and dst_ip = ? and dst_port = ?",
+				[]interface{}{fstrategyItem.VehicleId, fstrategyItem.DstIp, fstrategyItem.DstPort}...)
+			if err != nil {
+				continue
+			}
+
+			if fstrategyItemRecordNotFound {
+				if err := modelBase.InsertModel(); err != nil {
+					continue
+				}
+			}
+			if !util.IsExistInSlice(fstrategyItem.FstrategyItemId, vehicleFstrategyItems) {
+				vehicleFstrategyItems = append(vehicleFstrategyItems, fstrategyItem.FstrategyItemId)
+			}
+		}
+	}
+	fstrategyItems[vehicleId] = vehicleFstrategyItems
+
+	//找到FstrategyItemId(FstrategyVehicleItem表中)
+	//在FstrategyItemId(FstrategyItem表中)不存在的值
+
+	var fstrategyItemIds []string
+	_ = mysql.QueryPluckByModelWhere(&model.FstrategyVehicleItem{}, "fstrategy_item_id", &fstrategyItemIds,
+		"fstrategy_vehicle_id = ?", vehicleFStrategy.FstrategyVehicleId)
+
+	var needDeleFstrategyItemIds []string
+	for _, fstrategyItemId := range fstrategyItemIds {
+		//如果没有在里面，就是被删除的，需要改delete标志位
+		newFstrategyItemIds := fstrategyItems[vehicleId]
+		if !util.IsExistInSlice(fstrategyItemId, newFstrategyItemIds) {
+			needDeleFstrategyItemIds = append(needDeleFstrategyItemIds, fstrategyItemId)
+		}
+	}
+	//置成标志位
+	fstrategyItem := &model.FstrategyItem{}
+	err = fstrategyItem.SoftDeleModelImpl("fstrategy_item_id in (?)", needDeleFstrategyItemIds)
+
+
+	//删除FstrategyVehicleItem表
+	fstrategyVehicleItem := &model.FstrategyVehicleItem{}
+	fstrategyVehicleItemModelBase := model_base.ModelBaseImpl(fstrategyVehicleItem)
+	err = fstrategyVehicleItemModelBase.DeleModelsByCondition("fstrategy_vehicle_id = ?", vehicleFStrategy.FstrategyVehicleId)
+	if err != nil {
+		return
+	}
+
+	//添加FstrategyVehicleItem表
+	for _, fstrategyItemId := range fstrategyItemIds {
+		fstrategyVehicleItem:= &model.FstrategyVehicleItem{
+			FstrategyVehicleId:vehicleFStrategy.FstrategyVehicleId,
+			FstrategyItemId:fstrategyItemId,
+		}
+
+		fstrategyVehicleItemModelBase := model_base.ModelBaseImpl(fstrategyVehicleItem)
+		if err := fstrategyVehicleItemModelBase.InsertModel();err!=nil{
+			continue
+		}
+	}
 
 	//更新
-	strategyCmd := &emq_cmd.StrategySetCmd{
+	fstrategyCmd := &emq_cmd.FStrategySetCmd{
 		VehicleId: vehicleId,
-		TaskType:  int(protobuf.Command_STRATEGY_ADD),
+		TaskType:  int(protobuf.Command_FLOWSTRATEGY_ADD),
 
-		StrategyId: strategyId,
+		FstrategyId: fstrategyId,
 		Type:       setType,
 		HandleMode: handleMode,
 		Enable:     true,
 		GroupId:    "", //目前不实现
 	}
-	topic_publish_handler.GetPublishService().PutMsg2PublicChan(strategyCmd)
+	topic_publish_handler.GetPublishService().PutMsg2PublicChan(fstrategyCmd)
 
 	retObj := response.StructResponseObj(response.VStatusOK, response.ReqUpdateStrategySuccessMsg, "")
 	c.JSON(http.StatusOK, retObj)
@@ -192,7 +294,7 @@ func AddFStrategy(c *gin.Context) {
 		strconv.Itoa(int(protobuf.FlowStrategyAddParam_FLWOWHITEMODE)),
 		strconv.Itoa(int(protobuf.FlowStrategyAddParam_FLWOBLACKMODE))})
 
-	handleModeValid := util.IsEleExistInSlice(sType, []interface{}{
+	handleModeValid := util.IsEleExistInSlice(handleMode, []interface{}{
 		strconv.Itoa(int(protobuf.FlowStrategyAddParam_MODEDEFAULT)),
 		strconv.Itoa(int(protobuf.FlowStrategyAddParam_PREVENTWARNING)),
 		strconv.Itoa(int(protobuf.FlowStrategyAddParam_WARNING))})

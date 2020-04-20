@@ -10,9 +10,9 @@ var fstrategyUrls = map[string]string{
 	"post_fstrategy": "http://localhost:7001/api/v1/fstrategys",
 	"get_fstrategys": "http://localhost:7001/api/v1/fstrategys",
 	"get_fstrategy":  "http://localhost:7001/api/v1/fstrategys/VTkP0Qka6QHkjoy9OE5R079lz7zEa5o1",
-	"dele_fstrategy": "http://localhost:7001/api/v1/fstrategys/C4UOrF6oiJoQINfF5gjrQEhZ1CvLCEvY",
+	"dele_fstrategy": "http://localhost:7001/api/v1/fstrategys/Ne114FumZ61ju946sBT3Mdr65PjZYv95",
 
-	"edit_strategy": "http://localhost:7001/api/v1/strategys/9xR5vYZweMb3aRoGGEQYaIw6xhRetYV8",
+	"edit_fstrategy": "http://localhost:7001/api/v1/fstrategys/nNSuiQmC289P1Kd8tsjFbRPdSoNFQGkC",
 
 	"get_strategy_vehicles": "http://localhost:7001/api/v1/strategy_vehicles/9xR5vYZweMb3aRoGGEQYaIw6xhRetYV8",
 	"get_vehicle_results": "http://localhost:7001/api/v1/vehicle_lresults/cuMwUiDA2V8NLNWGznfVI2hP5Zi3PhMJ",
@@ -28,14 +28,48 @@ func main() {
 	//getFStrategys()
 	//getFStrategy()
 
-	deleFStrategy()
-	//editStrategy()//
+	//deleFStrategy()
+	editFStrategy()//
 
 	//getStrategyVehicle()
 	//getVehicleLearningResults()
 	//getStrategyVehicleLearningResults()
 }
 
+func editFStrategy() {
+	token := tool.GetVehicleToken()
+	urlReq, _ := fstrategyUrls["edit_fstrategy"]
+
+
+	queryParams := map[string]interface{}{
+		"vehicle_id":"TDav",
+		"type":"1",
+		"handle_mode":"2",
+		"dips":"192.168.1.1,192.168.1.3",
+		"dst_ports":"234,345",
+	}
+
+	resp, _ := tool.PutForm(urlReq, queryParams, token)
+
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+}
+
+func addFStrategy() {
+	token := tool.GetVehicleToken()
+	reqUrl := fstrategyUrls["post_fstrategy"]
+	queryParams := map[string]interface{}{
+		"vehicle_ids":"TDav",
+		"type":"1",
+		"handle_mode":"2",
+		"dips":"192.168.1.1,192.168.1.2",
+		"dst_ports":"123,234",
+	}
+
+	resp, _ := tool.PostForm(reqUrl, queryParams, token)
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+}
 func deleFStrategy() {
 	token := tool.GetVehicleToken()
 
@@ -81,21 +115,6 @@ func getFStrategys() {
 	fmt.Printf("resp %+v", string(respMarshal))
 }
 
-func addFStrategy() {
-	token := tool.GetVehicleToken()
-	reqUrl := fstrategyUrls["post_fstrategy"]
-	queryParams := map[string]interface{}{
-		"vehicle_ids":"TDav,TDavlll,12",
-		"type":"1",
-		"handle_mode":"2",
-		"dips":"192.168.1.1,192.168.1.1",
-		"dst_ports":"123,234,344,123",
-	}
-
-	resp, _ := tool.PostForm(reqUrl, queryParams, token)
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
-}
 //
 //
 //
@@ -106,22 +125,6 @@ func addFStrategy() {
 //	}
 //	reqUrl := strategyUrls["get_strategy_vehicle_results"]
 //	resp, _ := tool.Get(reqUrl, queryParams, token)
-//	respMarshal, _ := json.Marshal(resp)
-//	fmt.Printf("resp %+v", string(respMarshal))
-//}
-//
-//
-//func editStrategy() {
-//	token := tool.GetVehicleToken()
-//	urlReq, _ := strategyUrls["edit_strategy"]
-//
-//	bodyParams := map[string]interface{}{
-//		"type":   "22",
-//		"handle_mode": "11",
-//		"vehicle_id": "dTtR4sFMYfDJzGAVTv4KWSc9KYLTA64d",
-//	}
-//	resp, _ := tool.PutForm(urlReq, bodyParams, token)
-//
 //	respMarshal, _ := json.Marshal(resp)
 //	fmt.Printf("resp %+v", string(respMarshal))
 //}
