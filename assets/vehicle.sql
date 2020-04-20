@@ -514,4 +514,33 @@ CREATE TABLE IF NOT EXISTS `automated_learning_results`  (
   INDEX `idx_automated_learning_results_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS `monitors`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+
+  `monitor_id` varchar(255)  NULL DEFAULT NULL,
+  `cpu_rate` int(3)  NULL DEFAULT NULL,
+  `mem_rate` int(3)  NULL DEFAULT NULL,
+  `gather_time` int(11) NULL DEFAULT NULL,
+
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_monitors_deleted_at`(`deleted_at`) USING BTREE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `disks`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+
+  `monitor_id` varchar(255)  NULL DEFAULT NULL,
+  `path` varchar(255)  NULL DEFAULT NULL,
+  `disk_rate` int(3)  NULL DEFAULT NULL,
+
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_disks_deleted_at`(`deleted_at`) USING BTREE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

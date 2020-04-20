@@ -79,6 +79,10 @@ func (t *TopicSubscribeHandler) HanleSubscribeTopicData(topicMsg mqtt.Message) e
 	case protobuf.GWResult_GW_INFO: //GwInfoParam
 		handGwResultError = HandleVehicleInfo(vehicleResult)
 
+	case protobuf.GWResult_MONITORINFO: //MONITORINFO
+		handGwResultError = HandleMonitorInfo(vehicleResult)
+
+
 	case protobuf.GWResult_DEPLOYER: //DeployerParam
 		handGwResultError = HandleVehicleDeployer(vehicleResult)
 

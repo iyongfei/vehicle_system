@@ -1,0 +1,108 @@
+package model
+
+import (
+	"fmt"
+	"github.com/jinzhu/gorm"
+	"vehicle_system/src/vehicle/db/mysql"
+	"vehicle_system/src/vehicle/emq/protobuf"
+	"vehicle_system/src/vehicle/util"
+)
+
+type Monitor struct {
+	gorm.Model
+	MonitorId   string
+	CpuRate 	uint8
+	MemRate 	uint8
+	GatherTime  uint32
+}
+
+
+func (monitor *Monitor) InsertModel() error {
+	return mysql.CreateModel(monitor)
+}
+func (monitor *Monitor) GetModelByCondition(query interface{}, args ...interface{}) (error, bool) {
+	err, recordNotFound := mysql.QueryModelOneRecordIsExistByWhereCondition(monitor, query, args...)
+	if err != nil {
+		return err, true
+	}
+	if recordNotFound {
+		return nil, true
+	}
+	return nil, false
+}
+func (monitor *Monitor) UpdateModelsByCondition(values interface{}, query interface{}, queryArgs ...interface{}) error {
+	err := mysql.UpdateModelByMapModel(monitor, values, query, queryArgs...)
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
+	}
+	return nil
+}
+func (monitor *Monitor) DeleModelsByCondition(query interface{}, args ...interface{}) error {
+	err := mysql.HardDeleteModelB(monitor,query,args...)
+	if err!=nil{
+		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
+	}
+	return nil
+}
+func (monitor *Monitor) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) (error) {
+	err := mysql.QueryModelRecordsByWhereCondition(model,query,args...)
+	if err!=nil{
+		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
+	}
+	return nil
+}
+func (monitor *Monitor) CreateModel(monitorParams ...interface{}) interface{} {
+	monitorParam := monitorParams[0].(*protobuf.MonitorInfoParam)
+	monitor.CpuRate = uint8(monitorParam.GetCpuRate())
+	monitor.MemRate = uint8(monitorParam.GetMemRate())
+	monitor.GatherTime = monitorParam.GetGatherTime()
+	return monitor
+}
+
+
+type Disk struct {
+	gorm.Model
+	MonitorId   string
+	Path 		string
+	DiskRate  	uint8
+}
+
+func (disk *Disk) InsertModel() error {
+	return mysql.CreateModel(disk)
+}
+func (disk *Disk) GetModelByCondition(query interface{}, args ...interface{}) (error, bool) {
+	err, recordNotFound := mysql.QueryModelOneRecordIsExistByWhereCondition(disk, query, args...)
+	if err != nil {
+		return err, true
+	}
+	if recordNotFound {
+		return nil, true
+	}
+	return nil, false
+}
+func (disk *Disk) UpdateModelsByCondition(values interface{}, query interface{}, queryArgs ...interface{}) error {
+	err := mysql.UpdateModelByMapModel(disk, values, query, queryArgs...)
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
+	}
+	return nil
+}
+func (disk *Disk) DeleModelsByCondition(query interface{}, args ...interface{}) error {
+	err := mysql.HardDeleteModelB(disk,query,args...)
+	if err!=nil{
+		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
+	}
+	return nil
+}
+func (disk *Disk) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) (error) {
+	err := mysql.QueryModelRecordsByWhereCondition(model,query,args...)
+	if err!=nil{
+		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
+	}
+	return nil
+}
+func (disk *Disk) CreateModel(diskParams ...interface{}) interface{} {
+	diskParam := diskParams[0].(*protobuf.MonitorInfoParam_DiskOverFlow)
+	disk.DiskRate = uint8(diskParam.GetDiskRate())
+	return disk
+}

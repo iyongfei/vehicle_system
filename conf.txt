@@ -48,3 +48,7 @@ dev_name =小V上线
 #更新
 insert_firm_vehicle_id = kQ8XKqP57cNwt0CwXLWoXWF0UfwaYFX8
 deploy_id=1jllwe
+
+#monitor
+monitor_id = 1233
+disk_path_count = 5

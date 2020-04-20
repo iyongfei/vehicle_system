@@ -15,6 +15,7 @@ message GWResult {
 		FIRMWARE = 9;//版本更新信息,上报FirwareParam类型
 		FLOWSTAT = 10;//网络会话状态, 上报 FlowParam 类型
 		FLOWSTRATEGYSTAT = 11; // flow策略状态, 上传 FlowStrategyParam 类型
+		MONITORINFO   = 12; //监控，上报MonitorInfoParam类型
 	}
 
 	ActionType action_type = 1;//推送数据类型
@@ -22,6 +23,20 @@ message GWResult {
 	string GUID = 3;//小VGUID
 	string cmdID = 4;//结果返回所对应的命令ID. 用于返回Command的cmdID值及结果
 }
+
+message MonitorInfoParam {
+	message DiskOverFlow {
+		string path = 1;        //盘符路径
+		uint32 disk_rate = 2;   //当前盘符占用比例
+	}
+
+	uint32 cpu_rate = 1;    //CPU占用比例
+	uint32 mem_rate = 2;    //内存占用比例
+	repeated DiskOverFlow disk_item = 3; //占用比例较大盘符，暂定80%以上
+	uint32 gather_time = 4; //收集数据时间
+}
+
+
 
 enum FlowProtos {
 	FP_UNKNOWN = 0; // 默认值
