@@ -182,3 +182,35 @@ const (
 	ReqGetStrategyVehicleResultListFailMsg    = "车载-学习结果列表获取失败"
 	ReqGetStrategyVehicleResultListSuccessMsg = "车载-学习结果列表获取成功"
 )
+
+//fstrategy
+const (
+	//ReqAddStrategyFailMsg    = "策略添加失败"
+	ReqAddFStrategySuccessMsg = "会话策略添加成功"
+	//ReqGetStrategyExistMsg    = "策略已存在"
+	ReqGetFStrtegyUnExistMsg = "会话策略信息不存在"
+	//
+	ReqGetFStrategyListFailMsg    = "会话策略列表获取失败"
+	ReqGetFStrategyListSuccessMsg = "会话策略列表获取成功"
+	//
+	ReqGetFStrategyFailMsg    		= "会话策略信息获取失败"
+	ReqGetFStrategySuccessMsg		 = "会话策略信息获取成功"
+	//
+	ReqDeleFStrategyFailMsg          = "会话策略信息删除失败"
+	ReqDeleFStrategySuccessMsg       = "会话策略信息删除成功"
+	//
+	//ReqUpdateStrategyFailMsg    = "策略信息更新失败"
+	//ReqUpdateStrategySuccessMsg = "策略信息更新成功"
+	//
+	//
+	//
+	//ReqGetStrategyVehicleFailMsg    		= "策略-车载信息获取失败"
+	//ReqGetStrategyVehicleUnExistMsg    		= "策略-车载信息不存在"
+	//ReqGetStrategyVehicleSuccessMsg		 = "策略-车载信息获取成功"
+	//
+	//ReqGetStrategyVehicleListFailMsg    = "策略-车载列表获取失败"
+	//ReqGetStrategyVehicleListSuccessMsg = "策略-车载列表获取成功"
+	//
+	//ReqGetStrategyVehicleResultListFailMsg    = "车载-学习结果列表获取失败"
+	//ReqGetStrategyVehicleResultListSuccessMsg = "车载-学习结果列表获取成功"
+)

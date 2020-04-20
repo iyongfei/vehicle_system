@@ -144,6 +144,10 @@ func (flowStrategyVehicleItem *FstrategyVehicleItem) UpdateModelsByCondition(val
 	return nil
 }
 func (flowStrategyVehicleItem *FstrategyVehicleItem) DeleModelsByCondition(query interface{}, args ...interface{}) error {
+	err := mysql.HardDeleteModelB(flowStrategyVehicleItem,query,args...)
+	if err!=nil{
+		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
+	}
 	return nil
 }
 func (flowStrategyVehicleItem *FstrategyVehicleItem) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) (error) {
@@ -166,6 +170,18 @@ type FstrategyItem struct {
 	DstIp   string
 	DstPort   uint32
 }
+
+
+
+func (flowStrategyItem *FstrategyItem) SoftDeleModelImpl(query interface{}, args ...interface{}) error {
+	err := mysql.SoftDeleteModelB(flowStrategyItem,query,args...)
+	if err!=nil{
+		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
+	}
+	return nil
+}
+
+
 func (flowStrategyItem *FstrategyItem) InsertModel() error {
 	return mysql.CreateModel(flowStrategyItem)
 }
@@ -231,7 +247,7 @@ func GetFlowStrategyVehicleItems(query string,args ...interface{}) ([]*FlowStrat
 	fstrategyVehicleItemJoin := []*FlowStrategyVehicleItemJoin{}
 	err = vgorm.Debug().
 		Table("fstrategies").
-		Select("fstrategies.*,fstrategy_vehicles.vehicle_id ,fstrategy_vehicle_items.fstrategy_item_id").
+		Select("fstrategies.*,fstrategy_vehicles.vehicle_id ,fstrategy_vehicle_items.fstrategy_item_id,fstrategy_vehicle_items.fstrategy_vehicle_id").
 		Where(query,args...).
 		Joins("inner join fstrategy_vehicles ON fstrategies.fstrategy_id = fstrategy_vehicles.fstrategy_id").
 		Joins("inner JOIN fstrategy_vehicle_items ON fstrategy_vehicles.fstrategy_vehicle_id = fstrategy_vehicle_items.fstrategy_vehicle_id")	.
@@ -240,22 +256,23 @@ func GetFlowStrategyVehicleItems(query string,args ...interface{}) ([]*FlowStrat
 	return fstrategyVehicleItemJoin,err
 }
 
-
-
-func GetVehicleFlowStrategy(query string,args ...interface{}) (*StrategyVehicleLearningResultJoin,error) {
+/**
+ 获取某会话策略下的车载
+ */
+func GetFStrategyVehicles(query string,args ...interface{}) ([]*FlowStrategyVehicleItemJoin,error) {
 	vgorm,err := mysql.GetMysqlInstance().GetMysqlDB()
 	if err!= nil{
 		return nil,fmt.Errorf("%s open grom err:%v",util.RunFuncName(),err.Error())
 	}
-	strategyVehicleLearningResultJoins := &StrategyVehicleLearningResultJoin{}
+	fstrategyVehicles := []*FlowStrategyVehicleItemJoin{}
 	err = vgorm.Debug().
-		Table("strategies").
-		Select("strategies.*,strategy_vehicles.vehicle_id").
+		Table("fstrategies").
+		Select("fstrategies.*,fstrategy_vehicles.vehicle_id").
 		Where(query,args...).
-		Joins("inner join strategy_vehicles ON strategies.strategy_id = strategy_vehicles.strategy_id").
-		Scan(strategyVehicleLearningResultJoins).
+		Joins("inner join fstrategy_vehicles ON fstrategies.fstrategy_id = fstrategy_vehicles.fstrategy_id").
+		Scan(&fstrategyVehicles).
 		Error
-	return strategyVehicleLearningResultJoins,err
+	return fstrategyVehicles,err
 }
 
 

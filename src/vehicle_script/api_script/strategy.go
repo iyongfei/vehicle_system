@@ -21,7 +21,7 @@ var strategyUrls = map[string]string{
 
 func main() {
 	//addStrategy()
-	//getStrategys()
+	getStrategys()
 	//getStrategy()
 
 	//deleStrategy()//协议部分没有处理
@@ -32,6 +32,22 @@ func main() {
 	getStrategyVehicleLearningResults()
 }
 
+
+
+/**
+获取所有的车载信息
+*/
+func getStrategys() {
+	token := tool.GetVehicleToken()
+	queryParams := map[string]interface{}{
+		"page_size":  "3",
+		"page_index": "1",
+	}
+	reqUrl := strategyUrls["get_strategys"]
+	resp, _ := tool.Get(reqUrl, queryParams, token)
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+}
 
 func getStrategyVehicleLearningResults() {
 	token := tool.GetVehicleToken()
@@ -137,22 +153,6 @@ func deleStrategy() {
 
 	resp, _ := tool.Delete(reqUrl, queryParams, token)
 
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
-}
-
-//
-///**
-//获取所有的车载信息
-// */
-func getStrategys() {
-	token := tool.GetVehicleToken()
-	queryParams := map[string]interface{}{
-		"page_size":  "3",
-		"page_index": "1",
-	}
-	reqUrl := strategyUrls["get_strategys"]
-	resp, _ := tool.Get(reqUrl, queryParams, token)
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))
 }

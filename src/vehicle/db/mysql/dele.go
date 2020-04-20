@@ -5,34 +5,38 @@ import (
 	"vehicle_system/src/vehicle/util"
 )
 
-//软删除A
-/**
-query:="gw_name = ? and gw_mac = ?"
-mysql_util.SoftDeleteGwManageInfoA(&gw_manage.GwManageInfo{},query,"jj","wjeio")
- */
-func SoftDeleteModelA(model interface{},query interface{}, args ...interface{}) error {
-	vgorm,err := GetMysqlInstance().GetMysqlDB()
-	if err!= nil{
-		return fmt.Errorf("%s open grom err:%v",util.RunFuncName(),err.Error())
-	}
-	err = vgorm.Where(query, args...).Delete(model).Error
-	if err!= nil{
-		return fmt.Errorf("%s err %v",util.RunFuncName(),err.Error())
-	}
-	return nil
-}
+
 //软删除B
 /**
 
 query:="gw_name = ? and gw_mac = ?"
 mysql_util.SoftDeleteGwManageInfoB(&gw_manage.GwManageInfo{},query,"slfjgskdlfe","wjeio")
  */
-func SoftDeleteModelB(model interface{},where ...interface{}) error {
+func SoftDeleteModelA(model interface{},where ...interface{}) error {
 	vgorm,err := GetMysqlInstance().GetMysqlDB()
 	if err!= nil{
 		return fmt.Errorf("%s open grom err:%v",util.RunFuncName(),err.Error())
 	}
 	err = vgorm.Delete(model, where...).Error
+	if err!= nil{
+		return fmt.Errorf("%s err %v",util.RunFuncName(),err.Error())
+	}
+	return nil
+}
+
+
+
+//软删除A
+/**
+query:="gw_name = ? and gw_mac = ?"
+mysql_util.SoftDeleteGwManageInfoA(&gw_manage.GwManageInfo{},query,"jj","wjeio")
+ */
+func SoftDeleteModelB(model interface{},query interface{}, args ...interface{}) error {
+	vgorm,err := GetMysqlInstance().GetMysqlDB()
+	if err!= nil{
+		return fmt.Errorf("%s open grom err:%v",util.RunFuncName(),err.Error())
+	}
+	err = vgorm.Where(query, args...).Delete(model).Error
 	if err!= nil{
 		return fmt.Errorf("%s err %v",util.RunFuncName(),err.Error())
 	}

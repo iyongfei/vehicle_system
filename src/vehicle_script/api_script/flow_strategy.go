@@ -8,11 +8,10 @@ import (
 
 var fstrategyUrls = map[string]string{
 	"post_fstrategy": "http://localhost:7001/api/v1/fstrategys",
+	"get_fstrategys": "http://localhost:7001/api/v1/fstrategys",
+	"get_fstrategy":  "http://localhost:7001/api/v1/fstrategys/VTkP0Qka6QHkjoy9OE5R079lz7zEa5o1",
+	"dele_fstrategy": "http://localhost:7001/api/v1/fstrategys/C4UOrF6oiJoQINfF5gjrQEhZ1CvLCEvY",
 
-	"get_strategys": "http://localhost:7001/api/v1/strategys",
-	"get_strategy":  "http://localhost:7001/api/v1/strategys/9xR5vYZweMb3aRoGGEQYaIw6xhRetYV8",
-
-	"dele_strategy": "http://localhost:7001/api/v1/strategys/9xR5vYZweMb3aRoGGEQYaIw6xhRetYV8",
 	"edit_strategy": "http://localhost:7001/api/v1/strategys/9xR5vYZweMb3aRoGGEQYaIw6xhRetYV8",
 
 	"get_strategy_vehicles": "http://localhost:7001/api/v1/strategy_vehicles/9xR5vYZweMb3aRoGGEQYaIw6xhRetYV8",
@@ -25,16 +24,61 @@ var fstrategyUrls = map[string]string{
 //apiV1.PUT("/fstrategys/:fstrategy_id", api_server.EditFStrategy)
 //apiV1.GET("/fstrategy_vehicle_items/:fstrategy_vehicle_id", api_server.GetVehicleFStrategyItem)
 func main() {
-	addFStrategy()
-	//getStrategys()
-	//getStrategy()
+	//addFStrategy()
+	//getFStrategys()
+	//getFStrategy()
 
-	//deleStrategy()//协议部分没有处理
+	deleFStrategy()
 	//editStrategy()//
 
 	//getStrategyVehicle()
 	//getVehicleLearningResults()
 	//getStrategyVehicleLearningResults()
+}
+
+func deleFStrategy() {
+	token := tool.GetVehicleToken()
+
+	queryParams := map[string]interface{}{
+	}
+
+	reqUrl := fstrategyUrls["dele_fstrategy"]
+
+	resp, _ := tool.Delete(reqUrl, queryParams, token)
+
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+}
+
+
+/**
+获取一条会话策略信息
+*/
+func getFStrategy() {
+	token := tool.GetVehicleToken()
+	queryParams := map[string]interface{}{
+
+	}
+	reqUrl := fstrategyUrls["get_fstrategy"]
+	resp, _ := tool.Get(reqUrl, queryParams, token)
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+}
+
+
+/**
+获取所有的会话策略
+*/
+func getFStrategys() {
+	token := tool.GetVehicleToken()
+	queryParams := map[string]interface{}{
+		"page_size":  "3",
+		"page_index": "1",
+	}
+	reqUrl := fstrategyUrls["get_fstrategys"]
+	resp, _ := tool.Get(reqUrl, queryParams, token)
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
 }
 
 func addFStrategy() {
@@ -96,19 +140,7 @@ func addFStrategy() {
 //	respMarshal, _ := json.Marshal(resp)
 //	fmt.Printf("resp %+v", string(respMarshal))
 //}
-///**
-//获取一条策略信息
-//*/
-//func getStrategy() {
-//	token := tool.GetVehicleToken()
-//	queryParams := map[string]interface{}{
-//
-//	}
-//	reqUrl := strategyUrls["get_strategy"]
-//	resp, _ := tool.Get(reqUrl, queryParams, token)
-//	respMarshal, _ := json.Marshal(resp)
-//	fmt.Printf("resp %+v", string(respMarshal))
-//}
+
 //
 //
 ///**
@@ -124,44 +156,6 @@ func addFStrategy() {
 //	respMarshal, _ := json.Marshal(resp)
 //	fmt.Printf("resp %+v", string(respMarshal))
 //}
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//func deleStrategy() {
-//	token := tool.GetVehicleToken()
-//
-//	queryParams := map[string]interface{}{
-//	}
-//
-//	reqUrl := strategyUrls["dele_strategy"]
-//
-//	resp, _ := tool.Delete(reqUrl, queryParams, token)
-//
-//	respMarshal, _ := json.Marshal(resp)
-//	fmt.Printf("resp %+v", string(respMarshal))
-//}
-//
-////
-/////**
-////获取所有的车载信息
-//// */
-//func getStrategys() {
-//	token := tool.GetVehicleToken()
-//	queryParams := map[string]interface{}{
-//		"page_size":  "3",
-//		"page_index": "1",
-//	}
-//	reqUrl := strategyUrls["get_strategys"]
-//	resp, _ := tool.Get(reqUrl, queryParams, token)
-//	respMarshal, _ := json.Marshal(resp)
-//	fmt.Printf("resp %+v", string(respMarshal))
-//}
-//
-//
+
+
 
