@@ -25,31 +25,27 @@ func EditFStrategy(c *gin.Context) {
 	dips := c.PostForm("dips")
 	dstPorts := c.PostForm("dst_ports")
 
-	logger.Logger.Info("%s vehicle_id:%s,fstrategy_id:%s,type:%s,handle_mode:%s,dips:%s,dst_ports:%s",
-		util.RunFuncName(),vehicleId,fstrategyId,setTypeP,handleModeP,dips,dstPorts)
-
-	logger.Logger.Print("%s vehicle_id:%s,fstrategy_id:%s,type:%s,handle_mode:%s,dips:%s,dst_ports:%s",
-		util.RunFuncName(),vehicleId,fstrategyId,setTypeP,handleModeP,dips,dstPorts)
+	//logger.Logger.Info("%s vehicle_id:%s,fstrategy_id:%s,type:%s,handle_mode:%s,dips:%s,dst_ports:%s",
+	//	util.RunFuncName(),vehicleId,fstrategyId,setTypeP,handleModeP,dips,dstPorts)
+	//
+	//logger.Logger.Print("%s vehicle_id:%s,fstrategy_id:%s,type:%s,handle_mode:%s,dips:%s,dst_ports:%s",
+	//	util.RunFuncName(),vehicleId,fstrategyId,setTypeP,handleModeP,dips,dstPorts)
 
 	argsTrimsEmpty := util.RrgsTrimsEmpty(fstrategyId, vehicleId, setTypeP, handleModeP, dips, dstPorts)
-
 	sTypeValid := util.IsEleExistInSlice(setTypeP, []interface{}{
 		strconv.Itoa(int(protobuf.FlowStrategyAddParam_FLWOTYPEDEFAULT)),
 		strconv.Itoa(int(protobuf.FlowStrategyAddParam_FLWOWHITEMODE)),
 		strconv.Itoa(int(protobuf.FlowStrategyAddParam_FLWOBLACKMODE))})
-
 	handleModeValid := util.IsEleExistInSlice(handleModeP, []interface{}{
 		strconv.Itoa(int(protobuf.FlowStrategyAddParam_MODEDEFAULT)),
 		strconv.Itoa(int(protobuf.FlowStrategyAddParam_PREVENTWARNING)),
 		strconv.Itoa(int(protobuf.FlowStrategyAddParam_WARNING))})
-
 	if argsTrimsEmpty || !sTypeValid || !handleModeValid {
 		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
 		c.JSON(http.StatusOK, ret)
 		logger.Logger.Error("%s argsTrimsEmpty", util.RunFuncName())
 		logger.Logger.Print("%s argsTrimsEmpty", util.RunFuncName())
 	}
-
 	setType, _ := strconv.Atoi(setTypeP)
 	handleMode, _ := strconv.Atoi(handleModeP)
 
@@ -74,7 +70,6 @@ func EditFStrategy(c *gin.Context) {
 			fdportSlice = append(fdportSlice, uint32(dpInt))
 		}
 	}
-
 	//////////////////////////////////////////////////////////////
 	//查看该vehicle是否存在
 	vehicleFStrategy, err := model.GetVehicleFStrategy(
