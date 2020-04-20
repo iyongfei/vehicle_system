@@ -352,31 +352,15 @@ func DeleFStrategy(c *gin.Context) {
 		return
 	}
 
-	//查询要删除的会话策略
-
-	//fstrategyVehicles,err:= model.GetFStrategyVehicles("fstrategy_id = ?",fstrategyId)
-	//if err!=nil{
-	//	logger.Logger.Error("%s fstrategy_id:%s err:%s", util.RunFuncName(), fstrategyId, err)
-	//	logger.Logger.Print("%s fstrategy_id:%s err:%s", util.RunFuncName(), fstrategyId, err)
-	//	ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetFStrategyFailMsg, "")
-	//	c.JSON(http.StatusOK, ret)
-	//}
-
-	//for _,fstrategyVehicle := range fstrategyVehicles{
-	//
-	//
-	//}
-
-
 	//连表查询
 	ftrategyVehicleItems, _ := model.GetFlowStrategyVehicleItems(
 		"fstrategies.fstrategy_id = ?", []interface{}{fstrategyId}...)
 
-	fVehicleIdMap :=  map[string]string{}
-	fstrategyVehicleIdMap :=  map[string]string{}
-	fstrategyItemIdMap :=  map[string]string{}
+	fVehicleIdMap := map[string]string{}
+	fstrategyVehicleIdMap := map[string]string{}
+	fstrategyItemIdMap := map[string]string{}
 
-	for _,ftrategyVehicleItem := range ftrategyVehicleItems{
+	for _, ftrategyVehicleItem := range ftrategyVehicleItems {
 		fVehicleIdMap[ftrategyVehicleItem.VehicleId] = "1"
 		fstrategyVehicleIdMap[ftrategyVehicleItem.FstrategyVehicleId] = "1"
 		fstrategyItemIdMap[ftrategyVehicleItem.FstrategyItemId] = "1"
@@ -385,17 +369,17 @@ func DeleFStrategy(c *gin.Context) {
 	var fstrategyVehicleIdMapSlice []string
 	var fstrategyItemIdMapSlice []string
 
-	for k:=range fVehicleIdMap{
-		fmt.Println("fVehicleIdMap::",k)
-		fVehicleIdMapSlice = append(fVehicleIdMapSlice,k)
+	for k := range fVehicleIdMap {
+		fmt.Println("fVehicleIdMap::", k)
+		fVehicleIdMapSlice = append(fVehicleIdMapSlice, k)
 	}
-	for k:=range fstrategyVehicleIdMap{
-		fmt.Println("fstrategyVehicleIdMap::",k)
-		fstrategyVehicleIdMapSlice = append(fstrategyVehicleIdMapSlice,k)
+	for k := range fstrategyVehicleIdMap {
+		fmt.Println("fstrategyVehicleIdMap::", k)
+		fstrategyVehicleIdMapSlice = append(fstrategyVehicleIdMapSlice, k)
 	}
-	for k:=range fstrategyItemIdMap{
-		fmt.Println("fstrategyItemIdMap::",k)
-		fstrategyItemIdMapSlice = append(fstrategyItemIdMapSlice,k)
+	for k := range fstrategyItemIdMap {
+		fmt.Println("fstrategyItemIdMap::", k)
+		fstrategyItemIdMapSlice = append(fstrategyItemIdMapSlice, k)
 	}
 
 	//dele Fstrategy
@@ -417,27 +401,38 @@ func DeleFStrategy(c *gin.Context) {
 	//dele FstrategyVehicleItem
 	fstrategyVehicle := &model.FstrategyVehicle{}
 	fstrategyVehicleModelBase := model_base.ModelBaseImpl(fstrategyVehicle)
-	err =fstrategyVehicleModelBase.DeleModelsByCondition("fstrategy_vehicle_id in (?)",fstrategyVehicleIdMapSlice)
-	if err!= nil{
+	err = fstrategyVehicleModelBase.DeleModelsByCondition("fstrategy_vehicle_id in (?)", fstrategyVehicleIdMapSlice)
+	if err != nil {
 
 	}
 	//dele FstrategyVehicleItem
 	fstrategyVehicleItem := &model.FstrategyVehicleItem{}
 	fstrategyVehicleItemModelBase := model_base.ModelBaseImpl(fstrategyVehicleItem)
-	err = fstrategyVehicleItemModelBase.DeleModelsByCondition("fstrategy_item_id in (?)",fstrategyItemIdMapSlice)
-	if err!= nil{
+	err = fstrategyVehicleItemModelBase.DeleModelsByCondition("fstrategy_item_id in (?)", fstrategyItemIdMapSlice)
+	if err != nil {
 	}
 
 	//软删除FstrategyItem
 	fstrategyItem := &model.FstrategyItem{}
-	err = fstrategyItem.SoftDeleModelImpl("fstrategy_item_id in (?)",fstrategyItemIdMapSlice)
-	if err!= nil{
+	err = fstrategyItem.SoftDeleModelImpl("fstrategy_item_id in (?)", fstrategyItemIdMapSlice)
+	if err != nil {
 	}
 
 	//下发会话策略
+	for k := range fVehicleIdMap {
+		fStrategySetCmd := model.GetVehicleRecentFStrategy(k)
+		strategyCmd := &emq_cmd.FStrategySetCmd{
+			VehicleId: fStrategySetCmd.VehicleId,
+			TaskType:  int(protobuf.Command_FLOWSTRATEGY_ADD),
 
-
-
+			FstrategyId: fStrategySetCmd.FstrategyId,
+			Type:        fStrategySetCmd.Type,
+			HandleMode:  fStrategySetCmd.HandleMode,
+			Enable:      true,
+			GroupId:     "", //目前不实现
+		}
+		topic_publish_handler.GetPublishService().PutMsg2PublicChan(strategyCmd)
+	}
 
 	retObj := response.StructResponseObj(response.VStatusOK, response.ReqDeleFStrategySuccessMsg, "")
 	c.JSON(http.StatusOK, retObj)

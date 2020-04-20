@@ -274,24 +274,23 @@ func GetFStrategyVehicles(query string,args ...interface{}) ([]*FlowStrategyVehi
 		Error
 	return fstrategyVehicles,err
 }
-
-
-
-
-func GetVehicleAllFlowStrategys(query string,args ...interface{}) ([]*StrategyVehicleLearningResultJoin,error) {
-	vgorm,err := mysql.GetMysqlInstance().GetMysqlDB()
-	if err!= nil{
-		return nil,fmt.Errorf("%s open grom err:%v",util.RunFuncName(),err.Error())
-	}
-	strategyVehicleLearningResultJoins := []*StrategyVehicleLearningResultJoin{}
-	err = vgorm.Debug().
-		Table("strategies").
-		Select("strategies.*,strategy_vehicles.vehicle_id").
-		Where(query,args...).
-		Joins("inner join strategy_vehicles ON strategies.strategy_id = strategy_vehicles.strategy_id").
-		Order("strategies.created_at desc").
-		Scan(&strategyVehicleLearningResultJoins).
-		Error
-	return strategyVehicleLearningResultJoins,err
-}
+//
+//
+//
+//func GetVehicleAllFlowStrategys(query string,args ...interface{}) ([]*StrategyVehicleLearningResultJoin,error) {
+//	vgorm,err := mysql.GetMysqlInstance().GetMysqlDB()
+//	if err!= nil{
+//		return nil,fmt.Errorf("%s open grom err:%v",util.RunFuncName(),err.Error())
+//	}
+//	strategyVehicleLearningResultJoins := []*StrategyVehicleLearningResultJoin{}
+//	err = vgorm.Debug().
+//		Table("strategies").
+//		Select("strategies.*,strategy_vehicles.vehicle_id").
+//		Where(query,args...).
+//		Joins("inner join strategy_vehicles ON strategies.strategy_id = strategy_vehicles.strategy_id").
+//		Order("strategies.created_at desc").
+//		Scan(&strategyVehicleLearningResultJoins).
+//		Error
+//	return strategyVehicleLearningResultJoins,err
+//}
 
