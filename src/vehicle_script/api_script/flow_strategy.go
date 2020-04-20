@@ -12,7 +12,7 @@ var fstrategyUrls = map[string]string{
 	"get_fstrategy":  "http://localhost:7001/api/v1/fstrategys/VTkP0Qka6QHkjoy9OE5R079lz7zEa5o1",
 	"dele_fstrategy": "http://localhost:7001/api/v1/fstrategys/Ne114FumZ61ju946sBT3Mdr65PjZYv95",
 
-	"edit_fstrategy": "http://localhost:7001/api/v1/fstrategys/nNSuiQmC289P1Kd8tsjFbRPdSoNFQGkC",
+	"edit_fstrategy": "http://localhost:7001/api/v1/fstrategys/xyhMowqwDQUCBtofp25Z2hP4CdDvDwk3",
 
 	"get_strategy_vehicles": "http://localhost:7001/api/v1/strategy_vehicles/9xR5vYZweMb3aRoGGEQYaIw6xhRetYV8",
 	"get_vehicle_results": "http://localhost:7001/api/v1/vehicle_lresults/cuMwUiDA2V8NLNWGznfVI2hP5Zi3PhMJ",

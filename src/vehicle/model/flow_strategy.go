@@ -281,7 +281,7 @@ func GetVehicleFStrategy(query string,args ...interface{}) (*FlowStrategyVehicle
 	vehiclesFstrategy := &FlowStrategyVehicleItemJoin{}
 	err = vgorm.Debug().
 		Table("fstrategies").
-		Select("fstrategies.*,fstrategy_vehicles.vehicle_id，fstrategy_vehicles.fstrategy_vehicle_id").
+		Select("fstrategies.*,fstrategy_vehicles.vehicle_id,fstrategy_vehicles.fstrategy_vehicle_id").
 		Where(query,args...).
 		Joins("inner join fstrategy_vehicles ON fstrategies.fstrategy_id = fstrategy_vehicles.fstrategy_id").
 		Scan(&vehiclesFstrategy).

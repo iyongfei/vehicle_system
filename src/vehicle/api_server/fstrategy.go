@@ -17,24 +17,19 @@ import (
 	"vehicle_system/src/vehicle/util"
 )
 
-/**
-queryParams := map[string]interface{}{
-		"vehicle_id":"TDav",
-		"type":"1",
-		"handle_mode":"2",
-		"dips":"192.168.1.1,192.168.1.3",
-		"dst_ports":"234,345",
-	}
- */
 func EditFStrategy(c *gin.Context) {
 	vehicleId := c.PostForm("vehicle_id")
-
 	fstrategyId := c.Param("fstrategy_id")
 	setTypeP := c.PostForm("type")
 	handleModeP := c.PostForm("handle_mode")
-
 	dips := c.PostForm("dips")
 	dstPorts := c.PostForm("dst_ports")
+
+	logger.Logger.Info("%s vehicle_id:%s,fstrategy_id:%s,type:%s,handle_mode:%s,dips:%s,dst_ports:%s",
+		util.RunFuncName(),vehicleId,fstrategyId,setTypeP,handleModeP,dips,dstPorts)
+
+	logger.Logger.Print("%s vehicle_id:%s,fstrategy_id:%s,type:%s,handle_mode:%s,dips:%s,dst_ports:%s",
+		util.RunFuncName(),vehicleId,fstrategyId,setTypeP,handleModeP,dips,dstPorts)
 
 	argsTrimsEmpty := util.RrgsTrimsEmpty(fstrategyId, vehicleId, setTypeP, handleModeP, dips, dstPorts)
 
@@ -90,6 +85,8 @@ func EditFStrategy(c *gin.Context) {
 		return
 	}
 
+	logger.Logger.Print("%s vehicleFStrategy:%+v",util.RunFuncName(),vehicleFStrategy)
+
 	//更新策略信息
 	vehicleFstrategy := &model.Fstrategy{
 		FstrategyId: fstrategyId,
@@ -143,18 +140,22 @@ func EditFStrategy(c *gin.Context) {
 		}
 	}
 	fstrategyItems[vehicleId] = vehicleFstrategyItems
+	logger.Logger.Print("%s fstrategyItems:::%+v",util.RunFuncName(),fstrategyItems)
 
 	//找到FstrategyItemId(FstrategyVehicleItem表中)
 	//在FstrategyItemId(FstrategyItem表中)不存在的值
 
-	var fstrategyItemIds []string
-	_ = mysql.QueryPluckByModelWhere(&model.FstrategyVehicleItem{}, "fstrategy_item_id", &fstrategyItemIds,
+	var fstrategyVehicleItemIds []string
+	_ = mysql.QueryPluckByModelWhere(&model.FstrategyVehicleItem{}, "fstrategy_item_id", &fstrategyVehicleItemIds,
 		"fstrategy_vehicle_id = ?", vehicleFStrategy.FstrategyVehicleId)
 
+	logger.Logger.Print("%s fstrategyItemIds:::%+v",util.RunFuncName(),fstrategyVehicleItemIds)
+
+	//如果没有在里面，就是被删除的，需要改delete标志位
+	newFstrategyItemIds := fstrategyItems[vehicleId]
 	var needDeleFstrategyItemIds []string
-	for _, fstrategyItemId := range fstrategyItemIds {
-		//如果没有在里面，就是被删除的，需要改delete标志位
-		newFstrategyItemIds := fstrategyItems[vehicleId]
+	for _, fstrategyItemId := range fstrategyVehicleItemIds {
+
 		if !util.IsExistInSlice(fstrategyItemId, newFstrategyItemIds) {
 			needDeleFstrategyItemIds = append(needDeleFstrategyItemIds, fstrategyItemId)
 		}
@@ -173,7 +174,7 @@ func EditFStrategy(c *gin.Context) {
 	}
 
 	//添加FstrategyVehicleItem表
-	for _, fstrategyItemId := range fstrategyItemIds {
+	for _, fstrategyItemId := range newFstrategyItemIds {
 		fstrategyVehicleItem:= &model.FstrategyVehicleItem{
 			FstrategyVehicleId:vehicleFStrategy.FstrategyVehicleId,
 			FstrategyItemId:fstrategyItemId,
