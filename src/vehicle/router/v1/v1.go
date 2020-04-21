@@ -58,12 +58,14 @@ func V1Router(r *gin.Engine) {
 		apiV1.GET("/vehicle_lresults/:strategy_vehicle_id", api_server.GetVehicleLearningResults)
 		apiV1.GET("/strategy_vehicle_lresults/:strategy_id", api_server.GetStrategyVehicleLearningResults)
 
-		//flowStrategy
+		//////////////////////////////////////////////会话策略接口//////////////////////////////////////////////
 		apiV1.POST("/fstrategys", api_server.AddFStrategy)
-		apiV1.GET("/fstrategys", api_server.GetFStrategys)
-		apiV1.GET("/fstrategys/:fstrategy_id", api_server.GetFStrategy)
 		apiV1.DELETE("/fstrategys/:fstrategy_id", api_server.DeleFStrategy)
 		apiV1.PUT("/fstrategys/:fstrategy_id", api_server.EditFStrategy)
+
+		apiV1.GET("/fstrategys/:fstrategy_id", api_server.GetFStrategy)
+
+		apiV1.GET("/fstrategys", api_server.GetFStrategys)
 
 		apiV1.GET("/fstrategy_vehicle_items/:fstrategy_vehicle_id", api_server.GetVehicleFStrategyItem)
 
