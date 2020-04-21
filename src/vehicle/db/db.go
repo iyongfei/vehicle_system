@@ -37,6 +37,4 @@ func Setup() {
 
 	//redis.GetRedisInstance().VLPush("vlpush", "k4")
 
-	redis.GetRedisInstance().VHSet()
-
 }

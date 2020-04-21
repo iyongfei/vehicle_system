@@ -1,0 +1,11 @@
+#策略接口
+
+#暂时不用，目前默认利用flows会话充当学习结果
+learning_result_ids=
+
+#可以传多个车载id，这里测试用一个车载id测试
+vehicle_ids=tianqi-R201i-1A86B1FF1B42
+strategy_type=1
+handle_mode=2
+
+

@@ -14,22 +14,23 @@ var fstrategyUrls = map[string]string{
 
 	"edit_fstrategy": "http://localhost:7001/api/v1/fstrategys/xyhMowqwDQUCBtofp25Z2hP4CdDvDwk3",
 
-	"get_strategy_vehicles": "http://localhost:7001/api/v1/strategy_vehicles/9xR5vYZweMb3aRoGGEQYaIw6xhRetYV8",
-	"get_vehicle_results": "http://localhost:7001/api/v1/vehicle_lresults/cuMwUiDA2V8NLNWGznfVI2hP5Zi3PhMJ",
+	"get_strategy_vehicles":        "http://localhost:7001/api/v1/strategy_vehicles/9xR5vYZweMb3aRoGGEQYaIw6xhRetYV8",
+	"get_vehicle_results":          "http://localhost:7001/api/v1/vehicle_lresults/cuMwUiDA2V8NLNWGznfVI2hP5Zi3PhMJ",
 	"get_strategy_vehicle_results": "http://localhost:7001/api/v1/strategy_vehicle_lresults/9xR5vYZweMb3aRoGGEQYaIw6xhRetYV8",
 }
+
 //apiV1.GET("/fstrategys", api_server.GetFStrategys)
 //apiV1.GET("/fstrategys/:fstrategy_id", api_server.GetFStrategy)
 //apiV1.DELETE("/fstrategys/:fstrategy_id", api_server.DeleFStrategy)
 //apiV1.PUT("/fstrategys/:fstrategy_id", api_server.EditFStrategy)
 //apiV1.GET("/fstrategy_vehicle_items/:fstrategy_vehicle_id", api_server.GetVehicleFStrategyItem)
 func main() {
-	//addFStrategy()
+	addFStrategy()
 	//getFStrategys()
 	//getFStrategy()
 
 	//deleFStrategy()
-	editFStrategy()//
+	//editFStrategy() //
 
 	//getStrategyVehicle()
 	//getVehicleLearningResults()
@@ -40,13 +41,12 @@ func editFStrategy() {
 	token := tool.GetVehicleToken()
 	urlReq, _ := fstrategyUrls["edit_fstrategy"]
 
-
 	queryParams := map[string]interface{}{
-		"vehicle_id":"TDav",
-		"type":"1",
-		"handle_mode":"2",
-		"dips":"192.168.1.1,192.168.1.3",
-		"dst_ports":"234,345",
+		"vehicle_id":  "FmWsAjHH2tU5gwVGu6nofkgP1YKR2Hyb",
+		"type":        "1",
+		"handle_mode": "2",
+		"dips":        "192.190.1.1,192.108.1.3",
+		"dst_ports":   "34,35",
 	}
 
 	resp, _ := tool.PutForm(urlReq, queryParams, token)
@@ -56,16 +56,16 @@ func editFStrategy() {
 }
 
 func addFStrategy() {
+
 	token := tool.GetVehicleToken()
 	reqUrl := fstrategyUrls["post_fstrategy"]
 	queryParams := map[string]interface{}{
-		"vehicle_ids":"TDav",
-		"type":"1",
-		"handle_mode":"2",
-		"dips":"192.168.1.1,192.168.1.2",
-		"dst_ports":"123,234",
+		"vehicle_ids": "FmWsAjHH2tU5gwVGu6nofkgP1YKR2Hyb",
+		"type":        "1",
+		"handle_mode": "2",
+		"dips":        "142.108.1.6,152.165.45.2",
+		"dst_ports":   "5,3",
 	}
-
 	resp, _ := tool.PostForm(reqUrl, queryParams, token)
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))
@@ -73,8 +73,7 @@ func addFStrategy() {
 func deleFStrategy() {
 	token := tool.GetVehicleToken()
 
-	queryParams := map[string]interface{}{
-	}
+	queryParams := map[string]interface{}{}
 
 	reqUrl := fstrategyUrls["dele_fstrategy"]
 
@@ -84,21 +83,17 @@ func deleFStrategy() {
 	fmt.Printf("resp %+v", string(respMarshal))
 }
 
-
 /**
 获取一条会话策略信息
 */
 func getFStrategy() {
 	token := tool.GetVehicleToken()
-	queryParams := map[string]interface{}{
-
-	}
+	queryParams := map[string]interface{}{}
 	reqUrl := fstrategyUrls["get_fstrategy"]
 	resp, _ := tool.Get(reqUrl, queryParams, token)
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))
 }
-
 
 /**
 获取所有的会话策略
@@ -159,6 +154,3 @@ func getFStrategys() {
 //	respMarshal, _ := json.Marshal(resp)
 //	fmt.Printf("resp %+v", string(respMarshal))
 //}
-
-
-

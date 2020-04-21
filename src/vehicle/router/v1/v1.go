@@ -45,7 +45,7 @@ func V1Router(r *gin.Engine) {
 		apiV1.PUT("/assets/:asset_id", api_server.EditAsset)
 		apiV1.DELETE("/assets/:asset_id", api_server.DeleAsset)
 
-		//策略
+		//策略接口
 		apiV1.POST("/strategys", api_server.AddStrategy)
 		apiV1.GET("/strategys", api_server.GetStrategys)
 		apiV1.GET("/strategys/:strategy_id", api_server.GetStrategy)

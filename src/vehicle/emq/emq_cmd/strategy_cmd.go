@@ -39,10 +39,8 @@ func (setCmd *StrategySetCmd) CreateStrategyTopicMsg() interface{} {
 	strategySetParams.URLList = urlList
 	publishItem.Param, _ = proto.Marshal(strategySetParams)
 	//CmdID
-	var resultcmdItemKey string
 	taskTypeName := protobuf.Command_TaskType_name[int32(setCmd.TaskType)]
-	cmdRandom := util.RandomString(16)
-	resultcmdItemKey = createCmdId(taskTypeName, cmdRandom)
+	resultcmdItemKey := createCmdId(taskTypeName, util.RandomString(16))
 
 	publishItem.CmdID = resultcmdItemKey
 	resultcmdItemsBys, _ := proto.Marshal(publishItem)
@@ -55,7 +53,7 @@ func (setCmd *StrategySetCmd) CreateStrategyTopicMsg() interface{} {
 
 /*
 获取策略的url,ip列表，策略合并
- */
+*/
 func FetchDipUrlList(setCmd *StrategySetCmd) ([]string, []string) {
 	dipList := []string{}
 	urlList := []string{}
@@ -87,7 +85,7 @@ func FetchDipUrlList(setCmd *StrategySetCmd) ([]string, []string) {
 			originId := learningResult.OriginId
 			flows := []*model.Flow{}
 			_ = model_base.ModelBaseImpl(&model.Flow{}).GetModelListByCondition(&flows,
-				"stat = ? and vehicle_id = ?", []interface{}{protobuf.FlowStat_FST_FINISH,originId}...)
+				"stat = ? and vehicle_id = ?", []interface{}{protobuf.FlowStat_FST_FINISH, originId}...)
 			for _, flowItem := range flows {
 				dip := util.InetNtoa(int64(flowItem.DstIp))
 
@@ -122,8 +120,8 @@ func FetchDipUrlList(setCmd *StrategySetCmd) ([]string, []string) {
 	for _, url := range urlMap {
 		urlList = append(urlList, url.(string))
 	}
-	logger.Logger.Info("%s urlList:%+v,dipList:%+v", util.RunFuncName(), urlList,dipList)
-	logger.Logger.Print("%s urlList:%+v,dipList:%+v", util.RunFuncName(), urlList,dipList)
+	logger.Logger.Info("%s urlList:%+v,dipList:%+v", util.RunFuncName(), urlList, dipList)
+	logger.Logger.Print("%s urlList:%+v,dipList:%+v", util.RunFuncName(), urlList, dipList)
 
 	return dipList, urlList
 }

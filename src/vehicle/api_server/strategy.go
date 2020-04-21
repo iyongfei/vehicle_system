@@ -22,7 +22,7 @@ func EditStrategy(c *gin.Context) {
 	setTypeP := c.PostForm("type")
 	handleModeP := c.PostForm("handle_mode")
 
-	argsTrimsEmpty := util.RrgsTrimsEmpty(strategyId, setTypeP, handleModeP,vehicleId)
+	argsTrimsEmpty := util.RrgsTrimsEmpty(strategyId, setTypeP, handleModeP, vehicleId)
 	if argsTrimsEmpty {
 		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
 		c.JSON(http.StatusOK, ret)
@@ -33,11 +33,11 @@ func EditStrategy(c *gin.Context) {
 	setType, _ := strconv.Atoi(setTypeP)
 	handleMode, _ := strconv.Atoi(handleModeP)
 
-	strategyVehicleLearningResultJoins ,err := model.GetStrategyJoinVehicles(
+	strategyVehicleLearningResultJoins, err := model.GetStrategyJoinVehicles(
 		"strategy_vehicles.strategy_id = ? and strategy_vehicles.vehicle_id = ?",
-		[]interface{}{strategyId,vehicleId}...)
+		[]interface{}{strategyId, vehicleId}...)
 
-	if err!=nil ||strategyVehicleLearningResultJoins.StrategyId == "" || strategyVehicleLearningResultJoins.VehicleId == ""{
+	if err != nil || strategyVehicleLearningResultJoins.StrategyId == "" || strategyVehicleLearningResultJoins.VehicleId == "" {
 		logger.Logger.Error("%s strategyId:%s,recordNotFounder", util.RunFuncName(), strategyId)
 		logger.Logger.Print("%s strategyId:%s,recordNotFounder", util.RunFuncName(), strategyId)
 		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetStrtegyUnExistMsg, "")
@@ -73,25 +73,25 @@ func EditStrategy(c *gin.Context) {
 
 	attrs := map[string]interface{}{
 		"handle_mode": strategyInfo.HandleMode,
-		"type": strategyInfo.Type,
+		"type":        strategyInfo.Type,
 	}
-	if err:=modelBase.UpdateModelsByCondition(attrs,"strategy_id = ?",
-		[]interface{}{strategyInfo.StrategyId}...);err!=nil{
-		ret:=response.StructResponseObj(response.VStatusServerError,response.ReqUpdateStrategyFailMsg,"")
-		c.JSON(http.StatusOK,ret)
+	if err := modelBase.UpdateModelsByCondition(attrs, "strategy_id = ?",
+		[]interface{}{strategyInfo.StrategyId}...); err != nil {
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqUpdateStrategyFailMsg, "")
+		c.JSON(http.StatusOK, ret)
 		return
 	}
 
 	//更新
 	strategyCmd := &emq_cmd.StrategySetCmd{
-		VehicleId:vehicleId ,
+		VehicleId: vehicleId,
 		TaskType:  int(protobuf.Command_STRATEGY_ADD),
 
-		StrategyId:strategyId,
-		Type:      setType,
-		HandleMode:handleMode,
-		Enable:true,
-		GroupId:"", //目前不实现
+		StrategyId: strategyId,
+		Type:       setType,
+		HandleMode: handleMode,
+		Enable:     true,
+		GroupId:    "", //目前不实现
 	}
 	topic_publish_handler.GetPublishService().PutMsg2PublicChan(strategyCmd)
 
@@ -131,7 +131,7 @@ func GetStrategys(c *gin.Context) {
 	}
 
 	responseData := map[string]interface{}{
-		"strategys":   strategys,
+		"strategys":  strategys,
 		"totalCount": total,
 	}
 
@@ -179,99 +179,138 @@ func GetStrategy(c *gin.Context) {
 	c.JSON(http.StatusOK, retObj)
 }
 
-
 func AddStrategy(c *gin.Context) {
 	sType := c.PostForm("type")
 	handleMode := c.PostForm("handle_mode")
-	learningResultIdsP := c.PostForm("learning_result_ids")
 	vehicleIdsP := c.PostForm("vehicle_ids")
 
-	vStype, tErr := strconv.Atoi(sType)
-	vHandleMode, hErr := strconv.Atoi(handleMode)
+	sTypeValid := util.IsEleExistInSlice(sType, []interface{}{
+		strconv.Itoa(int(protobuf.StrategyAddParam_TYPEDEFAULT)),
+		strconv.Itoa(int(protobuf.StrategyAddParam_WHITEMODE)),
+		strconv.Itoa(int(protobuf.StrategyAddParam_BLACKMODE))})
 
-	logger.Logger.Print("%s sType:%s,handleMode:%s,learningResultIds:%s", util.RunFuncName(), sType, handleMode, learningResultIdsP)
-	logger.Logger.Info("%s sType:%s,handleMode:%s,learningResultIds:%s", util.RunFuncName(), sType, handleMode, learningResultIdsP)
+	handleModeValid := util.IsEleExistInSlice(handleMode, []interface{}{
+		strconv.Itoa(int(protobuf.StrategyAddParam_MODEDEFAULT)),
+		strconv.Itoa(int(protobuf.StrategyAddParam_PREVENTWARNING)),
+		strconv.Itoa(int(protobuf.StrategyAddParam_WARNING))})
 
-	argsTrimsEmpty := util.RrgsTrimsEmpty(sType, handleMode, learningResultIdsP,vehicleIdsP)
-	if argsTrimsEmpty || tErr != nil || hErr != nil {
+	logger.Logger.Print("%s strategyType:%s,handleMode:%s,vehicleIdsP:%s", util.RunFuncName(), sType, handleMode, vehicleIdsP)
+	logger.Logger.Info("%s strategyType:%s,handleMode:%s,vehicleIdsP:%s", util.RunFuncName(), sType, handleMode, vehicleIdsP)
+
+	argsTrimsEmpty := util.RrgsTrimsEmpty(sType, handleMode, vehicleIdsP)
+
+	if argsTrimsEmpty ||
+		!sTypeValid ||
+		!handleModeValid {
 		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
 		c.JSON(http.StatusOK, ret)
-		logger.Logger.Error("%s argsTrimsEmpty sType:%s,handleMode:%s,learningResultIds:%s", util.RunFuncName(), sType, handleMode, learningResultIdsP)
-		logger.Logger.Print("%s argsTrimsEmpty sType:%s,handleMode:%s,learningResultIds:%s", util.RunFuncName(), sType, handleMode, learningResultIdsP)
+		logger.Logger.Print("%s strategyType:%s,handleMode:%s,vehicleIdsP:%s", util.RunFuncName(), sType, handleMode, vehicleIdsP)
+		logger.Logger.Error("%s strategyType:%s,handleMode:%s,vehicleIdsP:%s", util.RunFuncName(), sType, handleMode, vehicleIdsP)
 		return
 	}
+	vStype, _ := strconv.Atoi(sType)
+	vHandleMode, _ := strconv.Atoi(handleMode)
 
 	//找出合法的vehicle
-	vehicleIdSlice := strings.Split(vehicleIdsP,",")
+	vehicleIdSlice := strings.Split(vehicleIdsP, ",")
 	var vehicleIds []string
-	_ = mysql.QueryPluckByModelWhere(&model.VehicleInfo{},"vehicle_id",&vehicleIds,"vehicle_id in (?)",vehicleIdSlice)
+	_ = mysql.QueryPluckByModelWhere(&model.VehicleInfo{}, "vehicle_id", &vehicleIds, "vehicle_id in (?)", vehicleIdSlice)
 
 	//找出合法的learning_result_id
-	learningResultIdSlice := strings.Split(learningResultIdsP,",")
-	var learningResultIds []string
-	_ = mysql.QueryPluckByModelWhere(&model.AutomatedLearningResult{},
-	"learning_result_id",&learningResultIds,"learning_result_id in (?)",learningResultIdSlice)
-
+	//learningResultIdSlice := strings.Split(learningResultIdsP, ",")
+	//var learningResultIds []string
+	//_ = mysql.QueryPluckByModelWhere(&model.AutomatedLearningResult{},
+	//	"learning_result_id", &learningResultIds, "learning_result_id in (?)", learningResultIdSlice)
 
 	//strategy table
 	strategy := &model.Strategy{
-		StrategyId:util.RandomString(32),
-		Type:      uint8(vStype),
-		HandleMode:     uint8(vHandleMode),
-		Enable: true,
+		StrategyId: util.RandomString(32),
+		Type:       uint8(vStype),
+		HandleMode: uint8(vHandleMode),
+		Enable:     true,
 	}
 	modelBase := model_base.ModelBaseImpl(strategy)
 
 	if err := modelBase.InsertModel(); err != nil {
 		ret := response.StructResponseObj(response.VStatusServerError, response.ReqAddStrategyFailMsg, "")
 		c.JSON(http.StatusOK, ret)
+		logger.Logger.Print("%s insertModel strategy:%+v,err:%s", util.RunFuncName(), strategy, err)
+		logger.Logger.Error("%s insertModel strategy:%+v,err:%s", util.RunFuncName(), strategy, err)
+
 		return
 	}
 
-
-
-	for _,vehicleId := range vehicleIds{
-		//strategyVehicle table
+	for _, vehicleId := range vehicleIds {
+		//insert strategyVehicle table
 		strategyVehicle := &model.StrategyVehicle{
-			StrategyVehicleId:util.RandomString(32),
-			StrategyId:strategy.StrategyId,
-			VehicleId:vehicleId,
+			StrategyVehicleId: util.RandomString(32),
+			StrategyId:        strategy.StrategyId,
+			VehicleId:         vehicleId,
 		}
 		strategyVehicleModelBase := model_base.ModelBaseImpl(strategyVehicle)
 		if err := strategyVehicleModelBase.InsertModel(); err != nil {
+			logger.Logger.Print("%s insertModel strategyVehicle:%+v,err:%s", util.RunFuncName(), strategyVehicle, err)
+			logger.Logger.Error("%s insertModel strategyVehicle:%+v,err:%s", util.RunFuncName(), strategyVehicle, err)
 			continue
 		}
 
-		//learningResultIds table
-		for _,learningResultId:=range learningResultIds{
-			strategyVehicleLearningResult := &model.StrategyVehicleLearningResult{
-				StrategyVehicleId:strategyVehicle.StrategyVehicleId,
-				LearningResultId:learningResultId,
-			}
+		//insert automatedLearningResult table
+		automatedLearningResult := &model.AutomatedLearningResult{
+			LearningResultId: util.RandomString(32),
+			OriginId:         vehicleId,
+			OriginType:       response.OriginTypeSelf,
+		}
 
-			strategyVehicleLearningResultModelBase := model_base.ModelBaseImpl(strategyVehicleLearningResult)
+		automatedLResultModelBase := model_base.ModelBaseImpl(automatedLearningResult)
+		err, automatedLResultRecordNotFound := automatedLResultModelBase.GetModelByCondition(
+			"origin_id = ? and origin_type = ?", automatedLearningResult.OriginId, automatedLearningResult.OriginType)
+		if err != nil {
+			logger.Logger.Print("%s insertModel automatedLearningResult:%+v,err:%s", util.RunFuncName(), automatedLearningResult, err)
+			logger.Logger.Error("%s insertModel automatedLearningResult:%+v,err:%s", util.RunFuncName(), automatedLearningResult, err)
+			continue
+		}
 
-			if err := strategyVehicleLearningResultModelBase.InsertModel(); err != nil {
+		if automatedLResultRecordNotFound {
+			if err := automatedLResultModelBase.InsertModel(); err != nil {
+				logger.Logger.Print("%s insertModel automatedLearningResult:%+v,err:%s", util.RunFuncName(), automatedLearningResult, err)
+				logger.Logger.Error("%s insertModel automatedLearningResult:%+v,err:%s", util.RunFuncName(), automatedLearningResult, err)
 				continue
 			}
+		}
+
+		//insert StrategyVehicleLearningResult table
+		strategyVehicleLearningResult := &model.StrategyVehicleLearningResult{
+			StrategyVehicleId: strategyVehicle.StrategyVehicleId,
+			LearningResultId:  automatedLearningResult.LearningResultId,
+		}
+
+		strategyVehicleLearningResultModelBase := model_base.ModelBaseImpl(strategyVehicleLearningResult)
+
+		if err := strategyVehicleLearningResultModelBase.InsertModel(); err != nil {
+			logger.Logger.Print("%s insertModel strategyVehicleLearningResult:%+v,err:%s", util.RunFuncName(), strategyVehicleLearningResult, err)
+			logger.Logger.Error("%s insertModel strategyVehicleLearningResult:%+v,err:%s", util.RunFuncName(), strategyVehicleLearningResult, err)
+
+			continue
 		}
 	}
 
 	//下发策略
-	for _,vehicleId := range vehicleIds{
+	for _, vehicleId := range vehicleIds {
 		strategyCmd := &emq_cmd.StrategySetCmd{
 			VehicleId: vehicleId,
 			TaskType:  int(protobuf.Command_STRATEGY_ADD),
 
-			StrategyId:strategy.StrategyId,
-			Type:      vStype,
-			HandleMode:vHandleMode,
-			Enable:true,
-			GroupId:"", //目前不实现
+			StrategyId: strategy.StrategyId,
+			Type:       vStype,
+			HandleMode: vHandleMode,
+			Enable:     true,
+			GroupId:    "", //目前不实现
 		}
+		logger.Logger.Print("%s publish strategyCmd:%+v", util.RunFuncName(), strategyCmd)
+		logger.Logger.Info("%s publish strategyCmd:%+v", util.RunFuncName(), strategyCmd)
+
 		topic_publish_handler.GetPublishService().PutMsg2PublicChan(strategyCmd)
 	}
-
 
 	retObj := response.StructResponseObj(response.VStatusOK, response.ReqAddStrategySuccessMsg, strategy)
 	c.JSON(http.StatusOK, retObj)
@@ -336,7 +375,7 @@ func GetStrategyVehicle(c *gin.Context) {
 	modelBase := model_base.ModelBaseImpl(strategyVehicleInfo)
 
 	strategyVehicleInfos := []*model.StrategyVehicle{}
-	err:=modelBase.GetModelListByCondition(&strategyVehicleInfos,"strategy_id = ?",[]interface{}{strategyVehicleInfo.StrategyId}...)
+	err := modelBase.GetModelListByCondition(&strategyVehicleInfos, "strategy_id = ?", []interface{}{strategyVehicleInfo.StrategyId}...)
 
 	if err != nil {
 		logger.Logger.Error("%s strategy_id:%s,err:%s", util.RunFuncName(), strategyId, err)
@@ -354,8 +393,6 @@ func GetStrategyVehicle(c *gin.Context) {
 	c.JSON(http.StatusOK, retObj)
 }
 
-
-
 /****************************************StrategyVehicleResult********************************************************/
 
 func GetVehicleLearningResults(c *gin.Context) {
@@ -368,13 +405,13 @@ func GetVehicleLearningResults(c *gin.Context) {
 		logger.Logger.Print("%s argsTrimsEmpty strategy_id:%s", util.RunFuncName(), strategyVehicleId)
 	}
 	vehicleLearnResultInfo := &model.StrategyVehicleLearningResult{
-		StrategyVehicleId:strategyVehicleId,
+		StrategyVehicleId: strategyVehicleId,
 	}
 
 	modelBase := model_base.ModelBaseImpl(vehicleLearnResultInfo)
 
 	strategyVehicleLearnResultInfos := []*model.StrategyVehicleLearningResult{}
-	err:=modelBase.GetModelListByCondition(&strategyVehicleLearnResultInfos,"strategy_vehicle_id = ?",[]interface{}{vehicleLearnResultInfo.StrategyVehicleId}...)
+	err := modelBase.GetModelListByCondition(&strategyVehicleLearnResultInfos, "strategy_vehicle_id = ?", []interface{}{vehicleLearnResultInfo.StrategyVehicleId}...)
 
 	if err != nil {
 		logger.Logger.Error("%s vehicle_id:%s,err:%s", util.RunFuncName(), vehicleLearnResultInfo.StrategyVehicleId, err)
@@ -392,8 +429,6 @@ func GetVehicleLearningResults(c *gin.Context) {
 	c.JSON(http.StatusOK, retObj)
 }
 
-
-
 func GetStrategyVehicleLearningResults(c *gin.Context) {
 	strategyId := c.Param("strategy_id")
 	argsTrimsEmpty := util.RrgsTrimsEmpty(strategyId)
@@ -404,7 +439,7 @@ func GetStrategyVehicleLearningResults(c *gin.Context) {
 		logger.Logger.Print("%s argsTrimsEmpty strategy_id:%s", util.RunFuncName(), strategyId)
 	}
 
-	results,_ := model.GetStrategyVehicleLearningResults("strategy_vehicles.strategy_id = ?",[]interface{}{strategyId}...)
+	results, _ := model.GetStrategyVehicleLearningResults("strategy_vehicles.strategy_id = ?", []interface{}{strategyId}...)
 
 	responseData := map[string]interface{}{
 		"strategy_vehicle_results": results,
