@@ -7,16 +7,14 @@ import (
 	"vehicle_system/src/vehicle/util"
 )
 
-type AutomatedLearning  struct {
+type AutomatedLearning struct {
 	gorm.Model
 	LearningId string
-	SampleId string
+	SampleId   string
 
-	FileName string
+	FileName    string
 	Description string
 }
-
-
 
 /**
 学习结果
@@ -27,9 +25,9 @@ ThreatWhiteId事件加白
 */
 type AutomatedLearningResult struct {
 	gorm.Model
-	LearningResultId    string
-	OriginId            string
-	OriginType          uint8
+	LearningResultId string
+	OriginId         string
+	OriginType       uint8
 
 	//CollectStatus       uint8
 	//Name  string
@@ -46,7 +44,6 @@ type AutomatedLearningResult struct {
 	//BeginStudyTime  time.Time
 	//StudyRemainTime uint32
 }
-
 
 func (automatedLearningResult *AutomatedLearningResult) InsertModel() error {
 	return mysql.CreateModel(automatedLearningResult)
@@ -71,10 +68,10 @@ func (automatedLearningResult *AutomatedLearningResult) UpdateModelsByCondition(
 func (automatedLearningResult *AutomatedLearningResult) DeleModelsByCondition(query interface{}, args ...interface{}) error {
 	return nil
 }
-func (automatedLearningResult *AutomatedLearningResult) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) (error) {
-	err := mysql.QueryModelRecordsByWhereCondition(model,query,args...)
-	if err!=nil{
-		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
+func (automatedLearningResult *AutomatedLearningResult) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) error {
+	err := mysql.QueryModelRecordsByWhereCondition(model, query, args...)
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
 	}
 	return nil
 }
