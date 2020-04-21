@@ -1,6 +1,8 @@
 package db
 
 import (
+	"encoding/json"
+	"fmt"
 	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/db/redis"
 	"vehicle_system/src/vehicle/db/tdata"
@@ -34,4 +36,12 @@ func Setup() {
 		logger.Logger.Error("tdata vehicle_asset check err:%v", err.Error())
 		logger.Logger.Print("tdata vehicle_asset check err:%v", err.Error())
 	}
+
+	//redis.GetRedisInstance().VHSet("hash", "k3")
+	//redis.GetRedisInstance().VLPush("vlpush", "k4")
+	data := []string{"a", "b"}
+	rrr, _ := json.Marshal(data)
+	r := redis.GetRedisInstance().VHSet("hseter", "f1", rrr)
+	fmt.Println(r, "jsldfjlsd")
+
 }

@@ -13,7 +13,7 @@ func perMinuteFun() {
 	//HandleSpecFun()
 }
 
-func HandleSpecFun()  {
+func HandleSpecFun() {
 	logger.Logger.Print("PerMinuteFun %v", time.Now())
 
 	vehicleInfos := []*model.VehicleInfo{}

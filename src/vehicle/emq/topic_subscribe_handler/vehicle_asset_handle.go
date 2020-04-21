@@ -26,7 +26,7 @@ func HandleVehicleAsset(vehicleResult protobuf.GWResult) error {
 	logger.Logger.Info("%s unmarshal assetParam:%+v", util.RunFuncName(), assetParam)
 	//create
 	vehicleInfo := &model.VehicleInfo{
-		VehicleId:vehicleId,
+		VehicleId: vehicleId,
 	}
 	modelBase := model_base.ModelBaseImpl(vehicleInfo)
 
@@ -37,42 +37,41 @@ func HandleVehicleAsset(vehicleResult protobuf.GWResult) error {
 	}
 	for _, assetItem := range assetParam.GetDeviceItem() {
 		asset := &model.Asset{
-			VehicleId:vehicleId,
-			AssetId:assetItem.GetMac(),
+			VehicleId: vehicleId,
+			AssetId:   assetItem.GetMac(),
 		}
 
 		modelBase := model_base.ModelBaseImpl(asset)
 		modelBase.CreateModel(assetItem)
 		_, recordNotFound := modelBase.GetModelByCondition("asset_id = ?", asset.AssetId)
-		if recordNotFound{
+		if recordNotFound {
 			err := modelBase.InsertModel()
 			if err != nil {
 				continue
 			}
-		}else {
+		} else {
 			//更新
-			attrs:= map[string]interface{}{
-				"vehicle_id":asset.VehicleId,
-				"asset_id":asset.AssetId,
-				"ip":asset.IP,
-				"mac":asset.Mac,
-				"name":asset.Name,
-				"trade_mark":asset.TradeMark,
-				"online_status":asset.OnlineStatus,
-				"last_online":asset.LastOnline,
-				"internet_switch":asset.InternetSwitch,
-				"protect_status":asset.ProtectStatus,
-				"lan_visit_switch":asset.LanVisitSwitch,
-				"asset_group":asset.AssetGroup,
-				"asset_leader":asset.AssetLeader,
+			attrs := map[string]interface{}{
+				"vehicle_id":       asset.VehicleId,
+				"asset_id":         asset.AssetId,
+				"ip":               asset.IP,
+				"mac":              asset.Mac,
+				"name":             asset.Name,
+				"trade_mark":       asset.TradeMark,
+				"online_status":    asset.OnlineStatus,
+				"last_online":      asset.LastOnline,
+				"internet_switch":  asset.InternetSwitch,
+				"protect_status":   asset.ProtectStatus,
+				"lan_visit_switch": asset.LanVisitSwitch,
+				"asset_group":      asset.AssetGroup,
+				"asset_leader":     asset.AssetLeader,
 			}
-			if err:=modelBase.UpdateModelsByCondition(attrs,"asset_id = ?",asset.AssetId);err!=nil{
+			if err := modelBase.UpdateModelsByCondition(attrs, "asset_id = ?", asset.AssetId); err != nil {
 				//return fmt.Errorf("%s update flow err:%s",util.RunFuncName(),err.Error())
 				continue
 			}
 		}
 	}
-
 
 	return nil
 }
