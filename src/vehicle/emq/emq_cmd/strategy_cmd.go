@@ -45,8 +45,29 @@ func (setCmd *StrategySetCmd) CreateStrategyTopicMsg() interface{} {
 	publishItem.CmdID = resultcmdItemKey
 	resultcmdItemsBys, _ := proto.Marshal(publishItem)
 
-	logger.Logger.Info("%s createAssetTopicMsg publishItem:%+v", util.RunFuncName(), publishItem)
-	logger.Logger.Print("%s createAssetTopicMsg publishItem:%+v", util.RunFuncName(), publishItem)
+	logger.Logger.Info("%s createStrategyTopicMsg taskType:%s,cmdId:%s,strategy_id:%s,"+
+		"type_name:%s,handle_mode:%s,enable:%v,dip_list:%s,url_list:%s,",
+		util.RunFuncName(),
+		protobuf.Command_TaskType_name[int32(publishItem.ItemType)],
+		publishItem.CmdID,
+		strategySetParams.StrategyId,
+		protobuf.StrategyAddParam_Type_name[int32(strategySetParams.DefenseType)],
+		protobuf.StrategyAddParam_HandleMode_name[int32(strategySetParams.HandleMode)],
+		strategySetParams.Enable,
+		strategySetParams.DIPList,
+		strategySetParams.URLList)
+
+	logger.Logger.Print("%s createStrategyTopicMsg taskType:%s,cmdId:%s,strategy_id:%s,"+
+		"type_name:%s,handle_mode:%s,enable:%v,dip_list:%s,url_list:%s,",
+		util.RunFuncName(),
+		protobuf.Command_TaskType_name[int32(publishItem.ItemType)],
+		publishItem.CmdID,
+		strategySetParams.StrategyId,
+		protobuf.StrategyAddParam_Type_name[int32(strategySetParams.DefenseType)],
+		protobuf.StrategyAddParam_HandleMode_name[int32(strategySetParams.HandleMode)],
+		strategySetParams.Enable,
+		strategySetParams.DIPList,
+		strategySetParams.URLList)
 
 	return resultcmdItemsBys
 }

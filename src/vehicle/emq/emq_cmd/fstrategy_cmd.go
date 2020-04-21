@@ -1,6 +1,7 @@
 package emq_cmd
 
 import (
+	"encoding/json"
 	"github.com/golang/protobuf/proto"
 	"vehicle_system/src/vehicle/emq/protobuf"
 	"vehicle_system/src/vehicle/logger"
@@ -15,10 +16,10 @@ type FStrategySetCmd struct {
 	TaskType  int
 
 	FstrategyId string
-	Type       int
-	HandleMode int
-	Enable     bool
-	GroupId    string
+	Type        int
+	HandleMode  int
+	Enable      bool
+	GroupId     string
 }
 
 func (setCmd *FStrategySetCmd) CreateFStrategyTopicMsg() interface{} {
@@ -33,7 +34,7 @@ func (setCmd *FStrategySetCmd) CreateFStrategyTopicMsg() interface{} {
 	fstrategySetParams.DefenseType = protobuf.FlowStrategyAddParam_Type(setCmd.Type)
 	fstrategySetParams.Enable = setCmd.Enable
 
-	dipPortList:= FetchDipPortList(setCmd)
+	dipPortList, dipPortMap := FetchDipPortList(setCmd)
 	fstrategySetParams.DIPList = dipPortList
 
 	publishItem.Param, _ = proto.Marshal(fstrategySetParams)
@@ -46,14 +47,33 @@ func (setCmd *FStrategySetCmd) CreateFStrategyTopicMsg() interface{} {
 	publishItem.CmdID = resultcmdItemKey
 	resultcmdItemsBys, _ := proto.Marshal(publishItem)
 
-	logger.Logger.Info("%s createAssetTopicMsg publishItem:%+v", util.RunFuncName(), publishItem)
-	logger.Logger.Print("%s createAssetTopicMsg publishItem:%+v", util.RunFuncName(), publishItem)
+	dipPortMapMarshal, _ := json.Marshal(dipPortMap)
+
+	logger.Logger.Info("%s createFStrategyTopicMsg taskType:%s,cmdId:%s,"+
+		"fstrategy_id:%s,type_name:%s,handle_mode:%s,enable:%v,dipPortList:%s",
+		util.RunFuncName(),
+		protobuf.Command_TaskType_name[int32(publishItem.ItemType)],
+		publishItem.CmdID,
+		fstrategySetParams.FlowStrategyId,
+		protobuf.FlowStrategyAddParam_Type_name[int32(fstrategySetParams.DefenseType)],
+		protobuf.FlowStrategyAddParam_HandleMode_name[int32(fstrategySetParams.HandleMode)],
+		fstrategySetParams.Enable, dipPortMapMarshal)
+
+	logger.Logger.Print("%s createFStrategyTopicMsg taskType:%s,cmdId:%s,"+
+		"fstrategy_id:%s,type_name:%s,handle_mode:%s,enable:%v,dipPortList:%s",
+		util.RunFuncName(),
+		protobuf.Command_TaskType_name[int32(publishItem.ItemType)],
+		publishItem.CmdID,
+		fstrategySetParams.FlowStrategyId,
+		protobuf.FlowStrategyAddParam_Type_name[int32(fstrategySetParams.DefenseType)],
+		protobuf.FlowStrategyAddParam_HandleMode_name[int32(fstrategySetParams.HandleMode)],
+		fstrategySetParams.Enable, dipPortMapMarshal)
 
 	return resultcmdItemsBys
 }
 
-func FetchDipPortList(setCmd *FStrategySetCmd) []*protobuf.FlowStrategyAddParam_FlowStrategyItem {
-		//获取learning_result_ids
+func FetchDipPortList(setCmd *FStrategySetCmd) ([]*protobuf.FlowStrategyAddParam_FlowStrategyItem, map[string][]uint32) {
+	//获取learning_result_ids
 	strategyVehicleLearningResultJoin, _ := model.GetFlowStrategyVehicleItems(
 		"fstrategy_vehicles.vehicle_id = ?", []interface{}{setCmd.VehicleId}...)
 
@@ -71,34 +91,32 @@ func FetchDipPortList(setCmd *FStrategySetCmd) []*protobuf.FlowStrategyAddParam_
 		GetModelListByCondition(&fstrategyVehicleItems,
 			"fstrategy_item_id in (?)", []interface{}{fFstrategyVehicleItems}...)
 
-
 	fProtobufStrategyVehicleItems := []*protobuf.FlowStrategyAddParam_FlowStrategyItem{}
 	mapper := map[string][]uint32{}
 	for _, fItem := range fstrategyVehicleItems {
 		//去重
-		dip:=fItem.DstIp
-		dport:=fItem.DstPort
+		dip := fItem.DstIp
+		dport := fItem.DstPort
 
-		if len(mapper[dip]) == 0{
+		if len(mapper[dip]) == 0 {
 
 			mapper[dip] = []uint32{dport}
-		}else {
-			if !util.IsExistInSlice(dport,mapper[dip]){
-				mapper[dip] = append(mapper[dip],dport)
+		} else {
+			if !util.IsExistInSlice(dport, mapper[dip]) {
+				mapper[dip] = append(mapper[dip], dport)
 			}
 		}
 	}
 
-	for dip,ports:=range mapper{
-		for _,port:=range ports{
+	for dip, ports := range mapper {
+		for _, port := range ports {
 			fProtobufStrategyVehicleItem := &protobuf.FlowStrategyAddParam_FlowStrategyItem{}
 			fProtobufStrategyVehicleItem.DstIp = uint32(util.InetAton(dip))
 			fProtobufStrategyVehicleItem.DstPort = port
 
-			fProtobufStrategyVehicleItems = append(fProtobufStrategyVehicleItems,fProtobufStrategyVehicleItem)
+			fProtobufStrategyVehicleItems = append(fProtobufStrategyVehicleItems, fProtobufStrategyVehicleItem)
 		}
 	}
 
-	return fProtobufStrategyVehicleItems
+	return fProtobufStrategyVehicleItems, mapper
 }
-

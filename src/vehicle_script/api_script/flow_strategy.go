@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"vehicle_system/src/vehicle_script/tool"
 )
 
@@ -19,12 +20,12 @@ var fstrategyUrls = map[string]string{
 	"get_strategy_vehicle_results": "http://localhost:7001/api/v1/strategy_vehicle_lresults/9xR5vYZweMb3aRoGGEQYaIw6xhRetYV8",
 }
 
-//apiV1.GET("/fstrategys", api_server.GetFStrategys)
-//apiV1.GET("/fstrategys/:fstrategy_id", api_server.GetFStrategy)
-//apiV1.DELETE("/fstrategys/:fstrategy_id", api_server.DeleFStrategy)
-//apiV1.PUT("/fstrategys/:fstrategy_id", api_server.EditFStrategy)
-//apiV1.GET("/fstrategy_vehicle_items/:fstrategy_vehicle_id", api_server.GetVehicleFStrategyItem)
+func getConfig() map[string]string {
+	return tool.InitConfig("api_conf.txt")
+}
+
 func main() {
+
 	addFStrategy()
 	//getFStrategys()
 	//getFStrategy()
@@ -42,7 +43,7 @@ func editFStrategy() {
 	urlReq, _ := fstrategyUrls["edit_fstrategy"]
 
 	queryParams := map[string]interface{}{
-		"vehicle_id":  "FmWsAjHH2tU5gwVGu6nofkgP1YKR2Hyb",
+		"vehicle_id":  "gBDvsD4qnAdR9K4cTIZoq7Zr05Ox1udr",
 		"type":        "1",
 		"handle_mode": "2",
 		"dips":        "192.190.1.1,192.108.1.3",
@@ -56,20 +57,51 @@ func editFStrategy() {
 }
 
 func addFStrategy() {
+	configs := getConfig()
+	flow_vehicle_ids := configs["flow_vehicle_ids"]
+	fstrategy_type := configs["fstrategy_type"]
+	fhandle_mode := configs["fhandle_mode"]
+	fip_random := configs["fip_random"]
+	fport_random := configs["fport_random"]
 
 	token := tool.GetVehicleToken()
 	reqUrl := fstrategyUrls["post_fstrategy"]
+
+	diports := creatFastrategyIpPortData(fip_random, fport_random)
+
 	queryParams := map[string]interface{}{
-		"vehicle_ids": "FmWsAjHH2tU5gwVGu6nofkgP1YKR2Hyb",
-		"type":        "1",
-		"handle_mode": "2",
-		"dips":        "142.108.1.6,152.165.45.2",
-		"dst_ports":   "5,3",
+		"vehicle_ids": flow_vehicle_ids,
+		"type":        fstrategy_type,
+		"handle_mode": fhandle_mode,
+		"diports":     diports,
 	}
 	resp, _ := tool.PostForm(reqUrl, queryParams, token)
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))
 }
+
+func creatFastrategyIpPortData(fip_random string, fport_random string) string {
+
+	fip_randomInt, _ := strconv.Atoi(fip_random)
+	fport_randomInt, _ := strconv.Atoi(fport_random)
+
+	data := map[string][]uint32{}
+
+	for i := 0; i < fip_randomInt; i++ {
+		ip := tool.GenIpAddr()
+
+		var ipPort []uint32
+		for j := 0; j < fport_randomInt; j++ {
+			port := tool.RandOneToMaxNumber(65535)
+			ipPort = append(ipPort, uint32(port))
+		}
+		data[ip] = ipPort
+	}
+
+	ret, _ := json.Marshal(data)
+	return string(ret)
+}
+
 func deleFStrategy() {
 	token := tool.GetVehicleToken()
 

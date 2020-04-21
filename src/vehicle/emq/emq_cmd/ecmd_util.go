@@ -40,19 +40,12 @@ const (
 	TaskTypeFlowStrategySet = "flowstrategyset"
 )
 
-
 func createCmdId(args ...string) string {
 	var buffer bytes.Buffer
-	for _,arg:=range args{
-		if strings.Trim(arg, " ") != ""{
+	for _, arg := range args {
+		if strings.Trim(arg, " ") != "" {
 			buffer.WriteString(arg)
 		}
 	}
 	return buffer.String()
-}
-
-func ParseCmdPayload()  {
-
-
-
 }
