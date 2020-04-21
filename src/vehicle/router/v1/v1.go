@@ -6,8 +6,8 @@ import (
 	"vehicle_system/src/vehicle/middleware"
 )
 
-func V1Router(r *gin.Engine)  {
-	apiV1:=r.Group("/api/v1")
+func V1Router(r *gin.Engine) {
+	apiV1 := r.Group("/api/v1")
 	apiV1.Use(middleware.AuthMiddle())
 	{
 		apiV1.GET("/white_lists/:white_list_id", api_server.GetWhiteList)
@@ -16,16 +16,12 @@ func V1Router(r *gin.Engine)  {
 		apiV1.PUT("/white_lists/:white_list_id", api_server.EditWhiteList)
 		apiV1.DELETE("/white_lists/:white_list_id", api_server.DeleWhiteList)
 
-
 		apiV1.GET("/threats/:threat_id", api_server.GetThreat)
 		apiV1.GET("/threats", api_server.GetThreats)
 		apiV1.GET("/pagination/threats", api_server.GetPaginationThreats)
 		//apiV1.POST("/threats", api_server.AddThreat)
 		//apiV1.PUT("/threats/:threat_id", api_server.EditThreat)
 		apiV1.DELETE("/threats/:threat_id", api_server.DeleThreat)
-
-
-
 
 		//flow
 		apiV1.GET("/flows/:flow_id", api_server.GetFlow)
@@ -69,7 +65,6 @@ func V1Router(r *gin.Engine)  {
 
 		apiV1.GET("/fstrategy_vehicle_items/:fstrategy_vehicle_id", api_server.GetVehicleFStrategyItem)
 
-
 		//车载管理信息
 		apiV1.PUT("/deployers/:deployer_id", api_server.EditDeployer)
 
@@ -77,21 +72,3 @@ func V1Router(r *gin.Engine)  {
 		apiV1.PUT("/port_maps/:port_map_id", api_server.EditPortMap)
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

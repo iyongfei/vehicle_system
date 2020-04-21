@@ -1,7 +1,6 @@
 package tdata
 
 import (
-	"github.com/jinzhu/gorm"
 	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/model"
 )
@@ -53,24 +52,16 @@ func getTables() []interface{} {
 	studyOrigin:=&model.StudyOrigin{}
 	automatedLearning:=&model.AutomatedLearning{}
 	automatedLearningResult:=&model.AutomatedLearningResult{}
-	mo:=&MonitorD{}
 
 	tables:=[]interface{}{
 		flow,firmwareUpdate,firmwareInfo,vehicleInfo,vehicleLeader,
 		user,asset,threat,whiteList,portMap,strategy,strategyVehicle,strategyGroup,
 		strategyGroupsLearningResult,flowStrategy,flowStrategyVehicles,flowStrategyVehicles,
 		flowStrategyTtem,flowStrategyRelateItem,sample,
-		sampleItem,studyOrigin,automatedLearning,automatedLearningResult,mo,
+		sampleItem,studyOrigin,automatedLearning,automatedLearningResult,
 	}
 
 	return tables
 }
 
 
-type MonitorD struct {
-	gorm.Model
-	MonitorId   string
-	CpuRate 	float32
-	MemRate 	float32
-	GatherTime  uint32
-}
