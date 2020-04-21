@@ -36,8 +36,8 @@ func createMonitorProbuf(vId string,defaultDiskPathCount int)[]byte{
 	}
 
 	params := &protobuf.MonitorInfoParam{
-		CpuRate:12,
-		MemRate:10,
+		CpuRate:0.1,
+		MemRate:0.3,
 		GatherTime:1231231231,
 	}
 
@@ -51,7 +51,7 @@ func createMonitorProbuf(vId string,defaultDiskPathCount int)[]byte{
 		moduleItem := &protobuf.MonitorInfoParam_DiskOverFlow{
 			//Path:tool.RandomString(4),
 			Path:"x9Es",
-			DiskRate:70,
+			DiskRate:0.4,
 		}
 		items = append(items,moduleItem)
 	}

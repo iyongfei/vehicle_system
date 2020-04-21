@@ -11,8 +11,8 @@ import (
 type Monitor struct {
 	gorm.Model
 	MonitorId   string
-	CpuRate 	uint8
-	MemRate 	uint8
+	CpuRate 	float32
+	MemRate 	float32
 	GatherTime  uint32
 }
 
@@ -53,8 +53,8 @@ func (monitor *Monitor) GetModelListByCondition(model interface{}, query interfa
 }
 func (monitor *Monitor) CreateModel(monitorParams ...interface{}) interface{} {
 	monitorParam := monitorParams[0].(*protobuf.MonitorInfoParam)
-	monitor.CpuRate = uint8(monitorParam.GetCpuRate())
-	monitor.MemRate = uint8(monitorParam.GetMemRate())
+	monitor.CpuRate = monitorParam.GetCpuRate()
+	monitor.MemRate = monitorParam.GetMemRate()
 	monitor.GatherTime = monitorParam.GetGatherTime()
 	return monitor
 }
@@ -64,7 +64,7 @@ type Disk struct {
 	gorm.Model
 	MonitorId   string
 	Path 		string
-	DiskRate  	uint8
+	DiskRate  	float32
 }
 
 func (disk *Disk) InsertModel() error {
@@ -103,6 +103,6 @@ func (disk *Disk) GetModelListByCondition(model interface{}, query interface{}, 
 }
 func (disk *Disk) CreateModel(diskParams ...interface{}) interface{} {
 	diskParam := diskParams[0].(*protobuf.MonitorInfoParam_DiskOverFlow)
-	disk.DiskRate = uint8(diskParam.GetDiskRate())
+	disk.DiskRate = diskParam.GetDiskRate()
 	return disk
 }

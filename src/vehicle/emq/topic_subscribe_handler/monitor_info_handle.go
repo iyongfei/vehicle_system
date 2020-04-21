@@ -67,7 +67,6 @@ func HandleMonitorInfo(vehicleResult protobuf.GWResult) error {
 				return fmt.Errorf("%s insert disk err:%s", util.RunFuncName(), err.Error())
 			}
 		} else {
-			fmt.Println("sfsdfwe",disk.DiskRate)
 			attrs := map[string]interface{}{
 				"disk_rate": disk.DiskRate,
 			}

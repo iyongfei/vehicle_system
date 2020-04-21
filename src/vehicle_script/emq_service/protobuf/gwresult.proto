@@ -24,14 +24,14 @@ message GWResult {
 	string cmdID = 4;//结果返回所对应的命令ID. 用于返回Command的cmdID值及结果
 }
 
+
 message MonitorInfoParam {
 	message DiskOverFlow {
 		string path = 1;        //盘符路径
-		uint32 disk_rate = 2;   //当前盘符占用比例
+		float disk_rate = 2;   //当前盘符占用比例
 	}
-
-	uint32 cpu_rate = 1;    //CPU占用比例
-	uint32 mem_rate = 2;    //内存占用比例
+	float cpu_rate = 1;    //CPU占用比例
+	float mem_rate = 2;    //内存占用比例
 	repeated DiskOverFlow disk_item = 3; //占用比例较大盘符，暂定80%以上
 	uint32 gather_time = 4; //收集数据时间
 }
