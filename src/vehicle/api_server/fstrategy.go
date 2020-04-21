@@ -279,130 +279,121 @@ func GetFStrategy(c *gin.Context) {
 }
 
 func AddFStrategy(c *gin.Context) {
-	vehicleIdsP := c.PostForm("vehicle_ids")
-	sType := c.PostForm("type")
-	handleMode := c.PostForm("handle_mode")
-	//dips := c.PostForm("dips")
-	//dstPorts := c.PostForm("dst_ports")
-	diports := c.PostForm("diports")
+	vehicleId := c.PostForm("vehicle_id")
+	diports := c.PostForm("dip_ports")
 
-	sTypeValid := util.IsEleExistInSlice(sType, []interface{}{
-		strconv.Itoa(int(protobuf.FlowStrategyAddParam_FLWOTYPEDEFAULT)),
-		strconv.Itoa(int(protobuf.FlowStrategyAddParam_FLWOWHITEMODE)),
-		strconv.Itoa(int(protobuf.FlowStrategyAddParam_FLWOBLACKMODE))})
+	//默认白名单
+	//sType := c.PostForm("type")
+	//默认告警
+	//handleMode := c.PostForm("handle_mode")
+	//此版本不实现
+	//sTypeValid := util.IsEleExistInSlice(sType, []interface{}{
+	//	strconv.Itoa(int(protobuf.FlowStrategyAddParam_FLWOTYPEDEFAULT)),
+	//	strconv.Itoa(int(protobuf.FlowStrategyAddParam_FLWOWHITEMODE)),
+	//	strconv.Itoa(int(protobuf.FlowStrategyAddParam_FLWOBLACKMODE))})
+	//
+	//handleModeValid := util.IsEleExistInSlice(handleMode, []interface{}{
+	//	strconv.Itoa(int(protobuf.FlowStrategyAddParam_MODEDEFAULT)),
+	//	strconv.Itoa(int(protobuf.FlowStrategyAddParam_PREVENTWARNING)),
+	//	strconv.Itoa(int(protobuf.FlowStrategyAddParam_WARNING))})
 
-	handleModeValid := util.IsEleExistInSlice(handleMode, []interface{}{
-		strconv.Itoa(int(protobuf.FlowStrategyAddParam_MODEDEFAULT)),
-		strconv.Itoa(int(protobuf.FlowStrategyAddParam_PREVENTWARNING)),
-		strconv.Itoa(int(protobuf.FlowStrategyAddParam_WARNING))})
+	logger.Logger.Print("%s vehicle_ids:%s,diports:%v",
+		util.RunFuncName(), vehicleId, diports)
+	logger.Logger.Info("%s vehicle_ids:%s,diports:%v",
+		util.RunFuncName(), vehicleId, diports)
 
-	logger.Logger.Print("%s vehicleIdsP:%s,sType:%s,handleMode:%s,diports:%v",
-		util.RunFuncName(), vehicleIdsP, sType, handleMode, diports)
-	logger.Logger.Info("%s vehicleIdsP:%s,sType:%s,handleMode:%s,diports:%v",
-		util.RunFuncName(), vehicleIdsP, sType, handleMode, diports)
-
-	argsTrimsEmpty := util.RrgsTrimsEmpty(sType, handleMode, diports, vehicleIdsP)
+	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId, diports)
 
 	diportsMap := map[string][]uint32{}
 	err := json.Unmarshal([]byte(diports), &diportsMap)
+	fmt.Println(diportsMap, "jksd")
 	if argsTrimsEmpty ||
-		!sTypeValid ||
-		!handleModeValid ||
 		err != nil {
 		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
 		c.JSON(http.StatusOK, ret)
-		logger.Logger.Print("%s vehicleIdsP:%s,sType:%s,handleMode:%s,diports:%v",
-			util.RunFuncName(), vehicleIdsP, sType, handleMode, diports)
-		logger.Logger.Info("%s vehicleIdsP:%s,sType:%s,handleMode:%s,diports:%v",
-			util.RunFuncName(), vehicleIdsP, sType, handleMode, diports)
+
+		logger.Logger.Print("%s vehicle_ids:%s,diports:%v",
+			util.RunFuncName(), vehicleId, diports)
+		logger.Logger.Error("%s vehicle_ids:%s,diports:%v",
+			util.RunFuncName(), vehicleId, diports)
 		return
 	}
 
-	vStype, _ := strconv.Atoi(sType)
-	vHandleMode, _ := strconv.Atoi(handleMode)
-
-	//for dip, ports := range diportsMap {
-	//	destIpValid := util.IpFormat(dip)
-	//	if !destIpValid {
-	//		delete(diportsMap, dip)
-	//	} else {
-	//		for _, dport := range ports {
-	//			dporStr := strconv.Itoa(int(dport))
-	//			destPortValid := util.VerifyIpPort(dporStr)
-	//			if !destPortValid {
-	//
-	//			}
-	//		}
-	//	}
-	//
-	//}
-
-	//fdipSlice := []string{}
-	////筛选dip
-	//dipSlice := strings.Split(dips, ",")
-	//for _, dip := range dipSlice {
-	//	destIpValid := util.IpFormat(dip)
-	//	if destIpValid && !util.IsExistInSlice(dip, fdipSlice) {
-	//		fdipSlice = append(fdipSlice, dip)
-	//	}
-	//}
-	//
-	//fdportSlice := []uint32{}
-	////筛选dstPort
-	//dstPortSlice := strings.Split(dstPorts, ",")
-	//
-	//for _, dport := range dstPortSlice {
-	//	destPortValid := util.VerifyIpPort(dport)
-	//	dpInt, _ := strconv.Atoi(dport)
-	//	if destPortValid && !util.IsExistInSlice(uint32(dpInt), fdportSlice) {
-	//		fdportSlice = append(fdportSlice, uint32(dpInt))
-	//	}
-	//}
-
 	//找出合法的vehicle
-	vehicleIdSlice := strings.Split(vehicleIdsP, ",")
-	var vehicleIds []string
-	_ = mysql.QueryPluckByModelWhere(&model.VehicleInfo{}, "vehicle_id", &vehicleIds, "vehicle_id in (?)", vehicleIdSlice)
+	vehicleInfo := &model.VehicleInfo{
+		VehicleId: vehicleId,
+	}
+	vehicleInfoModelBase := model_base.ModelBaseImpl(vehicleInfo)
 
-	//fstrategy_items table
-	fstrategyItems := map[string][]string{}
-	for _, vehicleId := range vehicleIds {
-		var vehicleFstrategyItems []string
-		for dip, ports := range diportsMap {
-			for _, dport := range ports {
-				fstrategyItem := &model.FstrategyItem{
-					FstrategyItemId: util.RandomString(32),
-					VehicleId:       vehicleId,
-					DstIp:           dip,
-					DstPort:         dport,
-				}
-				modelBase := model_base.ModelBaseImpl(fstrategyItem)
+	err, recordNotFound := vehicleInfoModelBase.GetModelByCondition("vehicle_id = ?", vehicleInfo.VehicleId)
+	if err != nil || recordNotFound {
+		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+		c.JSON(http.StatusOK, ret)
 
-				err, fstrategyItemrecordNotFound := modelBase.GetModelByCondition(
-					"vehicle_id = ? and dst_ip = ? and dst_port = ?",
-					[]interface{}{fstrategyItem.VehicleId, fstrategyItem.DstIp, fstrategyItem.DstPort}...)
-				if err != nil {
-					continue
-				}
+		logger.Logger.Print("%s vehicle_id:%s recordNotFound",
+			util.RunFuncName(), vehicleId)
+		logger.Logger.Error("%s vehicle_id:%s recordNotFound",
+			util.RunFuncName(), vehicleId)
+		return
+	}
 
-				if fstrategyItemrecordNotFound {
-					if err := modelBase.InsertModel(); err != nil {
-						continue
-					}
-				}
-				if !util.IsExistInSlice(fstrategyItem.FstrategyItemId, vehicleFstrategyItems) {
-					vehicleFstrategyItems = append(vehicleFstrategyItems, fstrategyItem.FstrategyItemId)
+	finalDiportsMap := map[string][]uint32{}
+	for dip, ports := range diportsMap {
+		destIpValid := util.IpFormat(dip)
+		if destIpValid {
+			for _, port := range ports {
+				portStr := strconv.Itoa(int(port))
+				if util.VerifyIpPort(portStr) {
+					finalDiportsMap[dip] = append(finalDiportsMap[dip], port)
 				}
 			}
 		}
-		fstrategyItems[vehicleId] = vehicleFstrategyItems
 	}
+
+	logger.Logger.Print("%s vehicle_id:%s finalDiportsMap:%+v", util.RunFuncName(), vehicleId, finalDiportsMap)
+	logger.Logger.Info("%s vehicle_id:%s finalDiportsMap:%+v", util.RunFuncName(), vehicleId, finalDiportsMap)
+
+	//fstrategy_items table
+	fstrategyItems := map[string][]string{}
+	var vehicleFstrategyItems []string
+
+	for dip, ports := range finalDiportsMap {
+		for _, dport := range ports {
+			fstrategyItem := &model.FstrategyItem{
+				FstrategyItemId: util.RandomString(32),
+				VehicleId:       vehicleId,
+				DstIp:           dip,
+				DstPort:         uint32(dport),
+			}
+			modelBase := model_base.ModelBaseImpl(fstrategyItem)
+
+			err, fstrategyItemrecordNotFound := modelBase.GetModelByCondition(
+				"vehicle_id = ? and dst_ip = ? and dst_port = ?",
+				[]interface{}{fstrategyItem.VehicleId, fstrategyItem.DstIp, fstrategyItem.DstPort}...)
+			if err != nil {
+				continue
+			}
+
+			if fstrategyItemrecordNotFound {
+				if err := modelBase.InsertModel(); err != nil {
+					continue
+				}
+			}
+			if !util.IsExistInSlice(fstrategyItem.FstrategyItemId, vehicleFstrategyItems) {
+				vehicleFstrategyItems = append(vehicleFstrategyItems, fstrategyItem.FstrategyItemId)
+			}
+		}
+	}
+	fstrategyItems[vehicleId] = vehicleFstrategyItems
+
+	logger.Logger.Print("%s vehicle_id:%s fstrategyItems:%+v", util.RunFuncName(), vehicleId, fstrategyItems)
+	logger.Logger.Info("%s vehicle_id:%s fstrategyItems:%+v", util.RunFuncName(), vehicleId, fstrategyItems)
 
 	//fstrategy table
 	fstrategy := &model.Fstrategy{
 		FstrategyId: util.RandomString(32),
-		Type:        uint8(vStype),
-		HandleMode:  uint8(vHandleMode),
+		Type:        uint8(protobuf.FlowStrategyAddParam_FLWOWHITEMODE),
+		HandleMode:  uint8(protobuf.FlowStrategyAddParam_WARNING),
 		Enable:      true,
 	}
 
@@ -411,48 +402,49 @@ func AddFStrategy(c *gin.Context) {
 		//todo
 	}
 
-	for _, vehicleId := range vehicleIds {
-		//FstrategyVehicle table
-		fstrategyVehicle := &model.FstrategyVehicle{
-			FstrategyVehicleId: util.RandomString(32),
-			FstrategyId:        fstrategy.FstrategyId,
-			VehicleId:          vehicleId,
+	//FstrategyVehicle table
+	fstrategyVehicle := &model.FstrategyVehicle{
+		FstrategyVehicleId: util.RandomString(32),
+		FstrategyId:        fstrategy.FstrategyId,
+		VehicleId:          vehicleId,
+	}
+	fstrategyVehicleModelBase := model_base.ModelBaseImpl(fstrategyVehicle)
+	if err := fstrategyVehicleModelBase.InsertModel(); err != nil {
+		logger.Logger.Print("%s vehicle_id:%s insert FstrategyVehicle err:%+v", util.RunFuncName(), vehicleId, err)
+		logger.Logger.Info("%s vehicle_id:%s insert FstrategyVehicle err:%+v", util.RunFuncName(), vehicleId, err)
+
+	}
+
+	vehicleFsItems := fstrategyItems[vehicleId]
+	//learningResultIds table
+	for _, item := range vehicleFsItems {
+		fstrategyVehicleItem := &model.FstrategyVehicleItem{
+			FstrategyVehicleId: fstrategyVehicle.FstrategyVehicleId,
+			FstrategyItemId:    item,
 		}
-		fstrategyVehicleModelBase := model_base.ModelBaseImpl(fstrategyVehicle)
-		if err := fstrategyVehicleModelBase.InsertModel(); err != nil {
+
+		fstrategyVehicleItemModelBase := model_base.ModelBaseImpl(fstrategyVehicleItem)
+
+		if err := fstrategyVehicleItemModelBase.InsertModel(); err != nil {
+			logger.Logger.Print("%s vehicle_id:%s insert fstrategyVehicleItem err:%+v", util.RunFuncName(), vehicleId, err)
+			logger.Logger.Info("%s vehicle_id:%s insert fstrategyVehicleItem err:%+v", util.RunFuncName(), vehicleId, err)
+
 			continue
-		}
-
-		vehicleFsItems := fstrategyItems[vehicleId]
-		//learningResultIds table
-		for _, item := range vehicleFsItems {
-			fstrategyVehicleItem := &model.FstrategyVehicleItem{
-				FstrategyVehicleId: fstrategyVehicle.FstrategyVehicleId,
-				FstrategyItemId:    item,
-			}
-
-			fstrategyVehicleItemModelBase := model_base.ModelBaseImpl(fstrategyVehicleItem)
-
-			if err := fstrategyVehicleItemModelBase.InsertModel(); err != nil {
-				continue
-			}
 		}
 	}
 
 	//下发策略
-	for _, vehicleId := range vehicleIds {
-		fstrategyCmd := &emq_cmd.FStrategySetCmd{
-			VehicleId: vehicleId,
-			TaskType:  int(protobuf.Command_FLOWSTRATEGY_ADD),
+	fstrategyCmd := &emq_cmd.FStrategySetCmd{
+		VehicleId: vehicleId,
+		TaskType:  int(protobuf.Command_FLOWSTRATEGY_ADD),
 
-			FstrategyId: fstrategy.FstrategyId,
-			Type:        vStype,
-			HandleMode:  vHandleMode,
-			Enable:      true,
-			GroupId:     "", //目前不实现
-		}
-		topic_publish_handler.GetPublishService().PutMsg2PublicChan(fstrategyCmd)
+		FstrategyId: fstrategy.FstrategyId,
+		Type:        int(protobuf.FlowStrategyAddParam_FLWOWHITEMODE),
+		HandleMode:  int(protobuf.FlowStrategyAddParam_WARNING),
+		Enable:      true,
+		GroupId:     "", //目前不实现
 	}
+	topic_publish_handler.GetPublishService().PutMsg2PublicChan(fstrategyCmd)
 
 	retObj := response.StructResponseObj(response.VStatusOK, response.ReqAddFStrategySuccessMsg, fstrategy)
 	c.JSON(http.StatusOK, retObj)

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+	"strings"
 	"vehicle_system/src/vehicle_script/tool"
 )
 
@@ -25,7 +26,6 @@ func getConfig() map[string]string {
 }
 
 func main() {
-
 	addFStrategy()
 	//getFStrategys()
 	//getFStrategy()
@@ -58,42 +58,39 @@ func editFStrategy() {
 
 func addFStrategy() {
 	configs := getConfig()
-	flow_vehicle_ids := configs["flow_vehicle_ids"]
-	fstrategy_type := configs["fstrategy_type"]
-	fhandle_mode := configs["fhandle_mode"]
-	fip_random := configs["fip_random"]
-	fport_random := configs["fport_random"]
+	flow_vehicle_id := configs["flow_vehicle_id"]
+	fips := configs["fips"]
+	fports := configs["fports"]
 
 	token := tool.GetVehicleToken()
 	reqUrl := fstrategyUrls["post_fstrategy"]
 
-	diports := creatFastrategyIpPortData(fip_random, fport_random)
+	diports := creatFastrategyIpPortData(fips, fports)
 
 	queryParams := map[string]interface{}{
-		"vehicle_ids": flow_vehicle_ids,
-		"type":        fstrategy_type,
-		"handle_mode": fhandle_mode,
-		"diports":     diports,
+		"vehicle_id": flow_vehicle_id,
+		"dip_ports":  diports,
 	}
 	resp, _ := tool.PostForm(reqUrl, queryParams, token)
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))
 }
 
-func creatFastrategyIpPortData(fip_random string, fport_random string) string {
+func creatFastrategyIpPortData(fips string, fports string) string {
 
-	fip_randomInt, _ := strconv.Atoi(fip_random)
-	fport_randomInt, _ := strconv.Atoi(fport_random)
+	ipList := strings.Split(fips, ",")
+	portList := strings.Split(fports, ",")
 
 	data := map[string][]uint32{}
 
-	for i := 0; i < fip_randomInt; i++ {
-		ip := tool.GenIpAddr()
+	for i := 0; i < len(ipList); i++ {
+		ip := ipList[i]
 
 		var ipPort []uint32
-		for j := 0; j < fport_randomInt; j++ {
-			port := tool.RandOneToMaxNumber(65535)
-			ipPort = append(ipPort, uint32(port))
+		for j := 0; j < len(portList); j++ {
+			port := portList[j]
+			rt, _ := strconv.Atoi(port)
+			ipPort = append(ipPort, uint32(rt))
 		}
 		data[ip] = ipPort
 	}

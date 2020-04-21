@@ -1,12 +1,30 @@
 package main
 
 import (
-	"fmt"
 	"github.com/jinzhu/gorm"
 	"vehicle_system/src/vehicle/conf"
 )
 
-func main()  {
+func main() {
+	//diportsMap := map[string][]uint32{
+	//	"192.167.1.1": []uint32{198, 2, 3},
+	//	"b":           []uint32{18989898, 2, 3},
+	//}
+	//
+	//for _, ports := range diportsMap {
+	//	for k, dport := range ports {
+	//		dporStr := strconv.Itoa(int(dport))
+	//		destPortValid := util.VerifyIpPort(dporStr)
+	//		if !destPortValid {
+	//			ports = append(ports[:k], ports[k+1:]...)
+	//		}
+	//	}
+	//}
+	//
+	//fmt.Println(diportsMap)
+	//
+	//a := []string{"a", "b"}
+	//fmt.Println(a[:0])
 
 	//vgorm := InitDataBase()
 
@@ -36,8 +54,6 @@ func main()  {
 	//	}
 	//}
 
-
-
 	//fstrategyVehicleItems := []*model.FstrategyItem{}
 	//mapper := map[string][]uint32{}
 	//_ = model_base.ModelBaseImpl(&model.AutomatedLearningResult{}).
@@ -45,20 +61,10 @@ func main()  {
 	//		"fstrategy_item_id in (?)",
 	//		[]interface{}{"Anvl7c2xEdm85wVwstHfNDj6TJeruWpZ","vmtsrkxsI87EoCLOtxag5Dh9V4CkW9GN"}...)
 
-	m:= map[string]string{
-		"a":"b",
-	}
-	for k:=range m{
-		fmt.Println(k)
-	}
 }
 
-
-
-
-
-func InitDataBase()(*gorm.DB){
-	GormDb, _ := gorm.Open("mysql","root:root@tcp(127.0.0.1:3306)/vehicle?charset=utf8&parseTime=True&loc=Local")
+func InitDataBase() *gorm.DB {
+	GormDb, _ := gorm.Open("mysql", "root:root@tcp(127.0.0.1:3306)/vehicle?charset=utf8&parseTime=True&loc=Local")
 	//GormDb.LogMode(true)
 
 	GormDb.DB().SetMaxIdleConns(conf.MaxIdleConns)

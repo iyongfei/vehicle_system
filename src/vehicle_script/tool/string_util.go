@@ -64,8 +64,8 @@ func pow(x, n int) int {
 }
 
 //传10，生成[1,10]的随机数
-func RandOneToMaxNumber(max int) int32 {
-	r := rand.New(rand.NewSource(time.Now().UnixNano())).Int31n(int32(max))
+func RandOneToMaxNumber(max int) int64 {
+	r := rand.New(rand.NewSource(time.Now().UnixNano())).Int63n(int64(max))
 	r++
 	return r
 }

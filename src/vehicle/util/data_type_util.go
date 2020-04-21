@@ -24,11 +24,11 @@ func QuickSort(array []int, left, right int) {
 func partition(array []int, left, right int) int {
 	baseNum := array[left]
 	for left < right {
-		for (array[right] <= baseNum && right > left) {
+		for array[right] <= baseNum && right > left {
 			right--
 		}
 		array[left] = array[right]
-		for (array[left] >= baseNum && right > left) {
+		for array[left] >= baseNum && right > left {
 			left++
 		}
 		array[right] = array[left]
@@ -68,13 +68,13 @@ func GetSomeString(strs string, split string) string {
 //截取之前的字符串 unused
 func SubStringTopic(strs string, split string) string {
 	begin := strings.Index(strs, split)
-	content := strs[:begin ]
+	content := strs[:begin]
 	return content
 }
 
 /**
 字符串是否包含字母
- */
+*/
 
 func ContainsLetters(s string) bool {
 	pattern := ".*[a-zA-z].*" //反斜杠要转义
@@ -85,7 +85,7 @@ func ContainsLetters(s string) bool {
 
 /**
 获取特定的固件版本号
- */
+*/
 func GetPrecedingStr(str string, indexStr string) string {
 	begin := strings.LastIndex(str, indexStr)
 
@@ -116,7 +116,7 @@ func FilterSqlWhere(sqlStr string) string {
 
 /**
 切片中是否存在某个元素
- */
+*/
 func IsEleExistInSlice(valueParam interface{}, array []interface{}) bool {
 	for _, value := range array {
 		if value == valueParam {
@@ -128,7 +128,7 @@ func IsEleExistInSlice(valueParam interface{}, array []interface{}) bool {
 
 /**
 以某条件拼接切片
- */
+*/
 func JoinSlice(slice []string, condition string) string {
 	ret := ""
 	for index, indexV := range slice {
@@ -163,16 +163,15 @@ func IsExistInSlice(valueParam interface{}, array interface{}) bool {
 strings.HasPrefix(s, prefix string) bool
 HasSuffix 判断字符串 s 是否以 suffix 结尾：
 strings.HasSuffix(s, suffix string) bool
- */
+*/
 
 func HasSuffix(str, suffix string) bool {
 	return strings.HasSuffix(str, suffix)
 }
 
-
 /**
 是否是邮件格式
- */
+*/
 
 func VerifyEmailFormat(email string) bool {
 	pattern := `^[0-9a-z][_.0-9a-z-]{0,31}@([0-9a-z][0-9a-z-]{0,30}[0-9a-z]\.){1,4}[a-z]{2,4}$`
@@ -183,7 +182,7 @@ func VerifyEmailFormat(email string) bool {
 
 /**
 是否是电话格式
- */
+*/
 func VerifyMobileFormat(mobileNum string) bool {
 	regular := "^((13[0-9])|(14[5,7])|(15[0-3,5-9])|(17[0,3,5-8])|(18[0-9])|166|198|199|(147))\\d{8}$"
 	reg := regexp.MustCompile(regular)
@@ -192,7 +191,7 @@ func VerifyMobileFormat(mobileNum string) bool {
 
 /**
 是否是url格式
- */
+*/
 func VerifyUrl(urls []string) bool {
 	var urlReg bool = true
 	for _, url := range urls {
@@ -204,10 +203,9 @@ func VerifyUrl(urls []string) bool {
 	return urlReg
 }
 
-
 /**
 字符串是否包含数字
- */
+*/
 
 func ContainsNumber(s string) bool {
 	pattern := ".*[0-9].*" //反斜杠要转义
@@ -218,7 +216,7 @@ func ContainsNumber(s string) bool {
 
 /**
 字符串是否都是中文
- */
+*/
 
 func VerifyChineseFormat(s string) bool {
 	pattern := "[\\u4e00-\\u9fa5]+" //反斜杠要转义
@@ -229,7 +227,7 @@ func VerifyChineseFormat(s string) bool {
 
 /**
 字符串是否都是英文
- */
+*/
 
 func VerifyWordsFormat(s string) bool {
 	pattern := "[a-zA-Z]+" //反斜杠要转义
@@ -240,7 +238,7 @@ func VerifyWordsFormat(s string) bool {
 
 /**
 字符串是否只有英文数字的字符串
- */
+*/
 
 func VerifyWordsAndNumberFormat(s string) bool {
 	pattern := "[a-zA-Z0-9]+" //反斜杠要转义
@@ -269,62 +267,96 @@ func IsDigit(data string) bool {
 	return true
 }
 
-
 /**
 是否是15位数字
- */
+*/
 
-func VerifyLengthNumberFormat(num string,length int) bool {
-	regular := fmt.Sprintf("^([0-9])\\d{%d}$",length)
+func VerifyLengthNumberFormat(num string, length int) bool {
+	regular := fmt.Sprintf("^([0-9])\\d{%d}$", length)
 	reg := regexp.MustCompile(regular)
 	return reg.MatchString(num)
 }
 
-func VerifyNumberFormat(num string)bool  {
+func VerifyNumberFormat(num string) bool {
 	pattern := "\\d+"
-	result,_ := regexp.MatchString(pattern,num)
+	result, _ := regexp.MatchString(pattern, num)
 
 	return result
 }
-
 
 /**
 生成多少以内的数字
 [0,n) //[0,65535)
 [1,65535]
- */
+*/
 func RandToMaxNumber(max int) int32 {
-	r:=rand.New(rand.NewSource(time.Now().UnixNano())).Int31n(int32(max))
+	r := rand.New(rand.NewSource(time.Now().UnixNano())).Int31n(int32(max))
 	return r
 }
 
 //传10，生成[1,10]的随机数
 
 func RandOneToMaxNumber(max int) int32 {
-	r:=rand.New(rand.NewSource(time.Now().UnixNano())).Int31n(int32(max))
-	r ++
+	r := rand.New(rand.NewSource(time.Now().UnixNano())).Int31n(int32(max))
+	r++
 	return r
 }
 
-
 //判断是不是一个端口
-func VerifyIpPort(num string)bool  {
+func VerifyIpPort(num string) bool {
 
 	pattern := "\\d+"
-	_,err := regexp.MatchString(pattern,num)
-	if err!=nil{
+	_, err := regexp.MatchString(pattern, num)
+	if err != nil {
 		return false
 	}
 
-	parseRt,err:=strconv.Atoi(num)
+	parseRt, err := strconv.Atoi(num)
 
-	if err!=nil{
-		return  false
+	if err != nil {
+		return false
 	}
 
-
-	if 0  < parseRt && parseRt <= 65535{
+	if 0 < parseRt && parseRt <= 65535 {
 		return true
 	}
 	return false
+}
+
+func StrConv(num interface{}) string {
+	var str string
+	switch num.(type) {
+	case float32:
+		rt := num.(float32)
+		str = strconv.Itoa(int(rt))
+	case float64:
+		rt := num.(float64)
+		str = strconv.Itoa(int(rt))
+	case uint8:
+		rt := num.(uint8)
+		str = strconv.Itoa(int(rt))
+	case uint16:
+		rt := num.(uint8)
+		str = strconv.Itoa(int(rt))
+	case uint32:
+		rt := num.(uint32)
+		str = strconv.Itoa(int(rt))
+	case uint64:
+		rt := num.(uint64)
+		str = strconv.Itoa(int(rt))
+	case int8:
+		rt := num.(int8)
+		str = strconv.Itoa(int(rt))
+	case int16:
+		rt := num.(int16)
+		str = strconv.Itoa(int(rt))
+	case int32:
+		rt := num.(int32)
+		str = strconv.Itoa(int(rt))
+	case int64:
+		rt := num.(int64)
+		str = strconv.Itoa(int(rt))
+	}
+
+	return str
 }
