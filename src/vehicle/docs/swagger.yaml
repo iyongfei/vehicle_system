@@ -1,5 +1,28 @@
 basePath: /
 definitions:
+  model.VehicleSingleFlowStrategyItemsReult:
+    properties:
+      enable:
+        description: 策略启用状态
+        type: boolean
+      fstrategyId:
+        type: string
+      handleMode:
+        description: 处理方式
+        type: integer
+      type:
+        description: 策略模式
+        type: integer
+      vehicleFStrategyItemsMap:
+        additionalProperties:
+          items:
+            type: integer
+          type: array
+        description: ///////////////////
+        type: object
+      vehicleId:
+        type: string
+    type: object
   response.Response:
     properties:
       code:
@@ -23,18 +46,47 @@ info:
   title: vehicle API
   version: "1.0"
 paths:
+  /api/v1/fstrategys/{fstrategy_id}:
+    get:
+      consumes:
+      - multipart/form-data
+      description: GetFStrategy
+      parameters:
+      - description: vehicle_id
+        in: query
+        name: vehicle_id
+        required: true
+        type: string
+      - description: fstrategy_id
+        in: path
+        name: fstrategy_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.VehicleSingleFlowStrategyItemsReult'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: GetFStrategy
   /auth:
     post:
       consumes:
       - multipart/form-data
+      description: auth
       parameters:
       - description: user_name
-        in: query
+        in: formData
         name: user_name
         required: true
         type: string
       - description: password
-        in: query
+        in: formData
         name: password
         required: true
         type: string
@@ -45,9 +97,9 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/response.Response'
-        "500":
-          description: Internal Server Error
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/response.Response'
-      summary: Get Auth
+      summary: auth
 swagger: "2.0"

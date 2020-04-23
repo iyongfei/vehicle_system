@@ -30,9 +30,9 @@ CREATE TABLE IF NOT EXISTS `flows`  (
   `flow_id` int(11) UNSIGNED NULL DEFAULT NULL,
   `vehicle_id` varchar(255) NULL DEFAULT NULL,
   `hash` int(11) UNSIGNED NULL DEFAULT NULL,
-  `src_ip` int(11) UNSIGNED NULL DEFAULT NULL,
+  `src_ip` varchar(255) NULL DEFAULT NULL,
   `src_port` int(11) NULL DEFAULT NULL,
-  `dst_ip` int(11) UNSIGNED NULL DEFAULT NULL,
+  `dst_ip` varchar(255) NULL DEFAULT NULL,
   `dst_port` int(11) NULL DEFAULT NULL,
 
   `protocol` tinyint(3) UNSIGNED NULL DEFAULT NULL,
@@ -328,32 +328,6 @@ CREATE TABLE IF NOT EXISTS `strategy_vehicle_learning_results`  (
   `learning_result_id` varchar(255)  NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_strategy_vehicle_learning_results_deleted_at`(`deleted_at`) USING BTREE
-) ENGINE = InnoDB DEFAULT CHARSET=utf8;
-
-
-CREATE TABLE IF NOT EXISTS `strategy_groups`  (
-  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  `deleted_at` timestamp NULL DEFAULT NULL,
-  `strategy_id` varchar(255)  NULL DEFAULT NULL,
-  `group_id` varchar(255) NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx_strategy_groups_deleted_at`(`deleted_at`) USING BTREE
-) ENGINE = InnoDB DEFAULT CHARSET=utf8;
-
-
-
-CREATE TABLE IF NOT EXISTS `strategy_group_learning_results`  (
-  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  `deleted_at` timestamp NULL DEFAULT NULL,
-
-  `group_id` varchar(255) NULL DEFAULT NULL,
-  `learning_result_id` varchar(255)  NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx_strategy_group_learning_results_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------

@@ -61,10 +61,10 @@ func V1Router(r *gin.Engine) {
 		apiV1.POST("/fstrategys", api_server.AddFStrategy)
 		apiV1.DELETE("/fstrategys/:fstrategy_id", api_server.DeleFStrategy)
 		apiV1.PUT("/fstrategys/:fstrategy_id", api_server.EditFStrategy)
-
 		apiV1.GET("/fstrategys/:fstrategy_id", api_server.GetFStrategy)
-		apiV1.GET("/fstrategys", api_server.GetFStrategys)
-		apiV1.GET("/fstrategy_vehicle_items/:fstrategy_vehicle_id", api_server.GetVehicleFStrategyItem)
+
+		//apiV1.GET("/fstrategys", api_server.GetFStrategys)
+		//apiV1.GET("/fstrategy_vehicle_items/:fstrategy_vehicle_id", api_server.GetVehicleFStrategyItem)
 
 		//车载管理信息
 		apiV1.PUT("/deployers/:deployer_id", api_server.EditDeployer)

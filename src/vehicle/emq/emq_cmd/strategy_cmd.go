@@ -108,7 +108,7 @@ func FetchDipUrlList(setCmd *StrategySetCmd) ([]string, []string) {
 			_ = model_base.ModelBaseImpl(&model.Flow{}).GetModelListByCondition(&flows,
 				"stat = ? and vehicle_id = ?", []interface{}{protobuf.FlowStat_FST_FINISH, originId}...)
 			for _, flowItem := range flows {
-				dip := util.InetNtoa(int64(flowItem.DstIp))
+				dip := flowItem.DstIp
 
 				if strings.Trim(dip, " ") != "" {
 					dipMap[dip] = dip

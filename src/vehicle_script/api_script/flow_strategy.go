@@ -9,13 +9,12 @@ import (
 )
 
 var fstrategyUrls = map[string]string{
-	"post_fstrategy": "http://localhost:7001/api/v1/fstrategys",
-	"get_fstrategys": "http://localhost:7001/api/v1/fstrategys",
-	"get_fstrategy":  "http://localhost:7001/api/v1/fstrategys/",
+	"post_fstrategy": "http://192.168.40.14:7001/api/v1/fstrategys",
 	"dele_fstrategy": "http://localhost:7001/api/v1/fstrategys/",
-
 	"edit_fstrategy": "http://localhost:7001/api/v1/fstrategys/",
+	"get_fstrategy":  "http://localhost:7001/api/v1/fstrategys/",
 
+	"get_fstrategys":               "http://localhost:7001/api/v1/fstrategys",
 	"get_strategy_vehicles":        "http://localhost:7001/api/v1/strategy_vehicles/9xR5vYZweMb3aRoGGEQYaIw6xhRetYV8",
 	"get_vehicle_results":          "http://localhost:7001/api/v1/vehicle_lresults/cuMwUiDA2V8NLNWGznfVI2hP5Zi3PhMJ",
 	"get_strategy_vehicle_results": "http://localhost:7001/api/v1/strategy_vehicle_lresults/9xR5vYZweMb3aRoGGEQYaIw6xhRetYV8",
@@ -27,11 +26,11 @@ func getConfig() map[string]string {
 
 func main() {
 	//addFStrategy()
-	//getFStrategys()
 	getFStrategy()
 	//deleFStrategy()
 	//editFStrategy()
 
+	//getFStrategys()
 	//getStrategyVehicle()
 	//getVehicleLearningResults()
 	//getStrategyVehicleLearningResults()
@@ -46,6 +45,8 @@ func getFStrategy() {
 	get_flow_vehicle_id := configs["get_flow_vehicle_id"]
 
 	token := tool.GetVehicleToken()
+
+	fmt.Println(get_flow_fstrategy_id, get_flow_vehicle_id, token)
 
 	queryParams := map[string]interface{}{
 		"vehicle_id": get_flow_vehicle_id,
@@ -100,7 +101,7 @@ func addFStrategy() {
 	fips := configs["fips"]
 	fports := configs["fports"]
 
-	token := tool.GetVehicleToken()
+	//token := tool.GetVehicleToken()
 	reqUrl := fstrategyUrls["post_fstrategy"]
 
 	diports := creatFastrategyIpPortData(fips, fports)
@@ -109,7 +110,9 @@ func addFStrategy() {
 		"vehicle_id": flow_vehicle_id,
 		"dip_ports":  diports,
 	}
-	resp, _ := tool.PostForm(reqUrl, queryParams, token)
+	fmt.Println("req::::::", reqUrl, diports)
+
+	resp, _ := tool.PostForm(reqUrl, queryParams, "token")
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))
 }
@@ -140,17 +143,17 @@ func creatFastrategyIpPortData(fips string, fports string) string {
 /**
 获取所有的会话策略
 */
-func getFStrategys() {
-	token := tool.GetVehicleToken()
-	queryParams := map[string]interface{}{
-		"page_size":  "3",
-		"page_index": "1",
-	}
-	reqUrl := fstrategyUrls["get_fstrategys"]
-	resp, _ := tool.Get(reqUrl, queryParams, token)
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
-}
+//func getFStrategys() {
+//	token := tool.GetVehicleToken()
+//	queryParams := map[string]interface{}{
+//		"page_size":  "3",
+//		"page_index": "1",
+//	}
+//	reqUrl := fstrategyUrls["get_fstrategys"]
+//	resp, _ := tool.Get(reqUrl, queryParams, token)
+//	respMarshal, _ := json.Marshal(resp)
+//	fmt.Printf("resp %+v", string(respMarshal))
+//}
 
 //
 //

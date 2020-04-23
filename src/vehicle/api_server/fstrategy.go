@@ -262,7 +262,7 @@ func AddFStrategy(c *gin.Context) {
 	}
 	vehicleInfoModelBase := model_base.ModelBaseImpl(vehicleInfo)
 
-	err, recordNotFound := vehicleInfoModelBase.GetModelByCondition("vehicle_id = ?", vehicleInfo.VehicleId)
+	err, recordNotFound := vehicleInfoModelBase.GetModelByCondition("vehicle_id = ?", []interface{}{vehicleInfo.VehicleId}...)
 	if err != nil || recordNotFound {
 		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
 		c.JSON(http.StatusOK, ret)
@@ -584,10 +584,20 @@ func GetVehicleFStrategyItem(c *gin.Context) {
 	c.JSON(http.StatusOK, retObj)
 }
 
+// @Summary GetFStrategy
+// @Description GetFStrategy
+// @Produce json
+// @Accept multipart/form-data
+// @Param  vehicle_id query string true "vehicle_id"
+// @Param fstrategy_id path string true "fstrategy_id"
+// @Success 200 {object} model.VehicleSingleFlowStrategyItemsReult
+// @Failure 400 {object} response.Response
+// @Router /api/v1/fstrategys/{fstrategy_id} [get]
 func GetFStrategy(c *gin.Context) {
 	fstrategyId := c.Param("fstrategy_id")
 	vehicleId := c.Query("vehicle_id")
 
+	fmt.Println("jlwjelwjerw")
 	argsTrimsEmpty := util.RrgsTrimsEmpty(fstrategyId, vehicleId)
 	if argsTrimsEmpty {
 		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
@@ -596,32 +606,54 @@ func GetFStrategy(c *gin.Context) {
 		logger.Logger.Print("%s argsTrimsEmpty fstrategyId:%s", util.RunFuncName(), fstrategyId)
 	}
 
-	fstrategyInfo := &model.Fstrategy{
-		FstrategyId: fstrategyId,
-	}
+	//查看该vehicle是否存在
+	vehicleFStrategy, err := model.GetVehicleFStrategy(
+		"fstrategy_vehicles.vehicle_id = ? and fstrategies.fstrategy_id = ?",
+		[]interface{}{vehicleId, fstrategyId}...)
 
-	modelBase := model_base.ModelBaseImpl(fstrategyInfo)
-
-	err, recordNotFound := modelBase.GetModelByCondition("fstrategy_id = ?", []interface{}{fstrategyInfo.FstrategyId}...)
-
-	if err != nil {
-		logger.Logger.Error("%s fstrategy_id:%s,err:%s", util.RunFuncName(), fstrategyInfo.FstrategyId, err)
-		logger.Logger.Print("%s fstrategy_id:%s,err:%s", util.RunFuncName(), fstrategyInfo.FstrategyId, err)
-		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetFStrategyFailMsg, "")
-		c.JSON(http.StatusOK, ret)
-		return
-	}
-
-	if recordNotFound {
-		logger.Logger.Error("%s strategy_id:%s,recordNotFound", util.RunFuncName(), fstrategyInfo.FstrategyId)
-		logger.Logger.Print("%s strategy_id:%s,recordNotFound", util.RunFuncName(), fstrategyInfo.FstrategyId)
+	if vehicleFStrategy.FstrategyVehicleId == "" {
 		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetFStrtegyUnExistMsg, "")
 		c.JSON(http.StatusOK, ret)
 		return
 	}
 
+	if err != nil {
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetFStrategyFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	vehicleFStrategyItems, err := model.GetVehicleFStrategyItems(
+		"fstrategy_vehicle_items.fstrategy_vehicle_id = ?",
+		[]interface{}{vehicleFStrategy.FstrategyVehicleId}...)
+
+	if err != nil {
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetFStrategyFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	vehicleFStrategyItemsMap := map[string][]uint32{}
+
+	for _, vehicleFStrategyItem := range vehicleFStrategyItems {
+		if len(vehicleFStrategyItemsMap[vehicleFStrategyItem.DstIp]) == 0 {
+			vehicleFStrategyItemsMap[vehicleFStrategyItem.DstIp] = []uint32{vehicleFStrategyItem.DstPort}
+		} else {
+			vehicleFStrategyItemsMap[vehicleFStrategyItem.DstIp] =
+				append(vehicleFStrategyItemsMap[vehicleFStrategyItem.DstIp], vehicleFStrategyItem.DstPort)
+		}
+	}
+
+	vehicleSingleFlowStrategyItemsReult := model.VehicleSingleFlowStrategyItemsReult{
+		FstrategyId:              vehicleFStrategy.FstrategyId,
+		Type:                     vehicleFStrategy.Type,
+		HandleMode:               vehicleFStrategy.HandleMode,
+		Enable:                   vehicleFStrategy.Enable,
+		VehicleId:                vehicleFStrategy.VehicleId,
+		VehicleFStrategyItemsMap: vehicleFStrategyItemsMap,
+	}
 	responseData := map[string]interface{}{
-		"fstrategy": fstrategyInfo,
+		"fstrategy": vehicleSingleFlowStrategyItemsReult,
 	}
 
 	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetFStrategySuccessMsg, responseData)

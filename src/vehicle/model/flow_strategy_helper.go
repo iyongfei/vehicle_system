@@ -52,12 +52,6 @@ func GetVehicleRecentFStrategy(vehicleId string) *FStrategySetCmd {
 		if err := strategyVehicleModelBase.InsertModel(); err != nil {
 			return nil
 		}
-		//FstrategyId string
-		//Type        int
-		//HandleMode  int
-		//Enable      bool
-		//GroupId     string
-
 
 		fstrategySetCmd.VehicleId = vehicleId
 		fstrategySetCmd.TaskType = int(protobuf.Command_FLOWSTRATEGY_ADD)

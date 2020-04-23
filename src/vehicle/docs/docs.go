@@ -33,28 +33,71 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/auth": {
-            "post": {
+        "/api/v1/fstrategys/{fstrategy_id}": {
+            "get": {
+                "description": "GetFStrategy",
                 "consumes": [
                     "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Get Auth",
+                "summary": "GetFStrategy",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "vehicle_id",
+                        "name": "vehicle_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "fstrategy_id",
+                        "name": "fstrategy_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.VehicleSingleFlowStrategyItemsReult"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth": {
+            "post": {
+                "description": "auth",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "auth",
                 "parameters": [
                     {
                         "type": "string",
                         "description": "user_name",
                         "name": "user_name",
-                        "in": "query",
+                        "in": "formData",
                         "required": true
                     },
                     {
                         "type": "string",
                         "description": "password",
                         "name": "password",
-                        "in": "query",
+                        "in": "formData",
                         "required": true
                     }
                 ],
@@ -65,8 +108,8 @@ var doc = `{
                             "$ref": "#/definitions/response.Response"
                         }
                     },
-                    "500": {
-                        "description": "Internal Server Error",
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -76,6 +119,39 @@ var doc = `{
         }
     },
     "definitions": {
+        "model.VehicleSingleFlowStrategyItemsReult": {
+            "type": "object",
+            "properties": {
+                "enable": {
+                    "description": "策略启用状态",
+                    "type": "boolean"
+                },
+                "fstrategyId": {
+                    "type": "string"
+                },
+                "handleMode": {
+                    "description": "处理方式",
+                    "type": "integer"
+                },
+                "type": {
+                    "description": "策略模式",
+                    "type": "integer"
+                },
+                "vehicleFStrategyItemsMap": {
+                    "description": "///////////////////",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "vehicleId": {
+                    "type": "string"
+                }
+            }
+        },
         "response.Response": {
             "type": "object",
             "properties": {
