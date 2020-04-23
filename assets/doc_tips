@@ -1,7 +1,6 @@
-#gomod用法
+####################################gomod用法###################################
 set GO111MODULE=on			//打开包管理
 set GOPROXY= https://goproxy.io		//设置下载包代理
-
 go mod download: 下载依赖的 module 到本地 cache
 go mod edit: 编辑 go.mod
 go mod graph: 打印模块依赖图
@@ -11,65 +10,64 @@ go mod vender: 将依赖复制到 vendor 下
 go mod verify: 校验依赖
 go mod why: 解释为什么需要依赖
 
-#build
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build cleandb.go
+####################################交叉编译###################################
+#Mac 下编译 Linux 和 Windows 64位可执行程序
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build main.go
+CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build main.go
 
-#
-set GOOS=linux
-set GOARCH=amd64
-go build xxx
+#Linux 下编译 Mac 和 Windows 64位可执行程序
+CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build main.go
+CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build main.go
 
-#protoc用法
+#window下编译
+SET CGO_ENABLED=0
+SET GOOS=darwin
+SET GOARCH=amd64
+go build main.go
+
+SET CGO_ENABLED=0
+SET GOOS=linux
+SET GOARCH=amd64
+go build main.go
+
+
+
+####################################protoc用法###################################
 /Users/mac/go/vehicle_system/src/vehicle/emq/protobuf
  protoc scommand.proto --go_out=./
 
-
-#swag
-
-#mysq
-TINYINT(Length)
-1字节
-范围：-128~127，或者0~255（无符号）
-
-SMALLINT(Length)
-2字节
-范围：-32 768~32 767，或者0~65 535（无符号）
-
-MEDIUMINT(Length)
-3字节
-范围：-8 388 608~8 388 607，或者0~16 777 215（无符号）
-
-INT(Length)
-4字节
-范围：-2 147 483 648~2 147 483 647，或者0~4 294 967 295（无符号）
-
-BIGINT(Length)
-8字节
-范围：-9 223 372 036 854 775 808~9 223 372 036 854 775 807，或者0~18 446 744 073 709 551 615（无符号）
-
-#go
-1	uint8
-无符号 8 位整型 (0 到 255)
-2	uint16
-无符号 16 位整型 (0 到 65535)
-3	uint32
-无符号 32 位整型 (0 到 4294967295)
-
-
-4	uint64
-无符号 64 位整型 (0 到 18446744073709551615)
-5	int8
-有符号 8 位整型 (-128 到 127)
-6	int16
-有符号 16 位整型 (-32768 到 32767)
-7	int32
-有符号 32 位整型 (-2147483648 到 2147483647)
-8	int64
-有符号 64 位整型 (-9223372036854775808 到 9223372036854775807)
-
-int(11) uin32
-
-TINYINT(3) uint8
-
+####################################rpmbuild、dpkg###################################
 #rpmbuild
 yum install rpm-build
+
+#dpkg打包
+dpkg -b deb_test_JyCenter_DaMeng/ JyCenter-4.0.1-0320dm-arm64.deb &
+
+#普通安装
+$ dpkg -i mydeb.deb
+
+#指定目录安装
+sudo dpkg -i --instdir=/home/test/compile/redis_tmp redis-server_5.0.7-5_amd64.deb
+
+查看deb包是否安装
+$ dpkg -s   mysoftware
+
+强制卸载deb包：
+sudo dpkg -r --force-depends --force-remove-reinstreq vhalo
+
+卸载
+$ dpkg -r   mysoftware
+　　
+查看安装的包
+sudo dpkg -l | grep vh !!
+　　
+
+解压deb包中所要安装的文件
+$ dpkg -X   mydeb.deb   mydeb    # 第一个参数为所要解压的deb包，这里为 mydeb.deb
+                                 # 第二个参数为将deb包解压到指定的目录，这里为 mydeb
+
+解压deb包中DEBIAN目录下的文件（至少包含control文件）
+$ dpkg -e   mydeb.deb   mydeb/DEBIAN    # 第一个参数为所要解压的deb包，
+                                        # 这里为 mydeb.deb
+                                        # 第二个参数为将deb包解压到指定的目录，
+                                        # 这里为 mydeb/DEBIAN

@@ -14,7 +14,7 @@ var vehicleUrls = map[string]string{
 
 	"post_vehicles": "http://localhost:7001/api/v1/vehicles",
 
-	"edit_vehicles": "http://localhost:7001/api/v1/vehicles/Qo3dbvFqzbMxJ9S563Hz7BltEtSfj0RP",
+	"edit_vehicles": "http://localhost:7001/api/v1/vehicles/derXH5DghbCV3UVHFQaCNbmHitQHcTfj",
 	"dele_vehicles": "http://localhost:7001/api/v1/vehicles/WDHIAeGImCklIqrzQ2fBfojPL0kg4D7d",
 }
 
@@ -43,8 +43,7 @@ func editVehicles() {
 func deleVehicles() {
 	token := tool.GetVehicleToken()
 
-	queryParams := map[string]interface{}{
-	}
+	queryParams := map[string]interface{}{}
 
 	reqUrl := vehicleUrls["dele_vehicles"]
 
@@ -89,12 +88,11 @@ func addVehicle() {
 
 /**
 获取一条车载信息
- */
+*/
 func getVehicle() {
 	token := tool.GetVehicleToken()
 
-	queryParams := map[string]interface{}{
-	}
+	queryParams := map[string]interface{}{}
 
 	reqUrl := vehicleUrls["get_vehicle"]
 
@@ -106,7 +104,7 @@ func getVehicle() {
 
 /**
 获取所有的车载信息
- */
+*/
 func getVehicles() {
 	token := tool.GetVehicleToken()
 

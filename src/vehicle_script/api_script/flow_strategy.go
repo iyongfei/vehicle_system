@@ -11,7 +11,7 @@ import (
 var fstrategyUrls = map[string]string{
 	"post_fstrategy": "http://localhost:7001/api/v1/fstrategys",
 	"get_fstrategys": "http://localhost:7001/api/v1/fstrategys",
-	"get_fstrategy":  "http://localhost:7001/api/v1/fstrategys/VTkP0Qka6QHkjoy9OE5R079lz7zEa5o1",
+	"get_fstrategy":  "http://localhost:7001/api/v1/fstrategys/",
 	"dele_fstrategy": "http://localhost:7001/api/v1/fstrategys/",
 
 	"edit_fstrategy": "http://localhost:7001/api/v1/fstrategys/",
@@ -28,13 +28,32 @@ func getConfig() map[string]string {
 func main() {
 	//addFStrategy()
 	//getFStrategys()
-	//getFStrategy()
+	getFStrategy()
 	//deleFStrategy()
-	editFStrategy()
+	//editFStrategy()
 
 	//getStrategyVehicle()
 	//getVehicleLearningResults()
 	//getStrategyVehicleLearningResults()
+}
+
+/**
+获取一条会话策略信息
+*/
+func getFStrategy() {
+	configs := getConfig()
+	get_flow_fstrategy_id := configs["get_flow_fstrategy_id"]
+	get_flow_vehicle_id := configs["get_flow_vehicle_id"]
+
+	token := tool.GetVehicleToken()
+
+	queryParams := map[string]interface{}{
+		"vehicle_id": get_flow_vehicle_id,
+	}
+	reqUrl := fstrategyUrls["get_fstrategy"] + get_flow_fstrategy_id
+	resp, _ := tool.Get(reqUrl, queryParams, token)
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
 }
 
 func deleFStrategy() {
@@ -116,18 +135,6 @@ func creatFastrategyIpPortData(fips string, fports string) string {
 
 	ret, _ := json.Marshal(data)
 	return string(ret)
-}
-
-/**
-获取一条会话策略信息
-*/
-func getFStrategy() {
-	token := tool.GetVehicleToken()
-	queryParams := map[string]interface{}{}
-	reqUrl := fstrategyUrls["get_fstrategy"]
-	resp, _ := tool.Get(reqUrl, queryParams, token)
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
 }
 
 /**

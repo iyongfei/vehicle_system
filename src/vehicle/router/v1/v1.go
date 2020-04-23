@@ -3,12 +3,11 @@ package v1
 import (
 	"github.com/gin-gonic/gin"
 	"vehicle_system/src/vehicle/api_server"
-	"vehicle_system/src/vehicle/middleware"
 )
 
 func V1Router(r *gin.Engine) {
 	apiV1 := r.Group("/api/v1")
-	apiV1.Use(middleware.AuthMiddle())
+	apiV1.Use( /*middleware.AuthMiddle()*/ )
 	{
 		apiV1.GET("/white_lists/:white_list_id", api_server.GetWhiteList)
 		apiV1.GET("/white_lists", api_server.GetWhiteLists)
@@ -64,9 +63,7 @@ func V1Router(r *gin.Engine) {
 		apiV1.PUT("/fstrategys/:fstrategy_id", api_server.EditFStrategy)
 
 		apiV1.GET("/fstrategys/:fstrategy_id", api_server.GetFStrategy)
-
 		apiV1.GET("/fstrategys", api_server.GetFStrategys)
-
 		apiV1.GET("/fstrategy_vehicle_items/:fstrategy_vehicle_id", api_server.GetVehicleFStrategyItem)
 
 		//车载管理信息

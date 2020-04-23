@@ -35,6 +35,4 @@ func Setup() {
 		logger.Logger.Print("tdata vehicle_asset check err:%v", err.Error())
 	}
 
-	//redis.GetRedisInstance().VLPush("vlpush", "k4")
-
 }

@@ -216,47 +216,6 @@ func GetFStrategys(c *gin.Context) {
 	c.JSON(http.StatusOK, retObj)
 }
 
-func GetFStrategy(c *gin.Context) {
-	fstrategyId := c.Param("fstrategy_id")
-	argsTrimsEmpty := util.RrgsTrimsEmpty(fstrategyId)
-	if argsTrimsEmpty {
-		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
-		c.JSON(http.StatusOK, ret)
-		logger.Logger.Error("%s argsTrimsEmpty fstrategyId:%s", util.RunFuncName(), fstrategyId)
-		logger.Logger.Print("%s argsTrimsEmpty fstrategyId:%s", util.RunFuncName(), fstrategyId)
-	}
-	fstrategyInfo := &model.Fstrategy{
-		FstrategyId: fstrategyId,
-	}
-
-	modelBase := model_base.ModelBaseImpl(fstrategyInfo)
-
-	err, recordNotFound := modelBase.GetModelByCondition("fstrategy_id = ?", []interface{}{fstrategyInfo.FstrategyId}...)
-
-	if err != nil {
-		logger.Logger.Error("%s fstrategy_id:%s,err:%s", util.RunFuncName(), fstrategyInfo.FstrategyId, err)
-		logger.Logger.Print("%s fstrategy_id:%s,err:%s", util.RunFuncName(), fstrategyInfo.FstrategyId, err)
-		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetFStrategyFailMsg, "")
-		c.JSON(http.StatusOK, ret)
-		return
-	}
-
-	if recordNotFound {
-		logger.Logger.Error("%s strategy_id:%s,recordNotFound", util.RunFuncName(), fstrategyInfo.FstrategyId)
-		logger.Logger.Print("%s strategy_id:%s,recordNotFound", util.RunFuncName(), fstrategyInfo.FstrategyId)
-		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetFStrtegyUnExistMsg, "")
-		c.JSON(http.StatusOK, ret)
-		return
-	}
-
-	responseData := map[string]interface{}{
-		"fstrategy": fstrategyInfo,
-	}
-
-	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetFStrategySuccessMsg, responseData)
-	c.JSON(http.StatusOK, retObj)
-}
-
 func AddFStrategy(c *gin.Context) {
 	vehicleId := c.PostForm("vehicle_id")
 	diports := c.PostForm("dip_ports")
@@ -435,7 +394,6 @@ func AddFStrategy(c *gin.Context) {
 func DeleFStrategy(c *gin.Context) {
 	fstrategyId := c.Param("fstrategy_id")
 
-	fmt.Println(fstrategyId, "sjdlf")
 	argsTrimsEmpty := util.RrgsTrimsEmpty(fstrategyId)
 	if argsTrimsEmpty {
 		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
@@ -623,5 +581,49 @@ func GetVehicleFStrategyItem(c *gin.Context) {
 	}
 
 	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetStrategyVehicleResultListSuccessMsg, responseData)
+	c.JSON(http.StatusOK, retObj)
+}
+
+func GetFStrategy(c *gin.Context) {
+	fstrategyId := c.Param("fstrategy_id")
+	vehicleId := c.Query("vehicle_id")
+
+	argsTrimsEmpty := util.RrgsTrimsEmpty(fstrategyId, vehicleId)
+	if argsTrimsEmpty {
+		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+		c.JSON(http.StatusOK, ret)
+		logger.Logger.Error("%s argsTrimsEmpty fstrategyId:%s", util.RunFuncName(), fstrategyId)
+		logger.Logger.Print("%s argsTrimsEmpty fstrategyId:%s", util.RunFuncName(), fstrategyId)
+	}
+
+	fstrategyInfo := &model.Fstrategy{
+		FstrategyId: fstrategyId,
+	}
+
+	modelBase := model_base.ModelBaseImpl(fstrategyInfo)
+
+	err, recordNotFound := modelBase.GetModelByCondition("fstrategy_id = ?", []interface{}{fstrategyInfo.FstrategyId}...)
+
+	if err != nil {
+		logger.Logger.Error("%s fstrategy_id:%s,err:%s", util.RunFuncName(), fstrategyInfo.FstrategyId, err)
+		logger.Logger.Print("%s fstrategy_id:%s,err:%s", util.RunFuncName(), fstrategyInfo.FstrategyId, err)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetFStrategyFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	if recordNotFound {
+		logger.Logger.Error("%s strategy_id:%s,recordNotFound", util.RunFuncName(), fstrategyInfo.FstrategyId)
+		logger.Logger.Print("%s strategy_id:%s,recordNotFound", util.RunFuncName(), fstrategyInfo.FstrategyId)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetFStrtegyUnExistMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	responseData := map[string]interface{}{
+		"fstrategy": fstrategyInfo,
+	}
+
+	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetFStrategySuccessMsg, responseData)
 	c.JSON(http.StatusOK, retObj)
 }
