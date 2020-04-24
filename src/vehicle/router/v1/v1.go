@@ -9,6 +9,29 @@ func V1Router(r *gin.Engine) {
 	apiV1 := r.Group("/api/v1")
 	apiV1.Use( /*middleware.AuthMiddle()*/ )
 	{
+		//////////////////////////////////////////////会话策略接口//////////////////////////////////////////////
+		apiV1.POST("/fstrategys", api_server.AddFStrategy)
+		apiV1.DELETE("/fstrategys/:fstrategy_id", api_server.DeleFStrategy)
+		apiV1.PUT("/fstrategys/:fstrategy_id", api_server.EditFStrategy)
+		apiV1.GET("/fstrategys/:fstrategy_id", api_server.GetFStrategy)
+
+		//////////////////////////////////////////////会话接口//////////////////////////////////////////////
+		apiV1.GET("/flows/:flow_id", api_server.GetFlow)
+		apiV1.GET("/pagination/flows", api_server.GetPaginationFlows)
+		apiV1.DELETE("/flows/:flow_id", api_server.DeleFlow)
+		//apiV1.POST("/flows", api_server.AddFlow)
+		//apiV1.PUT("/flows/:flow_id", api_server.EditFlow)
+		//apiV1.GET("/flows", api_server.GetFlows)
+
+		//////////////////////////////////////////////车载接口//////////////////////////////////////////////
+		apiV1.GET("/vehicles/:vehicle_id", api_server.GetVehicle)
+		apiV1.POST("/vehicles", api_server.AddVehicle)
+		apiV1.PUT("/vehicles/:vehicle_id", api_server.EditVehicle)
+		//apiV1.DELETE("/vehicles/:vehicle_id", api_server.DeleVehicle)
+		//apiV1.GET("/vehicles", api_server.GetVehicles)
+		//////////////////////////////////////////////监控接口//////////////////////////////////////////////
+		apiV1.GET("/monitors", api_server.GetMonitor)
+
 		apiV1.GET("/white_lists/:white_list_id", api_server.GetWhiteList)
 		apiV1.GET("/white_lists", api_server.GetWhiteLists)
 		apiV1.POST("/white_lists", api_server.AddWhiteList)
@@ -21,21 +44,6 @@ func V1Router(r *gin.Engine) {
 		//apiV1.POST("/threats", api_server.AddThreat)
 		//apiV1.PUT("/threats/:threat_id", api_server.EditThreat)
 		apiV1.DELETE("/threats/:threat_id", api_server.DeleThreat)
-
-		//flow
-		apiV1.GET("/flows/:flow_id", api_server.GetFlow)
-		apiV1.GET("/flows", api_server.GetFlows)
-		apiV1.GET("/pagination/flows", api_server.GetPaginationFlows)
-		apiV1.POST("/flows", api_server.AddFlow)
-		apiV1.PUT("/flows/:flow_id", api_server.EditFlow)
-		apiV1.DELETE("/flows/:flow_id", api_server.DeleFlow)
-
-		//车载
-		apiV1.GET("/vehicles", api_server.GetVehicles)
-		apiV1.GET("/vehicles/:vehicle_id", api_server.GetVehicle)
-		apiV1.POST("/vehicles", api_server.AddVehicle)
-		apiV1.PUT("/vehicles/:vehicle_id", api_server.EditVehicle)
-		apiV1.DELETE("/vehicles/:vehicle_id", api_server.DeleVehicle)
 
 		//资产
 		apiV1.GET("/assets", api_server.GetAssets)
@@ -56,15 +64,6 @@ func V1Router(r *gin.Engine) {
 		apiV1.GET("/strategy_vehicles/:strategy_id", api_server.GetStrategyVehicle)
 		apiV1.GET("/vehicle_lresults/:strategy_vehicle_id", api_server.GetVehicleLearningResults)
 		apiV1.GET("/strategy_vehicle_lresults/:strategy_id", api_server.GetStrategyVehicleLearningResults)
-
-		//////////////////////////////////////////////会话策略接口//////////////////////////////////////////////
-		apiV1.POST("/fstrategys", api_server.AddFStrategy)
-		apiV1.DELETE("/fstrategys/:fstrategy_id", api_server.DeleFStrategy)
-		apiV1.PUT("/fstrategys/:fstrategy_id", api_server.EditFStrategy)
-		apiV1.GET("/fstrategys/:fstrategy_id", api_server.GetFStrategy)
-
-		//apiV1.GET("/fstrategys", api_server.GetFStrategys)
-		//apiV1.GET("/fstrategy_vehicle_items/:fstrategy_vehicle_id", api_server.GetVehicleFStrategyItem)
 
 		//车载管理信息
 		apiV1.PUT("/deployers/:deployer_id", api_server.EditDeployer)

@@ -22,7 +22,7 @@ func EditVehicle(c *gin.Context) {
 	setTypeP := c.PostForm("type")
 	setSwitchP := c.PostForm("switch")
 
-	fmt.Println(vehicleId, setTypeP, setSwitchP, "jsldfksl")
+	fmt.Println("EditVehicle:::::::::", vehicleId, setTypeP, setSwitchP)
 	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId, setTypeP, setSwitchP)
 	if argsTrimsEmpty {
 		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
@@ -65,7 +65,7 @@ func EditVehicle(c *gin.Context) {
 		VehicleId: vehicleId,
 		TaskType:  int(protobuf.Command_GW_SET),
 
-		Type:      setType,
+		Type:   setType,
 		Switch: setSwitch,
 	}
 
@@ -156,14 +156,12 @@ func GetVehicle(c *gin.Context) {
 
 /**
 添加
- */
+*/
 
 func AddVehicle(c *gin.Context) {
 	body, _ := ioutil.ReadAll(c.Request.Body)
 
-	vehicleInfo := &model.VehicleInfo{
-
-	}
+	vehicleInfo := &model.VehicleInfo{}
 	err := json.Unmarshal(body, vehicleInfo)
 
 	if err != nil {

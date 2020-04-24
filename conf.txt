@@ -50,5 +50,5 @@ insert_firm_vehicle_id = kQ8XKqP57cNwt0CwXLWoXWF0UfwaYFX8
 deploy_id=1jllwe
 
 #monitor
-monitor_id = 1233
+monitor_id = 754d2728b4e549c5a16c0180fcacb800
 disk_path_count = 5

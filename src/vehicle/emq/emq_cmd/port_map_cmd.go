@@ -8,9 +8,9 @@ import (
 )
 
 type PortMapSetCmd struct {
-	VehicleId   string
-	CmdId int
-	TaskType int
+	VehicleId string
+	CmdId     int
+	TaskType  int
 
 	DestPort string
 	SrcPort  string
@@ -19,7 +19,7 @@ type PortMapSetCmd struct {
 	DestIp   string
 }
 
-func (setCmd *PortMapSetCmd) CreatePortMapSetCmdTopicMsg() interface{}{
+func (setCmd *PortMapSetCmd) CreatePortMapSetCmdTopicMsg() interface{} {
 	publishItem := &protobuf.Command{}
 
 	//ItemType
@@ -35,14 +35,12 @@ func (setCmd *PortMapSetCmd) CreatePortMapSetCmdTopicMsg() interface{}{
 	//CmdID
 	var resultcmdItemKey string
 	taskTypeName := protobuf.Command_TaskType_name[int32(setCmd.TaskType)]
-	cmdRandom := util.RandomString(16)
-	resultcmdItemKey = createCmdId(taskTypeName, cmdRandom)
+	resultcmdItemKey = createCmdId(taskTypeName, util.RandomString(16))
 	publishItem.CmdID = resultcmdItemKey
 	resultcmdItemsBys, _ := proto.Marshal(publishItem)
 
-	logger.Logger.Info("%s createPortMapSetCmdTopicMsg publishItem:%+v",util.RunFuncName(),publishItem)
-	logger.Logger.Print("%s createPortMapSetCmdTopicMsg publishItem:%+v",util.RunFuncName(),publishItem)
+	logger.Logger.Info("%s createPortMapSetCmdTopicMsg publishItem:%+v", util.RunFuncName(), publishItem)
+	logger.Logger.Print("%s createPortMapSetCmdTopicMsg publishItem:%+v", util.RunFuncName(), publishItem)
 
 	return resultcmdItemsBys
 }
-

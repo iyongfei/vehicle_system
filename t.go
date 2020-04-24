@@ -10,35 +10,6 @@ import (
 	"vehicle_system/src/vehicle/util"
 )
 
-/**
-flowItemId 654576970
-flowItemIdBefore &{{0 0001-01-01 00:00:00 +0000 UTC 0001-01-01 00:00:00 +0000 UTC <nil>} 654576970 754d2728b4e549c5a16c0180fcacb800
- 0  0  0 0  0  0 0 0 0 0}
-vehicle_system/src/vehicle/service/flow.(*FlowService).SendFlow send flow info map[754d2728b4e549c5a16c0180fcacb800
-:[0xc00054eee0]]
-TFlow {"754d2728b4e549c5a16c0180fcacb800\n":[{"ID":1070,"CreatedAt":"2020-04-24T12:46:15+08:00","UpdatedAt":"2020-04-24T12:46:47.540655+08:00","DeletedAt":null,"FlowId":1376020295,"VehicleId":"754d2728b4e549c5a16c0180fcacb800\n","Hash":1376020295,"SrcIp":"192.168.1.235","SrcPort":49240,"DstIp":"192.168.1.103","DstPort":445,"Protocol":41,"FlowInfo":"","SafeType":0,"SafeInfo":"","StartTime":1587703561,"LastSeenTime":1587703561,"SrcDstBytes":246,"DstSrcBytes":120,"Stat":2}]}
-[GIN] 2020/04/24 - 12:46:47 | 200 |       9.644µs |             ::1 | POST     "/t_flow"
-vehicle_system/src/vehicle/service/flow.(*FlowService).SendFlow sendFlow resp json:null, type:map[string]interface {}
-
-(/Users/mac/go/vehicle_system/src/vehicle/db/mysql/query.go:111)
-[2020-04-24 12:46:47]  [0.58ms]  SELECT * FROM `flows`  WHERE `flows`.`deleted_at` IS NULL AND ((flow_id = 654576970 and vehicle_id = '754d2728b4e549c5a16c0180fcacb800
-')) ORDER BY `flows`.`id` ASC LIMIT 1
-[0 rows affected or returned ]
-flowItemIdBeforfe &{{0 0001-01-01 00:00:00 +0000 UTC 0001-01-01 00:00:00 +0000 UTC <nil>} 654576970 754d2728b4e549c5a16c0180fcacb800
- 654576970 192.168.1.103 41520 192.168.1.192 8843 0  0  1587697020 1587703600 247861 83292 1}
-recordNotFound true &{{0 0001-01-01 00:00:00 +0000 UTC 0001-01-01 00:00:00 +0000 UTC <nil>} 654576970 754d2728b4e549c5a16c0180fcacb800
- 654576970 192.168.1.103 41520 192.168.1.192 8843 0  0  1587697020 1587703600 247861 83292 1}
-
-(/Users/mac/go/vehicle_system/src/vehicle/db/mysql/add.go:13)
-[2020-04-24 12:46:47]  Error 1062: Duplicate entry '654576970' for key 'flow_id'
-
-(/Users/mac/go/vehicle_system/src/vehicle/db/mysql/add.go:13)
-[2020-04-24 12:46:47]  [0.54ms]  INSERT INTO `flows` (`created_at`,`updated_at`,`deleted_at`,`flow_id`,`vehicle_id`,`hash`,`src_ip`,`src_port`,`dst_ip`,`dst_port`,`protocol`,`flow_info`,`safe_type`,`safe_info`,`start_time`,`last_seen_time`,`src_dst_bytes`,`dst_src_bytes`,`stat`) VALUES ('2020-04-24 12:46:47','2020-04-24 12:46:47',NULL,654576970,'754d2728b4e549c5a16c0180fcacb800
-',654576970,'192.168.1.103',41520,'192.168.1.192',8843,0,'',0,'',1587697020,1587703600,247861,83292,1)
-[0 rows affected or returned ]
-vehicle_system/src/vehicle/emq/topic_subscribe_handler.HandleVehicleFlow insert flowParam err:vehicle_system/src/vehicle/db/mysql.CreateModel err Error 1062: Duplicate entry '654576970' for key 'flow_id'
-*/
-
 func BytesToInt32(buf []byte) uint32 {
 	return uint32(binary.BigEndian.Uint32(buf))
 }

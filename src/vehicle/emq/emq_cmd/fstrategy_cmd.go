@@ -41,8 +41,7 @@ func (setCmd *FStrategySetCmd) CreateFStrategyTopicMsg() interface{} {
 	//CmdID
 	var resultcmdItemKey string
 	taskTypeName := protobuf.Command_TaskType_name[int32(setCmd.TaskType)]
-	cmdRandom := util.RandomString(16)
-	resultcmdItemKey = createCmdId(taskTypeName, cmdRandom)
+	resultcmdItemKey = createCmdId(taskTypeName, util.RandomString(16))
 
 	publishItem.CmdID = resultcmdItemKey
 	resultcmdItemsBys, _ := proto.Marshal(publishItem)

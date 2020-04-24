@@ -6,17 +6,16 @@ const (
 )
 
 const (
-	TrueFlag = "true"
+	TrueFlag  = "true"
 	FalseFlag = "false"
 )
 
 const (
-	OriginTypeSelf = 1
-	OriginTypeSample = 2
-	OriginTypeRule = 3
+	OriginTypeSelf      = 1
+	OriginTypeSample    = 2
+	OriginTypeRule      = 3
 	OriginTypeWhiteList = 4
 )
-
 
 const (
 	TokenExpiredStr                    = "token过期"
@@ -26,6 +25,7 @@ const (
 	ValidationErrorUnverifiableStr     = "签名信息错误，无法验证token"
 	ValidationErrorSignatureInvalidStr = "签名验证失败"
 )
+
 //token
 const (
 	AuthTokenLost     = "请求未携带token，权限不足"
@@ -36,6 +36,7 @@ const (
 const (
 	UnmarshalErr = "数据解析失败"
 )
+
 //group
 const (
 	UnGroupName           = "未分组"
@@ -87,6 +88,27 @@ const (
 	ReqDeleFlowFailMsg    = "会话消息删除失败"
 )
 
+//monitor
+const (
+	ReqGetMonitorsFailMsg    = "监控信息获取失败"
+	ReqGetMonitorsSuccessMsg = "监控信息获取成功"
+
+	//ReqGetAssetUnExistMsg = "设备信息不存在"
+	//ReqGetAssetExistMsg   = "设备信息已存在"
+	//
+	//ReqDeleAssetFailMsg    = "设备信息删除失败"
+	//ReqDeleAssetSuccessMsg = "设备信息删除成功"
+	//
+	//ReqUpdateAssetFailMsg    = "设备信息更新失败"
+	//ReqUpdateAssetSuccessMsg = "设备信息更新成功"
+	//
+	//ReqAddAssetFailMsg    = "设备信息添加失败"
+	//ReqAddAssetSuccessMsg = "设备信息添加成功"
+	//
+	//ReqGetAssetListFailMsg    = "设备列表获取失败"
+	//ReqGetAssetListSuccessMsg = "设备列表获取成功"
+)
+
 //threat
 const (
 	ReqGetThreatInfoFailMsg    = "威胁信息获取失败"
@@ -101,10 +123,10 @@ const (
 	ReqGetVehicleSuccessMsg = "车载信息获取成功"
 
 	ReqGetVehicleUnExistMsg = "车载信息不存在"
-	ReqGetVehicleExistMsg = "车载信息已存在"
+	ReqGetVehicleExistMsg   = "车载信息已存在"
 
-	ReqDeleVehicleFailMsg      = "车载信息删除失败"
-	ReqDeleVehicleSuccessMsg      = "车载信息删除成功"
+	ReqDeleVehicleFailMsg    = "车载信息删除失败"
+	ReqDeleVehicleSuccessMsg = "车载信息删除成功"
 
 	ReqUpdateVehicleFailMsg    = "车载信息更新失败"
 	ReqUpdateVehicleSuccessMsg = "车载信息更新成功"
@@ -115,20 +137,21 @@ const (
 	ReqGetVehiclesFailMsg    = "车载列表获取失败"
 	ReqGetVehiclesSuccessMsg = "车载列表获取成功"
 )
+
 //depolyer
 const (
-	ReqGetVehicleBindLeaderUnExistMsg = "车载没有绑定管理人员信息"
-	ReqGetVehicleBindLeaderFailMsg = "车载绑定管理人员信息获取失败"
+	ReqGetVehicleBindLeaderUnExistMsg    = "车载没有绑定管理人员信息"
+	ReqGetVehicleBindLeaderFailMsg       = "车载绑定管理人员信息获取失败"
 	ReqUpdateVehicleBindLeaderSuccessMsg = "车载绑定管理人员信息更新成功"
 )
 
 //portMap
 const (
-	ReqGetPortMapUnExistMsg = "端口映射信息不存在"
-	ReqGetPortMapFailMsg = "端口映射信息获取失败"
-	ReqGetPortMapSuccessMsg = "端口映射信息获取成功"
+	ReqGetPortMapUnExistMsg    = "端口映射信息不存在"
+	ReqGetPortMapFailMsg       = "端口映射信息获取失败"
+	ReqGetPortMapSuccessMsg    = "端口映射信息获取成功"
 	ReqUpdatePortMapSuccessMsg = "端口映射信息更新成功"
-	ReqUpdatePortMapFailMsg = "端口映射信息更新失败"
+	ReqUpdatePortMapFailMsg    = "端口映射信息更新失败"
 )
 
 //asset
@@ -137,10 +160,10 @@ const (
 	ReqGetAssetSuccessMsg = "设备信息获取成功"
 
 	ReqGetAssetUnExistMsg = "设备信息不存在"
-	ReqGetAssetExistMsg = "设备信息已存在"
+	ReqGetAssetExistMsg   = "设备信息已存在"
 
-	ReqDeleAssetFailMsg      = "设备信息删除失败"
-	ReqDeleAssetSuccessMsg      = "设备信息删除成功"
+	ReqDeleAssetFailMsg    = "设备信息删除失败"
+	ReqDeleAssetSuccessMsg = "设备信息删除成功"
 
 	ReqUpdateAssetFailMsg    = "设备信息更新失败"
 	ReqUpdateAssetSuccessMsg = "设备信息更新成功"
@@ -151,30 +174,29 @@ const (
 	ReqGetAssetListFailMsg    = "设备列表获取失败"
 	ReqGetAssetListSuccessMsg = "设备列表获取成功"
 )
+
 //strategy
 const (
 	ReqAddStrategyFailMsg    = "策略添加失败"
 	ReqAddStrategySuccessMsg = "策略添加成功"
-	ReqGetStrategyExistMsg    = "策略已存在"
-	ReqGetStrtegyUnExistMsg = "策略信息不存在"
+	ReqGetStrategyExistMsg   = "策略已存在"
+	ReqGetStrtegyUnExistMsg  = "策略信息不存在"
 
 	ReqGetStrategyListFailMsg    = "策略列表获取失败"
 	ReqGetStrategyListSuccessMsg = "策略列表获取成功"
 
-	ReqGetStrategyFailMsg    		= "策略信息获取失败"
-	ReqGetStrategySuccessMsg		 = "策略信息获取成功"
+	ReqGetStrategyFailMsg    = "策略信息获取失败"
+	ReqGetStrategySuccessMsg = "策略信息获取成功"
 
-	ReqDeleStrategyFailMsg          = "策略信息删除失败"
-	ReqDeleStrategySuccessMsg       = "策略信息删除成功"
+	ReqDeleStrategyFailMsg    = "策略信息删除失败"
+	ReqDeleStrategySuccessMsg = "策略信息删除成功"
 
 	ReqUpdateStrategyFailMsg    = "策略信息更新失败"
 	ReqUpdateStrategySuccessMsg = "策略信息更新成功"
 
-
-
-	ReqGetStrategyVehicleFailMsg    		= "策略-车载信息获取失败"
-	ReqGetStrategyVehicleUnExistMsg    		= "策略-车载信息不存在"
-	ReqGetStrategyVehicleSuccessMsg		 = "策略-车载信息获取成功"
+	ReqGetStrategyVehicleFailMsg    = "策略-车载信息获取失败"
+	ReqGetStrategyVehicleUnExistMsg = "策略-车载信息不存在"
+	ReqGetStrategyVehicleSuccessMsg = "策略-车载信息获取成功"
 
 	ReqGetStrategyVehicleListFailMsg    = "策略-车载列表获取失败"
 	ReqGetStrategyVehicleListSuccessMsg = "策略-车载列表获取成功"
@@ -193,11 +215,11 @@ const (
 	ReqGetFStrategyListFailMsg    = "会话策略列表获取失败"
 	ReqGetFStrategyListSuccessMsg = "会话策略列表获取成功"
 	//
-	ReqGetFStrategyFailMsg    		= "会话策略信息获取失败"
-	ReqGetFStrategySuccessMsg		 = "会话策略信息获取成功"
+	ReqGetFStrategyFailMsg    = "会话策略信息获取失败"
+	ReqGetFStrategySuccessMsg = "会话策略信息获取成功"
 	//
-	ReqDeleFStrategyFailMsg          = "会话策略信息删除失败"
-	ReqDeleFStrategySuccessMsg       = "会话策略信息删除成功"
+	ReqDeleFStrategyFailMsg    = "会话策略信息删除失败"
+	ReqDeleFStrategySuccessMsg = "会话策略信息删除成功"
 	//
 	//ReqUpdateStrategyFailMsg    = "策略信息更新失败"
 	//ReqUpdateStrategySuccessMsg = "策略信息更新成功"

@@ -10,12 +10,40 @@ import (
 
 type Monitor struct {
 	gorm.Model
-	MonitorId   string
-	CpuRate 	float32
-	MemRate 	float32
-	GatherTime  uint32
+	MonitorId  string
+	CpuRate    float32
+	MemRate    float32
+	GatherTime uint32
 }
 
+type VehicleMonitorJoinItems struct {
+	Monitor
+
+	Path     string
+	DiskRate float32
+}
+
+func GetVehicleMonitorItems(query string, args ...interface{}) ([]*VehicleMonitorJoinItems, error) {
+	vgorm, err := mysql.GetMysqlInstance().GetMysqlDB()
+	if err != nil {
+		return nil, fmt.Errorf("%s open grom err:%v", util.RunFuncName(), err.Error())
+	}
+	vehicleMonitorItems := []*VehicleMonitorJoinItems{}
+	err = vgorm.Debug().
+		Table("monitors").
+		Select("monitors.*,disks.path,disks.disk_rate").
+		Where(query, args...).
+		Joins("inner join disks ON monitors.monitor_id = disks.monitor_id").
+		Scan(&vehicleMonitorItems).
+		Error
+	return vehicleMonitorItems, err
+}
+
+type VehicleMonitorItemsResponse struct {
+	Monitor
+	/////////////////////
+	VehicleMonitorItemList []Disk
+}
 
 func (monitor *Monitor) InsertModel() error {
 	return mysql.CreateModel(monitor)
@@ -38,16 +66,16 @@ func (monitor *Monitor) UpdateModelsByCondition(values interface{}, query interf
 	return nil
 }
 func (monitor *Monitor) DeleModelsByCondition(query interface{}, args ...interface{}) error {
-	err := mysql.HardDeleteModelB(monitor,query,args...)
-	if err!=nil{
-		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
+	err := mysql.HardDeleteModelB(monitor, query, args...)
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
 	}
 	return nil
 }
-func (monitor *Monitor) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) (error) {
-	err := mysql.QueryModelRecordsByWhereCondition(model,query,args...)
-	if err!=nil{
-		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
+func (monitor *Monitor) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) error {
+	err := mysql.QueryModelRecordsByWhereCondition(model, query, args...)
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
 	}
 	return nil
 }
@@ -59,12 +87,11 @@ func (monitor *Monitor) CreateModel(monitorParams ...interface{}) interface{} {
 	return monitor
 }
 
-
 type Disk struct {
 	gorm.Model
-	MonitorId   string
-	Path 		string
-	DiskRate  	float32
+	MonitorId string
+	Path      string
+	DiskRate  float32
 }
 
 func (disk *Disk) InsertModel() error {
@@ -88,16 +115,16 @@ func (disk *Disk) UpdateModelsByCondition(values interface{}, query interface{},
 	return nil
 }
 func (disk *Disk) DeleModelsByCondition(query interface{}, args ...interface{}) error {
-	err := mysql.HardDeleteModelB(disk,query,args...)
-	if err!=nil{
-		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
+	err := mysql.HardDeleteModelB(disk, query, args...)
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
 	}
 	return nil
 }
-func (disk *Disk) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) (error) {
-	err := mysql.QueryModelRecordsByWhereCondition(model,query,args...)
-	if err!=nil{
-		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
+func (disk *Disk) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) error {
+	err := mysql.QueryModelRecordsByWhereCondition(model, query, args...)
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
 	}
 	return nil
 }

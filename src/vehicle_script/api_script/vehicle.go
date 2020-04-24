@@ -20,10 +20,24 @@ var vehicleUrls = map[string]string{
 
 func main() {
 	//getVehicles()
-	getVehicle()
+	//getVehicle()
 	//addVehicle()
 	//deleVehicles()
-	//editVehicles()
+	editVehicles()
+}
+
+func editVehicles() {
+	token := tool.GetVehicleToken()
+	urlReq, _ := vehicleUrls["edit_vehicles"]
+
+	bodyParams := map[string]interface{}{
+		"type":   "1",
+		"switch": "true",
+	}
+	resp, _ := tool.PutForm(urlReq, bodyParams, token)
+
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
 }
 
 /**
@@ -38,20 +52,6 @@ func getVehicle() {
 	reqUrl := vehicleUrls["get_vehicle"]
 
 	resp, _ := tool.Get(reqUrl, queryParams, token)
-
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
-}
-
-func editVehicles() {
-	token := tool.GetVehicleToken()
-	urlReq, _ := vehicleUrls["edit_vehicles"]
-
-	bodyParams := map[string]interface{}{
-		"type":   "1",
-		"switch": "true",
-	}
-	resp, _ := tool.PutForm(urlReq, bodyParams, token)
 
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))

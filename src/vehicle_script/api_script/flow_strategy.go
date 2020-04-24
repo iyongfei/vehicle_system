@@ -34,6 +34,7 @@ func main() {
 	//getStrategyVehicle()
 	//getVehicleLearningResults()
 	//getStrategyVehicleLearningResults()
+
 }
 
 /**

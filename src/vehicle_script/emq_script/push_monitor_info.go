@@ -12,58 +12,59 @@ import (
 /**
 添加车载信息
 insert_vehicle_count
- */
+#monitor
+monitor_id = 1233
+disk_path_count = 5
+*/
 const (
-	Monitor_Id = "monitor_id"
+	Monitor_Id      = "monitor_id"
 	Disk_Path_Count = "disk_path_count"
 )
 
-func main()  {
+func main() {
 	configMap := tool.InitConfig("conf.txt")
 	MonitorId := configMap[Monitor_Id]
 	DiskPathCount := configMap[Disk_Path_Count]
-	defaultDiskPathCount ,_ := strconv.Atoi(DiskPathCount)
+	defaultDiskPathCount, _ := strconv.Atoi(DiskPathCount)
 
-	emqx:= emq_service.NewEmqx()
+	emqx := emq_service.NewEmqx()
 	//vid:=tool.RandomString(32)
-	emqx.Publish(MonitorId,createMonitorProbuf(MonitorId,defaultDiskPathCount))
+	emqx.Publish(MonitorId, createMonitorProbuf(MonitorId, defaultDiskPathCount))
 }
 
-func createMonitorProbuf(vId string,defaultDiskPathCount int)[]byte{
-	pushReq:=&protobuf.GWResult{
-		ActionType:protobuf.GWResult_MONITORINFO,
-		GUID:vId,
+func createMonitorProbuf(vId string, defaultDiskPathCount int) []byte {
+	pushReq := &protobuf.GWResult{
+		ActionType: protobuf.GWResult_MONITORINFO,
+		GUID:       vId,
 	}
 
 	params := &protobuf.MonitorInfoParam{
-		CpuRate:0.1,
-		MemRate:0.3,
-		GatherTime:1231231231,
+		CpuRate:    0.1,
+		MemRate:    0.3,
+		GatherTime: 1231231231,
 	}
 
-
-
 	//module begin
-	items:=[]*protobuf.MonitorInfoParam_DiskOverFlow{}
+	items := []*protobuf.MonitorInfoParam_DiskOverFlow{}
 
-	for i:=0;i<defaultDiskPathCount;i++{
-		fmt.Println("lwejl",i)
+	for i := 0; i < defaultDiskPathCount; i++ {
+		fmt.Println("lwejl", i)
 		moduleItem := &protobuf.MonitorInfoParam_DiskOverFlow{
 			//Path:tool.RandomString(4),
-			Path:"x9Es",
-			DiskRate:0.4,
+			Path:     "x9Es",
+			DiskRate: 0.4,
 		}
-		items = append(items,moduleItem)
+		items = append(items, moduleItem)
 	}
 
 	params.DiskItem = items
 
-	fmt.Println("jsldfks",params)
+	fmt.Println("jsldfks", params)
 
-	bys,_:=proto.Marshal(params)
+	bys, _ := proto.Marshal(params)
 	///////////////////////////////////
 
 	pushReq.Param = bys
-	ret,_:=proto.Marshal(pushReq)
-	return  ret
+	ret, _ := proto.Marshal(pushReq)
+	return ret
 }

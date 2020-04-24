@@ -50,6 +50,7 @@ func HandleMonitorInfo(vehicleResult protobuf.GWResult, vehicleId string) error 
 
 	diskItems := monitorParam.GetDiskItem()
 	for _, diskItem := range diskItems {
+		fmt.Println(diskItem, "jwlejwksaflyerererer")
 		disk := &model.Disk{
 			MonitorId: vehicleId,
 			Path:      diskItem.Path,

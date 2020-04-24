@@ -8,17 +8,16 @@ import (
 )
 
 type DeployerSetCmd struct {
-	VehicleId   string
-	CmdId 		int
-	TaskType 	int
+	VehicleId string
+	CmdId     int
+	TaskType  int
 
-	Name string
-	Phone string
+	Name    string
+	Phone   string
 	DevName string
 }
 
-
-func (setCmd *DeployerSetCmd) CreateDeployerTopicMsg() interface{}{
+func (setCmd *DeployerSetCmd) CreateDeployerTopicMsg() interface{} {
 	publishItem := &protobuf.Command{}
 
 	//ItemType
@@ -33,13 +32,13 @@ func (setCmd *DeployerSetCmd) CreateDeployerTopicMsg() interface{}{
 	var resultcmdItemKey string
 	taskTypeName := protobuf.Command_TaskType_name[int32(setCmd.TaskType)]
 	cmdRandom := util.RandomString(16)
-	resultcmdItemKey = createCmdId(taskTypeName, cmdRandom)
+	resultcmdItemKey = createCmdId(taskTypeName, cmdRandom, util.RandomString(16))
 	publishItem.CmdID = resultcmdItemKey
 
 	resultcmdItemsBys, _ := proto.Marshal(publishItem)
 
-	logger.Logger.Info("%s createDeployerTopicMsg publishItem:%+v",util.RunFuncName(),publishItem)
-	logger.Logger.Print("%s createDeployerTopicMsg publishItem:%+v",util.RunFuncName(),publishItem)
+	logger.Logger.Info("%s createDeployerTopicMsg publishItem:%+v", util.RunFuncName(), publishItem)
+	logger.Logger.Print("%s createDeployerTopicMsg publishItem:%+v", util.RunFuncName(), publishItem)
 
 	return resultcmdItemsBys
 }
