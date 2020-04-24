@@ -3,11 +3,11 @@ package main
 import (
 	"bytes"
 	"encoding/binary"
+	"encoding/csv"
 	"fmt"
 	"github.com/jinzhu/gorm"
-	"strings"
+	"os"
 	"vehicle_system/src/vehicle/conf"
-	"vehicle_system/src/vehicle/util"
 )
 
 func BytesToInt32(buf []byte) uint32 {
@@ -48,15 +48,29 @@ func bytesToLittleEndian(testBytes []byte) (ret uint32) {
 }
 
 func main() {
-	trimStr := "sjkdlf" +
-		"" +
-		""
 
-	strings.Trim(trimStr, "\n")
-	fmt.Println(trimStr)
+	fileName := "2.csv"
+	buf := new(bytes.Buffer)
+	r2 := csv.NewWriter(buf)
+	for i := 0; i < 10; i++ {
+		s := make([]string, 3)
+		s[0] = "user id"
+		s[1] = "name"
+		s[2] = "depart"
+		r2.Write(s)
+		r2.Flush()
+	}
+	fmt.Println(buf)
+	fout, err := os.Create(fileName)
+	defer fout.Close()
+	if err != nil {
+		fmt.Println(fileName, err)
+		return
+	}
+	fout.WriteString(buf.String())
 
-	r := bytesToLittleEndian(UintToBytes(690530496))
-	fmt.Println(util.IpIntToString(int(r)))
+	//r := bytesToLittleEndian(UintToBytes(690530496))
+	//fmt.Println(util.IpIntToString(int(r)))
 	//
 	//rrr := util.StringIpToInt("255.255.255.255")
 	//fmt.Println(rrr)

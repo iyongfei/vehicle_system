@@ -16,6 +16,7 @@ message GWResult {
 		FLOWSTAT = 10;//网络会话状态, 上报 FlowParam 类型
 		FLOWSTRATEGYSTAT = 11; // flow策略状态, 上传 FlowStrategyParam 类型
 		MONITORINFO   = 12; //监控，上报MonitorInfoParam类型
+		FLOWSTATISTIC = 13; //流量统计，上报FlowStatisticParam类型
 	}
 
 	ActionType action_type = 1;//推送数据类型
@@ -24,6 +25,15 @@ message GWResult {
 	string cmdID = 4;//结果返回所对应的命令ID. 用于返回Command的cmdID值及结果
 }
 
+message FlowStatisticParam {
+	string interface_name = 1; //网卡名称
+	uint64 rx = 2; //接收总数据，字节
+	uint64 tx = 3; //上传总数据，字节
+	uint32 flow_count = 4; //探测的flow的总数
+	uint32 pub = 5; //本次发布的flow数量
+	uint32 notlocal = 6; //不是与本地相关的flow数
+	uint32 white =7; //其中属于白名单的数量
+}
 
 message MonitorInfoParam {
 	message DiskOverFlow {
@@ -35,8 +45,6 @@ message MonitorInfoParam {
 	repeated DiskOverFlow disk_item = 3; //占用比例较大盘符，暂定80%以上
 	uint32 gather_time = 4; //收集数据时间
 }
-
-
 
 enum FlowProtos {
 	FP_UNKNOWN = 0; // 默认值
@@ -75,7 +83,7 @@ message FlowParam {
 		uint64 dst2src_bytes = 13; // 下行流量(指dst->src方向) 单位:字节
 		FlowStat flow_stat = 14; // 当前会话活跃状态
 	}
-	
+
 	repeated FItem flow_item = 1; // flow集合
 }
 
@@ -252,10 +260,10 @@ message StrategyParam {
 // 小V 当前策略的状态
 message FlowStrategyParam {
 	enum Type {
-        FLWOTYPEDEFAULT = 0;
-        FLWOWHITEMODE =1;//白名单模式
-        FLWOBLACKMODE =2;//黑名单模式
-    }
+		FLWOTYPEDEFAULT = 0;
+		FLWOWHITEMODE =1;//白名单模式
+		FLWOBLACKMODE =2;//黑名单模式
+	}
 	enum HandleMode {
 		MODEDEFAULT = 0;
 		PREVENTWARNING = 1;//阻断并告警

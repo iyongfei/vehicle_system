@@ -1,5 +1,4 @@
 ﻿syntax = "proto3";
-package protobuf;
 //小v请求的基本格式
 message GWResult {
 	enum ActionType {
@@ -83,7 +82,7 @@ message FlowParam {
 		uint64 dst2src_bytes = 13; // 下行流量(指dst->src方向) 单位:字节
 		FlowStat flow_stat = 14; // 当前会话活跃状态
 	}
-
+	
 	repeated FItem flow_item = 1; // flow集合
 }
 
@@ -260,10 +259,10 @@ message StrategyParam {
 // 小V 当前策略的状态
 message FlowStrategyParam {
 	enum Type {
-		FLWOTYPEDEFAULT = 0;
-		FLWOWHITEMODE =1;//白名单模式
-		FLWOBLACKMODE =2;//黑名单模式
-	}
+        FLWOTYPEDEFAULT = 0;
+        FLWOWHITEMODE =1;//白名单模式
+        FLWOBLACKMODE =2;//黑名单模式
+    }
 	enum HandleMode {
 		MODEDEFAULT = 0;
 		PREVENTWARNING = 1;//阻断并告警
