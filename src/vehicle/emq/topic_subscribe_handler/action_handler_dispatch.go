@@ -45,20 +45,20 @@ func (t *TopicSubscribeHandler) HanleSubscribeTopicData(topicMsg mqtt.Message) e
 	vehicleResult := protobuf.GWResult{}
 	err := proto.Unmarshal(topicMsg.Payload(), &vehicleResult)
 
-	fmt.Printf("vehicleResult:%+v", vehicleResult)
 	if err != nil {
 		//$SYS/brokers/emqx@127.0.0.1/clients/vehicle_test/connected
 		return fmt.Errorf("hanleSubscribeTopicData unmarshal payload err:%s", err)
 	}
 	//vehicleId null
-	vehicleId := vehicleResult.GetGUID()
+	vehicleId := util.RrgsTrimEmptyTableEnter(vehicleResult.GetGUID())
+
 	fmt.Printf("vehicleResult vehicleId:%s", vehicleId)
 	if util.RrgsTrimEmpty(vehicleId) {
 		return fmt.Errorf("vehicleResult vehicle id null")
 	}
 
 	//vehicleId exist
-	actionCommonErr := HandleVehicleCommonAction(vehicleResult)
+	actionCommonErr := HandleVehicleCommonAction(vehicleResult, vehicleId)
 
 	if actionCommonErr != nil {
 		return actionCommonErr
@@ -79,41 +79,41 @@ func (t *TopicSubscribeHandler) HanleSubscribeTopicData(topicMsg mqtt.Message) e
 	switch actionType := vehicleResult.ActionType; actionType {
 
 	case protobuf.GWResult_GW_INFO: //GwInfoParam
-		handGwResultError = HandleVehicleInfo(vehicleResult)
+		handGwResultError = HandleVehicleInfo(vehicleResult, vehicleId)
 
 	case protobuf.GWResult_MONITORINFO: //MONITORINFO
-		handGwResultError = HandleMonitorInfo(vehicleResult)
+		handGwResultError = HandleMonitorInfo(vehicleResult, vehicleId)
 
 	case protobuf.GWResult_DEPLOYER: //DeployerParam
-		handGwResultError = HandleVehicleDeployer(vehicleResult)
+		handGwResultError = HandleVehicleDeployer(vehicleResult, vehicleId)
 
 	case protobuf.GWResult_PROTECT: //GWProtectInfoParam
-		handGwResultError = HandleVehicleProtect(vehicleResult)
+		handGwResultError = HandleVehicleProtect(vehicleResult, vehicleId)
 
 		//////////////////////////////////////////////
 	case protobuf.GWResult_FLOWSTAT: //FlowParam
-		handGwResultError = HandleVehicleFlow(vehicleResult)
+		handGwResultError = HandleVehicleFlow(vehicleResult, vehicleId)
 
 	case protobuf.GWResult_FIRMWARE: //FirwareParam
-		handGwResultError = HandleVehicleFirmware(vehicleResult)
+		handGwResultError = HandleVehicleFirmware(vehicleResult, vehicleId)
 
 	case protobuf.GWResult_DEVICE: //DeviceParam
-		handGwResultError = HandleVehicleAsset(vehicleResult)
+		handGwResultError = HandleVehicleAsset(vehicleResult, vehicleId)
 
 	case protobuf.GWResult_THREAT: //ThreatParam
-		handGwResultError = HandleVehicleThreat(vehicleResult)
+		handGwResultError = HandleVehicleThreat(vehicleResult, vehicleId)
 
 	case protobuf.GWResult_SAMPLE: //SampleParam
-		handGwResultError = HandleVehicleSample(vehicleResult)
+		handGwResultError = HandleVehicleSample(vehicleResult, vehicleId)
 
 	case protobuf.GWResult_STRATEGY: //StrawtegyParam
-		handGwResultError = HandleVehicleStrategy(vehicleResult)
+		handGwResultError = HandleVehicleStrategy(vehicleResult, vehicleId)
 
 	case protobuf.GWResult_FLOWSTRATEGYSTAT: //flowStrawtegyParam
-		handGwResultError = HandleVehicleFlowStrategy(vehicleResult)
+		handGwResultError = HandleVehicleFlowStrategy(vehicleResult, vehicleId)
 
 	case protobuf.GWResult_PORTREDIRECT: //PortRedirectParam
-		handGwResultError = HandleVehiclePortMap(vehicleResult)
+		handGwResultError = HandleVehiclePortMap(vehicleResult, vehicleId)
 
 	default:
 		logger.Logger.Error("vehicleId:%s action type err:%d", vehicleId, int32(vehicleResult.ActionType))

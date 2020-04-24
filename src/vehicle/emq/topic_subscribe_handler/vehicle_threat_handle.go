@@ -10,7 +10,7 @@ import (
 	"vehicle_system/src/vehicle/util"
 )
 
-func HandleVehicleThreat(vehicleResult protobuf.GWResult) error {
+func HandleVehicleThreat(vehicleResult protobuf.GWResult, vehicleId string) error {
 
 	//parse
 	vehicleParam := &protobuf.ThreatParam{}
@@ -20,8 +20,6 @@ func HandleVehicleThreat(vehicleResult protobuf.GWResult) error {
 		logger.Logger.Error("%s unmarshal vehicleParam err:%s", util.RunFuncName(), err.Error())
 		return fmt.Errorf("%s unmarshal vehicleParam err:%s", util.RunFuncName(), err.Error())
 	}
-	//vehicleId
-	vehicleId := vehicleResult.GetGUID()
 
 	logger.Logger.Print("%s unmarshal vehicleParam:%+v", util.RunFuncName(), vehicleParam)
 	logger.Logger.Info("%s unmarshal vehicleParam:%+v", util.RunFuncName(), vehicleParam)
@@ -37,8 +35,8 @@ func HandleVehicleThreat(vehicleResult protobuf.GWResult) error {
 	}
 	for _, threatItem := range vehicleParam.GetThreatItem() {
 		threat := &model.Threat{
-			ThreatId:util.RandomString(32),
-			VehicleId:vehicleId,
+			ThreatId:  util.RandomString(32),
+			VehicleId: vehicleId,
 		}
 
 		modelBase := model_base.ModelBaseImpl(threat)
@@ -47,7 +45,6 @@ func HandleVehicleThreat(vehicleResult protobuf.GWResult) error {
 		if !recordNotFound {
 			continue
 		}
-
 
 		err := modelBase.InsertModel()
 		if err != nil {

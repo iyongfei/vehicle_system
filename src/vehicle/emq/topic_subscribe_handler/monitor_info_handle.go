@@ -10,7 +10,7 @@ import (
 	"vehicle_system/src/vehicle/util"
 )
 
-func HandleMonitorInfo(vehicleResult protobuf.GWResult) error {
+func HandleMonitorInfo(vehicleResult protobuf.GWResult, vehicleId string) error {
 	//parse
 	monitorParam := &protobuf.MonitorInfoParam{}
 	err := proto.Unmarshal(vehicleResult.GetParam(), monitorParam)
@@ -20,7 +20,6 @@ func HandleMonitorInfo(vehicleResult protobuf.GWResult) error {
 		return fmt.Errorf("%s unmarshal monitorParam err:%s", util.RunFuncName(), err.Error())
 	}
 	//vehicleId
-	vehicleId := vehicleResult.GetGUID()
 
 	logger.Logger.Print("%s unmarshal monitorParam:%+v", util.RunFuncName(), monitorParam)
 	logger.Logger.Info("%s unmarshal monitorParam:%+v", util.RunFuncName(), monitorParam)

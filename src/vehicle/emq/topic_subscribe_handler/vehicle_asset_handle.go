@@ -10,7 +10,7 @@ import (
 	"vehicle_system/src/vehicle/util"
 )
 
-func HandleVehicleAsset(vehicleResult protobuf.GWResult) error {
+func HandleVehicleAsset(vehicleResult protobuf.GWResult, vehicleId string) error {
 	//parse
 	assetParam := &protobuf.DeviceParam{}
 	err := proto.Unmarshal(vehicleResult.GetParam(), assetParam)
@@ -19,8 +19,6 @@ func HandleVehicleAsset(vehicleResult protobuf.GWResult) error {
 		logger.Logger.Error("%s unmarshal assetParam err:%s", util.RunFuncName(), err.Error())
 		return fmt.Errorf("%s unmarshal assetParam err:%s", util.RunFuncName(), err.Error())
 	}
-	//vehicleId
-	vehicleId := vehicleResult.GetGUID()
 
 	logger.Logger.Print("%s unmarshal assetParam:%+v", util.RunFuncName(), assetParam)
 	logger.Logger.Info("%s unmarshal assetParam:%+v", util.RunFuncName(), assetParam)

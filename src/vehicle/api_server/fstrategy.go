@@ -597,13 +597,13 @@ func GetFStrategy(c *gin.Context) {
 	fstrategyId := c.Param("fstrategy_id")
 	vehicleId := c.Query("vehicle_id")
 
-	fmt.Println("jlwjelwjerw")
 	argsTrimsEmpty := util.RrgsTrimsEmpty(fstrategyId, vehicleId)
 	if argsTrimsEmpty {
 		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
 		c.JSON(http.StatusOK, ret)
 		logger.Logger.Error("%s argsTrimsEmpty fstrategyId:%s", util.RunFuncName(), fstrategyId)
 		logger.Logger.Print("%s argsTrimsEmpty fstrategyId:%s", util.RunFuncName(), fstrategyId)
+		return
 	}
 
 	//查看该vehicle是否存在

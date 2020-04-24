@@ -11,8 +11,7 @@ import (
 	"vehicle_system/src/vehicle/util"
 )
 
-func HandleVehicleFlow(vehicleResult protobuf.GWResult) error {
-	vehicleId := vehicleResult.GetGUID()
+func HandleVehicleFlow(vehicleResult protobuf.GWResult, vehicleId string) error {
 	//parse
 	flowParams := &protobuf.FlowParam{}
 	err := proto.Unmarshal(vehicleResult.GetParam(), flowParams)

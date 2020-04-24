@@ -6,9 +6,9 @@ import (
 	"strings"
 )
 
-func RunFuncName()string{
-	pc := make([]uintptr,1)
-	runtime.Callers(2,pc)
+func RunFuncName() string {
+	pc := make([]uintptr, 1)
+	runtime.Callers(2, pc)
 	f := runtime.FuncForPC(pc[0])
 	return f.Name()
 }
@@ -17,11 +17,10 @@ func RrgsTrimEmpty(arg string) bool {
 	return strings.Trim(arg, " ") == ""
 }
 
-
-func RrgsTrimsEmpty(args... string) bool {
+func RrgsTrimsEmpty(args ...string) bool {
 	var flag = false
-	for _,arg:=range args{
-		if strings.Trim(arg, " ") == ""{
+	for _, arg := range args {
+		if strings.Trim(arg, " ") == "" {
 			flag = true
 			break
 		}
@@ -29,21 +28,27 @@ func RrgsTrimsEmpty(args... string) bool {
 	return flag
 }
 
-func RrgsTrimsAllEmpty(args... string) bool {
+func RrgsTrimsAllEmpty(args ...string) bool {
 	nullCount := 0
 	var flag = false
-	for _,arg:=range args{
-		if strings.Trim(arg, " ") == ""{
-			nullCount ++
+	for _, arg := range args {
+		if strings.Trim(arg, " ") == "" {
+			nullCount++
 		}
 	}
-	if nullCount == len(args){
+	if nullCount == len(args) {
 		flag = true
 	}
 
 	return flag
 }
 
+func RrgsTrimEmptyTableEnter(arg string) string {
+	trimStr := strings.Trim(arg, " ")
+	trimStr = strings.Trim(trimStr, "\n")
+
+	return trimStr
+}
 
 func CamelCase(s string) string {
 	if s == "" {
@@ -82,11 +87,9 @@ func isASCIIUpper(c byte) bool {
 	return 'A' <= c && c <= 'Z'
 }
 
-
 func isASCIIDigit(c byte) bool {
 	return '0' <= c && c <= '9'
 }
-
 
 /**
 Required 不为空，即各个类型要求不为其零值
@@ -109,4 +112,4 @@ Tel 固定电话号，有效类型：string，其他类型都将不能通过验�
 Phone 手机号或固定电话号，有效类型：string，其他类型都将不能通过验证
 ZipCode 邮政编码，有效类型：string，其他类型都将不能通过验证
 
- */
+*/

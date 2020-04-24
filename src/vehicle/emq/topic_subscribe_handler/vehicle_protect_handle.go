@@ -10,7 +10,7 @@ import (
 	"vehicle_system/src/vehicle/util"
 )
 
-func HandleVehicleProtect(vehicleResult protobuf.GWResult) error {
+func HandleVehicleProtect(vehicleResult protobuf.GWResult, vehicleId string) error {
 	//parse
 	vehicleProtectParam := &protobuf.GWProtectInfoParam{}
 	err := proto.Unmarshal(vehicleResult.GetParam(), vehicleProtectParam)
@@ -19,8 +19,6 @@ func HandleVehicleProtect(vehicleResult protobuf.GWResult) error {
 		logger.Logger.Error("%s unmarshal vehicle protect param err:%s", util.RunFuncName(), err.Error())
 		return fmt.Errorf("%s unmarshal vehicle protect err:%s", util.RunFuncName(), err.Error())
 	}
-	//vehicleId
-	vehicleId := vehicleResult.GetGUID()
 
 	logger.Logger.Print("%s unmarshal vehicleProtectParam:%+v", util.RunFuncName(), vehicleProtectParam)
 	logger.Logger.Info("%s unmarshal vehicleProtectParam:%+v", util.RunFuncName(), vehicleProtectParam)

@@ -7,21 +7,83 @@ import (
 )
 
 var urls = map[string]string{
-	"get_flow":   "http://localhost:7001/api/v1/flows/6656653",
+	"get_flow":   "http://localhost:7001/api/v1/flows/825338010",
 	"get_flows":  "http://192.168.40.14:7001/api/v1/flows",
 	"pagination": "http://localhost:7001/api/v1/pagination/flows",
 	"post_flows": "http://localhost:7001/api/v1/flows",
 	"edit_flows": "http://localhost:7001/api/v1/flows/1111",
-	"dele_flows": "http://localhost:7001/api/v1/flows/113907034",
+	"dele_flows": "http://localhost:7001/api/v1/flows/710022812",
 }
 
 func main() {
-	//getFlow()
-	getFlows()
+	getFlow()
+	//getFlows()
 	//getPaginationFlows()
 	//addFlows()
 	//editFlows()
 	//deleFlows()
+}
+
+func deleFlows() {
+	token := tool.GetVehicleToken()
+
+	queryParams := map[string]interface{}{
+		"vehicle_id": "b020eccdf33d48b4aa246a89a6f04609",
+	}
+
+	reqUrl := urls["dele_flows"]
+
+	resp, _ := tool.Delete(reqUrl, queryParams, token)
+
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+}
+func editFlows() {
+	token := tool.GetVehicleToken()
+	urlReq, _ := urls["edit_flows"]
+
+	bodyParams := map[string]interface{}{
+		"vehicle_id": "b020eccdf33d48b4aa246a89a6f04609",
+		"src_ip":     "3",
+		"dst_ip":     "42",
+	}
+	resp, _ := tool.PutForm(urlReq, bodyParams, token)
+
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+}
+
+func getPaginationFlows() {
+
+	token := tool.GetVehicleToken()
+
+	queryParams := map[string]interface{}{
+		"vehicle_id": "b020eccdf33d48b4aa246a89a6f04609",
+		"page_size":  "10",
+		"page_index": "1",
+	}
+
+	reqUrl := urls["pagination"]
+
+	resp, _ := tool.Get(reqUrl, queryParams, token)
+
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+}
+
+func getFlow() {
+	token := tool.GetVehicleToken()
+
+	queryParams := map[string]interface{}{
+		"vehicle_id": "b020eccdf33d48b4aa246a89a6f04609",
+	}
+
+	reqUrl := urls["get_flow"]
+
+	resp, _ := tool.Get(reqUrl, queryParams, token)
+
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
 }
 
 func getFlows() {
@@ -39,36 +101,6 @@ func getFlows() {
 	fmt.Printf("resp %+v", string(respMarshal))
 }
 
-func deleFlows() {
-	token := tool.GetVehicleToken()
-
-	queryParams := map[string]interface{}{
-		"vehicle_id": "1234567890123",
-	}
-
-	reqUrl := urls["dele_flows"]
-
-	resp, _ := tool.Delete(reqUrl, queryParams, token)
-
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
-}
-
-func editFlows() {
-	token := tool.GetVehicleToken()
-	urlReq, _ := urls["edit_flows"]
-
-	bodyParams := map[string]interface{}{
-		"vehicle_id": "1234567890123",
-		"src_ip":     "3",
-		"dst_ip":     "42",
-	}
-	resp, _ := tool.PutForm(urlReq, bodyParams, token)
-
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
-}
-
 func addFlows() {
 	token := tool.GetVehicleToken()
 	urlReq, _ := urls["post_flows"]
@@ -80,43 +112,6 @@ func addFlows() {
 		"dst_ip":     "111",
 	}
 	resp, _ := tool.PostForm(urlReq, bodyParams, token)
-
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
-}
-
-func getPaginationFlows() {
-
-	token := tool.GetVehicleToken()
-
-	queryParams := map[string]interface{}{
-		"vehicle_id": "1234567890123",
-		"page_size":  "10",
-		"page_index": "1",
-	}
-
-	reqUrl := urls["pagination"]
-
-	resp, _ := tool.Get(reqUrl, queryParams, token)
-
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
-}
-
-/**
-flowId:=c.Param("flow_id")
-	vehicleId:=c.Query("vehicle_id")
-*/
-func getFlow() {
-	token := tool.GetVehicleToken()
-
-	queryParams := map[string]interface{}{
-		"vehicle_id": "1234567890123",
-	}
-
-	reqUrl := urls["get_flow"]
-
-	resp, _ := tool.Get(reqUrl, queryParams, token)
 
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))
