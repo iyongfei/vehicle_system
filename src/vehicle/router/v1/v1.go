@@ -14,7 +14,8 @@ func V1Router(r *gin.Engine) {
 		apiV1.DELETE("/fstrategys/:fstrategy_id", api_server.DeleFStrategy)
 		apiV1.PUT("/fstrategys/:fstrategy_id", api_server.EditFStrategy)
 		apiV1.GET("/fstrategys/:fstrategy_id", api_server.GetFStrategy)
-
+		//////////////////////////////////////////////会话策略下载上传//////////////////////////////////////////////
+		apiV1.GET("/fstrategy_csvs/:fstrategy_id", api_server.GetFStrategyCsv)
 		//////////////////////////////////////////////会话接口//////////////////////////////////////////////
 		apiV1.GET("/flows/:flow_id", api_server.GetFlow)
 		apiV1.GET("/pagination/flows", api_server.GetPaginationFlows)

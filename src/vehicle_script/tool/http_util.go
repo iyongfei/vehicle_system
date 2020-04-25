@@ -10,6 +10,28 @@ import (
 	"strings"
 )
 
+func GetFile(reqUrl string, queryParams map[string]interface{}, token string) (*http.Response, error) {
+	urlReq, _ := url.Parse(reqUrl)
+
+	params := url.Values{}
+	for k, v := range queryParams {
+		params.Set(k, v.(string))
+	}
+
+	urlReq.RawQuery = params.Encode()
+
+	client := http.Client{}
+
+	reqest, err := http.NewRequest("GET", urlReq.String(), nil)
+	reqest.Header.Add("token", token)
+
+	if err != nil {
+		return nil, err
+	}
+	rsp, _ := client.Do(reqest)
+
+	return rsp, nil
+}
 func Get(reqUrl string, queryParams map[string]interface{}, token string) (map[string]interface{}, error) {
 	urlReq, _ := url.Parse(reqUrl)
 

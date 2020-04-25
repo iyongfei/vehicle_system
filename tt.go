@@ -9,12 +9,17 @@ import (
 )
 
 func main() {
+	a := "wnn"
+	//rr := a[1:]
+	//fmt.Println(rr)
+	fmt.Println(a[:0])
 
+	//fmt.Println(r)
 	//filename := "test.csv"
 	//columns := [][]string{{"姓名", "电话", "公司", "职位", "加入时间"}, {"1", "2", "刘犇,刘犇,刘犇", "4", "5"}}
 	//ExportCsv(filename, columns)
 
-	AA("1", "2")
+	//AA("1", "2")
 }
 
 func AA(args ...interface{}) {

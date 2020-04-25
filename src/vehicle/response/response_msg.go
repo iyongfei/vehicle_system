@@ -154,6 +154,13 @@ const (
 	ReqUpdatePortMapFailMsg    = "端口映射信息更新失败"
 )
 
+//csv
+const (
+	ReqGetFstrategyCsvUnExistMsg = "会话策略csv不存在"
+	ReqFstrategyCsvFailMsg       = "会话策略csv获取失败"
+	ReqFstrategyCsvSuccessMsg    = "会话策略csv获取成功"
+)
+
 //asset
 const (
 	ReqGetAssetFailMsg    = "设备信息获取失败"

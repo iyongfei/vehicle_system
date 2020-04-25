@@ -26,6 +26,7 @@ func GetFlow(c *gin.Context) {
 		c.JSON(http.StatusOK, ret)
 		logger.Logger.Error("%s argsTrimsEmpty flowId:%s,vehicleId:%s argsTrimsEmpty", util.RunFuncName(), flowId, vehicleId)
 		logger.Logger.Print("%s argsTrimsEmpty flowId:%s,vehicleId:%s argsTrimsEmpty", util.RunFuncName(), flowId, vehicleId)
+		return
 	}
 	flowObj := &model.Flow{}
 

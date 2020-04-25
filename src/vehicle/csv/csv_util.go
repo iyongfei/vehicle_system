@@ -9,7 +9,7 @@ import (
 	"vehicle_system/src/vehicle/util"
 )
 
-const FStrategyCsvFolder = "fstrategy"
+const FStrategyCsvFolder = "fstrategy_csv"
 const FStrategyCsvSuffix = ".csv"
 
 type CSV struct {
@@ -126,7 +126,7 @@ func GetFstrategyCsvFile(vehicleId string, fstrategyId string) (*os.File, string
 	if err != nil {
 		return nil, "", err
 	}
-	csvFileName := fmt.Sprintf("%s%s%s", vehicleId, fstrategyId, FStrategyCsvSuffix)
+	csvFileName := fmt.Sprintf("%s%s", fstrategyId, FStrategyCsvSuffix)
 	csvFilePath := fmt.Sprintf("%s/%s", csvFolderPath, csvFileName)
 
 	csvFile, err := os.OpenFile(csvFilePath, os.O_CREATE|os.O_APPEND|os.O_RDWR, os.ModePerm)
@@ -134,6 +134,8 @@ func GetFstrategyCsvFile(vehicleId string, fstrategyId string) (*os.File, string
 	if err != nil {
 		return nil, "", err
 	}
-	csvFolderFileName := fmt.Sprintf("%s/%s", FStrategyCsvFolder, csvFileName)
+	localHost := util.GetLocalHost()
+	//http://192.168.100.2:7001/fstrategy/754d2728b4e549c5a16c0180fcacb800_LDmpxpPaarSHf2dvgVjQWNJHTewnGXEz.csv
+	csvFolderFileName := fmt.Sprintf("%s/%s/%s", localHost, FStrategyCsvFolder, csvFileName)
 	return csvFile, csvFolderFileName, nil
 }

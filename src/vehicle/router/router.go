@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
+	"net/http"
 	"vehicle_system/src/vehicle/api_server"
 	"vehicle_system/src/vehicle/conf"
 	_ "vehicle_system/src/vehicle/docs"
@@ -14,6 +15,9 @@ import (
 
 func RouterHandler() {
 	router := gin.Default()
+
+	router.StaticFS("fstrategy_csv", http.Dir("fstrategy_csv"))
+
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	router.Use(cors.Default())

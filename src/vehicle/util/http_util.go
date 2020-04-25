@@ -9,15 +9,23 @@ import (
 	"net/url"
 	"strings"
 	"time"
+	"vehicle_system/src/vehicle/conf"
 )
 
+func GetLocalHost() string {
+	protocol := "http://"
+	localHost := conf.LocalHost
+	port := conf.ServerPort
 
-func Get(reqUrl string,queryParams map[string]interface{},token string)(map[string]interface{}, error) {
+	return fmt.Sprintf("%s%s:%d", protocol, localHost, port)
+}
+
+func Get(reqUrl string, queryParams map[string]interface{}, token string) (map[string]interface{}, error) {
 	urlReq, _ := url.Parse(reqUrl)
 
 	params := url.Values{}
-	for k,v:=range queryParams{
-		params.Set(k,v.(string))
+	for k, v := range queryParams {
+		params.Set(k, v.(string))
 	}
 
 	urlReq.RawQuery = params.Encode()
@@ -28,7 +36,7 @@ func Get(reqUrl string,queryParams map[string]interface{},token string)(map[stri
 	reqest.Header.Add("token", token)
 
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 	rsp, _ := client.Do(reqest)
 
@@ -36,7 +44,7 @@ func Get(reqUrl string,queryParams map[string]interface{},token string)(map[stri
 
 	body, err := ioutil.ReadAll(rsp.Body)
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 	var p map[string]interface{}
 	err = json.Unmarshal(body, &p)
@@ -46,17 +54,15 @@ func Get(reqUrl string,queryParams map[string]interface{},token string)(map[stri
 	return p, nil
 }
 
-
-func Delete(reqUrl string,queryParams map[string]interface{},token string) (map[string]interface{}, error) {
+func Delete(reqUrl string, queryParams map[string]interface{}, token string) (map[string]interface{}, error) {
 	urlReq, _ := url.Parse(reqUrl)
 
 	params := url.Values{}
-	for k,v:=range queryParams{
-		params.Set(k,v.(string))
+	for k, v := range queryParams {
+		params.Set(k, v.(string))
 	}
 
 	urlReq.RawQuery = params.Encode()
-
 
 	client := http.Client{}
 
@@ -64,7 +70,7 @@ func Delete(reqUrl string,queryParams map[string]interface{},token string) (map[
 	reqest.Header.Add("token", token)
 
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 	rsp, _ := client.Do(reqest)
 
@@ -72,7 +78,7 @@ func Delete(reqUrl string,queryParams map[string]interface{},token string) (map[
 
 	body, err := ioutil.ReadAll(rsp.Body)
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 	var p map[string]interface{}
 	err = json.Unmarshal(body, &p)
@@ -84,16 +90,16 @@ func Delete(reqUrl string,queryParams map[string]interface{},token string) (map[
 
 /**
 模拟表单请求
- */
-func PostForm(urlParam string,bodyParms map[string]interface{},token string) (map[string]interface{}, error) {
-	u,err:=url.Parse(urlParam)
+*/
+func PostForm(urlParam string, bodyParms map[string]interface{}, token string) (map[string]interface{}, error) {
+	u, err := url.Parse(urlParam)
 
-	if err!=nil{
-		return nil,err
+	if err != nil {
+		return nil, err
 	}
 	q := u.Query()
-	for k,v:= range bodyParms{
-		q.Set(k,v.(string))
+	for k, v := range bodyParms {
+		q.Set(k, v.(string))
 	}
 
 	client := http.Client{}
@@ -102,37 +108,35 @@ func PostForm(urlParam string,bodyParms map[string]interface{},token string) (ma
 	reqest.Header.Add("token", token)
 	reqest.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-
 	rsp, _ := client.Do(reqest)
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 	defer rsp.Body.Close()
 
 	buf, err := ioutil.ReadAll(rsp.Body)
 
-	if err!=nil{
-		return nil,err
+	if err != nil {
+		return nil, err
 	}
 
 	var p map[string]interface{}
 	err = json.Unmarshal(buf, &p)
-	if err!=nil{
-		return nil,err
+	if err != nil {
+		return nil, err
 	}
-	return p,nil
+	return p, nil
 }
 
+func PutForm(urlParam string, bodyParms map[string]interface{}, token string) (map[string]interface{}, error) {
+	u, err := url.Parse(urlParam)
 
-func PutForm(urlParam string,bodyParms map[string]interface{},token string) (map[string]interface{}, error) {
-	u,err:=url.Parse(urlParam)
-
-	if err!=nil{
-		return nil,err
+	if err != nil {
+		return nil, err
 	}
 	q := u.Query()
-	for k,v:= range bodyParms{
-		q.Set(k,v.(string))
+	for k, v := range bodyParms {
+		q.Set(k, v.(string))
 	}
 
 	client := http.Client{}
@@ -141,26 +145,26 @@ func PutForm(urlParam string,bodyParms map[string]interface{},token string) (map
 	reqest.Header.Add("token", token)
 	reqest.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-
 	rsp, _ := client.Do(reqest)
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 	defer rsp.Body.Close()
 
 	buf, err := ioutil.ReadAll(rsp.Body)
 
-	if err!=nil{
-		return nil,err
+	if err != nil {
+		return nil, err
 	}
 
 	var p map[string]interface{}
 	err = json.Unmarshal(buf, &p)
-	if err!=nil{
-		return nil,err
+	if err != nil {
+		return nil, err
 	}
-	return p,nil
+	return p, nil
 }
+
 /************************************************************************************/
 func PostJSON(url string, body map[string]interface{}) (map[string]interface{}, error) {
 	jsonBytes, err := json.Marshal(body)
@@ -209,9 +213,7 @@ func delete(url string, reqBody string) {
 
 }
 
-
-
-func Post(url string, body map[string]interface{},token string)(map[string]interface{}, error) {
+func Post(url string, body map[string]interface{}, token string) (map[string]interface{}, error) {
 	jsonBytes, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
@@ -225,13 +227,13 @@ func Post(url string, body map[string]interface{},token string)(map[string]inter
 
 	rsp, _ := client.Do(reqest)
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 	defer rsp.Body.Close()
 
 	buf, err := ioutil.ReadAll(rsp.Body)
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 	var p map[string]interface{}
 	err = json.Unmarshal(buf, &p)
@@ -261,4 +263,3 @@ func put(url string, reqBody string) {
 	}
 	fmt.Println("RSP:", string(body))
 }
-
