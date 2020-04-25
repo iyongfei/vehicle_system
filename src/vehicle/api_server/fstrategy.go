@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
+	"vehicle_system/src/vehicle/csv"
 	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/emq/emq_cmd"
 	"vehicle_system/src/vehicle/emq/protobuf"
@@ -369,6 +370,13 @@ func AddFStrategy(c *gin.Context) {
 			continue
 		}
 	}
+	//插入csv
+	csvModel := csv.NewCsvWriter(vehicleId, fstrategy.FstrategyId)
+
+	fCsvHeader := csv.CreateCsvFstrategyHeader()
+	fCsvBody := csv.CreateCsvFstrategyBody(vehicleId, fstrategy.FstrategyId, diportsMap)
+
+	csvModel.SetCsvWritData(fCsvHeader, fCsvBody)
 
 	//下发策略
 	fstrategyCmd := &emq_cmd.FStrategySetCmd{

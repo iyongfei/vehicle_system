@@ -360,6 +360,7 @@ CREATE TABLE IF NOT EXISTS `fstrategies`  (
   `type` tinyint(3) NULL DEFAULT NULL,
   `handle_mode` tinyint(3) NULL DEFAULT NULL,
   `enable` tinyint(1) NULL DEFAULT NULL,
+  `scv_path` varchar(255)  NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_fstrategies_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
@@ -374,6 +375,7 @@ CREATE TABLE IF NOT EXISTS `fstrategy_vehicles`  (
   `fstrategy_vehicle_id` varchar(255)  NULL DEFAULT NULL,
   `fstrategy_id` varchar(255)  NULL DEFAULT NULL,
   `vehicle_id` varchar(255) NULL DEFAULT NULL,
+
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_fstrategy_vehicles_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;

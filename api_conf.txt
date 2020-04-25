@@ -7,7 +7,7 @@ handle_mode=2
 
 
 #增加会话策略接口
-flow_vehicle_id=b020eccdf33d48b4aa246a89a6f04609
+flow_vehicle_id=754d2728b4e549c5a16c0180fcacb800
 fips=192.168.1.1,192.167.1.3
 fports=123,124
 

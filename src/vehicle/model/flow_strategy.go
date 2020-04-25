@@ -12,10 +12,10 @@ import (
 type Fstrategy struct {
 	gorm.Model
 	FstrategyId string
-
-	Type       uint8 //策略模式
-	HandleMode uint8 //处理方式
-	Enable     bool  //策略启用状态
+	ScvPath     string
+	Type        uint8 //策略模式
+	HandleMode  uint8 //处理方式
+	Enable      bool  //策略启用状态
 }
 
 func (flowStrategy *Fstrategy) InsertModel() error {

@@ -48,14 +48,6 @@ func GetMonitor(c *gin.Context) {
 		Monitor:                monitorModel,
 		VehicleMonitorItemList: vehicleMonitorItemList,
 	}
-	//monitors := []*model.Monitor{}
-	//err := model_base.ModelBaseImpl(&model.Monitor{}).
-	//	GetModelListByCondition(&monitors, "monitor_id = ?", []interface{}{vehicleId}...)
-	//if err != nil {
-	//	ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetMonitorsFailMsg, "")
-	//	c.JSON(http.StatusOK, ret)
-	//	return
-	//}
 
 	responseData := map[string]interface{}{
 		"mointor": vehicleMonitorItemsResponse,

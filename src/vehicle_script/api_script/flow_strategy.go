@@ -9,7 +9,7 @@ import (
 )
 
 var fstrategyUrls = map[string]string{
-	"post_fstrategy": "http://192.168.40.14:7001/api/v1/fstrategys",
+	"post_fstrategy": "http://localhost:7001/api/v1/fstrategys",
 	"dele_fstrategy": "http://localhost:7001/api/v1/fstrategys/",
 	"edit_fstrategy": "http://localhost:7001/api/v1/fstrategys/",
 	"get_fstrategy":  "http://localhost:7001/api/v1/fstrategys/",
@@ -25,8 +25,8 @@ func getConfig() map[string]string {
 }
 
 func main() {
-	//addFStrategy()
-	getFStrategy()
+	addFStrategy()
+	//getFStrategy()
 	//deleFStrategy()
 	//editFStrategy()
 

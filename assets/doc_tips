@@ -74,3 +74,23 @@ $ dpkg -e   mydeb.deb   mydeb/DEBIAN    # 第一个参数为所要解压的deb�
 
 ###################################################swagger########################################################
 http://192.168.1.192:7001/swagger/index.html
+
+###################################################emq########################################################
+
+/**
+交互格式：
+Pub GUID/s/p   s/GUID/p
+Sub s/GUID/p   +/s/p
+
+mosquitto测试：
+mosquitto_sub -h 192.168.1.88 -t s/+/p　!!!
+mosquitto_sub -h 192.168.1.88 -t +/s/p
+
+在线离线：
+$SYS/brokers/emq@127.0.0.1/clients/front02/connected
+$SYS/brokers/emq@127.0.0.1/clients/122/disconnected
+mosquitto_sub -h 127.0.0.1 -t $SYS/brokers/+/clients/+/+ -d
+ */
+
+
+ netstat -nat | grep 1883
