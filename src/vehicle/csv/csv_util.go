@@ -65,7 +65,6 @@ func (csvModel *CSV) ParseCsvWritData(csvDatas ...interface{}) [][]string {
 			}
 		}
 	}
-
 	return fCsvDatas
 }
 

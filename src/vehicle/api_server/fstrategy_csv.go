@@ -13,10 +13,6 @@ import (
 	"vehicle_system/src/vehicle/util"
 )
 
-//router.GET("/local/file", func(c *gin.Context) {
-//	c.File("local/file.go")
-//})
-
 func GetFStrategyCsv(c *gin.Context) {
 	fstrategyId := c.Param("fstrategy_id")
 
@@ -54,7 +50,6 @@ func GetFStrategyCsv(c *gin.Context) {
 		return
 	}
 	//获取csv文件
-	//http://192.168.100.2:7001/fstrategy_csv/N5gqNSN0lpV30gKJOfBkYvGudNUfj1V5.csv
 	csvPath := fstrategy.ScvPath
 	fStrategyCsvFolderIndex := strings.Index(csvPath, csv.FStrategyCsvFolder)
 
@@ -65,4 +60,23 @@ func GetFStrategyCsv(c *gin.Context) {
 
 	fmt.Println(csvFileName, "csvFileName")
 	c.File(csvFileName)
+}
+
+/**
+上传scv
+*/
+func UploadFStrategyCsv(c *gin.Context) {
+	uploadCsv, err := c.FormFile("upload_csv")
+	fmt.Println(uploadCsv, "safly.........")
+	if err != nil {
+		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+		c.JSON(http.StatusOK, ret)
+		logger.Logger.Error("%s formfile err:%+v", util.RunFuncName(), err)
+		logger.Logger.Print("%s formfile err:%+v", util.RunFuncName(), err)
+		return
+	}
+	dst := uploadCsv.Filename
+	if err := c.SaveUploadedFile(uploadCsv, dst); err != nil {
+		// ignore
+	}
 }

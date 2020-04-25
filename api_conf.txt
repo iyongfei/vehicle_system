@@ -12,8 +12,8 @@ fips=192.168.1.1,192.167.1.3
 fports=123,124
 
 #删除会话策略接口
-dele_flow_strategy_id=FKka4hPVBTa1KncTCFTQ0JhGHb5jwWYf
-dele_flow_vehicle_id=dTtR4sFMYfDJzGAVTv4KWSc9KYLTA64d
+dele_flow_strategy_id=gMFh35ggCdYdZDVKPZF4cqE2DsRqDfL4
+dele_flow_vehicle_id=754d2728b4e549c5a16c0180fcacb800
 
 #修改会话策略接口
 update_flow_vehicle_id=dTtR4sFMYfDJzGAVTv4KWSc9KYLTA64d

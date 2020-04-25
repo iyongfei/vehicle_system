@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"os"
 	"strconv"
+	"strings"
 	"vehicle_system/src/vehicle/csv"
 	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/emq/emq_cmd"
@@ -453,14 +455,20 @@ func DeleFStrategy(c *gin.Context) {
 	}
 
 	fstrategyModelBase := model_base.ModelBaseImpl(fstrategyObj)
-	err := fstrategyModelBase.DeleModelsByCondition("fstrategy_id = ?", []interface{}{fstrategyObj.FstrategyId}...)
 
-	if err != nil {
-		logger.Logger.Error("%s fstrategy_id:%s err:%s", util.RunFuncName(), fstrategyObj.FstrategyId, err)
-		logger.Logger.Print("%s fstrategy_id:%s err:%s", util.RunFuncName(), fstrategyObj.FstrategyId, err)
-		ret := response.StructResponseObj(response.VStatusServerError, response.ReqDeleFStrategyFailMsg, "")
-		c.JSON(http.StatusOK, ret)
-		return
+	err, recordNotFound := fstrategyModelBase.GetModelByCondition("fstrategy_id = ?", fstrategyObj.FstrategyId)
+
+	if !recordNotFound {
+
+		err := fstrategyModelBase.DeleModelsByCondition("fstrategy_id = ?", []interface{}{fstrategyObj.FstrategyId}...)
+
+		if err != nil {
+			logger.Logger.Error("%s fstrategy_id:%s err:%s", util.RunFuncName(), fstrategyObj.FstrategyId, err)
+			logger.Logger.Print("%s fstrategy_id:%s err:%s", util.RunFuncName(), fstrategyObj.FstrategyId, err)
+			ret := response.StructResponseObj(response.VStatusServerError, response.ReqDeleFStrategyFailMsg, "")
+			c.JSON(http.StatusOK, ret)
+			return
+		}
 	}
 
 	//dele FstrategyVehicleItem
@@ -481,6 +489,23 @@ func DeleFStrategy(c *gin.Context) {
 	fstrategyItem := &model.FstrategyItem{}
 	err = fstrategyItem.SoftDeleModelImpl("fstrategy_item_id in (?)", fstrategyItemIdMapSlice)
 	if err != nil {
+	}
+	//删除scv
+	//http://192.168.100.2:7001/fstrategy_csv/N5gqNSN0lpV30gKJOfBkYvGudNUfj1V5.csv
+	csvPath := fstrategyObj.ScvPath
+	fStrategyCsvFolderIndex := strings.Index(csvPath, csv.FStrategyCsvFolder)
+
+	var csvFileName string
+	if fStrategyCsvFolderIndex != -1 {
+		csvFileName = csvPath[fStrategyCsvFolderIndex:]
+	}
+	isExist := csv.IsExists(csvFileName)
+	if isExist {
+		csvRemoveErr := os.Remove(csvFileName)
+		if csvRemoveErr != nil {
+			logger.Logger.Error("%s remove csvFile:%s,err:%s", util.RunFuncName(), csvFileName, err)
+			logger.Logger.Print("%s remove csvFile:%s,err:%s", util.RunFuncName(), csvFileName, err)
+		}
 	}
 
 	//下发会话策略

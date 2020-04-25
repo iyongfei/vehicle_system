@@ -3,12 +3,58 @@ package tool
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
+	"io"
 	"io/ioutil"
+	"mime/multipart"
 	"net/http"
 	"net/url"
 	"strings"
 )
+
+func UploadFile(url string, params map[string]string, nameField, fileName string, file io.Reader) ([]byte, error) {
+	body := new(bytes.Buffer)
+
+	writer := multipart.NewWriter(body)
+
+	formFile, err := writer.CreateFormFile(nameField, fileName)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = io.Copy(formFile, file)
+	if err != nil {
+		return nil, err
+	}
+
+	for key, val := range params {
+		_ = writer.WriteField(key, val)
+	}
+
+	err = writer.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", url, body)
+	if err != nil {
+		return nil, err
+	}
+	//req.Header.Set("Content-Type","multipart/form-data")
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+
+	client := http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	content, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	return content, nil
+}
 
 func GetFile(reqUrl string, queryParams map[string]interface{}, token string) (*http.Response, error) {
 	urlReq, _ := url.Parse(reqUrl)
@@ -206,49 +252,4 @@ func PostJson(url string, body interface{}, token string) (map[string]interface{
 		return nil, err
 	}
 	return p, nil
-}
-
-/************************************************************************************/
-
-func delete(url string, reqBody string) {
-	fmt.Println("DELETE REQ...")
-	fmt.Println("REQ:", reqBody)
-	req, err := http.NewRequest("DELETE", url, strings.NewReader(reqBody))
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	rsp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer rsp.Body.Close()
-
-	body, err := ioutil.ReadAll(rsp.Body)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println("RSP:", string(body))
-
-}
-
-func put(url string, reqBody string) {
-	fmt.Println("PUT REQ...")
-	fmt.Println("REQ:", reqBody)
-	req, err := http.NewRequest("PUT", url, strings.NewReader(reqBody))
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	rsp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer rsp.Body.Close()
-
-	body, err := ioutil.ReadAll(rsp.Body)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println("RSP:", string(body))
 }

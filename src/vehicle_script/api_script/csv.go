@@ -7,9 +7,9 @@ import (
 )
 
 var fStrategyCsvUrls = map[string]string{
-	"csv_url": "http://localhost:7001/fstrategy_csv/N5gqNSN0lpV30gKJOfBkYvGudNUfj1V5.csv",
-
+	"csv_url":           "http://localhost:7001/fstrategy_csv/N5gqNSN0lpV30gKJOfBkYvGudNUfj1V5.csv",
 	"get_fstrategy_csv": "http://localhost:7001/api/v1/fstrategy_csvs/N5gqNSN0lpV30gKJOfBkYvGudNUfj1V5",
+
 	//"post_strategy": "http://localhost:7001/api/v1/strategys",
 	"get_strategys": "http://localhost:7001/api/v1/strategys",
 
@@ -23,9 +23,23 @@ var fStrategyCsvUrls = map[string]string{
 
 func main() {
 	//getFstrategyCsv()
-	getFstrategyCsvTemp()
+	//getFstrategyCsvTemp()
+	uploadFstrategyCsv()
 }
 
+func uploadFstrategyCsv() {
+	url := "http://localhost:7001/api/v1/fstrategy_csvs"
+	mapArgs := map[string]string{
+		"k1": "v1",
+		"k2": "v2",
+	}
+
+	nameField := "upload_csv"
+	fileName := "upload_csver"
+	file, _ := os.Open("/Users/mac/go/vehicle_system/safly.csv")
+
+	tool.UploadFile(url, mapArgs, nameField, fileName, file)
+}
 func getFstrategyCsv() {
 	token := tool.GetVehicleToken()
 
