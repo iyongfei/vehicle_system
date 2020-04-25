@@ -10,18 +10,12 @@ type CsvFstrategyModelHeader struct {
 	Port        string //通过,分割
 }
 
-//csv单条记录
-//type CsvFstrategyModelBodyItem struct {
-//	CsvFstrategyModelHeader
-//}
-
 //csv所有记录
 type CsvFstrategyModelBody struct {
 	CsvFstrategyModelBody []CsvFstrategyModelHeader
 }
 
 func CreateCsvFstrategyHeader() CsvFstrategyModelHeader {
-
 	return CsvFstrategyModelHeader{
 		VehicleId:   "VehicleId",
 		FstrategyId: "FstrategyId",

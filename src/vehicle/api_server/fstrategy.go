@@ -372,11 +372,17 @@ func AddFStrategy(c *gin.Context) {
 	}
 	//插入csv
 	csvModel := csv.NewCsvWriter(vehicleId, fstrategy.FstrategyId)
-
 	fCsvHeader := csv.CreateCsvFstrategyHeader()
 	fCsvBody := csv.CreateCsvFstrategyBody(vehicleId, fstrategy.FstrategyId, diportsMap)
-
 	csvModel.SetCsvWritData(fCsvHeader, fCsvBody)
+
+	attrs := map[string]interface{}{
+		"scv_path": csvModel.CsvFilePath,
+	}
+	if err := fstrategyModelBase.UpdateModelsByCondition(attrs, "fstrategy_id = ?", fstrategy.FstrategyId); err != nil {
+		logger.Logger.Print("%s vehicle_id:%s insert fstrategy scv_path err:%+v", util.RunFuncName(), vehicleId, csvModel.CsvFilePath, err)
+		logger.Logger.Info("%s vehicle_id:%s insert fstrategy scv_path err:%+v", util.RunFuncName(), vehicleId, csvModel.CsvFilePath, err)
+	}
 
 	//下发策略
 	fstrategyCmd := &emq_cmd.FStrategySetCmd{

@@ -37,6 +37,28 @@ func main() {
 
 }
 
+func addFStrategy() {
+	configs := getConfig()
+	flow_vehicle_id := configs["flow_vehicle_id"]
+	fips := configs["fips"]
+	fports := configs["fports"]
+
+	//token := tool.GetVehicleToken()
+	reqUrl := fstrategyUrls["post_fstrategy"]
+
+	diports := creatFastrategyIpPortData(fips, fports)
+
+	queryParams := map[string]interface{}{
+		"vehicle_id": flow_vehicle_id,
+		"dip_ports":  diports,
+	}
+	fmt.Println("req::::::", reqUrl, diports)
+
+	resp, _ := tool.PostForm(reqUrl, queryParams, "token")
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+}
+
 /**
 获取一条会话策略信息
 */
@@ -92,28 +114,6 @@ func editFStrategy() {
 
 	resp, _ := tool.PutForm(urlReq, queryParams, token)
 
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
-}
-
-func addFStrategy() {
-	configs := getConfig()
-	flow_vehicle_id := configs["flow_vehicle_id"]
-	fips := configs["fips"]
-	fports := configs["fports"]
-
-	//token := tool.GetVehicleToken()
-	reqUrl := fstrategyUrls["post_fstrategy"]
-
-	diports := creatFastrategyIpPortData(fips, fports)
-
-	queryParams := map[string]interface{}{
-		"vehicle_id": flow_vehicle_id,
-		"dip_ports":  diports,
-	}
-	fmt.Println("req::::::", reqUrl, diports)
-
-	resp, _ := tool.PostForm(reqUrl, queryParams, "token")
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))
 }

@@ -3,26 +3,37 @@ package csv
 import (
 	"encoding/csv"
 	"fmt"
-	"log"
 	"os"
 	"strings"
+	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/util"
 )
 
+const FStrategyCsvFolder = "fstrategy"
+const FStrategyCsvSuffix = ".csv"
+
 type CSV struct {
-	csvWriter *csv.Writer
-	csvFile   *os.File
+	csvWriter   *csv.Writer
+	csvFile     *os.File
+	CsvFilePath string
 }
 
 func NewCsvWriter(vehicleId string, fstrategyId string) *CSV {
 
-	csvFile, _ := GetFstrategyCsvFile(vehicleId, fstrategyId)
+	csvFile, csvFolderFileName, err := GetFstrategyCsvFile(vehicleId, fstrategyId)
+	if err != nil {
+		logger.Logger.Print("%s newCsvWriter err:%+v", util.RunFuncName(), err)
+		logger.Logger.Info("%s  newCsvWritererr:%+v", util.RunFuncName(), err)
+	}
+	var csvModel *CSV
 	csvWriter := csv.NewWriter(csvFile)
 
-	csvModel := &CSV{
-		csvWriter: csvWriter,
-		csvFile:   csvFile,
+	csvModel = &CSV{
+		csvWriter:   csvWriter,
+		csvFile:     csvFile,
+		CsvFilePath: csvFolderFileName,
 	}
+
 	return csvModel
 }
 
@@ -33,8 +44,8 @@ func (csvModel *CSV) ParseCsvWritData(csvDatas ...interface{}) [][]string {
 	for _, scvData := range csvDatas {
 		switch scvData.(type) {
 		case CsvFstrategyModelHeader:
-			csvHeaderdata := scvData.(CsvFstrategyModelHeader)
 
+			csvHeaderdata := scvData.(CsvFstrategyModelHeader)
 			var scvHeader []string
 			scvHeader = append(scvHeader,
 				csvHeaderdata.VehicleId, csvHeaderdata.FstrategyId,
@@ -60,17 +71,32 @@ func (csvModel *CSV) ParseCsvWritData(csvDatas ...interface{}) [][]string {
 
 func (csvModel *CSV) SetCsvWritData(csvDatas ...interface{}) {
 
-	csvData := csvModel.ParseCsvWritData(csvDatas)
+	csvData := csvModel.ParseCsvWritData(csvDatas...)
+	csvModel.CsvWritData(csvData)
+
+}
+func (csvModel *CSV) CsvWritData(csvDatas [][]string) {
+	logger.Logger.Print("%s csvWritData err:%+v", util.RunFuncName(), csvDatas)
+	logger.Logger.Info("%s  csvWritData:%+v", util.RunFuncName(), csvDatas)
 
 	_, fileWriteErr := csvModel.csvFile.WriteString("\xEF\xBB\xBF")
-	fmt.Println("csvFile WriteString err", fileWriteErr)
-	csvWriteAllerr := csvModel.csvWriter.WriteAll(csvData)
-	fmt.Println("csvWriteAllerr", csvWriteAllerr)
+	if fileWriteErr != nil {
+		logger.Logger.Print("%s fileWrite bom err:%+v", util.RunFuncName(), fileWriteErr)
+		logger.Logger.Info("%s  fileWrite bom:%+v", util.RunFuncName(), fileWriteErr)
+
+	}
+
+	csvWriteAllerr := csvModel.csvWriter.WriteAll(csvDatas)
+	if csvWriteAllerr != nil {
+		logger.Logger.Print("%s csvWriteAll err:%+v", util.RunFuncName(), csvWriteAllerr)
+		logger.Logger.Info("%s  csvWriteAll err:%+v", util.RunFuncName(), csvWriteAllerr)
+
+	}
+
 	csvModel.csvWriter.Flush()
 
 	csvModel.Close()
 }
-
 func (csvModel *CSV) Close() {
 	if csvModel != nil {
 		if csvModel.csvFile != nil {
@@ -79,81 +105,35 @@ func (csvModel *CSV) Close() {
 	}
 }
 
-func CreateCSV(vehicleId string, fstrategyId string) (string, error) {
+func CreateCsvFolder() (string, error) {
 	wd := Getwd()
+
 	if strings.Trim(wd, " ") == "" {
 		return "", fmt.Errorf("%s get_wd:%s null", util.RunFuncName(), wd)
 
 	}
-	csvFilePath := fmt.Sprintf("%s%s%s", wd, vehicleId, fstrategyId)
-	csvFilePathErr := MkdirAll(csvFilePath)
-	if csvFilePathErr != nil {
-		return csvFilePath, csvFilePathErr
+	csvFileFolderPath := fmt.Sprintf("%s/%s", wd, FStrategyCsvFolder)
+	csvFileFolderPathErr := MkdirAll(csvFileFolderPath)
+	if csvFileFolderPathErr != nil {
+		return "", csvFileFolderPathErr
 	}
-	return "", nil
+	return csvFileFolderPath, nil
 }
 
 //获取fstrategyCsv文件
-func GetFstrategyCsvFile(vehicleId string, fstrategyId string) (*os.File, error) {
-	csvFilePath, err := CreateCSV(vehicleId, fstrategyId)
+func GetFstrategyCsvFile(vehicleId string, fstrategyId string) (*os.File, string, error) {
+	csvFolderPath, err := CreateCsvFolder()
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
+	csvFileName := fmt.Sprintf("%s%s%s", vehicleId, fstrategyId, FStrategyCsvSuffix)
+	csvFilePath := fmt.Sprintf("%s/%s", csvFolderPath, csvFileName)
 
 	csvFile, err := os.OpenFile(csvFilePath, os.O_CREATE|os.O_APPEND|os.O_RDWR, os.ModePerm)
 
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
-	return csvFile, nil
-}
-
-func ExampleWriter() {
-	records := [][]string{
-		{"first_name", "last_name", "username"},
-		{"Rob", "Pike", "rob"},
-		{"Ken", "Thompson", "ken"},
-		{"Robert", "Griesemer", "gri"},
-	}
-
-	w := csv.NewWriter(os.Stdout)
-
-	for _, record := range records {
-		if err := w.Write(record); err != nil {
-			log.Fatalln("error writing record to csv:", err)
-		}
-	}
-
-	// Write any buffered data to the underlying writer (standard output).
-	w.Flush()
-
-	if err := w.Error(); err != nil {
-		log.Fatal(err)
-	}
-	// Output:
-	// first_name,last_name,username
-	// Rob,Pike,rob
-	// Ken,Thompson,ken
-	// Robert,Griesemer,gri
-}
-
-func ExampleWriter_WriteAll() {
-	records := [][]string{
-		{"first_name", "last_name", "username"},
-		{"Rob", "Pike", "rob"},
-		{"Ken", "Thompson", "ken"},
-		{"Robert", "Griesemer", "gri"},
-	}
-
-	w := csv.NewWriter(os.Stdout)
-	w.WriteAll(records) // calls Flush internally
-
-	if err := w.Error(); err != nil {
-		log.Fatalln("error writing csv:", err)
-	}
-	// Output:
-	// first_name,last_name,username
-	// Rob,Pike,rob
-	// Ken,Thompson,ken
-	// Robert,Griesemer,gri
+	csvFolderFileName := fmt.Sprintf("%s/%s", FStrategyCsvFolder, csvFileName)
+	return csvFile, csvFolderFileName, nil
 }
