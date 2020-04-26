@@ -11,6 +11,8 @@ import (
 
 const FStrategyCsvFolder = "fstrategy_csv"
 const FStrategyCsvSuffix = ".csv"
+const FileTruncate = 0
+const FileAppend = 1
 
 type CSV struct {
 	csvWriter   *csv.Writer
@@ -18,9 +20,9 @@ type CSV struct {
 	CsvFilePath string
 }
 
-func NewCsvWriter(vehicleId string, fstrategyId string) *CSV {
+func NewCsvWriter(vehicleId string, fstrategyId string, fileMode int) *CSV {
 
-	csvFile, csvFolderFileName, err := GetFstrategyCsvFile(vehicleId, fstrategyId)
+	csvFile, csvFolderFileName, err := GetFstrategyCsvFile(vehicleId, fstrategyId, fileMode)
 	if err != nil {
 		logger.Logger.Print("%s newCsvWriter err:%+v", util.RunFuncName(), err)
 		logger.Logger.Info("%s  newCsvWritererr:%+v", util.RunFuncName(), err)
@@ -35,6 +37,34 @@ func NewCsvWriter(vehicleId string, fstrategyId string) *CSV {
 	}
 
 	return csvModel
+}
+
+//获取fstrategyCsv文件
+func GetFstrategyCsvFile(vehicleId string, fstrategyId string, fileMode int) (*os.File, string, error) {
+	csvFolderPath, err := CreateCsvFolder()
+	if err != nil {
+		return nil, "", err
+	}
+	csvFileName := fmt.Sprintf("%s%s", fstrategyId, FStrategyCsvSuffix)
+	csvFilePath := fmt.Sprintf("%s/%s", csvFolderPath, csvFileName)
+
+	var csvFile *os.File
+	var csvFileErr error
+	if fileMode == FileTruncate {
+		csvFile, csvFileErr = os.OpenFile(csvFilePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
+	} else if fileMode == FileAppend {
+		csvFile, csvFileErr = os.OpenFile(csvFilePath, os.O_CREATE|os.O_APPEND|os.O_RDWR, os.ModePerm)
+	} else {
+		csvFile, csvFileErr = os.OpenFile(csvFilePath, os.O_CREATE|os.O_APPEND|os.O_RDWR, os.ModePerm)
+	}
+
+	if csvFileErr != nil {
+		return nil, "", csvFileErr
+	}
+	localHost := util.GetLocalHost()
+	//http://192.168.100.2:7001/fstrategy/754d2728b4e549c5a16c0180fcacb800_LDmpxpPaarSHf2dvgVjQWNJHTewnGXEz.csv
+	csvFolderFileName := fmt.Sprintf("%s/%s/%s", localHost, FStrategyCsvFolder, csvFileName)
+	return csvFile, csvFolderFileName, nil
 }
 
 func (csvModel *CSV) ParseCsvWritData(csvDatas ...interface{}) [][]string {
@@ -117,24 +147,4 @@ func CreateCsvFolder() (string, error) {
 		return "", csvFileFolderPathErr
 	}
 	return csvFileFolderPath, nil
-}
-
-//获取fstrategyCsv文件
-func GetFstrategyCsvFile(vehicleId string, fstrategyId string) (*os.File, string, error) {
-	csvFolderPath, err := CreateCsvFolder()
-	if err != nil {
-		return nil, "", err
-	}
-	csvFileName := fmt.Sprintf("%s%s", fstrategyId, FStrategyCsvSuffix)
-	csvFilePath := fmt.Sprintf("%s/%s", csvFolderPath, csvFileName)
-
-	csvFile, err := os.OpenFile(csvFilePath, os.O_CREATE|os.O_APPEND|os.O_RDWR, os.ModePerm)
-
-	if err != nil {
-		return nil, "", err
-	}
-	localHost := util.GetLocalHost()
-	//http://192.168.100.2:7001/fstrategy/754d2728b4e549c5a16c0180fcacb800_LDmpxpPaarSHf2dvgVjQWNJHTewnGXEz.csv
-	csvFolderFileName := fmt.Sprintf("%s/%s/%s", localHost, FStrategyCsvFolder, csvFileName)
-	return csvFile, csvFolderFileName, nil
 }

@@ -27,8 +27,8 @@ func getConfig() map[string]string {
 func main() {
 	//addFStrategy()
 	//getFStrategy()
-	deleFStrategy()
-	//editFStrategy()
+	//deleFStrategy()
+	editFStrategy()
 
 	//getFStrategys()
 	//getStrategyVehicle()
@@ -37,6 +37,27 @@ func main() {
 
 }
 
+func editFStrategy() {
+	configs := getConfig()
+	update_flow_vehicle_id := configs["update_flow_vehicle_id"]
+	update_flow_strategy_id := configs["update_flow_strategy_id"]
+	update_fips := configs["update_fips"]
+	update_fports := configs["update_fports"]
+
+	//token := tool.GetVehicleToken()
+	urlReq := fstrategyUrls["edit_fstrategy"] + update_flow_strategy_id
+
+	diports := creatFastrategyIpPortData(update_fips, update_fports)
+	queryParams := map[string]interface{}{
+		"vehicle_id": update_flow_vehicle_id,
+		"dip_ports":  diports,
+	}
+
+	resp, _ := tool.PutForm(urlReq, queryParams, "")
+
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+}
 func addFStrategy() {
 	configs := getConfig()
 	flow_vehicle_id := configs["flow_vehicle_id"]
@@ -91,28 +112,6 @@ func deleFStrategy() {
 	reqUrl := fstrategyUrls["dele_fstrategy"] + dele_flow_vehicle_id
 
 	resp, _ := tool.Delete(reqUrl, queryParams, token)
-
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
-}
-
-func editFStrategy() {
-	configs := getConfig()
-	update_flow_vehicle_id := configs["update_flow_vehicle_id"]
-	update_flow_strategy_id := configs["update_flow_strategy_id"]
-	update_fips := configs["update_fips"]
-	update_fports := configs["update_fports"]
-
-	token := tool.GetVehicleToken()
-	urlReq := fstrategyUrls["edit_fstrategy"] + update_flow_strategy_id
-
-	diports := creatFastrategyIpPortData(update_fips, update_fports)
-	queryParams := map[string]interface{}{
-		"vehicle_id": update_flow_vehicle_id,
-		"dip_ports":  diports,
-	}
-
-	resp, _ := tool.PutForm(urlReq, queryParams, token)
 
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))

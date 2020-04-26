@@ -8,9 +8,29 @@ import (
 	"reflect"
 )
 
+//会清空文件，不能创建子级
+func Create() {
+
+}
+
+//打开只读
+func Open() {
+}
+
+//创建不会清空
+func NewFile() {
+
+}
+
+//特定模式
+func OpenFile() {
+
+}
 func main() {
-	csvRemoveErr := os.Remove("aa")
-	fmt.Println(csvRemoveErr)
+	os.OpenFile()
+
+	os.Create("aa.txt")
+
 	//filename := "test.csv"
 	//columns := [][]string{{"姓名", "电话", "公司", "职位", "加入时间"}, {"1", "2", "刘犇,刘犇,刘犇", "4", "5"}}
 	//ExportCsv(filename, columns)

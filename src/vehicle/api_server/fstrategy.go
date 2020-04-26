@@ -82,7 +82,6 @@ func EditFStrategy(c *gin.Context) {
 	//遍历FstrategyVehicleItem表
 	fstrategyItems := map[string][]string{}
 	var vehicleFstrategyItems []string
-	//finalDiportsMap := map[string][]uint32{}
 	for dip, ports := range finalDiportsMap {
 		for _, dport := range ports {
 			fstrategyItem := &model.FstrategyItem{
@@ -160,6 +159,12 @@ func EditFStrategy(c *gin.Context) {
 			continue
 		}
 	}
+
+	//插入csv
+	csvModel := csv.NewCsvWriter(vehicleId, vehicleFStrategy.FstrategyId, csv.FileTruncate)
+	fCsvHeader := csv.CreateCsvFstrategyHeader()
+	fCsvBody := csv.CreateCsvFstrategyBody(vehicleId, vehicleFStrategy.FstrategyId, finalDiportsMap)
+	csvModel.SetCsvWritData(fCsvHeader, fCsvBody)
 
 	//更新
 	fstrategyCmd := &emq_cmd.FStrategySetCmd{
@@ -373,9 +378,9 @@ func AddFStrategy(c *gin.Context) {
 		}
 	}
 	//插入csv
-	csvModel := csv.NewCsvWriter(vehicleId, fstrategy.FstrategyId)
+	csvModel := csv.NewCsvWriter(vehicleId, fstrategy.FstrategyId, csv.FileAppend)
 	fCsvHeader := csv.CreateCsvFstrategyHeader()
-	fCsvBody := csv.CreateCsvFstrategyBody(vehicleId, fstrategy.FstrategyId, diportsMap)
+	fCsvBody := csv.CreateCsvFstrategyBody(vehicleId, fstrategy.FstrategyId, finalDiportsMap)
 	csvModel.SetCsvWritData(fCsvHeader, fCsvBody)
 
 	attrs := map[string]interface{}{
