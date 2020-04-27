@@ -7,28 +7,28 @@ import (
 )
 
 var urls = map[string]string{
-	"get_flow":   "http://localhost:7001/api/v1/flows/825338010",
+	"get_flow":   "http://localhost:7001/api/v1/flows/2852327479",
 	"get_flows":  "http://192.168.40.14:7001/api/v1/flows",
 	"pagination": "http://localhost:7001/api/v1/pagination/flows",
 	"post_flows": "http://localhost:7001/api/v1/flows",
 	"edit_flows": "http://localhost:7001/api/v1/flows/1111",
-	"dele_flows": "http://localhost:7001/api/v1/flows/710022812",
+	"dele_flows": "http://localhost:7001/api/v1/flows/3648327872",
 }
 
 func main() {
-	getFlow()
+	//getFlow()
 	//getFlows()
 	//getPaginationFlows()
 	//addFlows()
 	//editFlows()
-	//deleFlows()
+	deleFlows()
 }
 
 func deleFlows() {
 	token := tool.GetVehicleToken()
 
 	queryParams := map[string]interface{}{
-		"vehicle_id": "b020eccdf33d48b4aa246a89a6f04609",
+		"vehicle_id": "754d2728b4e549c5a16c0180fcacb800",
 	}
 
 	reqUrl := urls["dele_flows"]
@@ -58,7 +58,7 @@ func getPaginationFlows() {
 	token := tool.GetVehicleToken()
 
 	queryParams := map[string]interface{}{
-		"vehicle_id": "b020eccdf33d48b4aa246a89a6f04609",
+		"vehicle_id": "754d2728b4e549c5a16c0180fcacb800",
 		"page_size":  "10",
 		"page_index": "1",
 	}
@@ -75,7 +75,7 @@ func getFlow() {
 	token := tool.GetVehicleToken()
 
 	queryParams := map[string]interface{}{
-		"vehicle_id": "b020eccdf33d48b4aa246a89a6f04609",
+		"vehicle_id": "754d2728b4e549c5a16c0180fcacb800",
 	}
 
 	reqUrl := urls["get_flow"]

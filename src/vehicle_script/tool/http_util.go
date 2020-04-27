@@ -111,7 +111,6 @@ func Get(reqUrl string, queryParams map[string]interface{}, token string) (map[s
 	}
 	return p, nil
 }
-
 func Delete(reqUrl string, queryParams map[string]interface{}, token string) (map[string]interface{}, error) {
 	urlReq, _ := url.Parse(reqUrl)
 

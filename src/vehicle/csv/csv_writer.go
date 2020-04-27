@@ -4,7 +4,6 @@ import (
 	"encoding/csv"
 	"fmt"
 	"os"
-	"strings"
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/util"
 )
@@ -14,23 +13,23 @@ const FStrategyCsvSuffix = ".csv"
 const FileTruncate = 0
 const FileAppend = 1
 
-type CSV struct {
+type CsvWriter struct {
 	csvWriter   *csv.Writer
 	csvFile     *os.File
 	CsvFilePath string
 }
 
-func NewCsvWriter(vehicleId string, fstrategyId string, fileMode int) *CSV {
+func NewCsvWriter(vehicleId string, fstrategyId string, fileMode int) *CsvWriter {
 
 	csvFile, csvFolderFileName, err := GetFstrategyCsvFile(vehicleId, fstrategyId, fileMode)
 	if err != nil {
 		logger.Logger.Print("%s newCsvWriter err:%+v", util.RunFuncName(), err)
 		logger.Logger.Info("%s  newCsvWritererr:%+v", util.RunFuncName(), err)
 	}
-	var csvModel *CSV
+	var csvModel *CsvWriter
 	csvWriter := csv.NewWriter(csvFile)
 
-	csvModel = &CSV{
+	csvModel = &CsvWriter{
 		csvWriter:   csvWriter,
 		csvFile:     csvFile,
 		CsvFilePath: csvFolderFileName,
@@ -67,7 +66,7 @@ func GetFstrategyCsvFile(vehicleId string, fstrategyId string, fileMode int) (*o
 	return csvFile, csvFolderFileName, nil
 }
 
-func (csvModel *CSV) ParseCsvWritData(csvDatas ...interface{}) [][]string {
+func (csvModel *CsvWriter) ParseCsvWritData(csvDatas ...interface{}) [][]string {
 
 	fCsvDatas := [][]string{}
 
@@ -98,13 +97,13 @@ func (csvModel *CSV) ParseCsvWritData(csvDatas ...interface{}) [][]string {
 	return fCsvDatas
 }
 
-func (csvModel *CSV) SetCsvWritData(csvDatas ...interface{}) {
+func (csvModel *CsvWriter) SetCsvWritData(csvDatas ...interface{}) {
 
 	csvData := csvModel.ParseCsvWritData(csvDatas...)
 	csvModel.CsvWritData(csvData)
 
 }
-func (csvModel *CSV) CsvWritData(csvDatas [][]string) {
+func (csvModel *CsvWriter) CsvWritData(csvDatas [][]string) {
 	logger.Logger.Print("%s csvWritData err:%+v", util.RunFuncName(), csvDatas)
 	logger.Logger.Info("%s  csvWritData:%+v", util.RunFuncName(), csvDatas)
 
@@ -126,25 +125,10 @@ func (csvModel *CSV) CsvWritData(csvDatas [][]string) {
 
 	csvModel.Close()
 }
-func (csvModel *CSV) Close() {
+func (csvModel *CsvWriter) Close() {
 	if csvModel != nil {
 		if csvModel.csvFile != nil {
 			csvModel.csvFile.Close()
 		}
 	}
-}
-
-func CreateCsvFolder() (string, error) {
-	wd := Getwd()
-
-	if strings.Trim(wd, " ") == "" {
-		return "", fmt.Errorf("%s get_wd:%s null", util.RunFuncName(), wd)
-
-	}
-	csvFileFolderPath := fmt.Sprintf("%s/%s", wd, FStrategyCsvFolder)
-	csvFileFolderPathErr := MkdirAll(csvFileFolderPath)
-	if csvFileFolderPathErr != nil {
-		return "", csvFileFolderPathErr
-	}
-	return csvFileFolderPath, nil
 }

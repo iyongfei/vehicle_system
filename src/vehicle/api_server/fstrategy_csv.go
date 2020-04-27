@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 	"vehicle_system/src/vehicle/csv"
+	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
@@ -67,7 +68,8 @@ func GetFStrategyCsv(c *gin.Context) {
 */
 func UploadFStrategyCsv(c *gin.Context) {
 	uploadCsv, err := c.FormFile("upload_csv")
-	fmt.Println(uploadCsv, "safly.........")
+	vehicleId := c.PostForm("vehicle_id")
+
 	if err != nil {
 		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
 		c.JSON(http.StatusOK, ret)
@@ -75,8 +77,32 @@ func UploadFStrategyCsv(c *gin.Context) {
 		logger.Logger.Print("%s formfile err:%+v", util.RunFuncName(), err)
 		return
 	}
-	dst := uploadCsv.Filename
-	if err := c.SaveUploadedFile(uploadCsv, dst); err != nil {
-		// ignore
+	uploadFileName := uploadCsv.Filename
+
+	logger.Logger.Info("%s fileName:%s, vehicleId:%s,err:%+v", util.RunFuncName(), uploadFileName, vehicleId, err)
+	logger.Logger.Print("%s fileName:%s, vehicleId:%s,err:%+v", util.RunFuncName(), uploadFileName, vehicleId, err)
+
+	//创建文件
+	tempCsvName := util.RandomString(16)
+	tempCsvFileFolderPath, _ := csv.CreateCsvFolder()
+	tempCsvPathName := tempCsvFileFolderPath + "/" + tempCsvName
+
+	if err := c.SaveUploadedFile(uploadCsv, tempCsvPathName); err != nil {
 	}
+	//解析
+	csvReaderModel := csv.CreateCsvReader(tempCsvPathName)
+	parseData, _ := csvReaderModel.ParseCsvFile()
+	//parseData:::::: map[754d2728b4e549c5a16c0180fcacb800:map[192.167.1.3:[123 125 23] 192.168.1.5:[123 125 23]]]
+
+	fmt.Println("parseData::::::", parseData)
+	for vehicleIdK, vehicleIdIpPorts := range parseData {
+		vehicleInfo := &model.VehicleInfo{
+			VehicleId: vehicleIdK,
+		}
+		err, recordNotFound := mysql.QueryModelOneRecordIsExistByWhereCondition(vehicleInfo, "vehicle_id = ?", vehicleInfo.VehicleId)
+		if err != nil || recordNotFound {
+			delete(parseData, vehicleIdK)
+		}
+	}
+
 }

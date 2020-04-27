@@ -10,7 +10,7 @@ import (
 )
 
 func GetMonitor(c *gin.Context) {
-	vehicleId := c.Query("vehicle_id")
+	vehicleId := c.Param("vehicle_id")
 
 	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId)
 	if argsTrimsEmpty {

@@ -79,7 +79,7 @@ http://192.168.1.192:7001/swagger/index.html
 
 /**
 交互格式：
-Pub GUID/s/p   s/GUID/p
+Pub GUID/s/p   s/GUID/          p
 Sub s/GUID/p   +/s/p
 
 mosquitto测试：
@@ -93,4 +93,6 @@ mosquitto_sub -h 127.0.0.1 -t $SYS/brokers/+/clients/+/+ -d
  */
 
 
- netstat -nat | grep 1883
+ netstat -natp | grep 7001
+
+ 123.57.252.4

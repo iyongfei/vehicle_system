@@ -27,8 +27,8 @@ func getConfig() map[string]string {
 func main() {
 	//addFStrategy()
 	//getFStrategy()
-	//deleFStrategy()
-	editFStrategy()
+	deleFStrategy()
+	//editFStrategy()
 
 	//getFStrategys()
 	//getStrategyVehicle()

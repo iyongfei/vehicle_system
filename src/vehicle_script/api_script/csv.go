@@ -7,8 +7,8 @@ import (
 )
 
 var fStrategyCsvUrls = map[string]string{
-	"csv_url":           "http://localhost:7001/fstrategy_csv/N5gqNSN0lpV30gKJOfBkYvGudNUfj1V5.csv",
-	"get_fstrategy_csv": "http://localhost:7001/api/v1/fstrategy_csvs/N5gqNSN0lpV30gKJOfBkYvGudNUfj1V5",
+	"csv_url":           "http://localhost:7001/fstrategy_csv/dwUF8MhOcJDDuXWaDYsQXW1aNtzHSMlp.csv",
+	"get_fstrategy_csv": "http://localhost:7001/api/v1/fstrategy_csvs/dwUF8MhOcJDDuXWaDYsQXW1aNtzHSMlp",
 
 	//"post_strategy": "http://localhost:7001/api/v1/strategys",
 	"get_strategys": "http://localhost:7001/api/v1/strategys",
@@ -30,8 +30,7 @@ func main() {
 func uploadFstrategyCsv() {
 	url := "http://localhost:7001/api/v1/fstrategy_csvs"
 	mapArgs := map[string]string{
-		"k1": "v1",
-		"k2": "v2",
+		"vehicle_id": "754d2728b4e549c5a16c0180fcacb800",
 	}
 
 	nameField := "upload_csv"

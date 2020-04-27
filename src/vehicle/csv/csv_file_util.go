@@ -1,9 +1,27 @@
 package csv
 
 import (
+	"fmt"
 	"os"
 	"path"
+	"strings"
+	"vehicle_system/src/vehicle/util"
 )
+
+func CreateCsvFolder() (string, error) {
+	wd := Getwd()
+
+	if strings.Trim(wd, " ") == "" {
+		return "", fmt.Errorf("%s get_wd:%s null", util.RunFuncName(), wd)
+
+	}
+	csvFileFolderPath := fmt.Sprintf("%s/%s", wd, FStrategyCsvFolder)
+	csvFileFolderPathErr := MkdirAll(csvFileFolderPath)
+	if csvFileFolderPathErr != nil {
+		return "", csvFileFolderPathErr
+	}
+	return csvFileFolderPath, nil
+}
 
 //判断是否是一个合法的文件路径(非文件夹)
 

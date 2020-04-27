@@ -3,33 +3,63 @@ package main
 import (
 	"encoding/csv"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"reflect"
+	"strings"
 )
 
-//会清空文件，不能创建子级
-func Create() {
+func ExampleReader() {
+	in := `first_name,last_name,username
+"Rob","Pike",rob
+Ken,Thompson,ken
+"Robert","Griesemer","gri"
+`
+	r := csv.NewReader(strings.NewReader(in))
 
-}
+	recordLine := 0
+	for {
 
-//打开只读
-func Open() {
-}
+		if recordLine == 0 {
+			record, err := r.Read()
+			if err == io.EOF {
+				fmt.Println(record, "1")
+				break
+			}
+			if err != nil {
+				log.Fatal(err)
+			}
+			fmt.Println(record)
+		} else {
+			record, err := r.Read()
+			if err == io.EOF {
+				fmt.Println()
+				break
+			}
+			if err != nil {
+				log.Fatal(err)
+			}
+			fmt.Println(record)
+		}
 
-//创建不会清空
-func NewFile() {
+		recordLine++
 
-}
-
-//特定模式
-func OpenFile() {
-
+	}
+	// Output:
+	// [first_name last_name username]
+	// [Rob Pike rob]
+	// [Ken Thompson ken]
+	// [Robert Griesemer gri]
 }
 func main() {
-	os.OpenFile()
 
-	os.Create("aa.txt")
+	iportsMap := map[string]map[string][]uint32{}
+	var a map[string][]uint32
+	a["v"] = []uint32{1, 2, 3}
+
+	iportsMap["a"] = a
+	fmt.Println(iportsMap["a"])
 
 	//filename := "test.csv"
 	//columns := [][]string{{"姓名", "电话", "公司", "职位", "加入时间"}, {"1", "2", "刘犇,刘犇,刘犇", "4", "5"}}

@@ -32,7 +32,7 @@ func V1Router(r *gin.Engine) {
 		//apiV1.DELETE("/vehicles/:vehicle_id", api_server.DeleVehicle)
 		//apiV1.GET("/vehicles", api_server.GetVehicles)
 		//////////////////////////////////////////////监控接口//////////////////////////////////////////////
-		apiV1.GET("/monitors", api_server.GetMonitor)
+		apiV1.GET("/monitors/:vehicle_id", api_server.GetMonitor)
 
 		apiV1.GET("/white_lists/:white_list_id", api_server.GetWhiteList)
 		apiV1.GET("/white_lists", api_server.GetWhiteLists)

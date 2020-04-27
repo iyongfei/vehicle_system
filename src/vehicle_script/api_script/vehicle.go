@@ -9,12 +9,12 @@ import (
 )
 
 var vehicleUrls = map[string]string{
-	"get_vehicle":  "http://localhost:7001/api/v1/vehicles/b020eccdf33d48b4aa246a89a6f04609",
+	"get_vehicle":  "http://localhost:7001/api/v1/vehicles/754d2728b4e549c5a16c0180fcacb800",
 	"get_vehicles": "http://localhost:7001/api/v1/vehicles",
 
 	"post_vehicles": "http://localhost:7001/api/v1/vehicles",
 
-	"edit_vehicles": "http://localhost:7001/api/v1/vehicles/derXH5DghbCV3UVHFQaCNbmHitQHcTfj",
+	"edit_vehicles": "http://192.168.1.198:7001/api/v1/vehicles/754d2728b4e549c5a16c0180fcacb800",
 	"dele_vehicles": "http://localhost:7001/api/v1/vehicles/WDHIAeGImCklIqrzQ2fBfojPL0kg4D7d",
 }
 
@@ -27,14 +27,14 @@ func main() {
 }
 
 func editVehicles() {
-	token := tool.GetVehicleToken()
+	//token := tool.GetVehicleToken()
 	urlReq, _ := vehicleUrls["edit_vehicles"]
 
 	bodyParams := map[string]interface{}{
 		"type":   "1",
-		"switch": "true",
+		"switch": "false",
 	}
-	resp, _ := tool.PutForm(urlReq, bodyParams, token)
+	resp, _ := tool.PutForm(urlReq, bodyParams, "")
 
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))
