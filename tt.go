@@ -52,7 +52,14 @@ Ken,Thompson,ken
 	// [Ken Thompson ken]
 	// [Robert Griesemer gri]
 }
+
+const (
+	AddCsv  = iota
+	EditCsv = 2
+)
+
 func main() {
+	fmt.Println(AddCsv, EditCsv)
 
 	//filename := "test.csv"
 	//columns := [][]string{{"姓名", "电话", "公司", "职位", "加入时间"}, {"1", "2", "刘犇,刘犇,刘犇", "4", "5"}}

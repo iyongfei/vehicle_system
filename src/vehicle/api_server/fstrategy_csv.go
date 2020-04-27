@@ -95,9 +95,7 @@ func UploadFStrategyCsv(c *gin.Context) {
 	}
 	//解析
 	csvReaderModel := csv.CreateCsvReader(tempCsvPathName)
-	parseData, _ := csvReaderModel.ParseCsvFile()
-
-	fmt.Println("parseData::::::", parseData)
+	parseData, _ := csvReaderModel.ParseCsvFile(csv.AddCsv)
 
 	//过滤非合法vehicleId
 	for vehicleIdK, _ := range parseData {
@@ -144,7 +142,6 @@ func UploadFStrategyCsv(c *gin.Context) {
 		}
 		fstrategyItems[vehicleIdK] = vehicleFstrategyItems
 	}
-
 	//fstrategy table
 	fstrategy := &model.Fstrategy{
 		FstrategyId: util.RandomString(32),
@@ -157,7 +154,6 @@ func UploadFStrategyCsv(c *gin.Context) {
 	if err := fstrategyModelBase.InsertModel(); err != nil {
 		//todo
 	}
-
 	//FstrategyVehicle table
 	vehicleFstrategyVehicleIdMap := map[string]string{}
 	for vehicleIdK, _ := range parseData {
@@ -186,7 +182,6 @@ func UploadFStrategyCsv(c *gin.Context) {
 	//vehicleFstrategyVehicleIdMap[vehicleIdK] = fstrategyVehicle.FstrategyVehicleId
 
 	for vehicleIdK, _ := range parseData {
-
 		vehicleFsItems := fstrategyItems[vehicleIdK]
 		FstrategyVehicleIdMapvehicleItem := vehicleFstrategyVehicleIdMap[vehicleIdK]
 
@@ -260,4 +255,43 @@ func UploadFStrategyCsv(c *gin.Context) {
 	retObj := response.StructResponseObj(response.VStatusOK, response.ReqAddFStrategySuccessMsg, responseData)
 	c.JSON(http.StatusOK, retObj)
 
+}
+
+func EditFStrategyCsv(c *gin.Context) {
+	uploadCsv, err := c.FormFile("upload_csv")
+	//vehicleId := c.PostForm("vehicle_id")
+
+	if err != nil {
+		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+		c.JSON(http.StatusOK, ret)
+		logger.Logger.Error("%s formfile err:%+v", util.RunFuncName(), err)
+		logger.Logger.Print("%s formfile err:%+v", util.RunFuncName(), err)
+		return
+	}
+	uploadFileName := uploadCsv.Filename
+
+	logger.Logger.Info("%s fileName:%s, vehicleId:%s,err:%+v", util.RunFuncName(), uploadFileName, err)
+	logger.Logger.Print("%s fileName:%s, vehicleId:%s,err:%+v", util.RunFuncName(), uploadFileName, err)
+
+	//创建文件
+	tempCsvName := util.RandomString(16)
+	tempCsvFileFolderPath, _ := csv.CreateCsvFolder()
+	tempCsvPathName := tempCsvFileFolderPath + "/" + tempCsvName
+
+	if err := c.SaveUploadedFile(uploadCsv, tempCsvPathName); err != nil {
+	}
+	//解析
+	csvReaderModel := csv.CreateCsvReader(tempCsvPathName)
+	parseData, _ := csvReaderModel.ParseCsvFile()
+
+	//过滤非合法vehicleId
+	for vehicleIdK, _ := range parseData {
+		vehicleInfo := &model.VehicleInfo{
+			VehicleId: vehicleIdK,
+		}
+		err, recordNotFound := mysql.QueryModelOneRecordIsExistByWhereCondition(vehicleInfo, "vehicle_id = ?", vehicleInfo.VehicleId)
+		if err != nil || recordNotFound {
+			delete(parseData, vehicleIdK)
+		}
+	}
 }

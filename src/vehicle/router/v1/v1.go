@@ -17,6 +17,7 @@ func V1Router(r *gin.Engine) {
 		//////////////////////////////////////////////会话策略下载上传//////////////////////////////////////////////
 		apiV1.GET("/fstrategy_csvs/:fstrategy_id", api_server.GetFStrategyCsv)
 		apiV1.POST("/fstrategy_csvs/", api_server.UploadFStrategyCsv)
+		apiV1.PUT("/fstrategy_csvs/:fstrategy_id", api_server.EditFStrategyCsv)
 		//////////////////////////////////////////////会话接口//////////////////////////////////////////////
 		apiV1.GET("/flows/:flow_id", api_server.GetFlow)
 		apiV1.GET("/pagination/flows", api_server.GetPaginationFlows)

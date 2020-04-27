@@ -12,7 +12,13 @@ import (
 
 var csvFormat = fmt.Errorf("%s", "csv format error")
 
-const CsvColumn = 3
+const CsvAddColumn = 3
+const CsvEditColumn = 4
+
+const (
+	AddCsv = iota
+	EditCsv
+)
 
 type CsvReaderModel struct {
 	csvReader *csv.Reader
@@ -43,7 +49,7 @@ func getCsvFile(csvFilePathName string) *os.File {
 
 }
 
-func (csvReaderModel *CsvReaderModel) ParseCsvFile() (map[string]map[string][]uint32, error) {
+func (csvReaderModel *CsvReaderModel) ParseCsvFile(handleCsvMode int) (map[string]map[string][]uint32, error) {
 	csvReader := csvReaderModel.csvReader
 	defer csvReaderModel.csvFile.Close()
 
@@ -52,11 +58,20 @@ func (csvReaderModel *CsvReaderModel) ParseCsvFile() (map[string]map[string][]ui
 		return nil, err
 	}
 
-	filterData, err := filterCsvData(records)
-	if err != nil {
-		return nil, err
-	}
+	var filterData map[string]map[string][]uint32
+	var filterDataErr error
 
+	if handleCsvMode == AddCsv {
+		filterData, filterDataErr = filterCsvData(records, handleCsvMode)
+		if filterDataErr != nil {
+			return nil, filterDataErr
+		}
+	} else if handleCsvMode == EditCsv {
+		filterData, filterDataErr = filterCsvData(records, handleCsvMode)
+		if filterDataErr != nil {
+			return nil, filterDataErr
+		}
+	}
 	return filterData, nil
 }
 
@@ -66,11 +81,17 @@ VehicleId,FstrategyId,Ip,Port
 754d2728b4e549c5a16c0180fcacb800,dwUF8MhOcJDDuXWaDYsQXW1aNtzHSMlp,192.167.1.3,123:125:23
 754d2728b4e549c5a16c0180fcacb800,dwUF8MhOcJDDuXWaDYsQXW1aNtzHSMlp,192.168.1.5,123:125:23
 */
-func filterCsvData(records [][]string) (map[string]map[string][]uint32, error) {
+func filterCsvData(records [][]string, handleCsvMode int) (map[string]map[string][]uint32, error) {
 	diportsMap := map[string]map[string][]uint32{}
 	for _, record := range records {
-		if len(record) != CsvColumn {
-			return nil, csvFormat
+		if handleCsvMode == AddCsv {
+			if len(record) != CsvAddColumn {
+				return nil, csvFormat
+			}
+		} else if handleCsvMode == EditCsv {
+			if len(record) != CsvEditColumn {
+				return nil, csvFormat
+			}
 		}
 	}
 	for _, record := range records {
@@ -123,7 +144,6 @@ func filterCsvData(records [][]string) (map[string]map[string][]uint32, error) {
 
 		}
 	}
-
 	return diportsMap, nil
 }
 
