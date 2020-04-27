@@ -6,9 +6,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/logger"
-	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/util"
 )
 
@@ -89,7 +87,6 @@ func filterCsvData(records [][]string) (map[string]map[string][]uint32, error) {
 					diportsMap[vehicleId][ip] = []uint32{}
 					portSlice := strings.Split(ports, ":")
 					for _, port := range portSlice {
-						//todo
 						if util.VerifyIpPort(port) {
 							portInt, _ := strconv.Atoi(port)
 							diportsMap[vehicleId][ip] = append(diportsMap[vehicleId][ip], uint32(portInt))

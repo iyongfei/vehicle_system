@@ -27,7 +27,7 @@ func HandleVehicleFlowStrategy(vehicleResult protobuf.GWResult, vehicleId string
 	}
 	modelBase := model_base.ModelBaseImpl(flowStrategyInfo)
 
-	_, recordNotFound := modelBase.GetModelByCondition("flow_strategy_id = ?", flowStrategyInfo.FstrategyId)
+	_, recordNotFound := modelBase.GetModelByCondition("fstrategy_id = ?", flowStrategyInfo.FstrategyId)
 
 	modelBase.CreateModel(flowStrategyParam)
 	if recordNotFound {
@@ -40,7 +40,7 @@ func HandleVehicleFlowStrategy(vehicleResult protobuf.GWResult, vehicleId string
 			"handle_mode": flowStrategyInfo.HandleMode,
 			"enable":      flowStrategyInfo.Enable,
 		}
-		if err := modelBase.UpdateModelsByCondition(attrs, "flow_strategy_id = ?", flowStrategyInfo.FstrategyId); err != nil {
+		if err := modelBase.UpdateModelsByCondition(attrs, "fstrategy_id = ?", flowStrategyInfo.FstrategyId); err != nil {
 			return fmt.Errorf("%s update vehicle flow strategy err:%s", util.RunFuncName(), err.Error())
 		}
 	}
@@ -55,7 +55,7 @@ func HandleVehicleFlowStrategy(vehicleResult protobuf.GWResult, vehicleId string
 	flowStrategyVehicleGetModelBase := model_base.GetModelImpl(flowStrategyVehicle)
 
 	_, strategyVehicleRecordNotFound := flowStrategyVehicleGetModelBase.GetModelByCondition(
-		"flow_strategy_id = ? and vehicle_id = ?", []interface{}{flowStrategyVehicle.FstrategyId, flowStrategyVehicle.VehicleId}...)
+		"fstrategy_id = ? and vehicle_id = ?", []interface{}{flowStrategyVehicle.FstrategyId, flowStrategyVehicle.VehicleId}...)
 	if strategyVehicleRecordNotFound {
 		if err := flowStrategyVehicleModelBase.InsertModel(); err != nil {
 			return fmt.Errorf("%s insert vehicle flowStrategyVehicle err:%s", util.RunFuncName(), err.Error())

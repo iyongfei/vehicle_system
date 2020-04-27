@@ -161,7 +161,7 @@ func EditFStrategy(c *gin.Context) {
 	}
 
 	//插入csv
-	csvModel := csv.NewCsvWriter(vehicleId, vehicleFStrategy.FstrategyId, csv.FileTruncate)
+	csvModel := csv.NewCsvWriter(vehicleFStrategy.FstrategyId, csv.FileTruncate)
 	fCsvHeader := csv.CreateCsvFstrategyHeader()
 	fCsvBody := csv.CreateCsvFstrategyBody(vehicleId, vehicleFStrategy.FstrategyId, finalDiportsMap)
 	csvModel.SetCsvWritData(fCsvHeader, fCsvBody)
@@ -361,7 +361,7 @@ func AddFStrategy(c *gin.Context) {
 	}
 
 	vehicleFsItems := fstrategyItems[vehicleId]
-	//learningResultIds table
+	//fstrategy_vehicle_items table
 	for _, item := range vehicleFsItems {
 		fstrategyVehicleItem := &model.FstrategyVehicleItem{
 			FstrategyVehicleId: fstrategyVehicle.FstrategyVehicleId,
@@ -378,7 +378,7 @@ func AddFStrategy(c *gin.Context) {
 		}
 	}
 	//插入csv
-	csvModel := csv.NewCsvWriter(vehicleId, fstrategy.FstrategyId, csv.FileAppend)
+	csvModel := csv.NewCsvWriter(fstrategy.FstrategyId, csv.FileAppend)
 	fCsvHeader := csv.CreateCsvFstrategyHeader()
 	fCsvBody := csv.CreateCsvFstrategyBody(vehicleId, fstrategy.FstrategyId, finalDiportsMap)
 	csvModel.SetCsvWritData(fCsvHeader, fCsvBody)
@@ -387,8 +387,8 @@ func AddFStrategy(c *gin.Context) {
 		"scv_path": csvModel.CsvFilePath,
 	}
 	if err := fstrategyModelBase.UpdateModelsByCondition(attrs, "fstrategy_id = ?", fstrategy.FstrategyId); err != nil {
-		logger.Logger.Print("%s vehicle_id:%s insert fstrategy scv_path err:%+v", util.RunFuncName(), vehicleId, csvModel.CsvFilePath, err)
-		logger.Logger.Info("%s vehicle_id:%s insert fstrategy scv_path err:%+v", util.RunFuncName(), vehicleId, csvModel.CsvFilePath, err)
+		logger.Logger.Print("%s insert fstrategy scv_path:%s, err:%+v", util.RunFuncName(), csvModel.CsvFilePath, err)
+		logger.Logger.Info("%s insert fstrategy scv_path:%s, err:%+v", util.RunFuncName(), csvModel.CsvFilePath, err)
 	}
 
 	//下发策略

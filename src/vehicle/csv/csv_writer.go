@@ -19,9 +19,9 @@ type CsvWriter struct {
 	CsvFilePath string
 }
 
-func NewCsvWriter(vehicleId string, fstrategyId string, fileMode int) *CsvWriter {
+func NewCsvWriter(fstrategyId string, fileMode int) *CsvWriter {
 
-	csvFile, csvFolderFileName, err := GetFstrategyCsvFile(vehicleId, fstrategyId, fileMode)
+	csvFile, csvFolderFileName, err := GetFstrategyCsvFile(fstrategyId, fileMode)
 	if err != nil {
 		logger.Logger.Print("%s newCsvWriter err:%+v", util.RunFuncName(), err)
 		logger.Logger.Info("%s  newCsvWritererr:%+v", util.RunFuncName(), err)
@@ -39,7 +39,7 @@ func NewCsvWriter(vehicleId string, fstrategyId string, fileMode int) *CsvWriter
 }
 
 //获取fstrategyCsv文件
-func GetFstrategyCsvFile(vehicleId string, fstrategyId string, fileMode int) (*os.File, string, error) {
+func GetFstrategyCsvFile(fstrategyId string, fileMode int) (*os.File, string, error) {
 	csvFolderPath, err := CreateCsvFolder()
 	if err != nil {
 		return nil, "", err

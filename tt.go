@@ -55,11 +55,44 @@ Ken,Thompson,ken
 func main() {
 
 	iportsMap := map[string]map[string][]uint32{}
-	var a map[string][]uint32
-	a["v"] = []uint32{1, 2, 3}
 
-	iportsMap["a"] = a
-	fmt.Println(iportsMap["a"])
+	iportsMap["a"] = map[string][]uint32{
+		"c1": []uint32{1, 2, 3},
+		"c2": []uint32{1, 2, 3},
+		"c3": []uint32{1, 2, 3},
+	}
+
+	iportsMap["b"] = map[string][]uint32{
+		"c1": []uint32{1, 2, 3},
+		"c2": []uint32{1, 2, 3},
+		"c3": []uint32{1, 2, 3},
+	}
+
+	iportsMap["c"] = map[string][]uint32{
+		"c1": []uint32{1, 2, 3},
+		"c2": []uint32{1, 2, 3},
+		"c3": []uint32{1, 2, 3},
+	}
+
+	iportsMap["d"] = map[string][]uint32{
+		"c1": []uint32{1, 2, 3},
+		"c2": []uint32{1, 2, 3},
+		"c3": []uint32{1, 2, 3},
+	}
+
+	for k, v := range iportsMap {
+		if k == "c" || k == "b" {
+			fmt.Println(k)
+			delete(iportsMap, k)
+		}
+		fmt.Println(k, v)
+	}
+
+	fmt.Println("________________")
+	for k, v := range iportsMap {
+
+		fmt.Println(k, v)
+	}
 
 	//filename := "test.csv"
 	//columns := [][]string{{"姓名", "电话", "公司", "职位", "加入时间"}, {"1", "2", "刘犇,刘犇,刘犇", "4", "5"}}
