@@ -232,7 +232,11 @@ func UploadFStrategyCsv(c *gin.Context) {
 	}
 
 	//删除文件
-	os.Remove(tempCsvPathName)
+
+	if csv.IsExists(tempCsvPathName) {
+		os.Remove(tempCsvPathName)
+	}
+
 	//下发策略
 	for vehicleIdK, _ := range parseData {
 		fstrategyCmd := &emq_cmd.FStrategySetCmd{
