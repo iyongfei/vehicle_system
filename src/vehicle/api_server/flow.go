@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
+	"time"
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
@@ -19,7 +20,6 @@ func GetFlow(c *gin.Context) {
 	flowId := c.Param("flow_id")
 	vehicleId := c.Query("vehicle_id")
 
-	fmt.Println("getflow.........")
 	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId, flowId)
 	if argsTrimsEmpty {
 		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
@@ -86,11 +86,15 @@ func GetPaginationFlows(c *gin.Context) {
 	vehicleId := c.Query("vehicle_id")
 	pageSizeP := c.Query("page_size")
 	pageIndexP := c.Query("page_index")
+	startTimeP := c.Query("start_time")
+	endTimeP := c.Query("end_time")
 
-	logger.Logger.Info("%s request params vehicle_id:%s,page_size:%s,page_index:%s", util.RunFuncName(), vehicleId, pageSizeP, pageIndexP)
-	logger.Logger.Print("%s request params vehicle_id:%s,page_size:%s,page_index:%s", util.RunFuncName(), vehicleId, pageSizeP, pageIndexP)
+	logger.Logger.Info("%s request params vehicle_id:%s,page_size:%s,page_index:%s,start_time%s,endtime%s",
+		util.RunFuncName(), vehicleId, pageSizeP, pageIndexP, startTimeP, endTimeP)
+	logger.Logger.Print("%s request params vehicle_id:%s,page_size:%s,page_index:%s,start_time%s,endtime%s",
+		util.RunFuncName(), vehicleId, pageSizeP, pageIndexP, startTimeP, endTimeP)
 
-	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId, pageSizeP, pageIndexP)
+	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId)
 	if argsTrimsEmpty {
 		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
 		c.JSON(http.StatusOK, ret)
@@ -98,17 +102,46 @@ func GetPaginationFlows(c *gin.Context) {
 		logger.Logger.Print("%s argsTrimsEmpty threatId:%s", util.RunFuncName(), argsTrimsEmpty)
 	}
 
-	pageSize, _ := strconv.Atoi(pageSizeP)
-	pageIndex, _ := strconv.Atoi(pageIndexP)
+	fpageSize, _ := strconv.Atoi(pageSizeP)
+	fpageIndex, _ := strconv.Atoi(pageIndexP)
+
+	var fStartTime time.Time
+	var fEndTime time.Time
+
+	startTime, _ := strconv.Atoi(startTimeP)
+	endTime, _ := strconv.Atoi(endTimeP)
+
+	defaultPageSize := 20
+	if fpageSize == 0 {
+		fpageSize = defaultPageSize
+	}
+	defaultPageIndex := 1
+	if fpageIndex == 0 {
+		fpageIndex = defaultPageIndex
+	}
+
+	defaultStartTime := util.GetFewDayAgo(2) //2
+	if startTime == 0 {
+		fStartTime = defaultStartTime
+	} else {
+		fStartTime = util.StampUnix2Time(int64(startTime))
+	}
+
+	defaultEndTime := time.Now()
+	if endTime == 0 {
+		fEndTime = defaultEndTime
+	} else {
+		fEndTime = util.StampUnix2Time(int64(endTime))
+	}
 
 	flows := []*model.Flow{}
 	var total int
 
 	modelBase := model_base.ModelBaseImplPagination(&model.Flow{})
 
-	err := modelBase.GetModelPaginationByCondition(pageIndex, pageSize,
-		&total, &flows, "vehicle_id = ?",
-		[]interface{}{vehicleId}...)
+	err := modelBase.GetModelPaginationByCondition(fpageIndex, fpageSize,
+		&total, &flows, "vehicle_id = ? and flows.created_at BETWEEN ? AND ?",
+		[]interface{}{vehicleId, fStartTime, fEndTime}...)
 
 	if err != nil {
 		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetFlowFailMsg, "")

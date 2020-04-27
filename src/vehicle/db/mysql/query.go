@@ -48,7 +48,7 @@ func QueryModelPaginationByWhereCondition(model interface{}, pageIndex int, page
 		return fmt.Errorf("%s open grom err:%v", util.RunFuncName(), err.Error())
 	}
 
-	err = vgorm.Offset((pageIndex-1)*pageSize).Limit(pageSize).Where(query, args...).Find(paginModel).
+	err = vgorm.Debug().Offset((pageIndex-1)*pageSize).Limit(pageSize).Where(query, args...).Find(paginModel).
 		Offset(-1).Model(model).Count(totalCount).Error
 
 	if err != nil {

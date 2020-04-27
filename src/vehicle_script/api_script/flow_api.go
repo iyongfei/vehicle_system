@@ -7,7 +7,7 @@ import (
 )
 
 var urls = map[string]string{
-	"get_flow":   "http://localhost:7001/api/v1/flows/2852327479",
+	"get_flow":   "http://localhost:7001/api/v1/flows/2768455442",
 	"get_flows":  "http://192.168.40.14:7001/api/v1/flows",
 	"pagination": "http://localhost:7001/api/v1/pagination/flows",
 	"post_flows": "http://localhost:7001/api/v1/flows",
@@ -18,10 +18,25 @@ var urls = map[string]string{
 func main() {
 	//getFlow()
 	//getFlows()
-	//getPaginationFlows()
+	getPaginationFlows()
 	//addFlows()
 	//editFlows()
-	deleFlows()
+	//deleFlows()
+}
+
+func getFlow() {
+	token := tool.GetVehicleToken()
+
+	queryParams := map[string]interface{}{
+		"vehicle_id": "754d2728b4e549c5a16c0180fcacb800",
+	}
+
+	reqUrl := urls["get_flow"]
+
+	resp, _ := tool.Get(reqUrl, queryParams, token)
+
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
 }
 
 func deleFlows() {
@@ -59,26 +74,10 @@ func getPaginationFlows() {
 
 	queryParams := map[string]interface{}{
 		"vehicle_id": "754d2728b4e549c5a16c0180fcacb800",
-		"page_size":  "10",
-		"page_index": "1",
+		"page_size":  "2",
 	}
 
 	reqUrl := urls["pagination"]
-
-	resp, _ := tool.Get(reqUrl, queryParams, token)
-
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
-}
-
-func getFlow() {
-	token := tool.GetVehicleToken()
-
-	queryParams := map[string]interface{}{
-		"vehicle_id": "754d2728b4e549c5a16c0180fcacb800",
-	}
-
-	reqUrl := urls["get_flow"]
 
 	resp, _ := tool.Get(reqUrl, queryParams, token)
 

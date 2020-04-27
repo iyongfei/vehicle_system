@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"vehicle_system/src/vehicle/db/mysql"
@@ -30,18 +31,16 @@ type Flow struct {
 }
 
 //序列化为数字类型
-//func (flow *Flow) MarshalJSON() ([]byte, error) {
-//	type FlowType Flow
-//	return json.Marshal(&struct {
-//		SrcIp string
-//		DstIp string
-//		*FlowType
-//	}{
-//		SrcIp:    util.IpIntToString(int(flow.SrcIp)),
-//		DstIp:    util.InetNtoa(int64(flow.DstIp)),
-//		FlowType: (*FlowType)(flow),
-//	})
-//}
+func (flow *Flow) MarshalJSON() ([]byte, error) {
+	type FlowType Flow
+	return json.Marshal(&struct {
+		Protocol string
+		*FlowType
+	}{
+		Protocol: protobuf.GetFlowProtocols(int(flow.Protocol)),
+		FlowType: (*FlowType)(flow),
+	})
+}
 
 //
 //func (flow *Flow) UnmarshalJSON(data []byte) error {
