@@ -147,24 +147,24 @@ func GetVehicle(c *gin.Context) {
 		return
 	}
 
-	type VehicleResponse struct {
-		VehicleId     string
-		Ip            string
-		Mac           string
-		OnlineStatus  bool
-		ProtectStatus uint8
-	}
-
-	vehicleResponse := VehicleResponse{
-		VehicleId:     vehicleId,
-		Ip:            vehicleInfo.Ip,
-		Mac:           vehicleInfo.Mac,
-		OnlineStatus:  vehicleInfo.OnlineStatus,
-		ProtectStatus: vehicleInfo.ProtectStatus,
-	}
+	//type VehicleResponse struct {
+	//	VehicleId     string
+	//	Ip            string
+	//	Mac           string
+	//	OnlineStatus  bool
+	//	ProtectStatus uint8
+	//}
+	//
+	//vehicleResponse := VehicleResponse{
+	//	VehicleId:     vehicleId,
+	//	Ip:            vehicleInfo.Ip,
+	//	Mac:           vehicleInfo.Mac,
+	//	OnlineStatus:  vehicleInfo.OnlineStatus,
+	//	ProtectStatus: vehicleInfo.ProtectStatus,
+	//}
 
 	responseData := map[string]interface{}{
-		"vehicle": vehicleResponse,
+		"vehicle": vehicleInfo,
 	}
 
 	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetVehicleSuccessMsg, responseData)

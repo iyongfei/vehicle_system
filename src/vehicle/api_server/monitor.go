@@ -10,7 +10,7 @@ import (
 )
 
 func GetMonitor(c *gin.Context) {
-	vehicleId := c.Param("vehicle_id")
+	vehicleId := c.Query("vehicle_id")
 
 	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId)
 	if argsTrimsEmpty {
@@ -56,15 +56,3 @@ func GetMonitor(c *gin.Context) {
 	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetMonitorsSuccessMsg, responseData)
 	c.JSON(http.StatusOK, retObj)
 }
-
-//
-//message MonitorInfoParam {
-//message DiskOverFlow {
-//string path = 1;        //盘符路径
-//float disk_rate = 2;   //当前盘符占用比例
-//}
-//float cpu_rate = 1;    //CPU占用比例
-//float mem_rate = 2;    //内存占用比例
-//repeated DiskOverFlow disk_item = 3; //占用比例较大盘符，暂定80%以上
-//uint32 gather_time = 4; //收集数据时间
-//}

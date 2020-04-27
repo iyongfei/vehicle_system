@@ -9,6 +9,12 @@ func V1Router(r *gin.Engine) {
 	apiV1 := r.Group("/api/v1")
 	apiV1.Use( /*middleware.AuthMiddle()*/ )
 	{
+
+		//////////////////////////////////////////////流量接口//////////////////////////////////////////////
+		apiV1.GET("/flow_statistics", api_server.FlowStatistics) //todo
+		//////////////////////////////////////////////监控接口//////////////////////////////////////////////
+		apiV1.GET("/monitors", api_server.GetMonitor) //todo
+
 		//////////////////////////////////////////////会话策略接口//////////////////////////////////////////////
 		apiV1.POST("/fstrategys", api_server.AddFStrategy)
 		apiV1.DELETE("/fstrategys/:fstrategy_id", api_server.DeleFStrategy)
@@ -27,13 +33,11 @@ func V1Router(r *gin.Engine) {
 		//apiV1.GET("/flows", api_server.GetFlows)
 
 		//////////////////////////////////////////////车载接口//////////////////////////////////////////////
-		apiV1.GET("/vehicles/:vehicle_id", api_server.GetVehicle)
+		apiV1.GET("/vehicles/:vehicle_id", api_server.GetVehicle) //todo
 		apiV1.POST("/vehicles", api_server.AddVehicle)
 		apiV1.PUT("/vehicles/:vehicle_id", api_server.EditVehicle)
 		//apiV1.DELETE("/vehicles/:vehicle_id", api_server.DeleVehicle)
 		//apiV1.GET("/vehicles", api_server.GetVehicles)
-		//////////////////////////////////////////////监控接口//////////////////////////////////////////////
-		apiV1.GET("/monitors/:vehicle_id", api_server.GetMonitor)
 
 		apiV1.GET("/white_lists/:white_list_id", api_server.GetWhiteList)
 		apiV1.GET("/white_lists", api_server.GetWhiteLists)

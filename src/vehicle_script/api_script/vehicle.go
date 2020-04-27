@@ -20,10 +20,10 @@ var vehicleUrls = map[string]string{
 
 func main() {
 	//getVehicles()
-	//getVehicle()
+	getVehicle()
 	//addVehicle()
 	//deleVehicles()
-	editVehicles()
+	//editVehicles()
 }
 
 func editVehicles() {

@@ -1,4 +1,4 @@
-server_ip = 192.168.1.198
+server_ip = 192.168.1.167
 
 #策略接口
 vehicle_ids=gBDvsD4qnAdR9K4cTIZoq7Zr05Ox1udr
@@ -29,3 +29,8 @@ get_flow_fstrategy_id=dwUF8MhOcJDDuXWaDYsQXW1aNtzHSMlp
 user_name=saflyer
 password=123456
 
+#flowstatistic
+flowstatistic_vehicle_id =754d2728b4e549c5a16c0180fcacb800
+
+#monitors
+monitors_vehicle_id =754d2728b4e549c5a16c0180fcacb800

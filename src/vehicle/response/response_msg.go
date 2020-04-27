@@ -212,6 +212,12 @@ const (
 	ReqGetStrategyVehicleResultListSuccessMsg = "终端-学习结果列表获取成功"
 )
 
+//flow_statistic
+const (
+	ReqGetVehicleStatisticListFailMsg    = "网络状态列表获取失败"
+	ReqGetVehicleStatisticListSuccessMsg = "网络状态列表获取成功"
+)
+
 //fstrategy
 const (
 	//ReqAddStrategyFailMsg    = "策略添加失败"
