@@ -180,7 +180,21 @@ func EditFStrategy(c *gin.Context) {
 	}
 	topic_publish_handler.GetPublishService().PutMsg2PublicChan(fstrategyCmd)
 
-	retObj := response.StructResponseObj(response.VStatusOK, response.ReqUpdateStrategySuccessMsg, "")
+	vehicleSingleFlowStrategyItemsReult := model.VehicleSingleFlowStrategyItemsReult{
+		FstrategyId:              vehicleFStrategy.FstrategyId,
+		Type:                     vehicleFStrategy.Type,
+		HandleMode:               vehicleFStrategy.HandleMode,
+		Enable:                   vehicleFStrategy.Enable,
+		VehicleId:                vehicleFStrategy.VehicleId,
+		ScvPath:                  vehicleFStrategy.ScvPath,
+		VehicleFStrategyItemsMap: finalDiportsMap,
+	}
+
+	responseData := map[string]interface{}{
+		"put_fstrategy": vehicleSingleFlowStrategyItemsReult,
+	}
+
+	retObj := response.StructResponseObj(response.VStatusOK, response.ReqUpdateStrategySuccessMsg, responseData)
 	c.JSON(http.StatusOK, retObj)
 
 }
@@ -389,6 +403,8 @@ func AddFStrategy(c *gin.Context) {
 	if err := fstrategyModelBase.UpdateModelsByCondition(attrs, "fstrategy_id = ?", fstrategy.FstrategyId); err != nil {
 		logger.Logger.Print("%s insert fstrategy scv_path:%s, err:%+v", util.RunFuncName(), csvModel.CsvFilePath, err)
 		logger.Logger.Info("%s insert fstrategy scv_path:%s, err:%+v", util.RunFuncName(), csvModel.CsvFilePath, err)
+	} else {
+		fstrategy.ScvPath = csvModel.CsvFilePath
 	}
 
 	//下发策略
@@ -404,8 +420,18 @@ func AddFStrategy(c *gin.Context) {
 	}
 	topic_publish_handler.GetPublishService().PutMsg2PublicChan(fstrategyCmd)
 
+	vehicleSingleFlowStrategyItemsReult := model.VehicleSingleFlowStrategyItemsReult{
+		FstrategyId:              fstrategy.FstrategyId,
+		Type:                     fstrategy.Type,
+		HandleMode:               fstrategy.HandleMode,
+		Enable:                   fstrategy.Enable,
+		VehicleId:                vehicleInfo.VehicleId,
+		ScvPath:                  fstrategy.ScvPath,
+		VehicleFStrategyItemsMap: finalDiportsMap,
+	}
+
 	responseData := map[string]interface{}{
-		"fstrategy": fstrategy,
+		"fstrategy": vehicleSingleFlowStrategyItemsReult,
 	}
 
 	retObj := response.StructResponseObj(response.VStatusOK, response.ReqAddFStrategySuccessMsg, responseData)
@@ -694,6 +720,7 @@ func GetFStrategy(c *gin.Context) {
 		HandleMode:               vehicleFStrategy.HandleMode,
 		Enable:                   vehicleFStrategy.Enable,
 		VehicleId:                vehicleFStrategy.VehicleId,
+		ScvPath:                  vehicleFStrategy.ScvPath,
 		VehicleFStrategyItemsMap: vehicleFStrategyItemsMap,
 	}
 	responseData := map[string]interface{}{

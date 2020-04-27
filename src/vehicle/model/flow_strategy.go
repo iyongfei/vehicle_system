@@ -228,8 +228,8 @@ type FlowStrategyVehicleItemJoin struct {
 	Type       uint8 //策略模式
 	HandleMode uint8 //处理方式
 	Enable     bool  //策略启用状态
-
-	VehicleId string
+	ScvPath    string
+	VehicleId  string
 
 	FstrategyVehicleId string
 	FstrategyItemId    string
@@ -283,6 +283,7 @@ type VehicleSingleFlowStrategyItemsReult struct {
 	Enable      bool  //策略启用状态
 	VehicleId   string
 
+	ScvPath string
 	/////////////////////
 	VehicleFStrategyItemsMap map[string][]uint32
 }
