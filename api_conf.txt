@@ -7,8 +7,8 @@ handle_mode=2
 
 
 #增加会话策略接口
-flow_vehicle_id=derXH5DghbCV3UVHFQaCNbmHitQHcTfj
-fips=192.168.1.1
+flow_vehicle_id=754d2728b4e549c5a16c0180fcacb800
+fips=192.168.1.1,192.168.1.2
 fports=123,124
 
 #删除会话策略接口

@@ -119,30 +119,30 @@ const (
 
 //vehicle
 const (
-	ReqGetVehicleFailMsg    = "车载信息获取失败"
-	ReqGetVehicleSuccessMsg = "车载信息获取成功"
+	ReqGetVehicleFailMsg    = "终端信息获取失败"
+	ReqGetVehicleSuccessMsg = "终端信息获取成功"
 
-	ReqGetVehicleUnExistMsg = "车载信息不存在"
-	ReqGetVehicleExistMsg   = "车载信息已存在"
+	ReqGetVehicleUnExistMsg = "终端信息不存在"
+	ReqGetVehicleExistMsg   = "终端信息已存在"
 
-	ReqDeleVehicleFailMsg    = "车载信息删除失败"
-	ReqDeleVehicleSuccessMsg = "车载信息删除成功"
+	ReqDeleVehicleFailMsg    = "终端信息删除失败"
+	ReqDeleVehicleSuccessMsg = "终端信息删除成功"
 
-	ReqUpdateVehicleFailMsg    = "车载信息更新失败"
-	ReqUpdateVehicleSuccessMsg = "车载信息更新成功"
+	ReqUpdateVehicleFailMsg    = "终端信息更新失败"
+	ReqUpdateVehicleSuccessMsg = "终端信息更新成功"
 
-	ReqAddVehicleFailMsg    = "车载信息添加失败"
-	ReqAddVehicleSuccessMsg = "车载信息添加成功"
+	ReqAddVehicleFailMsg    = "终端信息添加失败"
+	ReqAddVehicleSuccessMsg = "终端信息添加成功"
 
-	ReqGetVehiclesFailMsg    = "车载列表获取失败"
-	ReqGetVehiclesSuccessMsg = "车载列表获取成功"
+	ReqGetVehiclesFailMsg    = "终端列表获取失败"
+	ReqGetVehiclesSuccessMsg = "终端列表获取成功"
 )
 
 //depolyer
 const (
-	ReqGetVehicleBindLeaderUnExistMsg    = "车载没有绑定管理人员信息"
-	ReqGetVehicleBindLeaderFailMsg       = "车载绑定管理人员信息获取失败"
-	ReqUpdateVehicleBindLeaderSuccessMsg = "车载绑定管理人员信息更新成功"
+	ReqGetVehicleBindLeaderUnExistMsg    = "终端没有绑定管理人员信息"
+	ReqGetVehicleBindLeaderFailMsg       = "终端绑定管理人员信息获取失败"
+	ReqUpdateVehicleBindLeaderSuccessMsg = "终端绑定管理人员信息更新成功"
 )
 
 //portMap
@@ -201,15 +201,15 @@ const (
 	ReqUpdateStrategyFailMsg    = "策略信息更新失败"
 	ReqUpdateStrategySuccessMsg = "策略信息更新成功"
 
-	ReqGetStrategyVehicleFailMsg    = "策略-车载信息获取失败"
-	ReqGetStrategyVehicleUnExistMsg = "策略-车载信息不存在"
-	ReqGetStrategyVehicleSuccessMsg = "策略-车载信息获取成功"
+	ReqGetStrategyVehicleFailMsg    = "策略-终端信息获取失败"
+	ReqGetStrategyVehicleUnExistMsg = "策略-终端信息不存在"
+	ReqGetStrategyVehicleSuccessMsg = "策略-终端信息获取成功"
 
-	ReqGetStrategyVehicleListFailMsg    = "策略-车载列表获取失败"
-	ReqGetStrategyVehicleListSuccessMsg = "策略-车载列表获取成功"
+	ReqGetStrategyVehicleListFailMsg    = "策略-终端列表获取失败"
+	ReqGetStrategyVehicleListSuccessMsg = "策略-终端列表获取成功"
 
-	ReqGetStrategyVehicleResultListFailMsg    = "车载-学习结果列表获取失败"
-	ReqGetStrategyVehicleResultListSuccessMsg = "车载-学习结果列表获取成功"
+	ReqGetStrategyVehicleResultListFailMsg    = "终端-学习结果列表获取失败"
+	ReqGetStrategyVehicleResultListSuccessMsg = "终端-学习结果列表获取成功"
 )
 
 //fstrategy
@@ -233,13 +233,13 @@ const (
 	//
 	//
 	//
-	//ReqGetStrategyVehicleFailMsg    		= "策略-车载信息获取失败"
-	//ReqGetStrategyVehicleUnExistMsg    		= "策略-车载信息不存在"
-	//ReqGetStrategyVehicleSuccessMsg		 = "策略-车载信息获取成功"
+	//ReqGetStrategyVehicleFailMsg    		= "策略-终端信息获取失败"
+	//ReqGetStrategyVehicleUnExistMsg    		= "策略-终端信息不存在"
+	//ReqGetStrategyVehicleSuccessMsg		 = "策略-终端信息获取成功"
 	//
-	//ReqGetStrategyVehicleListFailMsg    = "策略-车载列表获取失败"
-	//ReqGetStrategyVehicleListSuccessMsg = "策略-车载列表获取成功"
+	//ReqGetStrategyVehicleListFailMsg    = "策略-终端列表获取失败"
+	//ReqGetStrategyVehicleListSuccessMsg = "策略-终端列表获取成功"
 	//
-	//ReqGetStrategyVehicleResultListFailMsg    = "车载-学习结果列表获取失败"
-	//ReqGetStrategyVehicleResultListSuccessMsg = "车载-学习结果列表获取成功"
+	//ReqGetStrategyVehicleResultListFailMsg    = "终端-学习结果列表获取失败"
+	//ReqGetStrategyVehicleResultListSuccessMsg = "终端-学习结果列表获取成功"
 )

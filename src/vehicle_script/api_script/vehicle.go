@@ -14,7 +14,7 @@ var vehicleUrls = map[string]string{
 
 	"post_vehicles": "http://localhost:7001/api/v1/vehicles",
 
-	"edit_vehicles": "http://192.168.1.198:7001/api/v1/vehicles/754d2728b4e549c5a16c0180fcacb800",
+	"edit_vehicles": "http://localhost:7001/api/v1/vehicles/754d2728b4e549c5a16c0180fcacb800",
 	"dele_vehicles": "http://localhost:7001/api/v1/vehicles/WDHIAeGImCklIqrzQ2fBfojPL0kg4D7d",
 }
 
@@ -32,7 +32,7 @@ func editVehicles() {
 
 	bodyParams := map[string]interface{}{
 		"type":   "1",
-		"switch": "false",
+		"switch": "true",
 	}
 	resp, _ := tool.PutForm(urlReq, bodyParams, "")
 

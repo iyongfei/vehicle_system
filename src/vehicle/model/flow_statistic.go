@@ -1,35 +1,67 @@
 package model
 
-import "github.com/jinzhu/gorm"
+import (
+	"fmt"
+	"github.com/jinzhu/gorm"
+	"vehicle_system/src/vehicle/db/mysql"
+	"vehicle_system/src/vehicle/emq/protobuf"
+	"vehicle_system/src/vehicle/util"
+)
 
 type FlowStatistic struct {
 	gorm.Model
-
-	FlowId       uint32
-	VehicleId    string
-	Hash         uint32
-	SrcIp        string
-	SrcPort      uint32
-	DstIp        string
-	DstPort      uint32
-	Protocol     uint8
-	FlowInfo     string
-	SafeType     uint8
-	SafeInfo     string
-	StartTime    uint32
-	LastSeenTime uint32
-	SrcDstBytes  uint64
-	DstSrcBytes  uint64
-	Stat         uint8
+	VehicleId     string
+	InterfaceName string
+	Receivex      uint64
+	Uploadx       uint64
+	FlowCount     uint32
+	PubFlow       uint32
+	NotlocalFlow  uint32
+	WhiteCount    uint32
 }
 
-//
-////message FlowStatisticParam {
-////string interface_name = 1; //网卡名称
-////uint64 rx = 2; //接收总数据，字节
-////uint64 tx = 3; //上传总数据，字节
-////uint32 flow_count = 4; //探测的flow的总数
-////uint32 pub = 5; //本次发布的flow数量
-////uint32 notlocal = 6; //不是与本地相关的flow数
-////uint32 white =7; //其中属于白名单的数量
-//}
+func (flowStatistic *FlowStatistic) InsertModel() error {
+	return mysql.CreateModel(flowStatistic)
+}
+func (flowStatistic *FlowStatistic) GetModelByCondition(query interface{}, args ...interface{}) (error, bool) {
+	err, recordNotFound := mysql.QueryModelOneRecordIsExistByWhereCondition(flowStatistic, query, args...)
+	if err != nil {
+		return err, true
+	}
+	if recordNotFound {
+		return nil, true
+	}
+	return nil, false
+}
+func (flowStatistic *FlowStatistic) UpdateModelsByCondition(values interface{}, query interface{}, queryArgs ...interface{}) error {
+	err := mysql.UpdateModelByMapModel(flowStatistic, values, query, queryArgs...)
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
+	}
+	return nil
+}
+func (flowStatistic *FlowStatistic) DeleModelsByCondition(query interface{}, args ...interface{}) error {
+	err := mysql.HardDeleteModelB(flowStatistic, query, args...)
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
+	}
+	return nil
+}
+func (flowStatistic *FlowStatistic) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) error {
+	err := mysql.QueryModelRecordsByWhereCondition(model, query, args...)
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
+	}
+	return nil
+}
+
+func (flowStatistic *FlowStatistic) CreateModel(vehicleParam ...interface{}) interface{} {
+	flowStatisticParams := vehicleParam[0].(*protobuf.FlowStatisticParam)
+	flowStatistic.Receivex = flowStatisticParams.GetRx()
+	flowStatistic.Uploadx = flowStatisticParams.GetTx()
+	flowStatistic.FlowCount = flowStatisticParams.GetFlowCount()
+	flowStatistic.PubFlow = flowStatisticParams.GetPub()
+	flowStatistic.NotlocalFlow = flowStatisticParams.GetNotlocal()
+	flowStatistic.WhiteCount = flowStatisticParams.GetWhite()
+	return flowStatistic
+}

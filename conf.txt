@@ -52,3 +52,8 @@ deploy_id=1jllwe
 #monitor
 monitor_id = 754d2728b4e549c5a16c0180fcacb800
 disk_path_count = 5
+
+
+#添加flowstatistic
+
+insert_flowstatistic_vehicle_id = 754d2728b4e549c5a16c0180fcacb800

@@ -282,7 +282,7 @@ func EditFStrategyCsv(c *gin.Context) {
 	}
 	//解析
 	csvReaderModel := csv.CreateCsvReader(tempCsvPathName)
-	parseData, _ := csvReaderModel.ParseCsvFile()
+	parseData, _ := csvReaderModel.ParseCsvFile(1)
 
 	//过滤非合法vehicleId
 	for vehicleIdK, _ := range parseData {

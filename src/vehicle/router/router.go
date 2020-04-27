@@ -15,9 +15,7 @@ import (
 
 func RouterHandler() {
 	router := gin.Default()
-
 	router.StaticFS("fstrategy_csv", http.Dir("fstrategy_csv"))
-
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	router.Use(cors.Default())
@@ -26,6 +24,5 @@ func RouterHandler() {
 	router.POST("/regist", api_server.Regist)
 
 	v1.V1Router(router)
-
 	router.Run(fmt.Sprintf("%s:%d", conf.ServerHost, conf.ServerPort))
 }

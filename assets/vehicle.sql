@@ -507,6 +507,29 @@ CREATE TABLE IF NOT EXISTS `monitors`  (
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 
+
+CREATE TABLE IF NOT EXISTS `flow_statistics`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+
+  `vehicle_id` varchar(255)  NULL DEFAULT NULL,
+  `interface_name` varchar(255)  NULL DEFAULT NULL,
+
+  `receivex`  BIGINT(20) UNSIGNED NULL DEFAULT NULL,
+  `uploadx`  BIGINT(20) UNSIGNED NULL DEFAULT NULL,
+  `flow_count`  int(11) UNSIGNED NULL DEFAULT NULL,
+  `pub_flow`  int(11) UNSIGNED NULL DEFAULT NULL,
+  `notlocal_flow`  int(11) UNSIGNED NULL DEFAULT NULL,
+  `white_count`  int(11) UNSIGNED NULL DEFAULT NULL,
+
+
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_flow_statistics_deleted_at`(`deleted_at`) USING BTREE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+
 CREATE TABLE IF NOT EXISTS `disks`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `created_at` timestamp NULL DEFAULT NULL,
