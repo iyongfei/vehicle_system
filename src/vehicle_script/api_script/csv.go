@@ -24,8 +24,8 @@ var fStrategyCsvUrls = map[string]string{
 func main() {
 	//getFstrategyCsv()
 	//getFstrategyCsvTemp()
-	//uploadFstrategyCsv()
-	editFstrategyCsv()
+	uploadFstrategyCsv()
+	//editFstrategyCsv()
 }
 
 func editFstrategyCsv() {

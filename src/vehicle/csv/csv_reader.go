@@ -17,9 +17,9 @@ const CsvEditColumn = 4
 
 const (
 	CsvColumnZeroIndex = iota
+	CsvColumnOneIndex
 	CsvColumnTwoIndex
 	CsvColumnThreeIndex
-	CsvColumnFourIndex
 )
 
 type CsvReaderModel struct {
@@ -48,8 +48,9 @@ func getCsvFile(csvFilePathName string) *os.File {
 		return nil
 	}
 	return csvFile
-
 }
+
+/////////////////////////////////////////更新上传的CSV/////////////////////////////////////////////////
 
 func (csvReaderModel *CsvReaderModel) ParseEditCsvFile(fstrategyId string, vehicleId string) (map[string]map[string][]uint32, error) {
 	csvReader := csvReaderModel.csvReader
@@ -69,7 +70,7 @@ func (csvReaderModel *CsvReaderModel) ParseEditCsvFile(fstrategyId string, vehic
 	filterRecords := [][]string{}
 	//过滤非本fstrategyId
 	for _, record := range records {
-		csvFstrategyId := record[CsvColumnTwoIndex]
+		csvFstrategyId := record[CsvColumnOneIndex]
 		csvVehicleId := record[CsvColumnZeroIndex]
 
 		if util.RrgsTrim(csvFstrategyId) == util.RrgsTrim(fstrategyId) &&
@@ -89,25 +90,13 @@ func (csvReaderModel *CsvReaderModel) ParseEditCsvFile(fstrategyId string, vehic
 	return filterData, nil
 }
 
-/**
-
-VehicleId,FstrategyId,Ip,Port
-754d2728b4e549c5a16c0180fcacb800,dwUF8MhOcJDDuXWaDYsQXW1aNtzHSMlp,192.167.1.3,123:125:23
-754d2728b4e549c5a16c0180fcacb800,dwUF8MhOcJDDuXWaDYsQXW1aNtzHSMlp,192.168.1.5,123:125:23
-*/
 func filterEditCsvData(records [][]string) (map[string]map[string][]uint32, error) {
 	diportsMap := map[string]map[string][]uint32{}
-	for _, record := range records {
-		if len(record) != CsvEditColumn {
-			return nil, csvFormat
-		}
-	}
 
 	for _, record := range records {
 		vehicleId := record[CsvColumnZeroIndex]
-		//fstrategyId := record[CsvColumnTwoIndex]
-		ip := record[CsvColumnThreeIndex]
-		ports := record[CsvColumnFourIndex]
+		ip := record[CsvColumnTwoIndex]
+		ports := record[CsvColumnThreeIndex]
 
 		if len(diportsMap[vehicleId]) == 0 {
 			diportsMap[vehicleId] = map[string][]uint32{}
@@ -156,7 +145,10 @@ func filterEditCsvData(records [][]string) (map[string]map[string][]uint32, erro
 	}
 	return diportsMap, nil
 }
-func (csvReaderModel *CsvReaderModel) ParseAddCsvFile() (map[string]map[string][]uint32, error) {
+
+/////////////////////////////////////////添加上传的CSV/////////////////////////////////////////////////
+
+func (csvReaderModel *CsvReaderModel) ParseAddCsvFile(vehicleId string) (map[string]map[string][]uint32, error) {
 	csvReader := csvReaderModel.csvReader
 	defer csvReaderModel.csvFile.Close()
 
@@ -165,10 +157,25 @@ func (csvReaderModel *CsvReaderModel) ParseAddCsvFile() (map[string]map[string][
 		return nil, err
 	}
 
+	for _, record := range records {
+		if len(record) != CsvAddColumn {
+			return nil, csvFormat
+		}
+	}
+	filterRecords := [][]string{}
+	//过滤非本fstrategyId
+	for _, record := range records {
+		csvVehicleId := record[CsvColumnZeroIndex]
+
+		if util.RrgsTrim(csvVehicleId) == util.RrgsTrim(vehicleId) {
+			filterRecords = append(filterRecords, record)
+		}
+	}
+
 	var filterData map[string]map[string][]uint32
 	var filterDataErr error
 
-	filterData, filterDataErr = filterAddCsvData(records)
+	filterData, filterDataErr = filterAddCsvData(filterRecords)
 	if filterDataErr != nil {
 		return nil, filterDataErr
 	}
@@ -178,16 +185,11 @@ func (csvReaderModel *CsvReaderModel) ParseAddCsvFile() (map[string]map[string][
 
 func filterAddCsvData(records [][]string) (map[string]map[string][]uint32, error) {
 	diportsMap := map[string]map[string][]uint32{}
-	for _, record := range records {
-		if len(record) != CsvAddColumn {
-			return nil, csvFormat
-		}
-	}
 
 	for _, record := range records {
 		vehicleId := record[CsvColumnZeroIndex]
-		ip := record[CsvColumnTwoIndex]
-		ports := record[CsvColumnThreeIndex]
+		ip := record[CsvColumnOneIndex]
+		ports := record[CsvColumnTwoIndex]
 
 		if len(diportsMap[vehicleId]) == 0 {
 			diportsMap[vehicleId] = map[string][]uint32{}

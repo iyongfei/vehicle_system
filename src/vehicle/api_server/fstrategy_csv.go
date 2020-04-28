@@ -72,7 +72,9 @@ func GetFStrategyCsv(c *gin.Context) {
 */
 func UploadFStrategyCsv(c *gin.Context) {
 	uploadCsv, err := c.FormFile("upload_csv")
+	vehicleId := c.PostForm("vehicle_id")
 
+	//文件获取失败
 	if err != nil {
 		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
 		c.JSON(http.StatusOK, ret)
@@ -80,10 +82,22 @@ func UploadFStrategyCsv(c *gin.Context) {
 		logger.Logger.Print("%s formfile err:%+v", util.RunFuncName(), err)
 		return
 	}
+
+	//终端id为空
+	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId)
+
+	if argsTrimsEmpty {
+		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+		c.JSON(http.StatusOK, ret)
+		logger.Logger.Error("%s vehicleId:%s,argsTrimsEmpty", util.RunFuncName(), vehicleId)
+		logger.Logger.Print("%s vehicleId:%s,argsTrimsEmpty", util.RunFuncName(), vehicleId)
+		return
+	}
+
 	uploadFileName := uploadCsv.Filename
 
-	logger.Logger.Info("%s fileName:%s, vehicleId:%s,err:%+v", util.RunFuncName(), uploadFileName, err)
-	logger.Logger.Print("%s fileName:%s, vehicleId:%s,err:%+v", util.RunFuncName(), uploadFileName, err)
+	logger.Logger.Info("%s fileName:%s, vehicleId:%s,err:%+v", util.RunFuncName(), uploadFileName, vehicleId, err)
+	logger.Logger.Print("%s fileName:%s, vehicleId:%s,err:%+v", util.RunFuncName(), uploadFileName, vehicleId, err)
 
 	//创建文件
 	tempCsvName := util.RandomString(16)
@@ -94,18 +108,17 @@ func UploadFStrategyCsv(c *gin.Context) {
 	}
 	//解析
 	csvReaderModel := csv.CreateCsvReader(tempCsvPathName)
-	parseData, _ := csvReaderModel.ParseAddCsvFile()
+	//map[string]map[string][]uint32
+	parseData, _ := csvReaderModel.ParseAddCsvFile(vehicleId)
 
-	//过滤非合法vehicleId
-	for vehicleIdK, _ := range parseData {
-		vehicleInfo := &model.VehicleInfo{
-			VehicleId: vehicleIdK,
-		}
-		err, recordNotFound := mysql.QueryModelOneRecordIsExistByWhereCondition(vehicleInfo, "vehicle_id = ?", vehicleInfo.VehicleId)
-		if err != nil || recordNotFound {
-			delete(parseData, vehicleIdK)
-		}
+	if len(parseData) == 0 {
+		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+		c.JSON(http.StatusOK, ret)
+		logger.Logger.Error("%s vehicleId:%s,csv format err", util.RunFuncName(), vehicleId)
+		logger.Logger.Print("%s vehicleId:%s,csv format err", util.RunFuncName(), vehicleId)
+		return
 	}
+
 	//fstrategy_items table
 	fstrategyItems := map[string][]string{}
 
@@ -223,6 +236,8 @@ func UploadFStrategyCsv(c *gin.Context) {
 	if err := fstrategyModelBase.UpdateModelsByCondition(attrs, "fstrategy_id = ?", fstrategy.FstrategyId); err != nil {
 		logger.Logger.Print("%s vehicle_id:%s insert fstrategy scv_path err:%+v", util.RunFuncName(), csvModel.CsvFilePath, err)
 		logger.Logger.Info("%s vehicle_id:%s insert fstrategy scv_path err:%+v", util.RunFuncName(), csvModel.CsvFilePath, err)
+	} else {
+		fstrategy.ScvPath = csvModel.CsvFilePath
 	}
 
 	//删除文件
@@ -247,8 +262,18 @@ func UploadFStrategyCsv(c *gin.Context) {
 
 	}
 
+	vehicleSingleFlowStrategyItemsReult := model.VehicleSingleFlowStrategyItemsReult{
+		FstrategyId:              fstrategy.FstrategyId,
+		Type:                     fstrategy.Type,
+		HandleMode:               fstrategy.HandleMode,
+		Enable:                   fstrategy.Enable,
+		VehicleId:                vehicleId,
+		ScvPath:                  fstrategy.ScvPath,
+		VehicleFStrategyItemsMap: parseData[vehicleId],
+	}
+
 	responseData := map[string]interface{}{
-		"fstrategy": fstrategy,
+		"fstrategy": vehicleSingleFlowStrategyItemsReult,
 	}
 
 	retObj := response.StructResponseObj(response.VStatusOK, response.ReqAddFStrategySuccessMsg, responseData)
