@@ -127,10 +127,9 @@ func filterEditCsvData(records [][]string) (map[string]map[string][]uint32, erro
 					}
 					for mapK, _ := range mapFilter {
 						if util.VerifyIpPort(mapK) {
-
+							portInt, _ := strconv.Atoi(mapK)
+							diportsMap[vehicleId][ip] = append(diportsMap[vehicleId][ip], uint32(portInt))
 						}
-						portInt, _ := strconv.Atoi(mapK)
-						diportsMap[vehicleId][ip] = append(diportsMap[vehicleId][ip], uint32(portInt))
 					}
 				} else {
 					portSlice := strings.Split(ports, ":")

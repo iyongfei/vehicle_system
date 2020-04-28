@@ -1,0 +1,3 @@
+VehicleId,Ip,Port
+${vehicle_id},192.168.1.6,123:124
+${vehicle_id},192.168.1.8,123:126

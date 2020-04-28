@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/golang/protobuf/proto"
 	"strconv"
 	"vehicle_system/src/vehicle_script/emq_service"
@@ -39,19 +38,14 @@ func createMonitorProbuf(vId string, defaultDiskPathCount int) []byte {
 	}
 
 	params := &protobuf.MonitorInfoParam{
-		CpuRate:    0.1,
-		MemRate:    0.3,
 		GatherTime: 1231231231,
 	}
 
-	//module begin
 	items := []*protobuf.MonitorInfoParam_DiskOverFlow{}
 
 	for i := 0; i < defaultDiskPathCount; i++ {
-		fmt.Println("lwejl", i)
 		moduleItem := &protobuf.MonitorInfoParam_DiskOverFlow{
-			//Path:tool.RandomString(4),
-			Path:     "x9Es",
+			Path:     tool.RandomString(8),
 			DiskRate: 0.4,
 		}
 		items = append(items, moduleItem)
@@ -59,7 +53,21 @@ func createMonitorProbuf(vId string, defaultDiskPathCount int) []byte {
 
 	params.DiskItem = items
 
-	fmt.Println("jsldfks", params)
+	redisInfo := &protobuf.MonitorInfoParam_RedisInfo{
+		Active:  true,
+		CpuRate: 0.4,
+		MemRate: 0.2,
+		Mem:     23222323232332,
+	}
+
+	vhaloInfo := &protobuf.MonitorInfoParam_VHaloNets{
+		Active:  false,
+		CpuRate: 0.4,
+		MemRate: 0.2,
+		Mem:     2322332,
+	}
+	params.RedisInfo = redisInfo
+	params.VhaloInfo = vhaloInfo
 
 	bys, _ := proto.Marshal(params)
 	///////////////////////////////////

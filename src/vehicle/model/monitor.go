@@ -80,18 +80,21 @@ func (monitor *Monitor) GetModelListByCondition(model interface{}, query interfa
 	return nil
 }
 func (monitor *Monitor) CreateModel(monitorParams ...interface{}) interface{} {
-	monitorParam := monitorParams[0].(*protobuf.MonitorInfoParam)
-	monitor.CpuRate = monitorParam.GetCpuRate()
-	monitor.MemRate = monitorParam.GetMemRate()
-	monitor.GatherTime = monitorParam.GetGatherTime()
+	//monitorParam := monitorParams[0].(*protobuf.MonitorInfoParam)
+	//monitor.CpuRate = monitorParam.GetCpuRate()
+	//monitor.MemRate = monitorParam.GetMemRate()
+	//monitor.GatherTime = monitorParam.GetGatherTime()
 	return monitor
 }
 
+///////////////////////////////////////Disk////////////////////////////////////////////////////
+
 type Disk struct {
 	gorm.Model
-	MonitorId string
-	Path      string
-	DiskRate  float32
+	MonitorId  string
+	Path       string
+	DiskRate   float32
+	GatherTime uint64
 }
 
 func (disk *Disk) InsertModel() error {
@@ -132,4 +135,113 @@ func (disk *Disk) CreateModel(diskParams ...interface{}) interface{} {
 	diskParam := diskParams[0].(*protobuf.MonitorInfoParam_DiskOverFlow)
 	disk.DiskRate = diskParam.GetDiskRate()
 	return disk
+}
+
+///////////////////////////////////////RedisInfo////////////////////////////////////////////////////
+type RedisInfo struct {
+	gorm.Model
+	MonitorId  string
+	Active     bool
+	CpuRate    float32
+	MemRate    float32
+	Mem        uint64
+	GatherTime uint64
+}
+
+func (redisInfo *RedisInfo) InsertModel() error {
+	return mysql.CreateModel(redisInfo)
+}
+func (redisInfo *RedisInfo) GetModelByCondition(query interface{}, args ...interface{}) (error, bool) {
+	err, recordNotFound := mysql.QueryModelOneRecordIsExistByWhereCondition(redisInfo, query, args...)
+	if err != nil {
+		return err, true
+	}
+	if recordNotFound {
+		return nil, true
+	}
+	return nil, false
+}
+func (redisInfo *RedisInfo) UpdateModelsByCondition(values interface{}, query interface{}, queryArgs ...interface{}) error {
+	err := mysql.UpdateModelByMapModel(redisInfo, values, query, queryArgs...)
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
+	}
+	return nil
+}
+func (redisInfo *RedisInfo) DeleModelsByCondition(query interface{}, args ...interface{}) error {
+	err := mysql.HardDeleteModelB(redisInfo, query, args...)
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
+	}
+	return nil
+}
+func (redisInfo *RedisInfo) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) error {
+	err := mysql.QueryModelRecordsByWhereCondition(model, query, args...)
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
+	}
+	return nil
+}
+func (redisInfo *RedisInfo) CreateModel(redisParams ...interface{}) interface{} {
+	redisParam := redisParams[0].(*protobuf.MonitorInfoParam_RedisInfo)
+
+	redisInfo.Active = redisParam.GetActive()
+	redisInfo.CpuRate = redisParam.GetCpuRate()
+	redisInfo.MemRate = redisParam.GetMemRate()
+	redisInfo.Mem = redisParam.GetMem()
+	return redisInfo
+}
+
+///////////////////////////////////////VhaloNets////////////////////////////////////////////////////
+type VhaloNets struct {
+	gorm.Model
+	MonitorId  string
+	Active     bool
+	CpuRate    float32
+	MemRate    float32
+	Mem        uint64
+	GatherTime uint64
+}
+
+func (vhaloNets *VhaloNets) InsertModel() error {
+	return mysql.CreateModel(vhaloNets)
+}
+func (vhaloNets *VhaloNets) GetModelByCondition(query interface{}, args ...interface{}) (error, bool) {
+	err, recordNotFound := mysql.QueryModelOneRecordIsExistByWhereCondition(vhaloNets, query, args...)
+	if err != nil {
+		return err, true
+	}
+	if recordNotFound {
+		return nil, true
+	}
+	return nil, false
+}
+func (vhaloNets *VhaloNets) UpdateModelsByCondition(values interface{}, query interface{}, queryArgs ...interface{}) error {
+	err := mysql.UpdateModelByMapModel(vhaloNets, values, query, queryArgs...)
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
+	}
+	return nil
+}
+func (vhaloNets *VhaloNets) DeleModelsByCondition(query interface{}, args ...interface{}) error {
+	err := mysql.HardDeleteModelB(vhaloNets, query, args...)
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
+	}
+	return nil
+}
+func (vhaloNets *VhaloNets) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) error {
+	err := mysql.QueryModelRecordsByWhereCondition(model, query, args...)
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
+	}
+	return nil
+}
+func (vhaloNets *VhaloNets) CreateModel(vhaloParams ...interface{}) interface{} {
+	vhaloParam := vhaloParams[0].(*protobuf.MonitorInfoParam_VHaloNets)
+	vhaloNets.Active = vhaloParam.GetActive()
+	vhaloNets.CpuRate = vhaloParam.GetCpuRate()
+	vhaloNets.MemRate = vhaloParam.GetMemRate()
+	vhaloNets.Mem = vhaloParam.GetMem()
+	return vhaloNets
 }

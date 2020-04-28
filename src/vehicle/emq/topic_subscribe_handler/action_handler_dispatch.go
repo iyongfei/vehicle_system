@@ -88,7 +88,7 @@ func (t *TopicSubscribeHandler) HanleSubscribeTopicData(topicMsg mqtt.Message) e
 	case protobuf.GWResult_MONITORINFO: //MONITORINFO
 		handGwResultError = HandleMonitorInfo(vehicleResult, vehicleId)
 
-	case protobuf.GWResult_FLOWSTATISTIC: //MONITORINFO
+	case protobuf.GWResult_FLOWSTATISTIC: //FlowStatisticInfo
 		handGwResultError = HandleFlowStatisticInfo(vehicleResult, vehicleId)
 
 	case protobuf.GWResult_DEPLOYER: //DeployerParam
