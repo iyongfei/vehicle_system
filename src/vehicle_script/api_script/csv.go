@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"io"
 	"os"
 	"vehicle_system/src/vehicle_script/tool"
@@ -10,7 +12,7 @@ var fStrategyCsvUrls = map[string]string{
 	"csv_url":           "http://localhost:7001/fstrategy_csv/3832kYyxG3uD9DhF9VDvV5HwLLyhrAkG.csv",
 	"get_fstrategy_csv": "http://localhost:7001/api/v1/fstrategy_csvs/HFiYobVy2dqYiVcGpcsrk6GVRxUdqpuy",
 	"post_strategy_csv": "http://localhost:7001/api/v1/fstrategy_csvs",
-	"edit_strategy_csv": "http://localhost:7001/api/v1/fstrategy_csvs",
+	"edit_strategy_csv": "http://localhost:7001/api/v1/fstrategy_csvs/RaZ8yLTOjDqybBrsQ7Tf5i3ZOJQhKfK9",
 	//////////////////////////////////////////////
 	"get_strategys": "http://localhost:7001/api/v1/strategys",
 
@@ -24,19 +26,26 @@ var fStrategyCsvUrls = map[string]string{
 func main() {
 	//getFstrategyCsv()
 	//getFstrategyCsvTemp()
-	uploadFstrategyCsv()
-	//editFstrategyCsv()
+	//uploadFstrategyCsv()
+	editFstrategyCsv()
 }
 
 func editFstrategyCsv() {
 	url := fStrategyCsvUrls["edit_strategy_csv"]
-	mapArgs := map[string]string{}
 
 	nameField := "upload_csv"
 	fileName := "upload_csver"
+
+	mapArgs := map[string]string{
+		"vehicle_id": "754d2728b4e549c5a16c0180fcacb800",
+	}
+
 	file, _ := os.Open("/Users/mac/go/vehicle_system/safly.csv")
 
-	tool.UploadFile(url, mapArgs, nameField, fileName, file)
+	resp, _ := tool.UploadEditFile(url, mapArgs, nameField, fileName, file)
+
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
 }
 
 func getFstrategyCsvTemp() {
@@ -82,5 +91,8 @@ func uploadFstrategyCsv() {
 	fileName := "upload_csver"
 	file, _ := os.Open("/Users/mac/go/vehicle_system/safly.csv")
 
-	tool.UploadFile(url, mapArgs, nameField, fileName, file)
+	resp, _ := tool.UploadFile(url, mapArgs, nameField, fileName, file)
+
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
 }

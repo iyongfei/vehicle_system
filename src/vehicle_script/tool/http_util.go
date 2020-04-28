@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-func UploadFile(url string, params map[string]string, nameField, fileName string, file io.Reader) ([]byte, error) {
+func UploadFile(url string, params map[string]string, nameField, fileName string, file io.Reader) (map[string]interface{}, error) {
 	body := new(bytes.Buffer)
 
 	writer := multipart.NewWriter(body)
@@ -53,7 +53,62 @@ func UploadFile(url string, params map[string]string, nameField, fileName string
 	if err != nil {
 		return nil, err
 	}
-	return content, nil
+	var p map[string]interface{}
+	err = json.Unmarshal(content, &p)
+	if err != nil {
+		return nil, err
+	}
+	return p, nil
+}
+
+func UploadEditFile(url string, params map[string]string, nameField, fileName string, file io.Reader) (map[string]interface{}, error) {
+	body := new(bytes.Buffer)
+
+	writer := multipart.NewWriter(body)
+
+	formFile, err := writer.CreateFormFile(nameField, fileName)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = io.Copy(formFile, file)
+	if err != nil {
+		return nil, err
+	}
+
+	for key, val := range params {
+		_ = writer.WriteField(key, val)
+	}
+
+	err = writer.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", url, body)
+	if err != nil {
+		return nil, err
+	}
+	//req.Header.Set("Content-Type","multipart/form-data")
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+
+	client := http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	content, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	var p map[string]interface{}
+	err = json.Unmarshal(content, &p)
+	if err != nil {
+		return nil, err
+	}
+	return p, nil
 }
 
 func GetFile(reqUrl string, queryParams map[string]interface{}, token string) (*http.Response, error) {
