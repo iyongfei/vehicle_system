@@ -20,6 +20,9 @@ func HandleVehicleFlow(vehicleResult protobuf.GWResult, vehicleId string) error 
 		logger.Logger.Error("%s unmarshal flowParam err:%s", util.RunFuncName(), err.Error())
 		return fmt.Errorf("%s unmarshal flowParam err:%s", util.RunFuncName(), err.Error())
 	}
+
+	var sendFlows []*model.Flow
+
 	for _, flowItem := range flowParams.FlowItem {
 
 		flowItemId := flowItem.GetHash()
@@ -62,21 +65,23 @@ func HandleVehicleFlow(vehicleResult protobuf.GWResult, vehicleId string) error 
 				"flow_id = ? and vehicle_id = ?", []interface{}{flowInfo.FlowId, flowInfo.VehicleId}...); err != nil {
 				logger.Logger.Print("%s update flowParam err:%s", util.RunFuncName(), err.Error())
 				logger.Logger.Error("%s update flowParam err:%s", util.RunFuncName(), err.Error())
-
-				//return fmt.Errorf("%s update flow err:%s",util.RunFuncName(),err.Error())
 				continue
 			}
 		}
-
-		//会话状态
-		if flowInfo.Stat == uint8(protobuf.FlowStat_FST_FINISH) {
-			logger.Logger.Print("%s flow info %+v", util.RunFuncName(), flowInfo)
-			logger.Logger.Info("%s flow info %+v", util.RunFuncName(), flowInfo)
-			flowMap := map[string]interface{}{}
-			flowMap[flowInfo.VehicleId] = []*model.Flow{flowInfo}
-			flow.GetFlowService().SetFlowData(flowMap).WriteFlow()
-		}
+		sendFlows = append(sendFlows, flowInfo)
 	}
+
+	//会话状态
+	logger.Logger.Print("%s flow info %+v", util.RunFuncName(), sendFlows)
+	logger.Logger.Info("%s flow info %+v", util.RunFuncName(), sendFlows)
+
+	pushActionTypeName := protobuf.GWResult_ActionType_name[int32(vehicleResult.ActionType)]
+	pushVehicleid := vehicleId
+	pushData := sendFlows
+
+	fPushData := flow.CreatePushData(pushActionTypeName, pushVehicleid, pushData)
+
+	flow.GetFlowService().SetFlowData(fPushData).WriteFlow()
 
 	return nil
 }

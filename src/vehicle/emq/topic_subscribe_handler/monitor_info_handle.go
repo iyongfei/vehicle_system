@@ -7,6 +7,7 @@ import (
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
+	"vehicle_system/src/vehicle/service/flow"
 	"vehicle_system/src/vehicle/util"
 )
 
@@ -23,30 +24,7 @@ func HandleMonitorInfo(vehicleResult protobuf.GWResult, vehicleId string) error 
 	logger.Logger.Print("%s unmarshal monitorParam:%+v", util.RunFuncName(), monitorParam)
 	logger.Logger.Info("%s unmarshal monitorParam:%+v", util.RunFuncName(), monitorParam)
 	//create
-	//monitor := &model.Monitor{
-	//	MonitorId: vehicleId,
-	//}
-	//modelBase := model_base.ModelBaseImpl(monitor)
-	//
-	//_, recordNotFound := modelBase.GetModelByCondition("monitor_id = ?", monitor.MonitorId)
-	//
-	//modelBase.CreateModel(monitorParam)
-	//if recordNotFound {
-	//	if err := modelBase.InsertModel(); err != nil {
-	//		return fmt.Errorf("%s insert monitor err:%s", util.RunFuncName(), err.Error())
-	//	}
-	//} else {
-	//	//更新 排除VehicleId,Name,ProtectStatus,LeaderId
-	//	attrs := map[string]interface{}{
-	//		"cpu_rate":    monitor.CpuRate,
-	//		"mem_rate":    monitor.MemRate,
-	//		"gather_time": monitor.GatherTime,
-	//	}
-	//	if err := modelBase.UpdateModelsByCondition(attrs, "monitor_id = ?", monitor.MonitorId); err != nil {
-	//		return fmt.Errorf("%s update monitor err:%s", util.RunFuncName(), err.Error())
-	//	}
-	//}
-
+	var diskList []*model.Disk
 	diskItems := monitorParam.GetDiskItem()
 	for _, diskItem := range diskItems {
 		disk := &model.Disk{
@@ -73,12 +51,14 @@ func HandleMonitorInfo(vehicleResult protobuf.GWResult, vehicleId string) error 
 				return fmt.Errorf("%s update monitor err:%s", util.RunFuncName(), err.Error())
 			}
 		}
+		diskList = append(diskList, disk)
 	}
 
 	//redis
 	redisInfoParam := monitorParam.GetRedisInfo()
+	var redisInfo *model.RedisInfo
 	if redisInfoParam.GetActive() {
-		redisInfo := &model.RedisInfo{
+		redisInfo = &model.RedisInfo{
 			MonitorId:  vehicleId,
 			GatherTime: monitorParam.GatherTime,
 		}
@@ -109,8 +89,9 @@ func HandleMonitorInfo(vehicleResult protobuf.GWResult, vehicleId string) error 
 
 	//vhalonets
 	vhaloNetsParam := monitorParam.GetVhaloInfo()
+	var vhaloInfo *model.VhaloNets
 	if vhaloNetsParam.GetActive() {
-		vhaloInfo := &model.VhaloNets{
+		vhaloInfo = &model.VhaloNets{
 			MonitorId:  vehicleId,
 			GatherTime: monitorParam.GatherTime,
 		}
@@ -138,6 +119,22 @@ func HandleMonitorInfo(vehicleResult protobuf.GWResult, vehicleId string) error 
 			}
 		}
 	}
+
+	//会话状态
+	logger.Logger.Print("%s monitorParam info %+v", util.RunFuncName(), monitorParam)
+	logger.Logger.Info("%s monitorParam info %+v", util.RunFuncName(), monitorParam)
+
+	pushActionTypeName := protobuf.GWResult_ActionType_name[int32(vehicleResult.ActionType)]
+	pushVehicleid := vehicleId
+	pushData := map[string]interface{}{
+		"disks": diskList,
+		"redis": redisInfo,
+		"vhalo": vhaloInfo,
+	}
+
+	fPushData := flow.CreatePushData(pushActionTypeName, pushVehicleid, pushData)
+
+	flow.GetFlowService().SetFlowData(fPushData).WriteFlow()
 
 	return nil
 }

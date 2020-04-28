@@ -61,7 +61,7 @@ func createMonitorProbuf(vId string, defaultDiskPathCount int) []byte {
 	}
 
 	vhaloInfo := &protobuf.MonitorInfoParam_VHaloNets{
-		Active:  false,
+		Active:  true,
 		CpuRate: 0.4,
 		MemRate: 0.2,
 		Mem:     2322332,

@@ -7,6 +7,7 @@ import (
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
+	"vehicle_system/src/vehicle/service/flow"
 	"vehicle_system/src/vehicle/util"
 )
 
@@ -51,6 +52,19 @@ func HandleFlowStatisticInfo(vehicleResult protobuf.GWResult, vehicleId string) 
 			return fmt.Errorf("%s update flowStatisticParam err:%s", util.RunFuncName(), err.Error())
 		}
 	}
+
+	//上报
+	//会话状态
+	logger.Logger.Print("%s flowStatistic info %+v", util.RunFuncName(), flowStatistic)
+	logger.Logger.Info("%s flowStatistic info %+v", util.RunFuncName(), flowStatistic)
+
+	pushActionTypeName := protobuf.GWResult_ActionType_name[int32(vehicleResult.ActionType)]
+	pushVehicleid := vehicleId
+	pushData := flowStatistic
+
+	fPushData := flow.CreatePushData(pushActionTypeName, pushVehicleid, pushData)
+
+	flow.GetFlowService().SetFlowData(fPushData).WriteFlow()
 
 	return nil
 }

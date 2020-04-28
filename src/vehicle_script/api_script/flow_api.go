@@ -18,12 +18,30 @@ var urls = map[string]string{
 func main() {
 	//getFlow()
 	//getFlows()
-	getPaginationFlows()
+	//getPaginationFlows()
 	//addFlows()
 	//editFlows()
 	//deleFlows()
+
+	//pushFlow()
 }
 
+type Requester struct {
+	Name string
+}
+
+func pushFlow() {
+	//token := tool.GetVehicleToken()
+	urlReq := "http://localhost:7001/t_flow"
+
+	req := Requester{
+		Name: "safly",
+	}
+	resp, _ := tool.PostJson(urlReq, req, "")
+
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+}
 func getFlow() {
 	token := tool.GetVehicleToken()
 
