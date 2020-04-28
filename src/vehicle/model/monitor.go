@@ -8,86 +8,88 @@ import (
 	"vehicle_system/src/vehicle/util"
 )
 
-type Monitor struct {
-	gorm.Model
-	MonitorId  string
-	CpuRate    float32
-	MemRate    float32
-	GatherTime uint32
-}
+//type Monitor struct {
+//	gorm.Model
+//	MonitorId  string
+//	CpuRate    float32
+//	MemRate    float32
+//	GatherTime uint32
+//}
 
-type VehicleMonitorJoinItems struct {
-	Monitor
+//type VehicleMonitorJoinItems struct {
+//	Monitor
+//
+//	Path     string
+//	DiskRate float32
+//}
+//
+//func GetVehicleMonitorItems(query string, args ...interface{}) ([]*VehicleMonitorJoinItems, error) {
+//	vgorm, err := mysql.GetMysqlInstance().GetMysqlDB()
+//	if err != nil {
+//		return nil, fmt.Errorf("%s open grom err:%v", util.RunFuncName(), err.Error())
+//	}
+//	vehicleMonitorItems := []*VehicleMonitorJoinItems{}
+//	err = vgorm.Debug().
+//		Table("monitors").
+//		Select("monitors.*,disks.path,disks.disk_rate").
+//		Where(query, args...).
+//		Joins("inner join disks ON monitors.monitor_id = disks.monitor_id").
+//		Scan(&vehicleMonitorItems).
+//		Error
+//	return vehicleMonitorItems, err
+//}
 
-	Path     string
-	DiskRate float32
-}
-
-func GetVehicleMonitorItems(query string, args ...interface{}) ([]*VehicleMonitorJoinItems, error) {
-	vgorm, err := mysql.GetMysqlInstance().GetMysqlDB()
-	if err != nil {
-		return nil, fmt.Errorf("%s open grom err:%v", util.RunFuncName(), err.Error())
-	}
-	vehicleMonitorItems := []*VehicleMonitorJoinItems{}
-	err = vgorm.Debug().
-		Table("monitors").
-		Select("monitors.*,disks.path,disks.disk_rate").
-		Where(query, args...).
-		Joins("inner join disks ON monitors.monitor_id = disks.monitor_id").
-		Scan(&vehicleMonitorItems).
-		Error
-	return vehicleMonitorItems, err
-}
-
-type VehicleMonitorItemsResponse struct {
-	Monitor
-	/////////////////////
-	VehicleMonitorItemList []Disk
-}
-
-func (monitor *Monitor) InsertModel() error {
-	return mysql.CreateModel(monitor)
-}
-func (monitor *Monitor) GetModelByCondition(query interface{}, args ...interface{}) (error, bool) {
-	err, recordNotFound := mysql.QueryModelOneRecordIsExistByWhereCondition(monitor, query, args...)
-	if err != nil {
-		return err, true
-	}
-	if recordNotFound {
-		return nil, true
-	}
-	return nil, false
-}
-func (monitor *Monitor) UpdateModelsByCondition(values interface{}, query interface{}, queryArgs ...interface{}) error {
-	err := mysql.UpdateModelByMapModel(monitor, values, query, queryArgs...)
-	if err != nil {
-		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
-	}
-	return nil
-}
-func (monitor *Monitor) DeleModelsByCondition(query interface{}, args ...interface{}) error {
-	err := mysql.HardDeleteModelB(monitor, query, args...)
-	if err != nil {
-		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
-	}
-	return nil
-}
-func (monitor *Monitor) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) error {
-	err := mysql.QueryModelRecordsByWhereCondition(model, query, args...)
-	if err != nil {
-		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
-	}
-	return nil
-}
-func (monitor *Monitor) CreateModel(monitorParams ...interface{}) interface{} {
-	//monitorParam := monitorParams[0].(*protobuf.MonitorInfoParam)
-	//monitor.CpuRate = monitorParam.GetCpuRate()
-	//monitor.MemRate = monitorParam.GetMemRate()
-	//monitor.GatherTime = monitorParam.GetGatherTime()
-	return monitor
-}
+//
+//func (monitor *Monitor) InsertModel() error {
+//	return mysql.CreateModel(monitor)
+//}
+//func (monitor *Monitor) GetModelByCondition(query interface{}, args ...interface{}) (error, bool) {
+//	err, recordNotFound := mysql.QueryModelOneRecordIsExistByWhereCondition(monitor, query, args...)
+//	if err != nil {
+//		return err, true
+//	}
+//	if recordNotFound {
+//		return nil, true
+//	}
+//	return nil, false
+//}
+//func (monitor *Monitor) UpdateModelsByCondition(values interface{}, query interface{}, queryArgs ...interface{}) error {
+//	err := mysql.UpdateModelByMapModel(monitor, values, query, queryArgs...)
+//	if err != nil {
+//		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
+//	}
+//	return nil
+//}
+//func (monitor *Monitor) DeleModelsByCondition(query interface{}, args ...interface{}) error {
+//	err := mysql.HardDeleteModelB(monitor, query, args...)
+//	if err != nil {
+//		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
+//	}
+//	return nil
+//}
+//func (monitor *Monitor) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) error {
+//	err := mysql.QueryModelRecordsByWhereCondition(model, query, args...)
+//	if err != nil {
+//		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
+//	}
+//	return nil
+//}
+//func (monitor *Monitor) CreateModel(monitorParams ...interface{}) interface{} {
+//	//monitorParam := monitorParams[0].(*protobuf.MonitorInfoParam)
+//	//monitor.CpuRate = monitorParam.GetCpuRate()
+//	//monitor.MemRate = monitorParam.GetMemRate()
+//	//monitor.GatherTime = monitorParam.GetGatherTime()
+//	return monitor
+//}
 
 ///////////////////////////////////////Disk////////////////////////////////////////////////////
+
+type VehicleMonitorItemsResponse struct {
+	/////////////////////
+	Disks     []*Disk
+	RedisInfo RedisInfo
+	VhaloNets VhaloNets
+}
 
 type Disk struct {
 	gorm.Model

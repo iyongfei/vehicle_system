@@ -1,10 +1,12 @@
 package api_server
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
+	"vehicle_system/src/vehicle/model/model_base"
 	"vehicle_system/src/vehicle/response"
 	"vehicle_system/src/vehicle/util"
 )
@@ -20,33 +22,70 @@ func GetMonitor(c *gin.Context) {
 		logger.Logger.Print("%s argsTrimsEmpty vehicleId:%s argsTrimsEmpty", util.RunFuncName(), vehicleId)
 		return
 	}
-	vehicleMonitorJoinItems, err := model.GetVehicleMonitorItems("monitors.monitor_id = ?", []interface{}{vehicleId}...)
+
+	//判断有无vehicle
+	vehicleInfo := &model.VehicleInfo{
+		VehicleId: vehicleId,
+	}
+
+	modelBase := model_base.ModelBaseImpl(vehicleInfo)
+
+	err, recordNotFound := modelBase.GetModelByCondition("vehicle_id = ?", []interface{}{vehicleInfo.VehicleId}...)
 
 	if err != nil {
-		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetMonitorsFailMsg, "")
+		logger.Logger.Error("%s vehicle_id:%s,err:%s", util.RunFuncName(), vehicleId, err)
+		logger.Logger.Print("%s vehicle_id:%s,err:%s", util.RunFuncName(), vehicleId, err)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetVehicleFailMsg, "")
 		c.JSON(http.StatusOK, ret)
 		return
 	}
 
-	var monitorModel model.Monitor
-	if len(vehicleMonitorJoinItems) > 0 {
-		monitor := vehicleMonitorJoinItems[0]
-		monitorModel = monitor.Monitor
+	if recordNotFound {
+		logger.Logger.Error("%s vehicle_id:%s,recordNotFound", util.RunFuncName(), vehicleId)
+		logger.Logger.Print("%s vehicle_id:%s,recordNotFound", util.RunFuncName(), vehicleId)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetVehicleUnExistMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
 	}
 
-	var vehicleMonitorItemList []model.Disk
-	for _, monitorItem := range vehicleMonitorJoinItems {
-		disk := model.Disk{
-			Path:     monitorItem.Path,
-			DiskRate: monitorItem.DiskRate,
-		}
+	//disk
+	diskList := []*model.Disk{}
+	disk := &model.Disk{
+		MonitorId: vehicleId,
+	}
 
-		vehicleMonitorItemList = append(vehicleMonitorItemList, disk)
+	diskModelBase := model_base.ModelBaseImpl(disk)
+
+	diskErr := diskModelBase.GetModelListByCondition(&diskList, "monitor_id = ?", disk.MonitorId)
+	if diskErr != nil {
+
+	}
+
+	//redis
+	redisInfo := &model.RedisInfo{
+		MonitorId: vehicleId,
+	}
+	redisModelBase := model_base.ModelBaseImpl(redisInfo)
+
+	redisErr, redisRecordNotFound := redisModelBase.GetModelByCondition("monitor_id = ?", disk.MonitorId)
+	if diskErr != nil || redisRecordNotFound {
+		fmt.Println(redisErr, redisRecordNotFound)
+	}
+	//vhalonets
+	vhaloInfo := &model.VhaloNets{
+		MonitorId: vehicleId,
+	}
+	vhaloModelBase := model_base.ModelBaseImpl(vhaloInfo)
+
+	vahloErr, vhaloRecordNotFound := vhaloModelBase.GetModelByCondition("monitor_id = ?", disk.MonitorId)
+	if vahloErr != nil || vhaloRecordNotFound {
+		fmt.Println(redisErr, recordNotFound)
 	}
 
 	vehicleMonitorItemsResponse := model.VehicleMonitorItemsResponse{
-		Monitor:                monitorModel,
-		VehicleMonitorItemList: vehicleMonitorItemList,
+		Disks:     diskList,
+		RedisInfo: *redisInfo,
+		VhaloNets: *vhaloInfo,
 	}
 
 	responseData := map[string]interface{}{
