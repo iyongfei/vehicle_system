@@ -17,6 +17,10 @@ func RrgsTrimEmpty(arg string) bool {
 	return strings.Trim(arg, " ") == ""
 }
 
+func RrgsTrim(arg string) string {
+	return strings.Trim(arg, " ")
+}
+
 func RrgsTrimsEmpty(args ...string) bool {
 	var flag = false
 	for _, arg := range args {

@@ -1,7 +1,6 @@
 package api_server
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -268,8 +267,6 @@ func EditFlow(c *gin.Context) {
 func DeleFlow(c *gin.Context) {
 	hashP := c.Param("flow_id")
 	vehicleId := c.Query("vehicle_id")
-
-	fmt.Println(hashP, vehicleId, "param::::::::::")
 
 	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId, hashP)
 	if argsTrimsEmpty {

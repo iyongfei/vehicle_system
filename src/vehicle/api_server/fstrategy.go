@@ -2,7 +2,6 @@ package api_server
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"os"
@@ -468,15 +467,12 @@ func DeleFStrategy(c *gin.Context) {
 	var fstrategyItemIdMapSlice []string
 
 	for k := range fVehicleIdMap {
-		fmt.Println("fVehicleIdMap::", k)
 		fVehicleIdMapSlice = append(fVehicleIdMapSlice, k)
 	}
 	for k := range fstrategyVehicleIdMap {
-		fmt.Println("fstrategyVehicleIdMap::", k)
 		fstrategyVehicleIdMapSlice = append(fstrategyVehicleIdMapSlice, k)
 	}
 	for k := range fstrategyItemIdMap {
-		fmt.Println("fstrategyItemIdMap::", k)
 		fstrategyItemIdMapSlice = append(fstrategyItemIdMapSlice, k)
 	}
 

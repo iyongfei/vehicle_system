@@ -20,8 +20,8 @@ func RouterHandler() {
 
 	router.Use(cors.Default())
 	router.POST("/t_flow", api_server.TFlow)
-	router.POST("/auth", api_server.Auth)
-	router.POST("/regist", api_server.Regist)
+	router.POST("/auth", api_server.Auth)     //todo
+	router.POST("/regist", api_server.Regist) //todo
 
 	v1.V1Router(router)
 	router.Run(fmt.Sprintf("%s:%d", conf.ServerHost, conf.ServerPort))

@@ -7,10 +7,10 @@ import (
 )
 
 var fStrategyCsvUrls = map[string]string{
-	"csv_url":           "http://localhost:7001/fstrategy_csv/dwUF8MhOcJDDuXWaDYsQXW1aNtzHSMlp.csv",
-	"get_fstrategy_csv": "http://localhost:7001/api/v1/fstrategy_csvs/SeAqt4B8RiLy0TidFKXByPSPqblT0D7H",
+	"csv_url":           "http://localhost:7001/fstrategy_csv/3832kYyxG3uD9DhF9VDvV5HwLLyhrAkG.csv",
+	"get_fstrategy_csv": "http://localhost:7001/api/v1/fstrategy_csvs/HFiYobVy2dqYiVcGpcsrk6GVRxUdqpuy",
 	"post_strategy_csv": "http://localhost:7001/api/v1/fstrategy_csvs",
-	"edit_strategy_csv": "http://localhost:7001/api/v1/fstrategy_csvs/BowUgPuVNnsrqOvRLfY8LPBNVJDwvIA5",
+	"edit_strategy_csv": "http://localhost:7001/api/v1/fstrategy_csvs",
 	//////////////////////////////////////////////
 	"get_strategys": "http://localhost:7001/api/v1/strategys",
 
@@ -39,18 +39,23 @@ func editFstrategyCsv() {
 	tool.UploadFile(url, mapArgs, nameField, fileName, file)
 }
 
-func uploadFstrategyCsv() {
-	url := fStrategyCsvUrls["post_strategy_csv"]
-	mapArgs := map[string]string{
-		"vehicle_id": "754d2728b4e549c5a16c0180fcacb800",
+func getFstrategyCsvTemp() {
+	token := tool.GetVehicleToken()
+
+	queryParams := map[string]interface{}{}
+
+	reqUrl := fStrategyCsvUrls["get_fstrategy_csv"]
+	res, err := tool.GetFile(reqUrl, queryParams, token)
+	if err != nil {
 	}
+	defer res.Body.Close()
 
-	nameField := "upload_csv"
-	fileName := "upload_csver"
-	file, _ := os.Open("/Users/mac/go/vehicle_system/safly.csv")
+	f, _ := os.Create("safly.csv")
 
-	tool.UploadFile(url, mapArgs, nameField, fileName, file)
+	io.Copy(f, res.Body)
+
 }
+
 func getFstrategyCsv() {
 	token := tool.GetVehicleToken()
 
@@ -67,19 +72,15 @@ func getFstrategyCsv() {
 	io.Copy(f, resp.Body)
 }
 
-func getFstrategyCsvTemp() {
-	token := tool.GetVehicleToken()
-
-	queryParams := map[string]interface{}{}
-
-	reqUrl := fStrategyCsvUrls["get_fstrategy_csv"]
-	res, err := tool.GetFile(reqUrl, queryParams, token)
-	if err != nil {
+func uploadFstrategyCsv() {
+	url := fStrategyCsvUrls["post_strategy_csv"]
+	mapArgs := map[string]string{
+		"vehicle_id": "754d2728b4e549c5a16c0180fcacb800",
 	}
-	defer res.Body.Close()
 
-	f, _ := os.Create("safly.csv")
+	nameField := "upload_csv"
+	fileName := "upload_csver"
+	file, _ := os.Open("/Users/mac/go/vehicle_system/safly.csv")
 
-	io.Copy(f, res.Body)
-
+	tool.UploadFile(url, mapArgs, nameField, fileName, file)
 }

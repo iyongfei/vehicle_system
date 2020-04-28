@@ -19,11 +19,11 @@ func V1Router(r *gin.Engine) {
 		apiV1.POST("/fstrategys", api_server.AddFStrategy)                  //todo
 		apiV1.DELETE("/fstrategys/:fstrategy_id", api_server.DeleFStrategy) //todo
 		apiV1.PUT("/fstrategys/:fstrategy_id", api_server.EditFStrategy)    //todo
-		apiV1.GET("/fstrategys/:fstrategy_id", api_server.GetFStrategy)
+		apiV1.GET("/fstrategys/:fstrategy_id", api_server.GetFStrategy)     //todo
 		//////////////////////////////////////////////会话策略下载上传//////////////////////////////////////////////
-		apiV1.GET("/fstrategy_csvs/:fstrategy_id", api_server.GetFStrategyCsv)
-		apiV1.POST("/fstrategy_csvs/", api_server.UploadFStrategyCsv)
-		apiV1.PUT("/fstrategy_csvs/:fstrategy_id", api_server.EditFStrategyCsv)
+		apiV1.GET("/fstrategy_csvs/:fstrategy_id", api_server.GetFStrategyCsv) //todo
+		apiV1.POST("/fstrategy_csvs", api_server.UploadFStrategyCsv)           //todo
+		apiV1.PUT("/fstrategy_csvs:fstrategy_id", api_server.EditFStrategyCsv) //todo
 		//////////////////////////////////////////////会话接口//////////////////////////////////////////////
 		apiV1.GET("/flows/:flow_id", api_server.GetFlow)              //todo
 		apiV1.GET("/pagination/flows", api_server.GetPaginationFlows) //todo

@@ -60,11 +60,9 @@ const (
 
 func main() {
 
-	currentTime := time.Now()
-	oldTime := currentTime.AddDate(0, 0, -2)
-	fmt.Println(currentTime, oldTime)
+	r := strings.Trim("   ew  ", " ")
+	fmt.Println(r)
 
-	fmt.Println(time.Now().Unix())
 	//filename := "test.csv"
 	//columns := [][]string{{"姓名", "电话", "公司", "职位", "加入时间"}, {"1", "2", "刘犇,刘犇,刘犇", "4", "5"}}
 	//ExportCsv(filename, columns)
