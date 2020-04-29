@@ -84,6 +84,7 @@ func (t *TopicSubscribeHandler) HanleSubscribeTopicData(topicMsg mqtt.Message) e
 		vehicleCache.Update(vehicleId, true)
 	} else {
 		if flag {
+			vehicleCache.Update(vehicleId, true)
 			err = HandleVehicleOfflineStatus(vehicleId, true)
 		}
 	}

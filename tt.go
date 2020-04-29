@@ -10,7 +10,10 @@ func main() {
 	maper := map[string]string{
 		"a": "b",
 	}
-	delete(maper, "b")
+	for k, _ := range maper {
+		delete(maper, k)
+	}
+
 	fmt.Println(maper)
 }
 

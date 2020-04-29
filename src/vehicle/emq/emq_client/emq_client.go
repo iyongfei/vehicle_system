@@ -89,11 +89,6 @@ func (m *EmqInstance) NewClientOptions() *mqtt.ClientOptions {
 
 func EmqReConnectTokenError() {
 
-	//var err error
-	//if util.RrgsTrimEmpty(vehicleId) {
-	//	err = HandleVehicleOfflineStatus(vehicleId, false)
-	//}
-
 	err := tdata.VehicleAssetCheck("", false)
 	if err != nil {
 		logger.Logger.Print("%s,emqReConnectTokenError update vehicle online status err:%+v", util.RunFuncName(), err)
