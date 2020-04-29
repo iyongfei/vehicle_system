@@ -6,6 +6,8 @@ import (
 	"github.com/eclipse/paho.mqtt.golang"
 	"github.com/golang/protobuf/proto"
 	"strings"
+	"vehicle_system/src/vehicle/db/tdata"
+	"vehicle_system/src/vehicle/emq/emq_cacha"
 	"vehicle_system/src/vehicle/emq/protobuf"
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/util"
@@ -56,7 +58,6 @@ func (t *TopicSubscribeHandler) HanleSubscribeTopicData(topicMsg mqtt.Message) e
 	logger.Logger.Print("hanleSubscribeTopicData vehicleIdTrim_length:%d,vehicleId_length:%d", len(vehicleIdTrim), len(vehicleId))
 	logger.Logger.Info("hanleSubscribeTopicData vehicleIdTrim_length:%d,vehicleId_length:%d", len(vehicleIdTrim), len(vehicleId))
 
-	fmt.Printf("vehicleResult vehicleId:%s", vehicleId)
 	if util.RrgsTrimEmpty(vehicleId) {
 		return fmt.Errorf("vehicleResult vehicle id null")
 	}
@@ -70,9 +71,22 @@ func (t *TopicSubscribeHandler) HanleSubscribeTopicData(topicMsg mqtt.Message) e
 
 	////////////////////////////////////////////////////////////////////////////////////////
 	//更新为在线
-	//gwOnlineAttrs:=[]interface{}{"online_status",true}
-	//_=mysql_util.UpdateModelOneColumn(&gw.GwInfo{},gwOnlineAttrs,"gw_id = ?",[]interface{}{gwId}...)
-	//_=mysql_util.UpdateModelOneColumn(&gw.GwInfoUncerted{},gwOnlineAttrs,"gw_id = ?",[]interface{}{gwId}...)
+	err = tdata.VehicleAssetCheck(vehicleId, true)
+	if err != nil {
+		logger.Logger.Print("%s,hanleSubscribeTopicData update vehicle online status err:%+v", util.RunFuncName(), err)
+		logger.Logger.Info("%s,hanleSubscribeTopicData update vehicle online status err:%+v", util.RunFuncName(), err)
+	}
+
+	//发送
+	vehicleCache := emq_cacha.GetVehicleCache()
+	exist, flag := vehicleCache.JudgeKeyExpire(vehicleId)
+	if !exist {
+		vehicleCache.Update(vehicleId, true)
+	} else {
+		if flag {
+			err = HandleVehicleOfflineStatus(vehicleId, true)
+		}
+	}
 
 	actionTypeName := protobuf.GWResult_ActionType_name[int32(vehicleResult.ActionType)]
 

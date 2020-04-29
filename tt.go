@@ -2,16 +2,22 @@ package main
 
 import (
 	"fmt"
-	"strings"
+	"time"
 )
 
 func main() {
-	//s := "tianqi-R201b-967E6D9A3001/disconnected"
-	//patter := ".*/disconnecte"
-	//r, err := regexp.MatchString(patter, s)
-	//fmt.Println(r, err)
 
-	r := strings.HasSuffix("ssswe", "we")
-	fmt.Println(r)
+	maper := map[string]string{
+		"a": "b",
+	}
+	delete(maper, "b")
+	fmt.Println(maper)
+}
 
+func SubTime(t time.Time) float64 {
+	now := time.Now()
+
+	subM := now.Sub(t)
+
+	return subM.Seconds()
 }

@@ -63,16 +63,19 @@ enum FlowProtos {
 	FP_UNKNOWN = 0; // 默认值
 }
 
+// FS_VERY_DANGER = 2 是黑名单, 只要有该类威胁, 无论是否在策略内, 均上报
+// 3,4,5 白名单模式, 只上报策略里没有的.
 enum FlowSafetype {
 	FS_UNSET = 0; // 默认值
 	FS_SAFE = 1; // 会话安全
-	FS_WARNING = 2; // 异常网络行为 
-	FS_LEAKAGE = 3; // 用户信息泄露威胁
-	FS_INVADE = 4; // 病毒/木马 TELNET SSH 远程控制等代码类入侵(包括文件还原结果)
+	FS_VERY_DANGER = 2; // 病毒/木马 TELNET SSH 远程控制等代码类入侵 
+	FS_EMAL_LEAKAGE = 3; // 邮件类高危信息泄露威胁
+	FS_LEAKAGE = 4; // web类信息信息泄露威胁  
+	FS_WARNING = 5; // 异常网络行为
 }
 
 enum FlowStat {
-	FST_UNSET = 0; //默认值
+	FST_UNSET = 0; // 默认值
 	FST_ACTIVE = 1; // 会话进行中
 	FST_FINISH = 2; // 会话完成(收到TCP完成标志)
 	FST_IDLE = 3; // 会话空闲(超时)
