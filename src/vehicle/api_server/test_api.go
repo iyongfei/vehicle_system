@@ -72,3 +72,16 @@ func TProtects(c *gin.Context) {
 
 	c.JSON(http.StatusOK, tempMap)
 }
+
+func TOnlineStatus(c *gin.Context) {
+
+	body, _ := ioutil.ReadAll(c.Request.Body)
+	bodyJsonStr := string(body)
+	fmt.Println("TOnlineStatus", bodyJsonStr)
+
+	var tempMap map[string]interface{}
+
+	_ = json.Unmarshal([]byte(bodyJsonStr), &tempMap)
+
+	c.JSON(http.StatusOK, tempMap)
+}

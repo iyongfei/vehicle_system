@@ -45,10 +45,12 @@ func HandleVehicleProtect(vehicleResult protobuf.GWResult, vehicleId string) err
 
 	pushActionTypeName := protobuf.GWResult_ActionType_name[int32(vehicleResult.ActionType)]
 	pushVehicleid := vehicleId
-	pushData := vehicleProtectParam.GetProtectStatus()
-
+	pushData := map[string]interface{}{
+		"protect_status": vehicleProtectParam.GetProtectStatus(),
+	}
 	fPushData := flow.CreatePushData(pushActionTypeName, pushVehicleid, pushData)
 
 	flow.GetFlowService().SetFlowData(fPushData).WriteFlow()
+
 	return nil
 }

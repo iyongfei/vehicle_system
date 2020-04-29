@@ -24,6 +24,7 @@ func RouterHandler() {
 	router.POST("/monitor_infos", api_server.TMonitorInfos)
 	router.POST("/gw_infos", api_server.TVehicleInfos)
 	router.POST("/protects", api_server.TProtects)
+	router.POST("/online_status", api_server.TOnlineStatus)
 
 	router.POST("/auth", api_server.Auth)     //todo
 	router.POST("/regist", api_server.Regist) //todo

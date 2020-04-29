@@ -5,6 +5,8 @@ import (
 	"vehicle_system/src/vehicle/emq/protobuf"
 )
 
+const ONLINE_STATUS = "ONLINE_STATUS"
+
 var GWResult_ActionType_name = map[string]string{
 	protobuf.GWResult_ActionType_name[0]:  "defaults",
 	protobuf.GWResult_ActionType_name[1]:  "devices",
@@ -20,6 +22,7 @@ var GWResult_ActionType_name = map[string]string{
 	protobuf.GWResult_ActionType_name[11]: "flow_strategystats",
 	protobuf.GWResult_ActionType_name[12]: "monitor_infos",
 	protobuf.GWResult_ActionType_name[13]: "flow_statistics",
+	ONLINE_STATUS:                         "online_status",
 }
 
 func getFlowReqUrl(interfaceName string) (url string) {

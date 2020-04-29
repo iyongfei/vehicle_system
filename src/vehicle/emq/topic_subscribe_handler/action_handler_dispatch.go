@@ -33,6 +33,7 @@ Payload:{"clean_start":true,"clientid":"tianqi-R201b-967E6D9A3001","connack":0,"
 $SYS/brokers/emqx@127.0.0.1/clients/vehicle_test/connected
 */
 func (t *TopicSubscribeHandler) HanleSubscribeTopicData(topicMsg mqtt.Message) error {
+	HandleVehicleOfflineStatus("754d2728b4e549c5a16c0180fcacb800", false)
 	disconnected := strings.HasSuffix(topicMsg.Topic(), "disconnected")
 	//_=strings.HasSuffix(topicMsg.Topic(),"connected")
 
@@ -149,7 +150,7 @@ func HanleSubscribeTopicLineData(topicMsg mqtt.Message) error {
 
 	var err error
 	if util.RrgsTrimEmpty(vehicleId) {
-		err = HandleVehicleOnline(vehicleId, false)
+		err = HandleVehicleOfflineStatus(vehicleId, false)
 	}
 
 	return err
