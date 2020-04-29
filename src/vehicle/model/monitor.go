@@ -3,6 +3,7 @@ package model
 import (
 	"fmt"
 	"github.com/jinzhu/gorm"
+	"strconv"
 	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/emq/protobuf"
 	"vehicle_system/src/vehicle/util"
@@ -133,9 +134,13 @@ func (disk *Disk) GetModelListByCondition(model interface{}, query interface{}, 
 	}
 	return nil
 }
+
 func (disk *Disk) CreateModel(diskParams ...interface{}) interface{} {
 	diskParam := diskParams[0].(*protobuf.MonitorInfoParam_DiskOverFlow)
-	disk.DiskRate = diskParam.GetDiskRate()
+
+	parseDiskRate, _ := strconv.ParseFloat(fmt.Sprintf("%.2f", diskParam.GetDiskRate()), 64)
+
+	disk.DiskRate = float32(parseDiskRate)
 	return disk
 }
 
@@ -188,8 +193,12 @@ func (redisInfo *RedisInfo) CreateModel(redisParams ...interface{}) interface{} 
 	redisParam := redisParams[0].(*protobuf.MonitorInfoParam_RedisInfo)
 
 	redisInfo.Active = redisParam.GetActive()
-	redisInfo.CpuRate = redisParam.GetCpuRate()
-	redisInfo.MemRate = redisParam.GetMemRate()
+
+	parseCpuRate, _ := strconv.ParseFloat(fmt.Sprintf("%.2f", redisParam.GetCpuRate()), 64)
+	parseMemRate, _ := strconv.ParseFloat(fmt.Sprintf("%.2f", redisParam.GetMemRate()), 64)
+
+	redisInfo.CpuRate = float32(parseCpuRate)
+	redisInfo.MemRate = float32(parseMemRate)
 	redisInfo.Mem = redisParam.GetMem()
 	return redisInfo
 }
@@ -242,8 +251,11 @@ func (vhaloNets *VhaloNets) GetModelListByCondition(model interface{}, query int
 func (vhaloNets *VhaloNets) CreateModel(vhaloParams ...interface{}) interface{} {
 	vhaloParam := vhaloParams[0].(*protobuf.MonitorInfoParam_VHaloNets)
 	vhaloNets.Active = vhaloParam.GetActive()
-	vhaloNets.CpuRate = vhaloParam.GetCpuRate()
-	vhaloNets.MemRate = vhaloParam.GetMemRate()
+
+	parseCpuRate, _ := strconv.ParseFloat(fmt.Sprintf("%.2f", vhaloParam.GetCpuRate()), 64)
+	parseMemRate, _ := strconv.ParseFloat(fmt.Sprintf("%.2f", vhaloParam.GetMemRate()), 64)
+	vhaloNets.CpuRate = float32(parseCpuRate)
+	vhaloNets.MemRate = float32(parseMemRate)
 	vhaloNets.Mem = vhaloParam.GetMem()
 	return vhaloNets
 }

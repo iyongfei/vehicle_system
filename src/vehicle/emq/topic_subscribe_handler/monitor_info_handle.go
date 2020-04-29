@@ -68,6 +68,7 @@ func HandleMonitorInfo(vehicleResult protobuf.GWResult, vehicleId string) error 
 			"monitor_id = ?", []interface{}{redisInfo.MonitorId}...)
 
 		redisInfoModelBase.CreateModel(redisInfoParam)
+
 		if redisRecordNotFound {
 			if err := redisInfoModelBase.InsertModel(); err != nil {
 				return fmt.Errorf("%s insert redis_info err:%s", util.RunFuncName(), err.Error())

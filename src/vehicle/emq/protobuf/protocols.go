@@ -1,7 +1,6 @@
 package protobuf
 
 func GetFlowProtocols(typeInt int) string {
-
 	p := map[int]string{
 		0:   "UNKNOWN",
 		1:   "FTP_CONTROL",

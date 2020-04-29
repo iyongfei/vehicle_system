@@ -7,14 +7,9 @@ import (
 
 func main() {
 
-	maper := map[string]string{
-		"a": "b",
-	}
-	for k, _ := range maper {
-		delete(maper, k)
-	}
+	s := 0.000000000000000001
 
-	fmt.Println(maper)
+	fmt.Println(s)
 }
 
 func SubTime(t time.Time) float64 {
