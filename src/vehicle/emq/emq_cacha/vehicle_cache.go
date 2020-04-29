@@ -1,7 +1,6 @@
 package emq_cacha
 
 import (
-	"fmt"
 	"sync"
 	"time"
 )
@@ -9,7 +8,7 @@ import (
 const (
 	OnLine       = "online"
 	UpdateTime   = "update_time"
-	DistanceTime = 60
+	DistanceTime = 120
 )
 
 var vehicleCache *VehicleCache
@@ -58,7 +57,7 @@ func (vehicleCache *VehicleCache) CleanAllKey(vkey string) {
 func (vehicleCache *VehicleCache) JudgeKeyExpire(vkey string) (bool, bool) {
 
 	var exist bool
-	var flag bool
+	var pushFlag bool
 
 	if keyValue, ok := vehicleCache.CacheMap[vkey]; ok {
 		exist = true
@@ -68,20 +67,19 @@ func (vehicleCache *VehicleCache) JudgeKeyExpire(vkey string) (bool, bool) {
 			subTime := SubTime(updateTimer)
 
 			if subTime > DistanceTime {
-				fmt.Println("update:::", updateTimer.Unix(), "now:::", time.Now().Unix(), "subTime:::", subTime)
-				flag = true
-				return exist, flag
+				//fmt.Println("存在，发送:::", updateTimer.Unix(), "now:::", time.Now().Unix(), "subTime:::", subTime, "vkey::", vkey)
+				pushFlag = true
+				return exist, pushFlag
 			} else {
-				flag = false
-				return exist, flag
+				pushFlag = false
+				return exist, pushFlag
 			}
-
 		}
 	} else {
 		exist = false
-		flag = false
+		pushFlag = false
 	}
-	return exist, flag
+	return exist, pushFlag
 }
 
 func SubTime(t time.Time) float64 {

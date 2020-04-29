@@ -79,15 +79,43 @@ func (t *TopicSubscribeHandler) HanleSubscribeTopicData(topicMsg mqtt.Message) e
 
 	//发送
 	vehicleCache := emq_cacha.GetVehicleCache()
-	exist, flag := vehicleCache.JudgeKeyExpire(vehicleId)
+	exist, pushFlag := vehicleCache.JudgeKeyExpire(vehicleId)
 	if !exist {
 		vehicleCache.Update(vehicleId, true)
+		err = HandleVehicleOfflineStatus(vehicleId, true)
+		//fmt.Println("不存在", exist, vehicleId)
 	} else {
-		if flag {
+		if pushFlag {
+			//fmt.Println("存在，发送", exist, vehicleId)
 			vehicleCache.Update(vehicleId, true)
 			err = HandleVehicleOfflineStatus(vehicleId, true)
+		} else {
+			//fmt.Println("存在，不发送", exist, vehicleId)
 		}
 	}
+	//不存在 false b020eccdf33d48b4aa246a89a6f04609
+	//不存在 false 754d2728b4e549c5a16c0180fcacb800
+	//存在，不发送 true b020eccdf33d48b4aa246a89a6f04609
+	//存在，不发送 true 754d2728b4e549c5a16c0180fcacb800
+	//存在，不发送 true b020eccdf33d48b4aa246a89a6f04609
+	//存在，不发送 true 754d2728b4e549c5a16c0180fcacb800
+
+	//存在，发送::: 1588162577 now::: 1588162637 subTime::: 60.071704553000004 vkey:: 754d2728b4e549c5a16c0180fcacb800
+	//存在，发送 true 754d2728b4e549c5a16c0180fcacb800
+	//
+	//存在，发送::: 1588162590 now::: 1588162650 subTime::: 60.003120247 vkey:: b020eccdf33d48b4aa246a89a6f04609
+	//存在，发送 true b020eccdf33d48b4aa246a89a6f04609
+	//
+	//存在，不发送 true 754d2728b4e549c5a16c0180fcacb800
+	//存在，不发送 true b020eccdf33d48b4aa246a89a6f04609
+	//存在，不发送 true 754d2728b4e549c5a16c0180fcacb800
+	//存在，不发送 true b020eccdf33d48b4aa246a89a6f04609
+	//
+	//存在，发送::: 1588162637 now::: 1588162697 subTime::: 60.107586153 vkey:: 754d2728b4e549c5a16c0180fcacb800
+	//存在，发送 true 754d2728b4e549c5a16c0180fcacb800
+	//
+	//存在，发送::: 1588162650 now::: 1588162710 subTime::: 60.107377575 vkey:: b020eccdf33d48b4aa246a89a6f04609
+	//存在，发送 true b020eccdf33d48b4aa246a89a6f04609
 
 	actionTypeName := protobuf.GWResult_ActionType_name[int32(vehicleResult.ActionType)]
 
@@ -164,6 +192,8 @@ func HanleSubscribeTopicLineData(topicMsg mqtt.Message) error {
 
 	var err error
 	if util.RrgsTrimEmpty(vehicleId) {
+		vehicleCache := emq_cacha.GetVehicleCache()
+		vehicleCache.Clean(vehicleId)
 		err = HandleVehicleOfflineStatus(vehicleId, false)
 	}
 
