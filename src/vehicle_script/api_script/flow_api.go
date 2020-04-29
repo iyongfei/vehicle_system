@@ -16,7 +16,7 @@ var urls = map[string]string{
 }
 
 func main() {
-	//getFlow()
+	getFlow()
 	//getFlows()
 	//getPaginationFlows()
 	//addFlows()

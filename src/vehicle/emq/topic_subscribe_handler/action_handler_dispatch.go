@@ -131,12 +131,26 @@ func (t *TopicSubscribeHandler) HanleSubscribeTopicData(topicMsg mqtt.Message) e
 	return handGwResultError
 }
 
+//$SYS/brokers/emqx@127.0.0.1/clients/+/+
 func HanleSubscribeTopicLineData(topicMsg mqtt.Message) error {
-	//topicSlice:=strings.Split(topicMsg.Topic(),"$SYS/brokers/emqx@127.0.0.1/clients/")
+	//$SYS/brokers/emqx@127.0.0.1/clients/tianqi-R201b-967E6D9A3001/disconnected
+
 	subscribeLineTopic := "$SYS/brokers/emqx@127.0.0.1/clients/"
-	topicSlice := strings.Split(topicMsg.Topic(), subscribeLineTopic)
-	topicSlice_1 := topicSlice[1]
-	vehicleId := strings.Split(topicSlice_1, "/")[0]
-	err := HandleVehicleOnline(vehicleId, false)
+
+	var vehicleId string
+	if strings.Contains(topicMsg.Topic(), subscribeLineTopic) {
+		topicSlice := strings.Split(topicMsg.Topic(), subscribeLineTopic)
+		topicSliceSuffix := topicSlice[1]
+
+		if strings.HasSuffix(topicSliceSuffix, "disconnected") {
+			vehicleId = strings.Split(topicSliceSuffix, "/")[0]
+		}
+	}
+
+	var err error
+	if util.RrgsTrimEmpty(vehicleId) {
+		err = HandleVehicleOnline(vehicleId, false)
+	}
+
 	return err
 }

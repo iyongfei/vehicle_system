@@ -35,8 +35,8 @@ sample_item_count = 5
 
 
 #状态保护
-insert_protect_vehicle_id = ff
-protect_status = 1
+insert_protect_vehicle_id = 754d2728b4e549c5a16c0180fcacb800
+protect_status = 2
 
 
 #负责人信息

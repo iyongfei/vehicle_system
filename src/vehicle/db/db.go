@@ -29,7 +29,7 @@ func Setup() {
 	}
 
 	//检测设备
-	err = tdata.VehicleAssetCheck()
+	err = tdata.VehicleAssetCheck("", false)
 	if err != nil {
 		logger.Logger.Error("tdata vehicle_asset check err:%v", err.Error())
 		logger.Logger.Print("tdata vehicle_asset check err:%v", err.Error())

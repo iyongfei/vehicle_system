@@ -9,27 +9,26 @@ import (
 
 /**
 失去连接
- */
+*/
 var connLostFlag = false
 var ConconnlostReconnectTime time.Duration = 30
 
-func Conconnlost(client mqtt.Client, err error)  {
-	if connLostFlag == true{
+func Conconnlost(client mqtt.Client, err error) {
+	if connLostFlag == true {
 		return
 	}
 
 	connLostFlag = true
-	timer :=time.NewTimer(ConconnlostReconnectTime * time.Second)
+	timer := time.NewTimer(ConconnlostReconnectTime * time.Second)
 
 	defer timer.Stop()
 	select {
-	case <- timer.C:
-		logger.Logger.Print("%s",util.RunFuncName())
-		logger.Logger.Info("%s",util.RunFuncName())
+	case <-timer.C:
+		logger.Logger.Print("%s emq conconnlost", util.RunFuncName())
+		logger.Logger.Info("%s emq conconnlost", util.RunFuncName())
 
 		connLostFlag = false
 		GetEmqInstance().InitEmqClient()
 		return
 	}
 }
-

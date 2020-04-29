@@ -59,3 +59,16 @@ func TVehicleInfos(c *gin.Context) {
 
 	c.JSON(http.StatusOK, tempMap)
 }
+
+func TProtects(c *gin.Context) {
+
+	body, _ := ioutil.ReadAll(c.Request.Body)
+	bodyJsonStr := string(body)
+	fmt.Println("TProtects", bodyJsonStr)
+
+	var tempMap map[string]interface{}
+
+	_ = json.Unmarshal([]byte(bodyJsonStr), &tempMap)
+
+	c.JSON(http.StatusOK, tempMap)
+}

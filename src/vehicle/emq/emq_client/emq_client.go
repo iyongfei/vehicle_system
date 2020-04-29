@@ -5,6 +5,7 @@ import (
 	"sync"
 	"time"
 	"vehicle_system/src/vehicle/conf"
+	"vehicle_system/src/vehicle/db/tdata"
 	"vehicle_system/src/vehicle/emq/subscribe_server_test"
 	"vehicle_system/src/vehicle/emq/topic_router"
 	"vehicle_system/src/vehicle/logger"
@@ -47,8 +48,8 @@ func (m *EmqInstance) InitEmqClient() {
 	if token := EmqClient.Connect(); token.Wait() && token.Error() != nil {
 		logger.Logger.Print("%s,err:%s", util.RunFuncName(), token.Error())
 		logger.Logger.Error("%s,err:%s", util.RunFuncName(), token.Error())
-		go EmqConnectTokenError()
-		//return
+		go EmqReConnectTokenError()
+		return
 	}
 	if token := EmqClient.Subscribe(SUBSCRIBE_MAIN_TOPIC, 0, topic_router.MainTopicRouter); token.Wait() && token.Error() != nil {
 		logger.Logger.Print("%s,err:%s", util.RunFuncName(), token.Error())
@@ -66,7 +67,6 @@ func (m *EmqInstance) InitEmqClient() {
 		logger.Logger.Error("%s,err:%s", util.RunFuncName(), token.Error())
 	}
 
-	//SetGWOnlineInfoWithEmqOffline(false)
 	logger.Logger.Print("%s,emqClient init success:%v", util.RunFuncName(), &EmqClient)
 	logger.Logger.Info("%s,emqClient init success:%v", util.RunFuncName(), &EmqClient)
 }
@@ -87,14 +87,19 @@ func (m *EmqInstance) NewClientOptions() *mqtt.ClientOptions {
 		SetPassword(conf.EmqPassword).SetTLSConfig(NewTLSConfig())
 }
 
-func EmqConnectTokenError() {
+func EmqReConnectTokenError() {
+	err := tdata.VehicleAssetCheck("", false)
+	if err != nil {
+		logger.Logger.Print("%s,emqReConnectTokenError update vehicle online status err:%+v", util.RunFuncName(), err)
+		logger.Logger.Info("%s,emqReConnectTokenError update vehicle online status err:%+v", util.RunFuncName(), err)
+	}
+
 	t := time.NewTicker(time.Second * 10)
 	select {
 	case <-t.C:
 		if !EmqClient.IsConnected() {
 			logger.Logger.Print("%s,emqClient:%v", util.RunFuncName(), &EmqClient)
 			logger.Logger.Info("%s,emqClient:%v", util.RunFuncName(), &EmqClient)
-			//SetGWOnlineInfoWithEmqOffline(true)
 			GetEmqInstance().InitEmqClient()
 		}
 		t.Stop()
