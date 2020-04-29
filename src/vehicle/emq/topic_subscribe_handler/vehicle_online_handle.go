@@ -8,9 +8,7 @@ import (
 //离线
 func HandleVehicleOfflineStatus(vehicleId string, onLineStatus bool) error {
 	err := tdata.VehicleAssetCheck(vehicleId, onLineStatus)
-
 	if err == nil {
-
 		pushActionTypeName := flow.ONLINE_STATUS
 		pushVehicleid := vehicleId
 		pushData := map[string]interface{}{
@@ -18,10 +16,7 @@ func HandleVehicleOfflineStatus(vehicleId string, onLineStatus bool) error {
 		}
 
 		fPushData := flow.CreatePushData(pushActionTypeName, pushVehicleid, pushData)
-
 		flow.GetFlowService().SetFlowData(fPushData).WriteFlow()
-
 	}
-
 	return err
 }

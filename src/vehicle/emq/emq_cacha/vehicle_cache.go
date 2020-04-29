@@ -47,7 +47,7 @@ func (vehicleCache *VehicleCache) Clean(vkey string) {
 
 //清除vehicle all key
 
-func (vehicleCache *VehicleCache) CleanAllKey(vkey string) {
+func (vehicleCache *VehicleCache) CleanAllKey() {
 	for k, _ := range vehicleCache.CacheMap {
 		delete(vehicleCache.CacheMap, k)
 	}
