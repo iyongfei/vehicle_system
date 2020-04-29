@@ -66,10 +66,9 @@ enum FlowProtos {
 enum FlowSafetype {
 	FS_UNSET = 0; // 默认值
 	FS_SAFE = 1; // 会话安全
-	FS_WARNING = 2; // 警告
-	FS_DANGER = 3; // 危险会话
-	FS_UNCHECK = 4; // 未检测
-	FS_CHECKING = 5; // 检测中
+	FS_WARNING = 2; // 异常网络行为 
+	FS_LEAKAGE = 3; // 用户信息泄露威胁
+	FS_INVADE = 4; // 病毒/木马 TELNET SSH 远程控制等代码类入侵(包括文件还原结果)
 }
 
 enum FlowStat {
@@ -83,11 +82,11 @@ message FlowParam {
 	message FItem {
 		uint32 hash = 1; // flow-id (int型哈希值)
 		uint32 src_ip = 2; // 发起者(源)IP地址
-		uint32 src_port = 3; // 发气者 端口号
+		uint32 src_port = 3; // 发起者 端口号
 		uint32 dst_ip = 4; // 接受者(目标)IP地址
 		uint32 dst_port = 5; // 接受者 端口号
 		FlowProtos protocol = 6; // flow的协议类型
-		string flow_info = 7; // 会话信息
+		string flow_info = 7; // 会话信息 (url, pop3, 邮件协议 邮箱地址, 密码)
 		FlowSafetype safe_type = 8; // 会话安全类型
 		string safe_info = 9; // 安全类型结果(无结果为空)
 		uint32 start_time = 10; // 启动时间戳
