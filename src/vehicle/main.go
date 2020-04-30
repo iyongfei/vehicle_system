@@ -7,7 +7,7 @@ import (
 	"vehicle_system/src/vehicle/emq"
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/router"
-	"vehicle_system/src/vehicle/service/flow"
+	"vehicle_system/src/vehicle/service/push"
 	"vehicle_system/src/vehicle/timing"
 	"vehicle_system/src/vehicle/vgo"
 )
@@ -19,11 +19,9 @@ func init() {
 	db.Setup()
 	emq.Setup()
 	cron.Setup()
-	flow.Setup()
+	push.Setup()
 	vgo.Setup()
 }
-
-
 
 // @title vehicle API
 // @version 1.0
@@ -39,6 +37,6 @@ func init() {
 
 // @host localhost:7001
 // @BasePath /
-func  main()  {
+func main() {
 	router.RouterHandler()
 }

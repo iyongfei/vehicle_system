@@ -7,7 +7,7 @@ import (
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
-	"vehicle_system/src/vehicle/service/flow"
+	"vehicle_system/src/vehicle/service/push"
 	"vehicle_system/src/vehicle/util"
 )
 
@@ -133,9 +133,9 @@ func HandleMonitorInfo(vehicleResult protobuf.GWResult, vehicleId string) error 
 		"vhalo": vhaloInfo,
 	}
 
-	fPushData := flow.CreatePushData(pushActionTypeName, pushVehicleid, pushData)
+	fPushData := push.CreatePushData(pushActionTypeName, pushVehicleid, pushData)
 
-	flow.GetFlowService().SetFlowData(fPushData).WriteFlow()
+	push.GetPushervice().SetPushData(fPushData).Write()
 
 	return nil
 }
