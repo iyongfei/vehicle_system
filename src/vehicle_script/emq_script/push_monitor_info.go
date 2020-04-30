@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/golang/protobuf/proto"
 	"strconv"
+	"vehicle_system/src/vehicle/emq/protobuf"
 	"vehicle_system/src/vehicle_script/emq_service"
-	"vehicle_system/src/vehicle_script/emq_service/protobuf"
 	"vehicle_system/src/vehicle_script/tool"
 )
 
@@ -21,6 +21,7 @@ const (
 )
 
 func main() {
+
 	configMap := tool.InitConfig("conf.txt")
 	MonitorId := configMap[Monitor_Id]
 	DiskPathCount := configMap[Disk_Path_Count]

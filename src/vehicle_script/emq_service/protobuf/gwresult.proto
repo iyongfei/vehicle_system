@@ -1,5 +1,5 @@
 ﻿syntax = "proto3";
-package protbobuf;
+package protobuf;
 //小v请求的基本格式
 message GWResult {
 	enum ActionType {

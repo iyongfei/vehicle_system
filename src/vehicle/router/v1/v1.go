@@ -27,6 +27,12 @@ func V1Router(r *gin.Engine) {
 		//////////////////////////////////////////////会话接口//////////////////////////////////////////////
 		apiV1.GET("/flows/:flow_id", api_server.GetFlow)              //todo
 		apiV1.GET("/pagination/flows", api_server.GetPaginationFlows) //todo
+
+		apiV1.GET("/tflow_dps", api_server.GetTFlowsDps) //todo
+		apiV1.GET("/tflows", api_server.GetTFlows)       //todo
+
+		apiV1.GET("/flow_dps", api_server.GetFlowsDps) //todo
+
 		//apiV1.DELETE("/flows/:flow_id", api_server.DeleFlow)
 		//apiV1.POST("/flows", api_server.AddFlow)
 		//apiV1.PUT("/flows/:flow_id", api_server.EditFlow)

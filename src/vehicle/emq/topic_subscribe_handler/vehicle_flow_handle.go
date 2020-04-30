@@ -71,6 +71,37 @@ func HandleVehicleFlow(vehicleResult protobuf.GWResult, vehicleId string) error 
 		sendFlows = append(sendFlows, flowInfo)
 	}
 
+	//删除临时表
+	tFlow := &model.TempFlow{}
+	tFlowModelBase := model_base.ModelBaseImpl(tFlow)
+	if err := tFlowModelBase.DeleModelsByCondition("vehicle_id = ?",
+		[]interface{}{vehicleId}...); err != nil {
+		logger.Logger.Print("%s dele temp vehicle flow err:%s", util.RunFuncName(), err.Error())
+		logger.Logger.Error("%s dele temp vehicle flow err:%s", util.RunFuncName(), err.Error())
+
+	}
+	for _, tFlowItem := range flowParams.FlowItem {
+
+		tFlowItemId := tFlowItem.GetHash()
+		tFlowInfo := &model.TempFlow{
+			FlowId:    tFlowItemId,
+			VehicleId: vehicleId,
+		}
+		tFlowModelBase := model_base.ModelBaseImpl(tFlowInfo)
+		_, recordNotFound := tFlowModelBase.GetModelByCondition(
+			"flow_id = ? and vehicle_id = ?", []interface{}{tFlowInfo.FlowId, tFlowInfo.VehicleId}...)
+		tFlowModelBase.CreateModel(tFlowItem)
+
+		if recordNotFound {
+			if err := tFlowModelBase.InsertModel(); err != nil {
+				logger.Logger.Print("%s insert temp flow err:%s", util.RunFuncName(), err.Error())
+				logger.Logger.Error("%s insert temp flow err:%s", util.RunFuncName(), err.Error())
+				//return fmt.Errorf("%s insert flow err:%s",util.RunFuncName(),err.Error())
+				continue
+			}
+		}
+	}
+
 	//会话状态
 	logger.Logger.Print("%s flow info %+v", util.RunFuncName(), sendFlows)
 	logger.Logger.Info("%s flow info %+v", util.RunFuncName(), sendFlows)

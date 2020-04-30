@@ -62,6 +62,7 @@ func GetFlows(c *gin.Context) {
 		c.JSON(http.StatusOK, ret)
 		logger.Logger.Error("%s argsTrimsEmpty vehicleId:%s argsTrimsEmpty", util.RunFuncName(), vehicleId)
 		logger.Logger.Print("%s argsTrimsEmpty vehicleId:%s argsTrimsEmpty", util.RunFuncName(), vehicleId)
+		return
 	}
 
 	flows := []*model.Flow{}
@@ -75,6 +76,98 @@ func GetFlows(c *gin.Context) {
 
 	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetFlowSuccessMsg, flows)
 	c.JSON(http.StatusOK, retObj)
+}
+func GetFlowsDps(c *gin.Context) {
+	vehicleId := c.Query("vehicle_id")
+	startTimeP := c.Query("start_time")
+	endTimeP := c.Query("end_time")
+
+	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId)
+	if argsTrimsEmpty {
+		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+		c.JSON(http.StatusOK, ret)
+		logger.Logger.Error("%s vehicleId:%s argsTrimsEmpty", util.RunFuncName(), vehicleId)
+		logger.Logger.Print("%s vehicleId:%s argsTrimsEmpty", util.RunFuncName(), vehicleId)
+		return
+	}
+
+	var fStartTime time.Time
+	var fEndTime time.Time
+
+	startTime, _ := strconv.Atoi(startTimeP)
+	endTime, _ := strconv.Atoi(endTimeP)
+
+	if startTime == 0 {
+		fStartTime = util.GetFewDayAgo(2)
+	} else {
+		fStartTime = util.StampUnix2Time(int64(startTime))
+	}
+
+	if endTime == 0 {
+		fEndTime = time.Now()
+	} else {
+		fEndTime = util.StampUnix2Time(int64(endTime))
+	}
+
+	//查询是否存在
+	vehicleInfo := &model.VehicleInfo{}
+	modelBase := model_base.ModelBaseImpl(vehicleInfo)
+
+	err, recordNotFound := modelBase.GetModelByCondition("vehicle_id = ?", []interface{}{vehicleId}...)
+
+	if err != nil {
+		logger.Logger.Error("%s vehicle_id:%s,err:%s", util.RunFuncName(), vehicleId, err)
+		logger.Logger.Print("%s vehicle_id:%s,err:%s", util.RunFuncName(), vehicleId, err)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetVehicleFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	if recordNotFound {
+		logger.Logger.Error("%s vehicle_id:%s,recordNotFound", util.RunFuncName(), vehicleId)
+		logger.Logger.Print("%s vehicle_id:%s,recordNotFound", util.RunFuncName(), vehicleId)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetVehicleUnExistMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	flows := []*model.Flow{}
+
+	flowModelBase := model_base.ModelBaseImpl(&model.Flow{})
+
+	err = flowModelBase.GetModelListByCondition(&flows, "vehicle_id = ? and flows.created_at BETWEEN ? AND ?",
+		[]interface{}{vehicleId, fStartTime, fEndTime}...)
+
+	if err != nil {
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetFlowFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	dps := map[string][]uint32{}
+	for _, tflow := range flows {
+		dip := tflow.DstIp
+		dport := tflow.DstPort
+		if util.RrgsTrimEmpty(dip) || dport <= 0 {
+			continue
+		}
+		if keyValue, ok := dps[dip]; ok {
+			exist := util.IsExistInSlice(dport, keyValue)
+			if !exist {
+				dps[dip] = append(dps[dip], dport)
+			}
+		} else {
+			dps[dip] = []uint32{dport}
+		}
+	}
+
+	responseData := &model.TempFlowDp{
+		VehicleId: vehicleId,
+		Dps:       dps,
+	}
+	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetFlowSuccessMsg, responseData)
+	c.JSON(http.StatusOK, retObj)
+
 }
 
 /*
@@ -132,6 +225,11 @@ func GetPaginationFlows(c *gin.Context) {
 	} else {
 		fEndTime = util.StampUnix2Time(int64(endTime))
 	}
+
+	logger.Logger.Info("%s frequest params vehicle_id:%s,fpageSize:%s,fpageIndex:%s,fStartTime%s,fEndTime%s",
+		util.RunFuncName(), vehicleId, fpageSize, fpageIndex, fStartTime, fEndTime)
+	logger.Logger.Print("%s frequest params vehicle_id:%s,fpageSize:%s,fpageIndex:%s,fStartTime%s,fEndTime%s",
+		util.RunFuncName(), vehicleId, fpageSize, fpageIndex, fStartTime, fEndTime)
 
 	flows := []*model.Flow{}
 	var total int

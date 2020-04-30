@@ -9,6 +9,7 @@ import (
 var urls = map[string]string{
 	"get_flow":   "http://localhost:7001/api/v1/flows/2768455442",
 	"get_flows":  "http://192.168.40.14:7001/api/v1/flows",
+	"flow_dps":   "http://localhost:7001/api/v1/flow_dps",
 	"pagination": "http://localhost:7001/api/v1/pagination/flows",
 	"post_flows": "http://localhost:7001/api/v1/flows",
 	"edit_flows": "http://localhost:7001/api/v1/flows/1111",
@@ -16,14 +17,31 @@ var urls = map[string]string{
 }
 
 func main() {
-	getFlow()
+	//getFlow()
 	//getFlows()
 	//getPaginationFlows()
 	//addFlows()
+
 	//editFlows()
 	//deleFlows()
 
 	//pushFlow()
+	getflowsDps()
+}
+
+func getflowsDps() {
+	token := tool.GetVehicleToken()
+
+	queryParams := map[string]interface{}{
+		"vehicle_id": "754d2728b4e549c5a16c0180fcacb800",
+	}
+
+	reqUrl := urls["flow_dps"]
+
+	resp, _ := tool.Get(reqUrl, queryParams, token)
+
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
 }
 
 type Requester struct {
