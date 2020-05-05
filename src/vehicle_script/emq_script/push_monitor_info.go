@@ -39,7 +39,7 @@ func createMonitorProbuf(vId string, defaultDiskPathCount int) []byte {
 	}
 
 	params := &protobuf.MonitorInfoParam{
-		GatherTime: 1231231231,
+		GatherTime: 1231231239,
 	}
 
 	items := []*protobuf.MonitorInfoParam_DiskOverFlow{}

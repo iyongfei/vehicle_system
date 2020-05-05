@@ -1,9 +1,9 @@
 package api_server
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
@@ -65,22 +65,14 @@ func GetMonitor(c *gin.Context) {
 	redisInfo := &model.RedisInfo{
 		MonitorId: vehicleId,
 	}
-	redisModelBase := model_base.ModelBaseImpl(redisInfo)
+	_ = mysql.QueryModelOneRecordByWhereConditionOrderBy(redisInfo, "id desc", "monitor_id = ?", redisInfo.MonitorId)
 
-	redisErr, redisRecordNotFound := redisModelBase.GetModelByCondition("monitor_id = ?", disk.MonitorId)
-	if diskErr != nil || redisRecordNotFound {
-		fmt.Println(redisErr, redisRecordNotFound)
-	}
 	//vhalonets
 	vhaloInfo := &model.VhaloNets{
 		MonitorId: vehicleId,
 	}
-	vhaloModelBase := model_base.ModelBaseImpl(vhaloInfo)
 
-	vahloErr, vhaloRecordNotFound := vhaloModelBase.GetModelByCondition("monitor_id = ?", disk.MonitorId)
-	if vahloErr != nil || vhaloRecordNotFound {
-		fmt.Println(redisErr, recordNotFound)
-	}
+	_ = mysql.QueryModelOneRecordByWhereConditionOrderBy(vhaloInfo, "id desc", "monitor_id = ?", vhaloInfo.MonitorId)
 
 	vehicleMonitorItemsResponse := model.VehicleMonitorItemsResponse{
 		Disks:     diskList,

@@ -25,11 +25,13 @@ func HandleMonitorInfo(vehicleResult protobuf.GWResult, vehicleId string) error 
 	logger.Logger.Info("%s unmarshal monitorParam:%+v", util.RunFuncName(), monitorParam)
 	//create
 	var diskList []*model.Disk
+
 	diskItems := monitorParam.GetDiskItem()
 	for _, diskItem := range diskItems {
 		disk := &model.Disk{
-			MonitorId: vehicleId,
-			Path:      diskItem.Path,
+			MonitorId:  vehicleId,
+			Path:       diskItem.Path,
+			GatherTime: monitorParam.GetGatherTime(),
 		}
 		diskModelBase := model_base.ModelBaseImpl(disk)
 
@@ -65,7 +67,7 @@ func HandleMonitorInfo(vehicleResult protobuf.GWResult, vehicleId string) error 
 		redisInfoModelBase := model_base.ModelBaseImpl(redisInfo)
 
 		_, redisRecordNotFound := redisInfoModelBase.GetModelByCondition(
-			"monitor_id = ?", []interface{}{redisInfo.MonitorId}...)
+			"gather_time = ?", []interface{}{redisInfo.GatherTime}...)
 
 		redisInfoModelBase.CreateModel(redisInfoParam)
 
@@ -99,7 +101,7 @@ func HandleMonitorInfo(vehicleResult protobuf.GWResult, vehicleId string) error 
 		vhaloModelBase := model_base.ModelBaseImpl(vhaloInfo)
 
 		_, redisRecordNotFound := vhaloModelBase.GetModelByCondition(
-			"monitor_id = ?", []interface{}{vhaloInfo.MonitorId}...)
+			"gather_time = ?", []interface{}{vhaloInfo.GatherTime}...)
 
 		vhaloModelBase.CreateModel(vhaloNetsParam)
 		if redisRecordNotFound {
