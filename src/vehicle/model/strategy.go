@@ -7,16 +7,16 @@ import (
 	"vehicle_system/src/vehicle/emq/protobuf"
 	"vehicle_system/src/vehicle/util"
 )
+
 ///////////////////////////Strategy//////////////////////////////////////
 type Strategy struct {
 	gorm.Model
-	StrategyId    string
+	StrategyId string
 
-	Type          uint8 //策略模式
-	HandleMode    uint8 //处理方式
-	Enable        bool  //策略启用状态
+	Type       uint8 //策略模式
+	HandleMode uint8 //处理方式
+	Enable     bool  //策略启用状态
 }
-
 
 func (strategy *Strategy) InsertModel() error {
 	return mysql.CreateModel(strategy)
@@ -39,16 +39,16 @@ func (strategy *Strategy) UpdateModelsByCondition(values interface{}, query inte
 	return nil
 }
 func (strategy *Strategy) DeleModelsByCondition(query interface{}, args ...interface{}) error {
-	err := mysql.HardDeleteModelB(strategy,query,args...)
-	if err!=nil{
-		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
+	err := mysql.HardDeleteModelB(strategy, query, args...)
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
 	}
 	return nil
 }
-func (strategy *Strategy) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) (error) {
-	err := mysql.QueryModelRecordsByWhereCondition(model,query,args...)
-	if err!=nil{
-		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
+func (strategy *Strategy) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) error {
+	err := mysql.QueryModelRecordsByWhereCondition(model, query, args...)
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
 	}
 	return nil
 }
@@ -62,12 +62,12 @@ func (strategy *Strategy) CreateModel(strategyParams ...interface{}) interface{}
 	return strategy
 }
 func (strategy *Strategy) GetModelPaginationByCondition(pageIndex int, pageSize int, totalCount *int,
-	paginModel interface{}, query interface{}, args ...interface{})(error){
+	paginModel interface{}, orderBy interface{}, query interface{}, args ...interface{}) error {
 
-	err := mysql.QueryModelPaginationByWhereCondition(strategy,pageIndex,pageSize,totalCount,paginModel,query,args...)
+	err := mysql.QueryModelPaginationByWhereCondition(strategy, pageIndex, pageSize, totalCount, paginModel, orderBy, query, args...)
 
-	if err!=nil{
-		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
 	}
 	return nil
 }
@@ -77,8 +77,9 @@ type StrategyVehicle struct {
 	gorm.Model
 	StrategyVehicleId string
 	StrategyId        string
-	VehicleId  		  string
+	VehicleId         string
 }
+
 func (strategyVehicle *StrategyVehicle) InsertModel() error {
 	return mysql.CreateModel(strategyVehicle)
 }
@@ -100,29 +101,31 @@ func (strategyVehicle *StrategyVehicle) UpdateModelsByCondition(values interface
 	return nil
 }
 func (strategyVehicle *StrategyVehicle) DeleModelsByCondition(query interface{}, args ...interface{}) error {
-	err := mysql.HardDeleteModelB(strategyVehicle,query,args...)
-	if err!=nil{
-		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
+	err := mysql.HardDeleteModelB(strategyVehicle, query, args...)
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
 	}
 	return nil
 }
-func (strategyVehicle *StrategyVehicle) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) (error) {
-	err := mysql.QueryModelRecordsByWhereCondition(model,query,args...)
-	if err!=nil{
-		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
+func (strategyVehicle *StrategyVehicle) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) error {
+	err := mysql.QueryModelRecordsByWhereCondition(model, query, args...)
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
 	}
 	return nil
 }
 func (strategyVehicle *StrategyVehicle) CreateModel(strategyParams ...interface{}) interface{} {
 	return strategyVehicle
 }
+
 ///////////////////////////VehicleLearningResult//////////////////////////////////////
 
 type StrategyVehicleLearningResult struct {
 	gorm.Model
-	StrategyVehicleId  string
-	LearningResultId   string
+	StrategyVehicleId string
+	LearningResultId  string
 }
+
 func (strategyVehicleLearningResult *StrategyVehicleLearningResult) InsertModel() error {
 	return mysql.CreateModel(strategyVehicleLearningResult)
 }
@@ -146,10 +149,10 @@ func (strategyVehicleLearningResult *StrategyVehicleLearningResult) UpdateModels
 func (strategyVehicleLearningResult *StrategyVehicleLearningResult) DeleModelsByCondition(query interface{}, args ...interface{}) error {
 	return nil
 }
-func (strategyVehicleLearningResult *StrategyVehicleLearningResult) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) (error) {
-	err := mysql.QueryModelRecordsByWhereCondition(model,query,args...)
-	if err!=nil{
-		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
+func (strategyVehicleLearningResult *StrategyVehicleLearningResult) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) error {
+	err := mysql.QueryModelRecordsByWhereCondition(model, query, args...)
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
 	}
 	return nil
 }
@@ -164,78 +167,71 @@ func (strategyVehicleLearningResult *StrategyVehicleLearningResult) CreateModel(
 SELECT strategies.*,strategy_vehicles.vehicle_id ,strategy_vehicle_learning_results.learning_result_id FROM strategies
 inner JOIN strategy_vehicles ON strategies.strategy_id = strategy_vehicles.strategy_id
 inner JOIN strategy_vehicle_learning_results ON strategy_vehicles.vehicle_id = strategy_vehicle_learning_results.vehicle_id
- */
+*/
 
 type StrategyVehicleLearningResultJoin struct {
 	gorm.Model
-	StrategyId    string
+	StrategyId string
 
-	Type          uint8
-	HandleMode    uint8
-	Enable        bool
+	Type       uint8
+	HandleMode uint8
+	Enable     bool
 
 	VehicleId string
 
-	StrategyVehicleId  string  //join
-	LearningResultId string //join
+	StrategyVehicleId string //join
+	LearningResultId  string //join
 }
 
-
-func GetStrategyVehicleLearningResults(query string,args ...interface{}) ([]*StrategyVehicleLearningResultJoin,error) {
-	vgorm,err := mysql.GetMysqlInstance().GetMysqlDB()
-	if err!= nil{
-		return nil,fmt.Errorf("%s open grom err:%v",util.RunFuncName(),err.Error())
+func GetStrategyVehicleLearningResults(query string, args ...interface{}) ([]*StrategyVehicleLearningResultJoin, error) {
+	vgorm, err := mysql.GetMysqlInstance().GetMysqlDB()
+	if err != nil {
+		return nil, fmt.Errorf("%s open grom err:%v", util.RunFuncName(), err.Error())
 	}
 	strategyVehicleLearningResultJoins := []*StrategyVehicleLearningResultJoin{}
 	err = vgorm.Debug().
 		Table("strategies").
 		Select("strategies.*,strategy_vehicles.vehicle_id ,strategy_vehicle_learning_results.learning_result_id").
-		Where(query,args...).
+		Where(query, args...).
 		Joins("inner join strategy_vehicles ON strategies.strategy_id = strategy_vehicles.strategy_id").
-		Joins("inner JOIN strategy_vehicle_learning_results ON strategy_vehicles.strategy_vehicle_id = strategy_vehicle_learning_results.strategy_vehicle_id")	.
+		Joins("inner JOIN strategy_vehicle_learning_results ON strategy_vehicles.strategy_vehicle_id = strategy_vehicle_learning_results.strategy_vehicle_id").
 		Scan(&strategyVehicleLearningResultJoins).
 		Error
-	return strategyVehicleLearningResultJoins,err
+	return strategyVehicleLearningResultJoins, err
 }
 
-
-
-func GetStrategyJoinVehicles(query string,args ...interface{}) (*StrategyVehicleLearningResultJoin,error) {
-	vgorm,err := mysql.GetMysqlInstance().GetMysqlDB()
-	if err!= nil{
-		return nil,fmt.Errorf("%s open grom err:%v",util.RunFuncName(),err.Error())
+func GetStrategyJoinVehicles(query string, args ...interface{}) (*StrategyVehicleLearningResultJoin, error) {
+	vgorm, err := mysql.GetMysqlInstance().GetMysqlDB()
+	if err != nil {
+		return nil, fmt.Errorf("%s open grom err:%v", util.RunFuncName(), err.Error())
 	}
 	strategyVehicleLearningResultJoins := &StrategyVehicleLearningResultJoin{}
 	err = vgorm.Debug().
 		Table("strategies").
 		Select("strategies.*,strategy_vehicles.vehicle_id").
-		Where(query,args...).
+		Where(query, args...).
 		Joins("inner join strategy_vehicles ON strategies.strategy_id = strategy_vehicles.strategy_id").
 		Scan(strategyVehicleLearningResultJoins).
 		Error
-	return strategyVehicleLearningResultJoins,err
+	return strategyVehicleLearningResultJoins, err
 }
 
-
-
-
-func GetVehicleAllStrategys(query string,args ...interface{}) ([]*StrategyVehicleLearningResultJoin,error) {
-	vgorm,err := mysql.GetMysqlInstance().GetMysqlDB()
-	if err!= nil{
-		return nil,fmt.Errorf("%s open grom err:%v",util.RunFuncName(),err.Error())
+func GetVehicleAllStrategys(query string, args ...interface{}) ([]*StrategyVehicleLearningResultJoin, error) {
+	vgorm, err := mysql.GetMysqlInstance().GetMysqlDB()
+	if err != nil {
+		return nil, fmt.Errorf("%s open grom err:%v", util.RunFuncName(), err.Error())
 	}
 	strategyVehicleLearningResultJoins := []*StrategyVehicleLearningResultJoin{}
 	err = vgorm.Debug().
 		Table("strategies").
 		Select("strategies.*,strategy_vehicles.vehicle_id").
-		Where(query,args...).
+		Where(query, args...).
 		Joins("inner join strategy_vehicles ON strategies.strategy_id = strategy_vehicles.strategy_id").
 		Order("strategies.created_at desc").
 		Scan(&strategyVehicleLearningResultJoins).
 		Error
-	return strategyVehicleLearningResultJoins,err
+	return strategyVehicleLearningResultJoins, err
 }
-
 
 /******************************分组扩展****************************/
 type StrategyGroup struct {

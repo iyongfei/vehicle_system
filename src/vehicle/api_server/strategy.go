@@ -121,7 +121,7 @@ func GetStrategys(c *gin.Context) {
 	modelBase := model_base.ModelBaseImplPagination(&model.Strategy{})
 
 	err := modelBase.GetModelPaginationByCondition(pageIndex, pageSize,
-		&total, &strategys, "",
+		&total, &strategys, "", "",
 		[]interface{}{}...)
 
 	if err != nil {

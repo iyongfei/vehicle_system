@@ -15,7 +15,7 @@ import (
 type VehicleInfo struct {
 	gorm.Model
 	VehicleId string `gorm:"unique"` //小v ID
-	Name      string                 //小v名称
+	Name      string //小v名称
 	Version   string
 	//StartTime       model_base.UnixTime //启动时间
 	StartTime       time.Time //启动时间
@@ -40,7 +40,7 @@ type VehicleInfo struct {
 	GroupId       string
 }
 
-func (vehicle *VehicleInfo) AfterCreate(tx *gorm.DB) ( error) {
+func (vehicle *VehicleInfo) AfterCreate(tx *gorm.DB) error {
 	logger.Logger.Print("%s afterCreate vehicle_id:%s", util.RunFuncName(), vehicle.VehicleId)
 	logger.Logger.Info("%s afterCreate vehicle_id:%s", util.RunFuncName(), vehicle.VehicleId)
 
@@ -121,10 +121,10 @@ func (u *VehicleInfo) DeleModelsByCondition(query interface{}, args ...interface
 	}
 	return nil
 }
-func (u *VehicleInfo) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) (error) {
-	err := mysql.QueryModelRecordsByWhereCondition(model,query,args...)
-	if err!=nil{
-		return fmt.Errorf("%s err %s",util.RunFuncName(),err.Error())
+func (u *VehicleInfo) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) error {
+	err := mysql.QueryModelRecordsByWhereCondition(model, query, args...)
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
 	}
 	return nil
 }
@@ -167,9 +167,9 @@ func (vehicleInfo *VehicleInfo) CreateModel(vehicleParam ...interface{}) interfa
 }
 
 func (vehicleInfo *VehicleInfo) GetModelPaginationByCondition(pageIndex int, pageSize int, totalCount *int,
-	paginModel interface{}, query interface{}, args ...interface{}) (error) {
+	paginModel interface{}, orderBy interface{}, query interface{}, args ...interface{}) error {
 
-	err := mysql.QueryModelPaginationByWhereCondition(vehicleInfo, pageIndex, pageSize, totalCount, paginModel, query, args...)
+	err := mysql.QueryModelPaginationByWhereCondition(vehicleInfo, pageIndex, pageSize, totalCount, paginModel, orderBy, query, args...)
 
 	if err != nil {
 		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())

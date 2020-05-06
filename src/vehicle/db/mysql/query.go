@@ -41,14 +41,14 @@ func QueryRawsqlScanVariable(tname string, selectColumn string, variable interfa
 }
 
 func QueryModelPaginationByWhereCondition(model interface{}, pageIndex int, pageSize int, totalCount *int,
-	paginModel interface{}, query interface{}, args ...interface{}) error {
+	paginModel interface{}, orderBy interface{}, query interface{}, args ...interface{}) error {
 
 	vgorm, err := GetMysqlInstance().GetMysqlDB()
 	if err != nil {
 		return fmt.Errorf("%s open grom err:%v", util.RunFuncName(), err.Error())
 	}
-
-	err = vgorm.Debug().Offset((pageIndex-1)*pageSize).Limit(pageSize).Where(query, args...).Find(paginModel).
+	//db.Model(&User{}).Where("name = ?", "jinzhu").Count(&count)
+	err = vgorm.Debug().Offset((pageIndex-1)*pageSize).Limit(pageSize).Order(orderBy).Where(query, args...).Find(paginModel).
 		Offset(-1).Model(model).Count(totalCount).Error
 
 	if err != nil {

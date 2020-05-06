@@ -38,10 +38,9 @@ func EditAsset(c *gin.Context) {
 		setSwitch = false
 	}
 
-
 	//查询是否存在
 	assetInfo := &model.Asset{
-		AssetId:assetId,
+		AssetId: assetId,
 	}
 	modelBase := model_base.ModelBaseImpl(assetInfo)
 
@@ -69,8 +68,8 @@ func EditAsset(c *gin.Context) {
 		TaskType:  int(protobuf.Command_DEVICE_SET),
 
 		Switch: setSwitch,
-		Type:      setType,
-		Mac:assetId,
+		Type:   setType,
+		Mac:    assetId,
 	}
 
 	topic_publish_handler.GetPublishService().PutMsg2PublicChan(assetCmd)
@@ -101,7 +100,7 @@ func GetAssets(c *gin.Context) {
 	modelBase := model_base.ModelBaseImplPagination(&model.Asset{})
 
 	err := modelBase.GetModelPaginationByCondition(pageIndex, pageSize,
-		&total, &assetInfos, "",
+		&total, &assetInfos, "", "",
 		[]interface{}{}...)
 
 	if err != nil {
@@ -161,14 +160,12 @@ func GetAsset(c *gin.Context) {
 
 /**
 添加
- */
+*/
 
 func AddAsset(c *gin.Context) {
 	body, _ := ioutil.ReadAll(c.Request.Body)
 
-	assetInfo := &model.Asset{
-
-	}
+	assetInfo := &model.Asset{}
 	err := json.Unmarshal(body, assetInfo)
 
 	if err != nil {
@@ -220,7 +217,7 @@ func DeleAsset(c *gin.Context) {
 	}
 
 	assetObj := &model.Asset{
-		AssetId:assetId,
+		AssetId: assetId,
 	}
 
 	modelBase := model_base.ModelBaseImpl(assetObj)

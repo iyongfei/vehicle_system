@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
@@ -170,6 +171,53 @@ func GetFlowsDps(c *gin.Context) {
 
 }
 
+func GetFlowTypeCounts(c *gin.Context) {
+	vehicleId := c.Query("vehicle_id")
+
+	logger.Logger.Info("%s request params vehicle_id:%s", util.RunFuncName(), vehicleId)
+	logger.Logger.Print("%s request params vehicle_id:%s", util.RunFuncName(), vehicleId)
+
+	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId)
+	if argsTrimsEmpty {
+		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+		c.JSON(http.StatusOK, ret)
+		logger.Logger.Error("%s argsTrimsEmpty threatId:%s", util.RunFuncName(), argsTrimsEmpty)
+		logger.Logger.Print("%s argsTrimsEmpty threatId:%s", util.RunFuncName(), argsTrimsEmpty)
+		return
+	}
+
+	type FlowSafeType struct {
+		SafeType int
+		Count    int
+	}
+
+	flowSafeTypeModelList := []*FlowSafeType{}
+
+	execSql := "SELECT COUNT(safe_type) as count,safe_type FROM flows WHERE vehicle_id = ? GROUP BY safe_type;"
+	err := mysql.QueryRawsqlScanStruct(execSql, vehicleId, &flowSafeTypeModelList)
+	if err != nil {
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetFlowFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	totalCount := 0
+	flowMap := map[int]int{}
+	for _, flowSafeType := range flowSafeTypeModelList {
+		ftype := flowSafeType.SafeType
+		fcount := flowSafeType.Count
+		flowMap[ftype] = fcount
+		totalCount += fcount
+	}
+	responseData := map[string]interface{}{
+		"flow_type_counts": flowMap,
+		"total_count":      totalCount,
+	}
+
+	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetFlowSuccessMsg, responseData)
+	c.JSON(http.StatusOK, retObj)
+}
+
 /*
 获取所有消息会话
 GetModelPaginationByCondition
@@ -204,15 +252,17 @@ func GetPaginationFlows(c *gin.Context) {
 	startTime, _ := strconv.Atoi(startTimeP)
 	endTime, _ := strconv.Atoi(endTimeP)
 
+	//默认20
 	defaultPageSize := 20
 	if fpageSize == 0 {
 		fpageSize = defaultPageSize
 	}
+	//默认第一页
 	defaultPageIndex := 1
 	if fpageIndex == 0 {
 		fpageIndex = defaultPageIndex
 	}
-
+	//默认2天前
 	defaultStartTime := util.GetFewDayAgo(2) //2
 	if startTime == 0 {
 		fStartTime = defaultStartTime
@@ -220,6 +270,7 @@ func GetPaginationFlows(c *gin.Context) {
 		fStartTime = util.StampUnix2Time(int64(startTime))
 	}
 
+	//默认当前时间
 	defaultEndTime := time.Now()
 	if endTime == 0 {
 		fEndTime = defaultEndTime
@@ -238,7 +289,7 @@ func GetPaginationFlows(c *gin.Context) {
 	modelBase := model_base.ModelBaseImplPagination(&model.Flow{})
 
 	err := modelBase.GetModelPaginationByCondition(fpageIndex, fpageSize,
-		&total, &flows, "vehicle_id = ? and flows.created_at BETWEEN ? AND ?",
+		&total, &flows, "flows.created_at desc", "vehicle_id = ? and flows.created_at BETWEEN ? AND ?",
 		[]interface{}{vehicleId, fStartTime, fEndTime}...)
 
 	if err != nil {

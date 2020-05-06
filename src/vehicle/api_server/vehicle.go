@@ -96,7 +96,7 @@ func GetVehicles(c *gin.Context) {
 	modelBase := model_base.ModelBaseImplPagination(&model.VehicleInfo{})
 
 	err := modelBase.GetModelPaginationByCondition(pageIndex, pageSize,
-		&total, &vehicleInfos, "",
+		&total, &vehicleInfos, "", "",
 		[]interface{}{}...)
 
 	if err != nil {

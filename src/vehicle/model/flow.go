@@ -42,6 +42,9 @@ func (flow *Flow) MarshalJSON() ([]byte, error) {
 	})
 }
 
+type FlowSafeTypeResponse struct {
+}
+
 //
 //func (flow *Flow) UnmarshalJSON(data []byte) error {
 //	type FlowType Flow
@@ -121,10 +124,13 @@ func (flow *Flow) CreateModel(flowParam ...interface{}) interface{} {
 	return flow
 }
 
-func (flow *Flow) GetModelPaginationByCondition(pageIndex int, pageSize int, totalCount *int,
-	paginModel interface{}, query interface{}, args ...interface{}) error {
+//func QueryModelPaginationByWhereCondition(model interface{}, pageIndex int, pageSize int, totalCount *int,
+//	paginModel interface{}, orderBy interface{}, query interface{}, args ...interface{}) error {
 
-	err := mysql.QueryModelPaginationByWhereCondition(flow, pageIndex, pageSize, totalCount, paginModel, query, args...)
+func (flow *Flow) GetModelPaginationByCondition(pageIndex int, pageSize int, totalCount *int,
+	paginModel interface{}, orderBy interface{}, query interface{}, args ...interface{}) error {
+
+	err := mysql.QueryModelPaginationByWhereCondition(flow, pageIndex, pageSize, totalCount, paginModel, orderBy, query, args...)
 
 	if err != nil {
 		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
