@@ -122,6 +122,7 @@ func GetVehicle(c *gin.Context) {
 		c.JSON(http.StatusOK, ret)
 		logger.Logger.Error("%s argsTrimsEmpty vehicle_id:%s", util.RunFuncName(), vehicleId)
 		logger.Logger.Print("%s argsTrimsEmpty vehicle_id:%s", util.RunFuncName(), vehicleId)
+		return
 	}
 	vehicleInfo := &model.VehicleInfo{
 		VehicleId: vehicleId,
@@ -146,22 +147,6 @@ func GetVehicle(c *gin.Context) {
 		c.JSON(http.StatusOK, ret)
 		return
 	}
-
-	//type VehicleResponse struct {
-	//	VehicleId     string
-	//	Ip            string
-	//	Mac           string
-	//	OnlineStatus  bool
-	//	ProtectStatus uint8
-	//}
-	//
-	//vehicleResponse := VehicleResponse{
-	//	VehicleId:     vehicleId,
-	//	Ip:            vehicleInfo.Ip,
-	//	Mac:           vehicleInfo.Mac,
-	//	OnlineStatus:  vehicleInfo.OnlineStatus,
-	//	ProtectStatus: vehicleInfo.ProtectStatus,
-	//}
 
 	responseData := map[string]interface{}{
 		"vehicle": vehicleInfo,

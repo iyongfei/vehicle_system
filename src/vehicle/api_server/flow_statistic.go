@@ -19,6 +19,7 @@ func FlowStatistics(c *gin.Context) {
 		c.JSON(http.StatusOK, ret)
 		logger.Logger.Error("%s argsTrimsEmpty vehicleId nill", util.RunFuncName())
 		logger.Logger.Print("%s argsTrimsEmpty vehicleId nill", util.RunFuncName())
+		return
 	}
 
 	flowStatistics := &model.FlowStatistic{

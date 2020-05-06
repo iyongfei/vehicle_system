@@ -48,6 +48,7 @@ func EditFStrategy(c *gin.Context) {
 		c.JSON(http.StatusOK, ret)
 		logger.Logger.Error("%s argsTrimsEmpty", util.RunFuncName())
 		logger.Logger.Print("%s argsTrimsEmpty", util.RunFuncName())
+		return
 	}
 
 	//////////////////////////////////////////////////////////////
