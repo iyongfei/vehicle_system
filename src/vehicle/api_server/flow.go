@@ -192,6 +192,7 @@ func GetPaginationFlows(c *gin.Context) {
 		c.JSON(http.StatusOK, ret)
 		logger.Logger.Error("%s argsTrimsEmpty threatId:%s", util.RunFuncName(), argsTrimsEmpty)
 		logger.Logger.Print("%s argsTrimsEmpty threatId:%s", util.RunFuncName(), argsTrimsEmpty)
+		return
 	}
 
 	fpageSize, _ := strconv.Atoi(pageSizeP)
