@@ -190,27 +190,6 @@ func PutForm(urlParam string, bodyParms map[string]interface{}, token string) (m
 //
 //	return p, nil
 //}
-func delete(url string, reqBody string) {
-	fmt.Println("DELETE REQ...")
-	fmt.Println("REQ:", reqBody)
-	req, err := http.NewRequest("DELETE", url, strings.NewReader(reqBody))
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	rsp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer rsp.Body.Close()
-
-	body, err := ioutil.ReadAll(rsp.Body)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println("RSP:", string(body))
-
-}
 
 //func Post(url string, body map[string]interface{}, token string) (map[string]interface{}, error) {
 //	jsonBytes, err := json.Marshal(body)
@@ -254,20 +233,28 @@ func PostJson(url string, body interface{}, token string) (map[string]interface{
 	reqest.Header.Add("token", token)
 	reqest.Header.Set("Content-Type", "application/json")
 
-	rsp, _ := client.Do(reqest)
 	if err != nil {
 		return nil, err
 	}
-	defer rsp.Body.Close()
 
-	buf, err := ioutil.ReadAll(rsp.Body)
+	rsp, err := client.Do(reqest)
 	if err != nil {
 		return nil, err
 	}
+
 	var p map[string]interface{}
-	err = json.Unmarshal(buf, &p)
-	if err != nil {
-		return nil, err
+	if rsp != nil {
+		buf, err := ioutil.ReadAll(rsp.Body)
+		if err != nil {
+			return nil, err
+		}
+
+		err = json.Unmarshal(buf, &p)
+		if err != nil {
+			return nil, err
+		}
+
 	}
+
 	return p, nil
 }

@@ -2,6 +2,7 @@ package push
 
 import (
 	"fmt"
+	"vehicle_system/src/vehicle/conf"
 	"vehicle_system/src/vehicle/emq/protobuf"
 )
 
@@ -29,6 +30,6 @@ func getPushReqUrl(interfaceName string) (url string) {
 
 	urlName := GWResult_ActionType_name[interfaceName]
 
-	url = fmt.Sprintf("http://localhost:7001/%s", urlName)
+	url = fmt.Sprintf("http://%s:%d/%s", conf.PushHost, conf.PushPort, urlName)
 	return
 }

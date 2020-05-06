@@ -62,6 +62,13 @@ func (fservce *PushService) Write() {
 	startWritePushG(fservce)
 
 }
+
+/**
+fPushData := map[string]interface{}{}
+	fPushData[ActionType] = actionType
+	fPushData[VehicleId] = vehicleId
+	fPushData[PushData] = pushData
+*/
 func (f *PushService) Send(data interface{}) {
 	logger.Logger.Print("%s send flow info %+v", util.RunFuncName(), data)
 
@@ -73,8 +80,20 @@ func (f *PushService) Send(data interface{}) {
 		actionType := postData[ActionType]
 		url := getPushReqUrl(actionType.(string))
 
-		resp, _ := util.PostJson(url, postData, "")
-		respJsonBys, _ := json.Marshal(resp)
+		logger.Logger.Print("%s sendFlow postData:%+v, type:%+v,url:%s", util.RunFuncName(), postData, actionType, url)
+
+		resp, postErr := util.PostJson(url, postData, "")
+
+		if postErr != nil {
+			logger.Logger.Print("%s json post json err:%+v", util.RunFuncName(), postErr)
+			logger.Logger.Error("%s json post json err:%+v", util.RunFuncName(), postErr)
+		}
+
+		respJsonBys, jsonMarshalErr := json.Marshal(resp)
+		if jsonMarshalErr != nil {
+			logger.Logger.Print("%s json marshal resp err:%+v", util.RunFuncName(), jsonMarshalErr)
+			logger.Logger.Error("%s json marshal resp err:%+v", util.RunFuncName(), jsonMarshalErr)
+		}
 
 		logger.Logger.Print("%s sendFlow resp json:%s, type:%+v", util.RunFuncName(), string(respJsonBys), reflect.TypeOf(data))
 		logger.Logger.Info("%s sendFlow resp json:%s, type:%+v", util.RunFuncName(), string(respJsonBys), reflect.TypeOf(data))
