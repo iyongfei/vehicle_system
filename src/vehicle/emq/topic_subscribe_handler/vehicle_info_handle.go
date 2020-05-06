@@ -7,6 +7,7 @@ import (
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
+	"vehicle_system/src/vehicle/service/push"
 	"vehicle_system/src/vehicle/util"
 )
 
@@ -59,5 +60,16 @@ func HandleVehicleInfo(vehicleResult protobuf.GWResult, vehicleId string) error 
 			return fmt.Errorf("%s update vehicle err:%s", util.RunFuncName(), err.Error())
 		}
 	}
+
+	pushActionTypeName := protobuf.GWResult_ActionType_name[int32(vehicleResult.ActionType)]
+	pushVehicleid := vehicleId
+	pushData := map[string]interface{}{
+		"vehicle_info": vehicleInfo,
+	}
+
+	fPushData := push.CreatePushData(pushActionTypeName, pushVehicleid, pushData)
+
+	push.GetPushervice().SetPushData(fPushData).Write()
+
 	return nil
 }

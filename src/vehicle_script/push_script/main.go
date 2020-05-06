@@ -20,7 +20,7 @@ func main() {
 	router.POST("/flowstats", TFlowStats)
 	router.POST("/flow_statistics", TFlowStatistics)
 	router.POST("/monitor_infos", TMonitorInfos)
-	router.POST("/gw_infos", TVehicleInfos)
+	router.POST("/vehicle_infos", TVehicleInfos)
 	router.POST("/protects", TProtects)
 	router.POST("/online_status", TOnlineStatus)
 

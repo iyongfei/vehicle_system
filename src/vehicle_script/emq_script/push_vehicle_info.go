@@ -11,63 +11,63 @@ import (
 /**
 添加车载信息
 insert_vehicle_count
- */
+*/
 const (
-	Conf_Name = "conf.txt"
+	Conf_Name          = "conf.txt"
 	InsertVehicleCount = "insert_vehicle_count"
 )
 
-func main()  {
+func main() {
 	configMap := tool.InitConfig(Conf_Name)
 	insertVehicleCount := configMap[InsertVehicleCount]
-	defaultVehicleCount ,_ := strconv.Atoi(insertVehicleCount)
+	defaultVehicleCount, _ := strconv.Atoi(insertVehicleCount)
 
-	emqx:= emq_service.NewEmqx()
-	for i:=0;i< defaultVehicleCount;i++{
+	emqx := emq_service.NewEmqx()
+	for i := 0; i < defaultVehicleCount; i++ {
 		//vid:=tool.RandomString(32)
-		vid:="TDav"
-		emqx.Publish(vid,createGwProbuf(vid))
+		vid := "754d2728b4e549c5a16c0180fcacb800"
+		emqx.Publish(vid, createGwProbuf(vid))
 	}
 }
 
-func createGwProbuf(vId string)[]byte{
-	pushReq:=&protobuf.GWResult{
-		ActionType:protobuf.GWResult_GW_INFO,
-		GUID:vId,
+func createGwProbuf(vId string) []byte {
+	pushReq := &protobuf.GWResult{
+		ActionType: protobuf.GWResult_GW_INFO,
+		GUID:       vId,
 	}
 
 	params := &protobuf.GwInfoParam{
-		Version:tool.GenVersion(),
-		StartTime:tool.TimeNowToUnix(),
-		FirmwareVersion:tool.GenVersion(),
-		HardwareModel:tool.GenBrand(1),
-		SupplyId:tool.RandomString(5),
-		UpRouterIp:tool.GenIpAddr(),
-		Ip:tool.GenIpAddr(),
-		Type:protobuf.GwInfoParam_DEFAULT,
-		Mac:tool.RandomString(8),
-		Timestamp:tool.TimeNowToUnix(),
-		HbTimeout:30,
-		DeployMode:protobuf.GwInfoParam_SWITCHMODE,
-		FlowIdleTimeSlot:1212,
+		Version:          tool.GenVersion(),
+		StartTime:        tool.TimeNowToUnix(),
+		FirmwareVersion:  tool.GenVersion(),
+		HardwareModel:    tool.GenBrand(1),
+		SupplyId:         tool.RandomString(5),
+		UpRouterIp:       tool.GenIpAddr(),
+		Ip:               tool.GenIpAddr(),
+		Type:             protobuf.GwInfoParam_DEFAULT,
+		Mac:              tool.RandomString(8),
+		Timestamp:        tool.TimeNowToUnix(),
+		HbTimeout:        30,
+		DeployMode:       protobuf.GwInfoParam_SWITCHMODE,
+		FlowIdleTimeSlot: 1212,
 	}
 	//module begin
-	items:=[]*protobuf.GwInfoParam_ModuleItem{}
+	items := []*protobuf.GwInfoParam_ModuleItem{}
 	moduleItem1 := &protobuf.GwInfoParam_ModuleItem{
-		Name:tool.RandomString(10),
-		Version:tool.GenVersion(),
+		Name:    tool.RandomString(10),
+		Version: tool.GenVersion(),
 	}
 	moduleItem2 := &protobuf.GwInfoParam_ModuleItem{
-		Name:tool.RandomString(10),
-		Version:tool.GenVersion(),
+		Name:    tool.RandomString(10),
+		Version: tool.GenVersion(),
 	}
-	items = append(items,moduleItem1,moduleItem2)
+	items = append(items, moduleItem1, moduleItem2)
 	//module end
 	params.Module = items
-	bys,_:=proto.Marshal(params)
+	bys, _ := proto.Marshal(params)
 	///////////////////////////////////
 
 	pushReq.Param = bys
-	ret,_:=proto.Marshal(pushReq)
-	return  ret
+	ret, _ := proto.Marshal(pushReq)
+	return ret
 }

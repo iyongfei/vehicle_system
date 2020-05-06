@@ -9,10 +9,11 @@ import (
 const ONLINE_STATUS = "ONLINE_STATUS"
 
 var GWResult_ActionType_name = map[string]string{
-	protobuf.GWResult_ActionType_name[0]:  "defaults",
-	protobuf.GWResult_ActionType_name[1]:  "devices",
-	protobuf.GWResult_ActionType_name[2]:  "threats",
-	protobuf.GWResult_ActionType_name[3]:  "gw_infos",
+	protobuf.GWResult_ActionType_name[0]: "defaults",
+	protobuf.GWResult_ActionType_name[1]: "devices",
+	protobuf.GWResult_ActionType_name[2]: "threats",
+	//protobuf.GWResult_ActionType_name[3]:  "gw_infos",
+	protobuf.GWResult_ActionType_name[3]:  "vehicle_infos",
 	protobuf.GWResult_ActionType_name[4]:  "samples",
 	protobuf.GWResult_ActionType_name[5]:  "protects",
 	protobuf.GWResult_ActionType_name[6]:  "strategys",

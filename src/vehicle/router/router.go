@@ -22,7 +22,7 @@ func RouterHandler() {
 	router.POST("/flowstats", api_server.TFlowStats)
 	router.POST("/flow_statistics", api_server.TFlowStatistics)
 	router.POST("/monitor_infos", api_server.TMonitorInfos)
-	router.POST("/gw_infos", api_server.TVehicleInfos)
+	router.POST("/vehicle_infos", api_server.TVehicleInfos)
 	router.POST("/protects", api_server.TProtects)
 	router.POST("/online_status", api_server.TOnlineStatus)
 
