@@ -29,6 +29,8 @@ func GetFStrategyCsv(c *gin.Context) {
 		logger.Logger.Print("%s argsTrimsEmpty fstrategyId:%s,argsTrimsEmpty", util.RunFuncName(), fstrategyId)
 		return
 	}
+	logger.Logger.Print("%s vehicle_id:%s,fstrategyId:%s,", util.RunFuncName(), fstrategyId)
+	logger.Logger.Info("%s vehicle_id:%s,fstrategyId:%s", util.RunFuncName(), fstrategyId)
 
 	fstrategy := &model.Fstrategy{
 		FstrategyId: fstrategyId,
@@ -37,11 +39,9 @@ func GetFStrategyCsv(c *gin.Context) {
 
 	err, recordNotFound := fstrategyModelBase.GetModelByCondition("fstrategy_id = ?", fstrategy.FstrategyId)
 	if err != nil {
-		logger.Logger.Error("%s fstrategyId:%s,err:%+v",
-			util.RunFuncName(), fstrategyId, err)
+		logger.Logger.Error("%s fstrategyId:%s,err:%+v", util.RunFuncName(), fstrategyId, err)
 
-		logger.Logger.Print("%s fstrategyId:%s,err:%+v",
-			util.RunFuncName(), fstrategyId, err)
+		logger.Logger.Print("%s fstrategyId:%s,err:%+v", util.RunFuncName(), fstrategyId, err)
 
 		ret := response.StructResponseObj(response.VStatusServerError, response.ReqFstrategyCsvFailMsg, "")
 		c.JSON(http.StatusOK, ret)
@@ -82,6 +82,8 @@ func UploadFStrategyCsv(c *gin.Context) {
 		logger.Logger.Print("%s upload fstrategy csv formfile err:%+v", util.RunFuncName(), err)
 		return
 	}
+	logger.Logger.Print("%s vehicle_id:%s,uploadCsv:%s,", util.RunFuncName(), vehicleId, uploadCsv.Filename)
+	logger.Logger.Info("%s vehicle_id:%s,uploadCsv:%s", util.RunFuncName(), vehicleId, uploadCsv.Filename)
 
 	//终端id为空
 	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId)
@@ -314,6 +316,8 @@ func EditFStrategyCsv(c *gin.Context) {
 	vehicleId := c.PostForm("vehicle_id")
 
 	fmt.Println(uploadCsv, fstrategyId, vehicleId, "hahahahah")
+	logger.Logger.Print("%s vehicle_id:%s,uploadCsv:%s,fstrategyId:%s", util.RunFuncName(), vehicleId, uploadCsv.Filename, fstrategyId)
+	logger.Logger.Info("%s vehicle_id:%s,uploadCsv:%s,fstrategyId:%s", util.RunFuncName(), vehicleId, uploadCsv.Filename, fstrategyId)
 
 	if err != nil {
 		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")

@@ -24,10 +24,8 @@ func EditFStrategy(c *gin.Context) {
 	fstrategyId := c.Param("fstrategy_id")
 	diports := c.PostForm("dip_ports")
 
-	logger.Logger.Print("%s vehicle_id:%s,fstrategy_id:%s,diports:%v",
-		util.RunFuncName(), vehicleId, fstrategyId, diports)
-	logger.Logger.Info("%s vehicle_id:%s,fstrategy_id:%s,diports:%v",
-		util.RunFuncName(), vehicleId, fstrategyId, diports)
+	logger.Logger.Print("%s vehicle_id:%s,fstrategy_id:%s,diports:%v", util.RunFuncName(), vehicleId, fstrategyId, diports)
+	logger.Logger.Info("%s vehicle_id:%s,fstrategy_id:%s,diports:%v", util.RunFuncName(), vehicleId, fstrategyId, diports)
 
 	//setTypeP := c.PostForm("type")
 	//handleModeP := c.PostForm("handle_mode")
@@ -266,18 +264,16 @@ func AddFStrategy(c *gin.Context) {
 
 	diportsMap := map[string][]uint32{}
 	err := json.Unmarshal([]byte(diports), &diportsMap)
-	if argsTrimsEmpty ||
-		err != nil {
+	if argsTrimsEmpty || err != nil {
 		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
 		c.JSON(http.StatusOK, ret)
 
-		logger.Logger.Print("%s vehicle_ids:%s,diports:%v",
-			util.RunFuncName(), vehicleId, diports)
-		logger.Logger.Error("%s vehicle_ids:%s,diports:%v",
-			util.RunFuncName(), vehicleId, diports)
+		logger.Logger.Print("%s vehicle_ids:%s,diports:%v", util.RunFuncName(), vehicleId, diports)
+		logger.Logger.Error("%s vehicle_ids:%s,diports:%v", util.RunFuncName(), vehicleId, diports)
 		return
 	}
-
+	logger.Logger.Info("%s vehicleId:%s,diports:%s", util.RunFuncName(), vehicleId, diports)
+	logger.Logger.Print("%s vehicleId:%s,diports:%s", util.RunFuncName(), vehicleId, diports)
 	//找出合法的vehicle
 	vehicleInfo := &model.VehicleInfo{
 		VehicleId: vehicleId,
@@ -289,10 +285,8 @@ func AddFStrategy(c *gin.Context) {
 		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
 		c.JSON(http.StatusOK, ret)
 
-		logger.Logger.Print("%s vehicle_id:%s recordNotFound",
-			util.RunFuncName(), vehicleId)
-		logger.Logger.Error("%s vehicle_id:%s recordNotFound",
-			util.RunFuncName(), vehicleId)
+		logger.Logger.Print("%s vehicle_id:%s recordNotFound", util.RunFuncName(), vehicleId)
+		logger.Logger.Error("%s vehicle_id:%s recordNotFound", util.RunFuncName(), vehicleId)
 		return
 	}
 
@@ -308,9 +302,6 @@ func AddFStrategy(c *gin.Context) {
 			}
 		}
 	}
-
-	logger.Logger.Print("%s vehicle_id:%s finalDiportsMap:%+v", util.RunFuncName(), vehicleId, finalDiportsMap)
-	logger.Logger.Info("%s vehicle_id:%s finalDiportsMap:%+v", util.RunFuncName(), vehicleId, finalDiportsMap)
 
 	//fstrategy_items table
 	fstrategyItems := map[string][]string{}
@@ -449,6 +440,8 @@ func DeleFStrategy(c *gin.Context) {
 		logger.Logger.Print("%s argsTrimsEmpty fstrategy_id:%s argsTrimsEmpty", util.RunFuncName(), fstrategyId)
 		return
 	}
+	logger.Logger.Info("%s fstrategyId:%s", util.RunFuncName(), fstrategyId)
+	logger.Logger.Print("%s fstrategyId:%s", util.RunFuncName(), fstrategyId)
 
 	//连表查询
 	ftrategyVehicleItems, _ := model.GetFlowStrategyVehicleItems(
@@ -673,6 +666,9 @@ func GetFStrategy(c *gin.Context) {
 		return
 	}
 
+	logger.Logger.Print("%s vehicle_id:%s,fstrategyId:%s,vehicleId:%v", util.RunFuncName(), fstrategyId, vehicleId)
+	logger.Logger.Info("%s vehicle_id:%s,fstrategyId:%s,vehicleId:%v", util.RunFuncName(), fstrategyId, vehicleId)
+
 	//查看该vehicle是否存在
 	vehicleFStrategy, err := model.GetVehicleFStrategy(
 		"fstrategy_vehicles.vehicle_id = ? and fstrategies.fstrategy_id = ?",
@@ -681,12 +677,19 @@ func GetFStrategy(c *gin.Context) {
 	if vehicleFStrategy.FstrategyVehicleId == "" {
 		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetFStrtegyUnExistMsg, "")
 		c.JSON(http.StatusOK, ret)
+
+		logger.Logger.Print("%s fstrategy join fstrategy_vehicles fstrategyVehicleId null", util.RunFuncName())
+		logger.Logger.Error("%s fstrategy join fstrategy_vehicles fstrategyVehicleId null", util.RunFuncName())
+
 		return
 	}
 
 	if err != nil {
 		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetFStrategyFailMsg, "")
 		c.JSON(http.StatusOK, ret)
+		logger.Logger.Print("%s fstrategy join fstrategy_vehicles err:%+v", util.RunFuncName(), err)
+		logger.Logger.Error("%s fstrategy join fstrategy_vehicles err:%+v", util.RunFuncName(), err)
+
 		return
 	}
 

@@ -124,6 +124,9 @@ func GetVehicle(c *gin.Context) {
 		logger.Logger.Print("%s argsTrimsEmpty vehicle_id:%s", util.RunFuncName(), vehicleId)
 		return
 	}
+	logger.Logger.Info("%s vehicleId:%s", util.RunFuncName(), vehicleId)
+	logger.Logger.Print("%s vehicleId:%s", util.RunFuncName(), vehicleId)
+
 	vehicleInfo := &model.VehicleInfo{
 		VehicleId: vehicleId,
 	}

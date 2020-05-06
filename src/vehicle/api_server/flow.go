@@ -91,6 +91,8 @@ func GetFlowsDps(c *gin.Context) {
 		logger.Logger.Print("%s vehicleId:%s argsTrimsEmpty", util.RunFuncName(), vehicleId)
 		return
 	}
+	logger.Logger.Info("%s vehicleId:%s,startTimeP:%s,endTimeP:%s", util.RunFuncName(), vehicleId, startTimeP, endTimeP)
+	logger.Logger.Print("%s vehicleId:%s", util.RunFuncName(), vehicleId, startTimeP, endTimeP)
 
 	var fStartTime time.Time
 	var fEndTime time.Time

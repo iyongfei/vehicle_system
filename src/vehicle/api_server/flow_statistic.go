@@ -22,6 +22,9 @@ func FlowStatistics(c *gin.Context) {
 		return
 	}
 
+	logger.Logger.Info("%s vehicleId:%s", util.RunFuncName(), vehicleId)
+	logger.Logger.Print("%s vehicleId:%s", util.RunFuncName(), vehicleId)
+
 	flowStatistics := &model.FlowStatistic{
 		VehicleId: vehicleId,
 	}

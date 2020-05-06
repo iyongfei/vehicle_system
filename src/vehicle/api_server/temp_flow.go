@@ -25,6 +25,8 @@ func GetTFlows(c *gin.Context) {
 		logger.Logger.Print("%s vehicleId:%s argsTrimsEmpty", util.RunFuncName(), vehicleId)
 		return
 	}
+	logger.Logger.Info("%s vehicleId:%s", util.RunFuncName(), vehicleId)
+	logger.Logger.Print("%s vehicleId:%s", util.RunFuncName(), vehicleId)
 
 	//查询是否存在
 	vehicleInfo := &model.VehicleInfo{}
@@ -73,6 +75,8 @@ func GetTFlowsDps(c *gin.Context) {
 		logger.Logger.Print("%s vehicleId:%s argsTrimsEmpty", util.RunFuncName(), vehicleId)
 		return
 	}
+	logger.Logger.Info("%s vehicleId:%s", util.RunFuncName(), vehicleId)
+	logger.Logger.Print("%s vehicleId:%s", util.RunFuncName(), vehicleId)
 
 	//查询是否存在
 	vehicleInfo := &model.VehicleInfo{}

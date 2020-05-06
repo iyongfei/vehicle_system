@@ -22,7 +22,8 @@ func GetMonitor(c *gin.Context) {
 		logger.Logger.Print("%s argsTrimsEmpty vehicleId:%s argsTrimsEmpty", util.RunFuncName(), vehicleId)
 		return
 	}
-
+	logger.Logger.Info("%s vehicleId:%s", util.RunFuncName(), vehicleId)
+	logger.Logger.Print("%s vehicleId:%s", util.RunFuncName(), vehicleId)
 	//判断有无vehicle
 	vehicleInfo := &model.VehicleInfo{
 		VehicleId: vehicleId,
@@ -58,6 +59,8 @@ func GetMonitor(c *gin.Context) {
 
 	diskErr := diskModelBase.GetModelListByCondition(&diskList, "monitor_id = ?", disk.MonitorId)
 	if diskErr != nil {
+		logger.Logger.Error("%s argsTrimsEmpty diskErr:%+v", util.RunFuncName(), diskErr)
+		logger.Logger.Print("%s argsTrimsEmpty diskErr:%+v", util.RunFuncName(), diskErr)
 
 	}
 
@@ -65,15 +68,24 @@ func GetMonitor(c *gin.Context) {
 	redisInfo := &model.RedisInfo{
 		MonitorId: vehicleId,
 	}
-	_ = mysql.QueryModelOneRecordByWhereConditionOrderBy(redisInfo, "id desc", "monitor_id = ?", redisInfo.MonitorId)
+	redisInfoErr := mysql.QueryModelOneRecordByWhereConditionOrderBy(redisInfo, "id desc", "monitor_id = ?", redisInfo.MonitorId)
+	if redisInfoErr != nil {
+		logger.Logger.Error("%s argsTrimsEmpty redisInfoErr:%+v", util.RunFuncName(), redisInfoErr)
+		logger.Logger.Print("%s argsTrimsEmpty redisInfoErr:%+v", util.RunFuncName(), redisInfoErr)
+
+	}
 
 	//vhalonets
 	vhaloInfo := &model.VhaloNets{
 		MonitorId: vehicleId,
 	}
 
-	_ = mysql.QueryModelOneRecordByWhereConditionOrderBy(vhaloInfo, "id desc", "monitor_id = ?", vhaloInfo.MonitorId)
+	vhaloInfoErr := mysql.QueryModelOneRecordByWhereConditionOrderBy(vhaloInfo, "id desc", "monitor_id = ?", vhaloInfo.MonitorId)
+	if vhaloInfoErr != nil {
+		logger.Logger.Error("%s argsTrimsEmpty vhaloInfoErr:%+v", util.RunFuncName(), vhaloInfoErr)
+		logger.Logger.Print("%s argsTrimsEmpty vhaloInfoErr:%+v", util.RunFuncName(), vhaloInfoErr)
 
+	}
 	vehicleMonitorItemsResponse := model.VehicleMonitorItemsResponse{
 		Disks:     diskList,
 		RedisInfo: *redisInfo,
