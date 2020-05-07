@@ -42,7 +42,7 @@ func V1Router(r *gin.Engine) {
 		//////////////////////////////////////////////车载接口//////////////////////////////////////////////
 		apiV1.GET("/vehicles/:vehicle_id", api_server.GetVehicle) //todo
 		apiV1.POST("/vehicles", api_server.AddVehicle)
-		apiV1.PUT("/vehicles/:vehicle_id", api_server.EditVehicle)
+		apiV1.PUT("/vehicles/:vehicle_id", api_server.EditVehicle) //todo
 		//apiV1.DELETE("/vehicles/:vehicle_id", api_server.DeleVehicle)
 		//apiV1.GET("/vehicles", api_server.GetVehicles)
 

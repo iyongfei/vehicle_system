@@ -15,7 +15,7 @@ func QueryRawsqlScanStruct(sql string, arg interface{}, obj interface{}) error {
 	if err != nil {
 		return fmt.Errorf("%s open grom err:%v", util.RunFuncName(), err.Error())
 	}
-	err = vgorm.Raw(sql, arg).Scan(obj).Error
+	err = vgorm.Debug().Raw(sql, arg).Scan(obj).Error
 	if err != nil {
 		return fmt.Errorf("%s err %v", util.RunFuncName(), err.Error())
 	}

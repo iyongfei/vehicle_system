@@ -189,8 +189,9 @@ func GetFlowTypeCounts(c *gin.Context) {
 	}
 
 	type FlowSafeType struct {
-		SafeType int
-		Count    int
+		SafeType    int
+		Count       int
+		SafeTypeStr string
 	}
 
 	flowSafeTypeModelList := []*FlowSafeType{}
@@ -203,12 +204,23 @@ func GetFlowTypeCounts(c *gin.Context) {
 		return
 	}
 
+	var FlowSafetype_name = map[int]string{
+		0: "FS_UNSET",
+		1: "FS_SAFE",
+		2: "FS_VERY_DANGER",
+		3: "FS_EMAL_LEAKAGE",
+		4: "FS_LEAKAGE",
+		5: "FS_WARNING",
+	}
+
 	totalCount := 0
-	flowMap := map[int]int{}
+	flowMap := map[string]int{}
 	for _, flowSafeType := range flowSafeTypeModelList {
+
 		ftype := flowSafeType.SafeType
+		SafeTypeStr := FlowSafetype_name[ftype]
 		fcount := flowSafeType.Count
-		flowMap[ftype] = fcount
+		flowMap[SafeTypeStr] = fcount
 		totalCount += fcount
 	}
 	responseData := map[string]interface{}{
