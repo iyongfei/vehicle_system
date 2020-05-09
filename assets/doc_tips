@@ -21,6 +21,7 @@ CGO_ENABLED=0 GOOS=linux GOARCH=arm go build main.go
 CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build main.go
 CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build main.go
 CGO_ENABLED=0 GOOS=linux GOARCH=arm go build -o vservice main.go
+
 #window下编译
 SET CGO_ENABLED=0
 SET GOOS=darwin
@@ -74,6 +75,19 @@ $ dpkg -e   mydeb.deb   mydeb/DEBIAN    # 第一个参数为所要解压的deb�
                                         # 第二个参数为将deb包解压到指定的目录，
                                         # 这里为 mydeb/DEBIAN
 
+
+
+############################################
+
+dpkg -l apache2
+
+locate apache2
+
+apt-get --purge remove apache2
+apt-get remove softname
+dpkg -r --purge xxx.deb
+dpkg -info xxx.deb
+
 ###################################################swagger########################################################
 http://192.168.1.192:7001/swagger/index.html
 
@@ -98,3 +112,38 @@ mosquitto_sub -h 127.0.0.1 -t $SYS/brokers/+/clients/+/+ -d
  netstat -natp | grep 7001
 
  123.57.252.4
+
+####################################docker############################
+tar zcvf emqx_p.tar.gz *
+docker run -i -t emqx/emqx:v4.0.0 /bin/sh
+docker cp mycontainer:/opt/testnew/file.txt /opt/test/
+docker load < emqx-docker-v4.0.0
+
+docker exec -it 1d815b29ae85 /bin/sh
+
+docker inspect 65f54c800452 (镜像)
+
+
+####################################################
+//go清华园
+https://mirrors.tuna.tsinghua.edu.cn/debian/pool/main/e/erlang/
+
+//编译go
+git clone https://github.com/erlang/otp.git
+cd otp
+./otp_build autoconf
+./configure
+make
+make install
+
+//go构建工具
+https://github.com/erlang/rebar3.git
+
+//emqx包
+https://github.com/emqx/emqx/releases?after=v3.2-beta.2
+
+//emqx编译包
+https://github.com/emqx/emqx-rel
+git clone -b v3.1.1 https://github.com/emqx/emqx-rel.git emqx-rel
+cd emqx-rel && make
+./_build/emqx/rel/emqx/bin/emqx console

@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"flag"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
@@ -10,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"time"
+	"vehicle_system/src/vehicle_script/tool"
 )
 
 func main() {
@@ -27,19 +27,29 @@ func main() {
 	router.Run(fmt.Sprintf("%s:%s", ip, port))
 }
 
-//./push_script -ip 192.168.1.1 -port 7001
 func initConfIni() (string, string) {
-	var ip string
-	var port string
+	apiConfigMap := tool.InitConfig("conf.ini")
+	push_host := apiConfigMap["push_host"]
+	push_port := apiConfigMap["push_port"]
 
-	flag.StringVar(&ip, "h", "", "")
-	flag.StringVar(&port, "p", "", "")
+	fmt.Println("ini_pushhost-->", push_host, ",ini_pushport-->", push_port)
 
-	flag.Parse()
-
-	fmt.Println("ip==>", ip, ",port==>", port)
-	return ip, port
+	return push_host, push_port
 }
+
+//./push_script -ip 192.168.1.1 -port 7001
+//func initConfIni() (string, string) {
+//	var ip string
+//	var port string
+//
+//	flag.StringVar(&ip, "h", "192.1", "")
+//	flag.StringVar(&port, "p", "", "")
+//
+//	flag.Parse()
+//
+//	fmt.Println("ip==>", ip, ",port==>", port)
+//	return ip, port
+//}
 
 func TFlowStats(c *gin.Context) {
 
