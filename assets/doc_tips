@@ -147,3 +147,5 @@ https://github.com/emqx/emqx-rel
 git clone -b v3.1.1 https://github.com/emqx/emqx-rel.git emqx-rel
 cd emqx-rel && make
 ./_build/emqx/rel/emqx/bin/emqx console
+
+apt -f -y install
