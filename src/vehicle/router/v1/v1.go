@@ -3,11 +3,12 @@ package v1
 import (
 	"github.com/gin-gonic/gin"
 	"vehicle_system/src/vehicle/api_server"
+	"vehicle_system/src/vehicle/middleware"
 )
 
 func V1Router(r *gin.Engine) {
 	apiV1 := r.Group("/api/v1")
-	apiV1.Use( /*middleware.AuthMiddle()*/ )
+	apiV1.Use(middleware.AuthMiddle())
 	{
 
 		//////////////////////////////////////////////流量接口//////////////////////////////////////////////

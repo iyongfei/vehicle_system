@@ -133,6 +133,9 @@ var doc = `{
                     "description": "处理方式",
                     "type": "integer"
                 },
+                "scvPath": {
+                    "type": "string"
+                },
                 "type": {
                     "description": "策略模式",
                     "type": "integer"
