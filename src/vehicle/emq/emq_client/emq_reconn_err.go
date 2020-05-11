@@ -14,7 +14,7 @@ func EmqReConnectTokenError() {
 
 	PushAllVehicleOffLine()
 
-	t := time.NewTicker(time.Second * 30)
+	t := time.NewTicker(time.Second * 60)
 	select {
 	case <-t.C:
 		if !EmqClient.IsConnected() {

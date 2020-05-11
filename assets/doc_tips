@@ -14,13 +14,13 @@ go mod why: 解释为什么需要依赖
 #Mac 下编译 Linux 和 Windows 64位可执行程序
 CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build main.go
 CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build main.go
-
+CGO_ENABLED=0 GOOS=linux GOARCH=arm go build -o vservice main.go
 
 CGO_ENABLED=0 GOOS=linux GOARCH=arm go build main.go
 #Linux 下编译 Mac 和 Windows 64位可执行程序
 CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build main.go
 CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build main.go
-CGO_ENABLED=0 GOOS=linux GOARCH=arm go build -o vservice main.go
+
 
 #window下编译
 SET CGO_ENABLED=0
@@ -189,3 +189,19 @@ https://mirrors.tuna.tsinghua.edu.cn/debian/pool/main/e/erlang/erlang-edoc_21.2.
 
 erlang-eunit
 https://mirrors.tuna.tsinghua.edu.cn/debian/pool/main/e/erlang/erlang-eunit_21.2.6+dfsg-1_arm64.deb
+
+
+
+ /home/emqx/bin/mylib/libcrypto/libcrypto.so.1.1
+https://github.com/emqx/emqx/issues/3288
+
+
+
+linux-vdso.so.1 =>  (0x00007ffe953cf000)
+
+	libcrypto.so.10 => /lib64/libcrypto.so.10 (0x00007f7135315000)
+
+	libc.so.6 => /lib64/libc.so.6 (0x00007f7134f48000)
+	libdl.so.2 => /lib64/libdl.so.2 (0x00007f7134d44000)
+	libz.so.1 => /lib64/libz.so.1 (0x00007f7134b2e000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f7135991000)
