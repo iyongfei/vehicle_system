@@ -109,6 +109,7 @@ mosquitto_sub -h 127.0.0.1 -t $SYS/brokers/+/clients/+/+ -d
  */
 
 
+
  netstat -natp | grep 7001
 
  123.57.252.4
@@ -149,3 +150,36 @@ cd emqx-rel && make
 ./_build/emqx/rel/emqx/bin/emqx console
 
 apt -f -y install
+
+
+apt-get install
+
+erlang-crypto
+https://mirrors.tuna.tsinghua.edu.cn/debian/pool/main/e/erlang/erlang-crypto_21.2.6%2Bdfsg-1_arm64.deb
+
+erlang-eldap
+https://mirrors.tuna.tsinghua.edu.cn/debian/pool/main/e/erlang/erlang-eldap_21.2.6%2Bdfsg-1_arm64.deb
+
+erlang-public-key
+https://mirrors.tuna.tsinghua.edu.cn/debian/pool/main/e/erlang/erlang-public-key_21.2.6%2Bdfsg-1_arm64.deb
+
+erlang-runtime-tools
+https://mirrors.tuna.tsinghua.edu.cn/debian/pool/main/e/erlang/erlang-runtime-tools_21.2.6%2Bdfsg-1_arm64.deb
+
+erlang-ssl
+https://mirrors.tuna.tsinghua.edu.cn/debian/pool/main/e/erlang/erlang-ssl_21.2.6%2Bdfsg-1_arm64.deb
+
+inets
+https://mirrors.tuna.tsinghua.edu.cn/debian/pool/main/e/erlang/erlang-inets_21.2.6+dfsg-1_arm64.deb
+
+erlang-parsetools
+https://mirrors.tuna.tsinghua.edu.cn/debian/pool/main/e/erlang/erlang-parsetools_21.2.6+dfsg-1_arm64.deb
+
+erlang-dev
+https://mirrors.tuna.tsinghua.edu.cn/debian/pool/main/e/erlang/erlang-dev_21.2.6%2Bdfsg-1_arm64.deb
+
+erlang-edoc
+https://mirrors.tuna.tsinghua.edu.cn/debian/pool/main/e/erlang/erlang-edoc_21.2.6+dfsg-1_arm64.deb
+
+erlang-eunit
+https://mirrors.tuna.tsinghua.edu.cn/debian/pool/main/e/erlang/erlang-eunit_21.2.6+dfsg-1_arm64.deb
