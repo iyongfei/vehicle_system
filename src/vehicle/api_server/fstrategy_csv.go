@@ -55,7 +55,7 @@ func GetFStrategyCsv(c *gin.Context) {
 		return
 	}
 	//获取csv文件
-	csvPath := fstrategy.ScvPath
+	csvPath := fstrategy.CsvPath
 	fStrategyCsvFolderIndex := strings.Index(csvPath, csv.FStrategyCsvFolder)
 
 	var csvFileName string
@@ -261,13 +261,13 @@ func UploadFStrategyCsv(c *gin.Context) {
 	csvModel.SetCsvWritData(fCsvHeader, csvFstrategyModelBody)
 
 	attrs := map[string]interface{}{
-		"scv_path": csvModel.CsvFilePath,
+		"csv_path": csvModel.CsvFilePath,
 	}
 	if err := fstrategyModelBase.UpdateModelsByCondition(attrs, "fstrategy_id = ?", fstrategy.FstrategyId); err != nil {
-		logger.Logger.Print("%s vehicle_id:%s insert fstrategy scv_path err:%+v", util.RunFuncName(), csvModel.CsvFilePath, err)
-		logger.Logger.Info("%s vehicle_id:%s insert fstrategy scv_path err:%+v", util.RunFuncName(), csvModel.CsvFilePath, err)
+		logger.Logger.Print("%s vehicle_id:%s insert fstrategy csv_path err:%+v", util.RunFuncName(), csvModel.CsvFilePath, err)
+		logger.Logger.Info("%s vehicle_id:%s insert fstrategy csv_path err:%+v", util.RunFuncName(), csvModel.CsvFilePath, err)
 	} else {
-		fstrategy.ScvPath = csvModel.CsvFilePath
+		fstrategy.CsvPath = csvModel.CsvFilePath
 	}
 
 	//删除文件
@@ -297,7 +297,7 @@ func UploadFStrategyCsv(c *gin.Context) {
 		HandleMode:               fstrategy.HandleMode,
 		Enable:                   fstrategy.Enable,
 		VehicleId:                vehicleId,
-		ScvPath:                  fstrategy.ScvPath,
+		ScvPath:                  fstrategy.CsvPath,
 		VehicleFStrategyItemsMap: parseData[vehicleId],
 	}
 

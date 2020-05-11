@@ -389,7 +389,7 @@ CREATE TABLE IF NOT EXISTS `fstrategies`  (
   `type` tinyint(3) NULL DEFAULT NULL,
   `handle_mode` tinyint(3) NULL DEFAULT NULL,
   `enable` tinyint(1) NULL DEFAULT NULL,
-  `scv_path` varchar(255)  NULL DEFAULT NULL,
+  `csv_path` varchar(255)  NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_fstrategies_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;

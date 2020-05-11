@@ -389,13 +389,13 @@ func AddFStrategy(c *gin.Context) {
 	csvModel.SetCsvWritData(fCsvHeader, fCsvBody)
 
 	attrs := map[string]interface{}{
-		"scv_path": csvModel.CsvFilePath,
+		"csv_path": csvModel.CsvFilePath,
 	}
 	if err := fstrategyModelBase.UpdateModelsByCondition(attrs, "fstrategy_id = ?", fstrategy.FstrategyId); err != nil {
-		logger.Logger.Print("%s insert fstrategy scv_path:%s, err:%+v", util.RunFuncName(), csvModel.CsvFilePath, err)
-		logger.Logger.Info("%s insert fstrategy scv_path:%s, err:%+v", util.RunFuncName(), csvModel.CsvFilePath, err)
+		logger.Logger.Print("%s insert fstrategy csv_path:%s, err:%+v", util.RunFuncName(), csvModel.CsvFilePath, err)
+		logger.Logger.Info("%s insert fstrategy csv_path:%s, err:%+v", util.RunFuncName(), csvModel.CsvFilePath, err)
 	} else {
-		fstrategy.ScvPath = csvModel.CsvFilePath
+		fstrategy.CsvPath = csvModel.CsvFilePath
 	}
 
 	//下发策略
@@ -417,7 +417,7 @@ func AddFStrategy(c *gin.Context) {
 		HandleMode:               fstrategy.HandleMode,
 		Enable:                   fstrategy.Enable,
 		VehicleId:                vehicleInfo.VehicleId,
-		ScvPath:                  fstrategy.ScvPath,
+		ScvPath:                  fstrategy.CsvPath,
 		VehicleFStrategyItemsMap: finalDiportsMap,
 	}
 
@@ -513,7 +513,7 @@ func DeleFStrategy(c *gin.Context) {
 	}
 	//删除scv
 	//http://192.168.100.2:7001/fstrategy_csv/N5gqNSN0lpV30gKJOfBkYvGudNUfj1V5.csv
-	csvPath := fstrategyObj.ScvPath
+	csvPath := fstrategyObj.CsvPath
 	fStrategyCsvFolderIndex := strings.Index(csvPath, csv.FStrategyCsvFolder)
 
 	var csvFileName string
