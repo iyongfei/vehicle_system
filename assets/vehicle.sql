@@ -359,6 +359,21 @@ CREATE TABLE IF NOT EXISTS `strategy_vehicle_learning_results`  (
   INDEX `idx_strategy_vehicle_learning_results_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
+
+CREATE TABLE IF NOT EXISTS `strategy_groups`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+
+  `strategy_group_id` varchar(255)  NULL DEFAULT NULL,
+  `strategy_id` varchar(255)  NULL DEFAULT NULL,
+  `group_id` varchar(255) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_strategy_groups_deleted_at`(`deleted_at`) USING BTREE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+
 -- ----------------------------
 -- Table structure for FlowStrategy
 -- ----------------------------

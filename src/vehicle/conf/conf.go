@@ -53,7 +53,6 @@ var (
 	SubscribeChanIdle    time.Duration
 
 	//jwt
-	Expires time.Duration
 	SignKey string
 )
 
@@ -125,9 +124,8 @@ func Setup() {
 		EmqBrokerUrl, EmqClientId, EmqKeepAlive, AutoReconnect, ConnectTimeOut, EmqPingTimeOut, EmqCleanSession,
 		EmqUser, EmqPassword, MaxReconnectInterval, EmqQos, PublishChanCapa, PublishChanIdle, SubscribeChanCapa, SubscribeChanIdle)
 
-	Expires = iniParser.GetTimeDuration("jwt", "expires")
 	SignKey = iniParser.GetString("jwt", "sign_key")
 
-	logger.Logger.Info("Expires:%d,SignKey:%s", Expires, SignKey)
-	logger.Logger.Print("Expires:%d,SignKey:%s", Expires, SignKey)
+	logger.Logger.Info("SignKey:%s", SignKey)
+	logger.Logger.Print("SignKey:%s", SignKey)
 }

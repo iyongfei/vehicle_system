@@ -11,7 +11,7 @@ import (
 失去连接
 */
 var connLostFlag = false
-var ConconnlostReconnectTime time.Duration = 30
+var ConconnlostReconnectTime time.Duration = 60
 
 func Conconnlost(client mqtt.Client, err error) {
 	if connLostFlag == true {

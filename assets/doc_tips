@@ -32,7 +32,11 @@ SET GOOS=linux
 SET GOARCH=amd64
 go build main.go
 
-
+root@FT2000:/opt/JyCenter/vcenter/script# 1589277063: mosquitto version 1.6.9 starting
+1589277063: Config loaded from /opt/JyCenter/local/emqx/mosquitto.conf.
+1589277063: Opening ipv4 listen socket on port 8843.
+1589277063: Opening ipv6 listen socket on port 8843.
+1589277063: Error: Invalid user 'mosquitto'.
 
 ####################################protoc用法###################################
 /Users/mac/go/vehicle_system/src/vehicle/emq/protobuf
@@ -207,3 +211,12 @@ linux-vdso.so.1 =>  (0x00007ffe953cf000)
 
 ###################mysql##########################
 ALTER TABLE fstrategies CHANGE scv_path csv_path varchar(255)  NULL DEFAULT NULL;
+
+
+#################################
+emq_pids=`ps -ef | grep /opt/JyCenter/local/emqx | grep -v grep | awk '{print $2}'`
+
+
+userdel 用户名  //仅删除用户
+
+userdel -r 用户名  //连带用户主目录一起删除

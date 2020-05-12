@@ -28,33 +28,47 @@ func checkTable(model interface{}) (error, int64) {
 
 func getTables() []interface{} {
 	//添加各个&model表
-	flow := &model.Flow{}
-	firmwareUpdate := &model.FirmwareUpdate{}
-	firmwareInfo := &model.FirmwareInfo{}
-	vehicleInfo := &model.VehicleInfo{}
-	vehicleLeader := &model.VehicleLeader{}
-	user := &model.User{}
+	area := &model.AreaGroup{}
+	assetLeader := &model.AssetLeader{}
 	asset := &model.Asset{}
-	threat := &model.Threat{}
-	whiteList := &model.WhiteList{}
-	portMap := &model.PortMap{}
-	strategy := &model.Strategy{}
-	strategyVehicle := &model.StrategyVehicle{}
+	automatedLearning := &model.AutomatedLearning{}
+	automatedLearningResult := &model.AutomatedLearningResult{}
+	disk := &model.Disk{}
+	firmwareInfo := &model.FirmwareInfo{}
+	firmwareUpdate := &model.FirmwareUpdate{}
+
+	flowStatistic := &model.FlowStatistic{}
+	flow := &model.Flow{}
 	flowStrategy := &model.Fstrategy{}
 	flowStrategyVehicles := &model.FstrategyVehicle{}
 	flowStrategyTtem := &model.FstrategyItem{}
 	flowStrategyRelateItem := &model.FstrategyVehicleItem{}
-	sample := &model.Sample{}
+	portMap := &model.PortMap{}
+	redisInfo := &model.RedisInfo{}
 	sampleItem := &model.SampleItem{}
+	sample := &model.Sample{}
+	strategy := &model.Strategy{}
+	strategyVehicle := &model.StrategyVehicle{}
+	strategyVehicleLearnings := &model.StrategyVehicleLearningResult{}
+	strategyGroup := &model.StrategyGroup{}
+
 	studyOrigin := &model.StudyOrigin{}
-	automatedLearning := &model.AutomatedLearning{}
-	automatedLearningResult := &model.AutomatedLearningResult{}
+
+	tflow := &model.TempFlow{}
+	threat := &model.Threat{}
+	user := &model.User{}
+
+	vehicleInfo := &model.VehicleInfo{}
+	vehicleLeader := &model.VehicleLeader{}
+
+	vhalonet := &model.VhaloNets{}
+	whiteList := &model.WhiteList{}
 
 	tables := []interface{}{
-		flow, firmwareUpdate, firmwareInfo, vehicleInfo, vehicleLeader,
-		user, asset, threat, whiteList, portMap, strategy, strategyVehicle,
-		flowStrategy, flowStrategyVehicles, flowStrategyVehicles,
-		flowStrategyTtem, flowStrategyRelateItem, sample,
+		area, asset, assetLeader, flow, tflow, flowStatistic, firmwareUpdate, firmwareInfo, vehicleInfo, vehicleLeader,
+		user, disk, threat, whiteList, vhalonet, redisInfo, portMap, strategy, strategyGroup, strategyVehicle,
+		flowStrategy, flowStrategyVehicles,
+		flowStrategyTtem, flowStrategyRelateItem, sample, strategyVehicleLearnings,
 		sampleItem, studyOrigin, automatedLearning, automatedLearningResult,
 	}
 
