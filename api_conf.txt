@@ -1,4 +1,4 @@
-server_ip = 192.168.1.167
+server_ip = localhost
 
 #策略接口
 vehicle_ids=gBDvsD4qnAdR9K4cTIZoq7Zr05Ox1udr

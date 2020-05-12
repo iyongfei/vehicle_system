@@ -64,7 +64,7 @@ func addFStrategy() {
 	fips := configs["fips"]
 	fports := configs["fports"]
 
-	//token := tool.GetVehicleToken()
+	token := tool.GetVehicleToken()
 	reqUrl := fstrategyUrls["post_fstrategy"]
 
 	diports := creatFastrategyIpPortData(fips, fports)
@@ -75,7 +75,7 @@ func addFStrategy() {
 	}
 	fmt.Println("req::::::", reqUrl, diports)
 
-	resp, _ := tool.PostForm(reqUrl, queryParams, "token")
+	resp, _ := tool.PostForm(reqUrl, queryParams, token)
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))
 }

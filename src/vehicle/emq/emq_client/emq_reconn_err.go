@@ -18,8 +18,8 @@ func EmqReConnectTokenError() {
 	select {
 	case <-t.C:
 		if !EmqClient.IsConnected() {
-			logger.Logger.Print("%s,emqClient:%v", util.RunFuncName(), &EmqClient)
-			logger.Logger.Info("%s,emqClient:%v", util.RunFuncName(), &EmqClient)
+			logger.Logger.Print("%s,emqReConnectTokenError:%v", util.RunFuncName(), &EmqClient)
+			logger.Logger.Info("%s,emqReConnectTokenError:%v", util.RunFuncName(), &EmqClient)
 			GetEmqInstance().InitEmqClient()
 		}
 		t.Stop()

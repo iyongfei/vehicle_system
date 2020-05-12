@@ -16,7 +16,6 @@ CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build main.go
 CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build main.go
 CGO_ENABLED=0 GOOS=linux GOARCH=arm go build -o vservice main.go
 
-CGO_ENABLED=0 GOOS=linux GOARCH=arm go build main.go
 #Linux 下编译 Mac 和 Windows 64位可执行程序
 CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build main.go
 CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build main.go
@@ -205,3 +204,6 @@ linux-vdso.so.1 =>  (0x00007ffe953cf000)
 	libdl.so.2 => /lib64/libdl.so.2 (0x00007f7134d44000)
 	libz.so.1 => /lib64/libz.so.1 (0x00007f7134b2e000)
 	/lib64/ld-linux-x86-64.so.2 (0x00007f7135991000)
+
+###################mysql##########################
+ALTER TABLE fstrategies CHANGE scv_path csv_path varchar(255)  NULL DEFAULT NULL;

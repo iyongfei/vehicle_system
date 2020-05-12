@@ -52,11 +52,8 @@ func (t *TopicSubscribeHandler) HanleSubscribeTopicData(topicMsg mqtt.Message) e
 		return fmt.Errorf("hanleSubscribeTopicData unmarshal payload err:%s", err)
 	}
 	//vehicleId null
-	vehicleIdTrim := util.RrgsTrimEmptyTableEnter(vehicleResult.GetGUID())
+	//vehicleIdTrim := util.RrgsTrimEmptyTableEnter(vehicleResult.GetGUID())
 	vehicleId := vehicleResult.GetGUID()
-
-	logger.Logger.Print("hanleSubscribeTopicData vehicleIdTrim_length:%d,vehicleId_length:%d", len(vehicleIdTrim), len(vehicleId))
-	logger.Logger.Info("hanleSubscribeTopicData vehicleIdTrim_length:%d,vehicleId_length:%d", len(vehicleIdTrim), len(vehicleId))
 
 	if util.RrgsTrimEmpty(vehicleId) {
 		return fmt.Errorf("vehicleResult vehicle id null")
