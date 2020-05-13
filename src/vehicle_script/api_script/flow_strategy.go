@@ -69,9 +69,7 @@ func addFStrategy() {
 	fips := configs["fips"]
 	fports := configs["fports"]
 
-	//token := tool.GetVehicleToken()
-	token := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYjZScmxOY0ozS3dSWDcweHRrdWx5SVpoaWNpVUs4OU4iLCJ1c2VyX25hbWUiOiJzYWZseWVyIiwicGFzc193b3JkIjoiNGMzNWMxNjZjYzVkMjhjYjk2YWQ1YzYwNmNkMmYyNjMiLCJleHAiOjE2MjUzNzk0ODEsImlzcyI6InZlaGljbGUifQ.FPRYE9wtMbdXCvx8MmhEuqoBvU2y8-SUCOlHADW2Mak"
-	fmt.Println(token, "stoken.........")
+	token := tool.GetVehicleToken()
 	reqUrl := fstrategyUrls["post_fstrategy"]
 
 	diports := creatFastrategyIpPortData(fips, fports)

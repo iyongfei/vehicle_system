@@ -5,7 +5,6 @@ import (
 	"encoding/binary"
 	"fmt"
 	"github.com/jinzhu/gorm"
-	"strconv"
 	"vehicle_system/src/vehicle/conf"
 	"vehicle_system/src/vehicle/util"
 )
@@ -73,14 +72,17 @@ func main() {
 	//小->大
 	sipBigEndian := util.BytesToBigEndian(util.LittleToBytes(uint32(s)))
 	//转换////////////////
-	dipf := strconv.Itoa(int(sipBigEndian))
+	dipf := int(sipBigEndian)
 	fmt.Println(dipf)
 
 	//大->小
-	//dipLittleEndian := util.BytesToLittleEndian(util.BigToBytes(uint32(dipf)))
-	//fss := util.IpIntToString(int(dipLittleEndian))
-	//fmt.Println(fss)
+	dipLittleEndian := util.BytesToLittleEndian(util.BigToBytes(uint32(dipf)))
+	fss := util.IpIntToString(int(dipLittleEndian))
+	fmt.Println(fss)
 
+	//大端
+	rr := util.IpIntToString(2046929088)
+	fmt.Println("int-->ip", rr)
 }
 
 type FlowProtos int32

@@ -16,6 +16,8 @@ func auth() {
 	password := apiConfigMap["password"]
 	ip := apiConfigMap["server_ip"]
 
+	fmt.Println(user_name, password, ip)
+
 	req_url := fmt.Sprintf("http://%s:7001/auth", ip)
 	bodyParams := map[string]interface{}{
 		"user_name": user_name,

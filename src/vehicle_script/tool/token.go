@@ -7,7 +7,7 @@ func GetVehicleToken() string {
 
 	bodyParams := map[string]interface{}{
 		"user_name": "saflyer",
-		"password":  "4c35c166cc5d28cb96ad5c606cd2f263",
+		"password":  "123456",
 	}
 	resp, _ := PostForm(reqUrl, bodyParams, "")
 
