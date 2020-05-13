@@ -73,6 +73,7 @@ func main() {
 	sipBigEndian := util.BytesToBigEndian(util.LittleToBytes(uint32(s)))
 	//转换////////////////
 	dipf := int(sipBigEndian)
+
 	fmt.Println(dipf)
 
 	//大->小

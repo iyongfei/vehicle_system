@@ -7,8 +7,8 @@ import (
 )
 
 var tFlow_urls = map[string]string{
-	"get_flow":   "http://localhost:7001/api/v1/flows/2768455442",
-	"get_flows":  "http://localhost:7001/api/v1/tflows",
+	"get_flow":   "http://192.168.1.103:7001/api/v1/flows/2768455442",
+	"get_flows":  "http://192.168.1.103:7001/api/v1/tflows",
 	"tflow_dps":  "http://localhost:7001/api/v1/flow_dps",
 	"pagination": "http://localhost:7001/api/v1/pagination/flows",
 	"post_flows": "http://localhost:7001/api/v1/flows",
@@ -17,22 +17,15 @@ var tFlow_urls = map[string]string{
 }
 
 func main() {
-	//getFlow()
-	//getTflows()
-	getTflowsDps()
-	//getPaginationFlows()
-	//addFlows()
-	//editFlows()
-	//deleFlows()
-
-	//pushFlow()
+	getTflows()
+	//getTflowsDps()
 }
 
 func getTflowsDps() {
 	token := tool.GetVehicleToken()
 
 	queryParams := map[string]interface{}{
-		"vehicle_id": "754d2728b4e549c5a16c0180fcacb800",
+		"vehicle_id": "ada81f6c788e40d4bbb9bfd2ee476a80",
 	}
 
 	reqUrl := tFlow_urls["tflow_dps"]
@@ -47,7 +40,7 @@ func getTflows() {
 	token := tool.GetVehicleToken()
 
 	queryParams := map[string]interface{}{
-		"vehicle_id": "754d2728b4e549c5a16c0180fcacb800",
+		"vehicle_id": "ada81f6c788e40d4bbb9bfd2ee476a80",
 	}
 
 	reqUrl := tFlow_urls["get_flows"]
