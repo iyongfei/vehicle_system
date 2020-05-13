@@ -19,8 +19,9 @@ func HandleVehicleFlowStrategy(vehicleResult protobuf.GWResult, vehicleId string
 		logger.Logger.Error("%s unmarshal vehicle flow strategy err:%s", util.RunFuncName(), err.Error())
 		return fmt.Errorf("%s unmarshal vehicle flow strategy err:%s", util.RunFuncName(), err.Error())
 	}
-	logger.Logger.Print("%s unmarshal vehicle flow strategy:%+v", util.RunFuncName(), flowStrategyParam)
-	logger.Logger.Info("%s unmarshal vehicle flow strategy:%+v", util.RunFuncName(), flowStrategyParam)
+	logger.Logger.Print("%s handle_fstrategy:%+v", util.RunFuncName(), *flowStrategyParam)
+	logger.Logger.Info("%s handle_fstrategy:%+v", util.RunFuncName(), *flowStrategyParam)
+
 	//create
 	flowStrategyInfo := &model.Fstrategy{
 		FstrategyId: flowStrategyParam.GetFlowStrategyId(),

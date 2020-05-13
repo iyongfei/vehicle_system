@@ -24,6 +24,9 @@ func HandleVehicleFlow(vehicleResult protobuf.GWResult, vehicleId string) error 
 	var sendFlows []*model.Flow
 
 	for _, flowItem := range flowParams.FlowItem {
+		//输出log
+		logger.Logger.Print("%s handle_flow%+v", util.RunFuncName(), *flowItem)
+		logger.Logger.Info("%s handle_flow%+v", util.RunFuncName(), *flowItem)
 
 		flowItemId := flowItem.GetHash()
 		flowInfo := &model.Flow{
@@ -101,10 +104,6 @@ func HandleVehicleFlow(vehicleResult protobuf.GWResult, vehicleId string) error 
 			}
 		}
 	}
-
-	//会话状态
-	logger.Logger.Print("%s flow info %+v", util.RunFuncName(), sendFlows)
-	logger.Logger.Info("%s flow info %+v", util.RunFuncName(), sendFlows)
 
 	pushActionTypeName := protobuf.GWResult_ActionType_name[int32(vehicleResult.ActionType)]
 	pushVehicleid := vehicleId

@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/binary"
-	"encoding/json"
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"vehicle_system/src/vehicle/conf"
@@ -62,10 +61,41 @@ func main() {
 	//r1 := Str2Stamp("2020-05-06 19:55:15")
 	//fmt.Println(r1)
 
-	a := `["a","b"] `
-	aa := []string{}
-	json.Unmarshal([]byte(a), &aa)
-	fmt.Println(aa)
+	a := []*FlowParam_FItem{}
+
+	b := &FlowParam_FItem{
+		SrcIp:        12,
+		FlowInfo:     "wjelw",
+		Src2DstBytes: 1321,
+		Protocol:     FlowProtos(3232),
+	}
+	a = append(a, b)
+
+	fmt.Printf("%+v", *a[0])
+
+}
+
+type FlowProtos int32
+type FlowSafetype int32
+type FlowStat int32
+type FlowParam_FItem struct {
+	Hash                 uint32       `protobuf:"varint,1,opt,name=hash,proto3" json:"hash,omitempty"`
+	SrcIp                uint32       `protobuf:"varint,2,opt,name=src_ip,json=srcIp,proto3" json:"src_ip,omitempty"`
+	SrcPort              uint32       `protobuf:"varint,3,opt,name=src_port,json=srcPort,proto3" json:"src_port,omitempty"`
+	DstIp                uint32       `protobuf:"varint,4,opt,name=dst_ip,json=dstIp,proto3" json:"dst_ip,omitempty"`
+	DstPort              uint32       `protobuf:"varint,5,opt,name=dst_port,json=dstPort,proto3" json:"dst_port,omitempty"`
+	Protocol             FlowProtos   `protobuf:"varint,6,opt,name=protocol,proto3,enum=protobuf.FlowProtos" json:"protocol,omitempty"`
+	FlowInfo             string       `protobuf:"bytes,7,opt,name=flow_info,json=flowInfo,proto3" json:"flow_info,omitempty"`
+	SafeType             FlowSafetype `protobuf:"varint,8,opt,name=safe_type,json=safeType,proto3,enum=protobuf.FlowSafetype" json:"safe_type,omitempty"`
+	SafeInfo             string       `protobuf:"bytes,9,opt,name=safe_info,json=safeInfo,proto3" json:"safe_info,omitempty"`
+	StartTime            uint32       `protobuf:"varint,10,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
+	LastSeenTime         uint32       `protobuf:"varint,11,opt,name=last_seen_time,json=lastSeenTime,proto3" json:"last_seen_time,omitempty"`
+	Src2DstBytes         uint64       `protobuf:"varint,12,opt,name=src2dst_bytes,json=src2dstBytes,proto3" json:"src2dst_bytes,omitempty"`
+	Dst2SrcBytes         uint64       `protobuf:"varint,13,opt,name=dst2src_bytes,json=dst2srcBytes,proto3" json:"dst2src_bytes,omitempty"`
+	FlowStat             FlowStat     `protobuf:"varint,14,opt,name=flow_stat,json=flowStat,proto3,enum=protobuf.FlowStat" json:"flow_stat,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}     `json:"-"`
+	XXX_unrecognized     []byte       `json:"-"`
+	XXX_sizecache        int32        `json:"-"`
 }
 
 //r := bytesToLittleEndian(UintToBytes(690530496))

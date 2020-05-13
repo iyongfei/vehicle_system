@@ -21,8 +21,8 @@ func HandleVehicleProtect(vehicleResult protobuf.GWResult, vehicleId string) err
 		return fmt.Errorf("%s unmarshal vehicle protect err:%s", util.RunFuncName(), err.Error())
 	}
 
-	logger.Logger.Print("%s unmarshal vehicleProtectParam:%+v", util.RunFuncName(), vehicleProtectParam)
-	logger.Logger.Info("%s unmarshal vehicleProtectParam:%+v", util.RunFuncName(), vehicleProtectParam)
+	logger.Logger.Print("%s handle_protect:%+v", util.RunFuncName(), *vehicleProtectParam)
+	logger.Logger.Info("%s handle_protect:%+v", util.RunFuncName(), *vehicleProtectParam)
 	//create
 	vehicleInfo := &model.VehicleInfo{
 		VehicleId: vehicleId,
