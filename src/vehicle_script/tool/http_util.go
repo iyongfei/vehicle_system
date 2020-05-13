@@ -225,7 +225,7 @@ func PostForm(urlParam string, bodyParms map[string]interface{}, token string) (
 	if err != nil {
 		return nil, err
 	}
-	defer rsp.Body.Close()
+	//defer rsp.Body.Close()
 
 	buf, err := ioutil.ReadAll(rsp.Body)
 

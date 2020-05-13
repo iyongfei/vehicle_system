@@ -1,4 +1,4 @@
-server_ip = localhost
+server_ip = 192.168.1.103
 
 #策略接口
 vehicle_ids=gBDvsD4qnAdR9K4cTIZoq7Zr05Ox1udr
@@ -7,9 +7,9 @@ handle_mode=2
 
 
 #增加会话策略接口
-flow_vehicle_id=754d2728b4e549c5a16c0180fcacb800
-fips=192.168.1.1,192.168.1.2
-fports=123,124
+flow_vehicle_id=ada81f6c788e40d4bbb9bfd2ee476a80
+fips=192.168.1.122
+fports=2020
 
 #删除会话策略接口
 dele_flow_strategy_id=kh3mBQZVlMfQO4o6kiEY0j7skx4hEydr

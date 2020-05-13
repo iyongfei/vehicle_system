@@ -9,7 +9,7 @@ import (
 )
 
 var fstrategyUrls = map[string]string{
-	"post_fstrategy": "http://localhost:7001/api/v1/fstrategys",
+	"post_fstrategy": "http://192.168.1.103:7001/api/v1/fstrategys",
 	"dele_fstrategy": "http://localhost:7001/api/v1/fstrategys/",
 	"edit_fstrategy": "http://localhost:7001/api/v1/fstrategys/",
 	"get_fstrategy":  "http://localhost:7001/api/v1/fstrategys/",
@@ -36,6 +36,11 @@ func main() {
 	//getStrategyVehicleLearningResults()
 
 }
+
+/**
+resp {"code":2000,"data":{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYjZScmxOY0ozS3dSWDcweHRrdWx5SVpoaWNpVUs4OU4iLCJ1c2VyX25hbWUiOiJzYWZseWVyIiwicGFzc193b3JkIjoiNGMzNWMxNjZjYzVkMjhjYjk2YWQ1YzYwNmNkMmYyNjMiLCJleHAiOjE2MjUzNzk0ODEsImlzcyI6InZlaGljbGUifQ.FPRYE9wtMbdXCvx8MmhEuqoBvU2y8-SUCOlHADW2Mak","user_id":"b6RrlNcJ3KwRX70xtkulyIZhiciUK89N"},"msg":"该用户授权成功"}
+
+*/
 
 func editFStrategy() {
 	configs := getConfig()
@@ -64,7 +69,9 @@ func addFStrategy() {
 	fips := configs["fips"]
 	fports := configs["fports"]
 
-	token := tool.GetVehicleToken()
+	//token := tool.GetVehicleToken()
+	token := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYjZScmxOY0ozS3dSWDcweHRrdWx5SVpoaWNpVUs4OU4iLCJ1c2VyX25hbWUiOiJzYWZseWVyIiwicGFzc193b3JkIjoiNGMzNWMxNjZjYzVkMjhjYjk2YWQ1YzYwNmNkMmYyNjMiLCJleHAiOjE2MjUzNzk0ODEsImlzcyI6InZlaGljbGUifQ.FPRYE9wtMbdXCvx8MmhEuqoBvU2y8-SUCOlHADW2Mak"
+	fmt.Println(token, "stoken.........")
 	reqUrl := fstrategyUrls["post_fstrategy"]
 
 	diports := creatFastrategyIpPortData(fips, fports)

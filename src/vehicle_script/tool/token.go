@@ -3,7 +3,7 @@ package tool
 //map[string]interface{}
 
 func GetVehicleToken() string {
-	reqUrl := "http://localhost:7001/auth"
+	reqUrl := "http://192.168.1.103:7001/auth"
 
 	bodyParams := map[string]interface{}{
 		"user_name": "saflyer",

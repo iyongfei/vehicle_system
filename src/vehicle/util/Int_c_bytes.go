@@ -84,6 +84,7 @@ func IntToBytes(n int, b byte) ([]byte, error) {
 	return nil, fmt.Errorf("IntToBytes b param is invaild")
 }
 
+//
 func BigToBytes(n uint32) []byte {
 	var testBytes []byte = make([]byte, 4)
 	binary.BigEndian.PutUint32(testBytes, n)
