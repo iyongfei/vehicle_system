@@ -3,6 +3,7 @@ package emq_cmd
 import (
 	"encoding/json"
 	"github.com/golang/protobuf/proto"
+	"strconv"
 	"vehicle_system/src/vehicle/emq/protobuf"
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
@@ -93,8 +94,16 @@ func FetchDipPortList(setCmd *FStrategySetCmd) ([]*protobuf.FlowStrategyAddParam
 	fProtobufStrategyVehicleItems := []*protobuf.FlowStrategyAddParam_FlowStrategyItem{}
 	mapper := map[string][]uint32{}
 	for _, fItem := range fstrategyVehicleItems {
+
 		//去重
-		dip := fItem.DstIp
+		dstIp := fItem.DstIp //string
+		strDip, _ := strconv.Atoi(dstIp)
+
+		sipBigEndian := util.BytesToBigEndian(util.LittleToBytes(uint32(strDip)))
+		//转换
+
+		dip := strconv.Itoa(int(sipBigEndian))
+
 		dport := fItem.DstPort
 
 		if len(mapper[dip]) == 0 {

@@ -14,10 +14,6 @@ func BytesToInt(b []byte, isSymbol bool) (int, error) {
 	return bytesToIntU(b)
 }
 
-func BytesToInt32(buf []byte) uint32 {
-	return uint32(binary.BigEndian.Uint32(buf))
-}
-
 //字节数(大端)组转成int(无符号的)
 func bytesToIntU(b []byte) (int, error) {
 	if len(b) == 3 {
@@ -88,7 +84,7 @@ func IntToBytes(n int, b byte) ([]byte, error) {
 	return nil, fmt.Errorf("IntToBytes b param is invaild")
 }
 
-func UintToBytes(n uint32) []byte {
+func BigToBytes(n uint32) []byte {
 	var testBytes []byte = make([]byte, 4)
 	binary.BigEndian.PutUint32(testBytes, n)
 	return testBytes
@@ -97,4 +93,15 @@ func UintToBytes(n uint32) []byte {
 func BytesToLittleEndian(testBytes []byte) (ret uint32) {
 	ret = binary.LittleEndian.Uint32(testBytes)
 	return
+}
+
+///////////////////
+func BytesToBigEndian(buf []byte) uint32 {
+	return uint32(binary.BigEndian.Uint32(buf))
+}
+
+func LittleToBytes(n uint32) []byte {
+	var testBytes []byte = make([]byte, 4)
+	binary.LittleEndian.PutUint32(testBytes, n)
+	return testBytes
 }

@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"github.com/jinzhu/gorm"
+	"strconv"
 	"vehicle_system/src/vehicle/conf"
 	"vehicle_system/src/vehicle/util"
 )
@@ -52,26 +53,30 @@ func Str2Stamp(formatTimeStr string) int64 {
 	return millisecond
 }
 
+/**
+sipLittleEndian := util.BytesToLittleEndian(util.UintToBytes(flowItemParams.GetSrcIp()))
+flow.SrcIp = util.IpIntToString(int(sipLittleEndian))
+*/
+
 func main() {
-	////2020-04-30 19:55:15
-	//
-	//r := Str2Stamp("2020-04-30 19:55:15")
-	//fmt.Println(r)
-	//
-	//r1 := Str2Stamp("2020-05-06 19:55:15")
-	//fmt.Println(r1)
 
-	a := []*FlowParam_FItem{}
+	dip := "3232235898"
+	strDIp, _ := strconv.Atoi(dip)
 
-	b := &FlowParam_FItem{
-		SrcIp:        12,
-		FlowInfo:     "wjelw",
-		Src2DstBytes: 1321,
-		Protocol:     FlowProtos(3232),
-	}
-	a = append(a, b)
+	s := util.StringIpToInt("192.168.1.122")
+	fmt.Println(s, "sdfsdlf")
+	r := util.IpIntToString(s)
+	fmt.Println(r, "wejlrw")
 
-	fmt.Printf("%+v", *a[0])
+	sipBigEndian := util.BytesToBigEndian(util.LittleToBytes(uint32(strDIp)))
+	//转换////////////////
+
+	dipf := strconv.Itoa(int(sipBigEndian))
+	fmt.Println(dipf)
+
+	dipLittleEndian := util.BytesToLittleEndian(util.BigToBytes(2046929088))
+	fss := util.IpIntToString(int(dipLittleEndian))
+	fmt.Println(fss)
 
 }
 

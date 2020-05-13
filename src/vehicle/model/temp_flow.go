@@ -105,12 +105,12 @@ func (flow *TempFlow) CreateModel(flowParam ...interface{}) interface{} {
 	flowItemParams := flowParam[0].(*protobuf.FlowParam_FItem)
 	flow.Hash = flowItemParams.GetHash()
 
-	sipLittleEndian := util.BytesToLittleEndian(util.UintToBytes(flowItemParams.GetSrcIp()))
+	sipLittleEndian := util.BytesToLittleEndian(util.BigToBytes(flowItemParams.GetSrcIp()))
 	flow.SrcIp = util.IpIntToString(int(sipLittleEndian))
 
 	flow.SrcPort = flowItemParams.GetSrcPort()
 
-	dipLittleEndian := util.BytesToLittleEndian(util.UintToBytes(flowItemParams.GetDstIp()))
+	dipLittleEndian := util.BytesToLittleEndian(util.BigToBytes(flowItemParams.GetDstIp()))
 	flow.DstIp = util.IpIntToString(int(dipLittleEndian))
 
 	flow.DstPort = flowItemParams.GetDstPort()
