@@ -7,8 +7,8 @@ import (
 )
 
 var urls = map[string]string{
-	"get_flow":   "http://localhost:7001/api/v1/flows/2768455442",
-	"get_flows":  "http://192.168.40.14:7001/api/v1/flows",
+	"get_flow":   "http://%s:7001/api/v1/flows/%s",
+	"get_flows":  "http://%s:7001/api/v1/flows",
 	"flow_dps":   "http://localhost:7001/api/v1/flow_dps",
 	"pagination": "http://localhost:7001/api/v1/pagination/flows",
 	"post_flows": "http://localhost:7001/api/v1/flows",
@@ -18,7 +18,7 @@ var urls = map[string]string{
 
 func main() {
 	//getFlow()
-	//getFlows()
+	getFlows()
 	//getPaginationFlows()
 	//addFlows()
 
@@ -26,7 +26,53 @@ func main() {
 	//deleFlows()
 
 	//pushFlow()
-	getflowsDps()
+	//getflowsDps()
+}
+
+var flowip string
+var flowId string
+
+var flowvehicleId string
+
+func init() {
+	apiConfigMap := tool.InitConfig("api_conf.txt")
+	flowip = apiConfigMap["server_ip"]
+	flowvehicleId = apiConfigMap["vehicle_id"]
+	flowId = apiConfigMap["flowid"]
+}
+
+func getFlows() {
+	token := tool.GetVehicleToken()
+
+	queryParams := map[string]interface{}{
+		"vehicle_id": flowvehicleId,
+	}
+
+	reqUrl := urls["get_flows"]
+	reqUrl = fmt.Sprintf(reqUrl, flowip)
+
+	fmt.Println(reqUrl, token)
+
+	resp, _ := tool.Get(reqUrl, queryParams, token)
+
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+}
+
+func getFlow() {
+	token := tool.GetVehicleToken()
+
+	queryParams := map[string]interface{}{
+		"vehicle_id": flowvehicleId,
+	}
+
+	reqUrl := urls["get_flow"]
+	reqUrl = fmt.Sprintf(reqUrl, flowip, flowId)
+
+	resp, _ := tool.Get(reqUrl, queryParams, token)
+
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
 }
 
 func getflowsDps() {
@@ -56,20 +102,6 @@ func pushFlow() {
 		Name: "safly",
 	}
 	resp, _ := tool.PostJson(urlReq, req, "")
-
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
-}
-func getFlow() {
-	token := tool.GetVehicleToken()
-
-	queryParams := map[string]interface{}{
-		"vehicle_id": "754d2728b4e549c5a16c0180fcacb800",
-	}
-
-	reqUrl := urls["get_flow"]
-
-	resp, _ := tool.Get(reqUrl, queryParams, token)
 
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))
@@ -114,21 +146,6 @@ func getPaginationFlows() {
 	}
 
 	reqUrl := urls["pagination"]
-
-	resp, _ := tool.Get(reqUrl, queryParams, token)
-
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
-}
-
-func getFlows() {
-	token := tool.GetVehicleToken()
-
-	queryParams := map[string]interface{}{
-		"vehicle_id": "b020eccdf33d48b4aa246a89a6f04609",
-	}
-
-	reqUrl := urls["get_flows"]
 
 	resp, _ := tool.Get(reqUrl, queryParams, token)
 

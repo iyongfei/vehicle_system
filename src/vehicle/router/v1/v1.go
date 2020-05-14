@@ -45,7 +45,7 @@ func V1Router(r *gin.Engine) {
 		apiV1.POST("/vehicles", api_server.AddVehicle)
 		apiV1.PUT("/vehicles/:vehicle_id", api_server.EditVehicle) //todo
 		//apiV1.DELETE("/vehicles/:vehicle_id", api_server.DeleVehicle)
-		//apiV1.GET("/vehicles", api_server.GetVehicles)
+		apiV1.GET("/vehicles", api_server.GetVehicles)
 
 		apiV1.GET("/white_lists/:white_list_id", api_server.GetWhiteList)
 		apiV1.GET("/white_lists", api_server.GetWhiteLists)
