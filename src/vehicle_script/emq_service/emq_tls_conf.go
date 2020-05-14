@@ -35,10 +35,9 @@ xmzfn9PNpf5eq7+2FUahOXwDvWZszUs8zjKyye/++6h5AtmL2LKKPTt8G8DF6Arn
 		`)
 )
 
-
 const (
 	//broker_url = "tcp://127.0.0.1:1883"
-	broker_url = "ssl://127.0.0.1:8843"
+	broker_url             = "ssl://211.159.167.112:8843"
 	client_id              = "vehicle_test"
 	keep_alive             = 5
 	auto_reconnect         = true
@@ -49,13 +48,14 @@ const (
 	password               = ""
 	max_reconnect_interval = 20
 )
+
 func initClientOps() *mqtt.ClientOptions {
 	return mqtt.NewClientOptions().
 		AddBroker(broker_url).
 		SetClientID(client_id).
 		SetKeepAlive(keep_alive).
 		SetAutoReconnect(auto_reconnect).
-		SetConnectTimeout(connect_time_out *time.Second).
+		SetConnectTimeout(connect_time_out * time.Second).
 		SetPingTimeout(ping_time_out * time.Second).
 		//SetConnectionLostHandler(Conconnlost).
 		SetMaxReconnectInterval(max_reconnect_interval * time.Second).
@@ -64,13 +64,13 @@ func initClientOps() *mqtt.ClientOptions {
 		SetPassword(password).SetTLSConfig(NewTLSConfig())
 }
 
-func NewTLSConfig() *tls.Config  {
+func NewTLSConfig() *tls.Config {
 	certpool := x509.NewCertPool()
 	certpool.AppendCertsFromPEM(caBlock)
 	return &tls.Config{
-		RootCAs: certpool,
-		ClientAuth: tls.NoClientCert,
-		ClientCAs: nil,
+		RootCAs:            certpool,
+		ClientAuth:         tls.NoClientCert,
+		ClientCAs:          nil,
 		InsecureSkipVerify: false,
 	}
 }
