@@ -231,8 +231,8 @@ type FlowStrategyVehicleItemJoin struct {
 	CsvPath    string
 	VehicleId  string
 
-	FstrategyVehicleId string
-	FstrategyItemId    string
+	FstrategyVehicleId string `json:"omitempty"`
+	FstrategyItemId    string `json:"omitempty"`
 }
 
 func GetFlowStrategyVehicleItems(query string, args ...interface{}) ([]*FlowStrategyVehicleItemJoin, error) {
@@ -254,7 +254,7 @@ func GetFlowStrategyVehicleItems(query string, args ...interface{}) ([]*FlowStra
 }
 
 /**
-获取某会话策略下的车载
+获取某会话策略下的车载GetVehicleRecentFStrategy
 */
 func GetFStrategyVehicles(query string, args ...interface{}) ([]*FlowStrategyVehicleItemJoin, error) {
 	vgorm, err := mysql.GetMysqlInstance().GetMysqlDB()
@@ -271,22 +271,6 @@ func GetFStrategyVehicles(query string, args ...interface{}) ([]*FlowStrategyVeh
 		Scan(&fstrategyVehicles).
 		Error
 	return fstrategyVehicles, err
-}
-
-/**************
-获取某车载的单条会话
-*/
-
-type VehicleSingleFlowStrategyItemsReult struct {
-	FstrategyId string
-	Type        uint8 //策略模式
-	HandleMode  uint8 //处理方式
-	Enable      bool  //策略启用状态
-	VehicleId   string
-
-	CsvPath string
-	/////////////////////
-	VehicleFStrategyItemsMap map[string][]uint32
 }
 
 func GetVehicleFStrategy(query string, args ...interface{}) (*FlowStrategyVehicleItemJoin, error) {
@@ -347,4 +331,34 @@ func GetVehicleFStrategyItems(query string, args ...interface{}) ([]*VehicleSing
 //		Scan(&strategyVehicleLearningResultJoins).
 //		Error
 //	return strategyVehicleLearningResultJoins,err
+//}
+/**************
+获取某车载的单条会话
+*/
+
+type VehicleSingleFlowStrategyItemsReult struct {
+	FstrategyId string
+	Type        uint8 //策略模式
+	HandleMode  uint8 //处理方式
+	Enable      bool  //策略启用状态
+	VehicleId   string
+
+	CsvPath string
+	/////////////////////
+	VehicleFStrategyItemsMap map[string][]uint32
+}
+
+///**
+//查看所有的策略
+//*/
+//type VehicleFlowStrategyList struct {
+//	FstrategyId string
+//
+//	Type       uint8 //策略模式
+//	HandleMode uint8 //处理方式
+//	Enable     bool  //策略启用状态
+//	CsvPath    string
+//	VehicleId  string
+//
+//	FstrategyVehicleId string
 //}

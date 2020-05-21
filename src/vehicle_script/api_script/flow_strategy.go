@@ -9,11 +9,13 @@ import (
 )
 
 var fstrategyUrls = map[string]string{
-	"post_fstrategy":       "http://%s:7001/api/v1/fstrategys",
-	"dele_fstrategy":       "http://%s:7001/api/v1/fstrategys/",
-	"edit_fstrategy":       "http://%s:7001/api/v1/fstrategys/",
-	"get_fstrategy":        "http://%s:7001/api/v1/fstrategys/",
-	"get_active_fstrategs": "http://%s:7001/api/v1/active_fstrategs/",
+	"post_fstrategy":        "http://%s:7001/api/v1/fstrategys",
+	"dele_fstrategy":        "http://%s:7001/api/v1/fstrategys/",
+	"edit_fstrategy":        "http://%s:7001/api/v1/fstrategys/",
+	"get_fstrategy":         "http://%s:7001/api/v1/fstrategys/",
+	"get_active_fstrategs":  "http://%s:7001/api/v1/active/fstrategs",
+	"get_all_fstrategs":     "http://%s:7001/api/v1/ids/fstrategys",
+	"get_partial_fstrategs": "http://%s:7001/api/v1/partial/fstrategys",
 
 	"get_fstrategys":               "http://localhost:7001/api/v1/fstrategys",
 	"get_strategy_vehicles":        "http://localhost:7001/api/v1/strategy_vehicles/9xR5vYZweMb3aRoGGEQYaIw6xhRetYV8",
@@ -27,15 +29,49 @@ func getConfig() map[string]string {
 
 func main() {
 	//addFStrategy()
-	getFStrategy()
+	//getFStrategy()
 	//deleFStrategy()
 	//editFStrategy()
 	//getRecentFStrategy()
+	//getAllFStrategys()
+	getPartialFStrategys()
 	//unused
 	//getFStrategys()
 	//getStrategyVehicle()
 	//getVehicleLearningResults()
 	//getStrategyVehicleLearningResults()
+}
+
+func getPartialFStrategys() {
+	configs := getConfig()
+	get_flow_vehicle_id := configs["vehicle_id"]
+	partial_fstrategs := configs["partial_fstrategs"]
+	fip := configs["server_ip"]
+	token := tool.GetVehicleToken()
+
+	queryParams := map[string]interface{}{
+		"vehicle_id":    get_flow_vehicle_id,
+		"fstrategy_ids": partial_fstrategs,
+	}
+	reqUrl := fmt.Sprintf(fstrategyUrls["get_all_fstrategs"], fip)
+	resp, _ := tool.Get(reqUrl, queryParams, token)
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+}
+
+func getAllFStrategys() {
+	configs := getConfig()
+	get_flow_vehicle_id := configs["vehicle_id"]
+	fip := configs["server_ip"]
+	token := tool.GetVehicleToken()
+
+	queryParams := map[string]interface{}{
+		"vehicle_id": get_flow_vehicle_id,
+	}
+	reqUrl := fmt.Sprintf(fstrategyUrls["get_all_fstrategs"], fip)
+	resp, _ := tool.Get(reqUrl, queryParams, token)
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
 }
 
 /**

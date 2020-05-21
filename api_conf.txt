@@ -30,3 +30,6 @@ update_fports=123,125
 
 #flowid
 flowid=1644395481
+
+#部分策略
+partial_fstrategs=O3l5zjLgIZkaRrbWMPfT0miPFaKph3Rn,b7DCXxj2bm7MZqQiuK4Cq8oCMItvpJSi

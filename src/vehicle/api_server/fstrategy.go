@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 	"vehicle_system/src/vehicle/csv"
 	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/emq/emq_cmd"
@@ -642,6 +643,157 @@ func GetVehicleFStrategyItem(c *gin.Context) {
 
 	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetStrategyVehicleResultListSuccessMsg, responseData)
 	c.JSON(http.StatusOK, retObj)
+}
+
+/**
+查看所有的策略id
+*/
+func GetAllFstrategys(c *gin.Context) {
+	vehicleId := c.Query("vehicle_id")
+	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId)
+	if argsTrimsEmpty {
+		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+		c.JSON(http.StatusOK, ret)
+		logger.Logger.Error("%s argsTrimsEmpty vehicleId:%s", util.RunFuncName(), vehicleId)
+		logger.Logger.Print("%s argsTrimsEmpty vehicleId:%s", util.RunFuncName(), vehicleId)
+		return
+	}
+	logger.Logger.Print("%s vehicle_id:%s", util.RunFuncName(), vehicleId)
+	logger.Logger.Info("%s vehicle_id:%s", util.RunFuncName(), vehicleId)
+
+	//查询终端id是否存在
+	vehicleInfo := &model.VehicleInfo{
+		VehicleId: vehicleId,
+	}
+
+	modelBase := model_base.ModelBaseImpl(vehicleInfo)
+
+	err, recordNotFound := modelBase.GetModelByCondition("vehicle_id = ?", []interface{}{vehicleInfo.VehicleId}...)
+
+	if err != nil {
+		logger.Logger.Error("%s vehicle_id:%s,err:%s", util.RunFuncName(), vehicleId, err)
+		logger.Logger.Print("%s vehicle_id:%s,err:%s", util.RunFuncName(), vehicleId, err)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetVehicleFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	if recordNotFound {
+		logger.Logger.Error("%s vehicle_id:%s,recordNotFound", util.RunFuncName(), vehicleId)
+		logger.Logger.Print("%s vehicle_id:%s,recordNotFound", util.RunFuncName(), vehicleId)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetVehicleUnExistMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+	//查询所有的策略
+	//查看该vehicle是否存在
+	vehicleFStrategys, err := model.GetFStrategyVehicles(
+		"fstrategy_vehicles.vehicle_id = ?", []interface{}{vehicleId}...)
+
+	var fstrategys []interface{}
+	fstrategyIds := map[string]interface{}{}
+	for _, v := range vehicleFStrategys {
+		fstrategyId := v.FstrategyId
+		createdAt := v.CreatedAt
+
+		fstrategyIds["CreatedAt"] = createdAt
+		fstrategyIds["FstrategyId"] = fstrategyId
+		fstrategys = append(fstrategys, fstrategyIds)
+	}
+
+	responseData := map[string]interface{}{
+		"Vehicle_Id":     vehicleId,
+		"All_Fstrategys": fstrategys,
+	}
+
+	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetFStrategySuccessMsg, responseData)
+	c.JSON(http.StatusOK, retObj)
+
+}
+
+/**
+查看所有的策略id
+*/
+func GetPartFstrategyIds(c *gin.Context) {
+	vehicleId := c.Query("vehicle_id")
+	fstrategyIds := c.Query("fstrategy_ids")
+	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId, fstrategyIds)
+	if argsTrimsEmpty {
+		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+		c.JSON(http.StatusOK, ret)
+		logger.Logger.Error("%s argsTrimsEmpty vehicleId:%s,fstrategyIds%s", util.RunFuncName(), vehicleId, fstrategyIds)
+		logger.Logger.Print("%s argsTrimsEmpty vehicleId:%s,fstrategyIds%s", util.RunFuncName(), vehicleId, fstrategyIds)
+		return
+	}
+	logger.Logger.Print("%s vehicle_id:%s", util.RunFuncName(), vehicleId)
+	logger.Logger.Info("%s vehicle_id:%s", util.RunFuncName(), vehicleId)
+
+}
+
+/**
+获取所有的策略
+*/
+func GetPaginationFstrategys(c *gin.Context) {
+	vehicleId := c.Query("vehicle_id")
+	pageSizeP := c.Query("page_size")
+	pageIndexP := c.Query("page_index")
+	startTimeP := c.Query("start_time")
+	endTimeP := c.Query("end_time")
+
+	logger.Logger.Info("%s request params vehicle_id:%s,page_size:%s,page_index:%s,start_time%s,endtime%s",
+		util.RunFuncName(), vehicleId, pageSizeP, pageIndexP, startTimeP, endTimeP)
+	logger.Logger.Print("%s request params vehicle_id:%s,page_size:%s,page_index:%s,start_time%s,endtime%s",
+		util.RunFuncName(), vehicleId, pageSizeP, pageIndexP, startTimeP, endTimeP)
+
+	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId)
+	if argsTrimsEmpty {
+		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+		c.JSON(http.StatusOK, ret)
+		logger.Logger.Error("%s argsTrimsEmpty threatId:%s", util.RunFuncName(), argsTrimsEmpty)
+		logger.Logger.Print("%s argsTrimsEmpty threatId:%s", util.RunFuncName(), argsTrimsEmpty)
+		return
+	}
+
+	fpageSize, _ := strconv.Atoi(pageSizeP)
+	fpageIndex, _ := strconv.Atoi(pageIndexP)
+
+	var fStartTime time.Time
+	var fEndTime time.Time
+
+	startTime, _ := strconv.Atoi(startTimeP)
+	endTime, _ := strconv.Atoi(endTimeP)
+
+	//默认20
+	defaultPageSize := 20
+	if fpageSize == 0 {
+		fpageSize = defaultPageSize
+	}
+	//默认第一页
+	defaultPageIndex := 1
+	if fpageIndex == 0 {
+		fpageIndex = defaultPageIndex
+	}
+	//默认2天前
+	defaultStartTime := util.GetFewDayAgo(2) //2
+	if startTime == 0 {
+		fStartTime = defaultStartTime
+	} else {
+		fStartTime = util.StampUnix2Time(int64(startTime))
+	}
+
+	//默认当前时间
+	defaultEndTime := time.Now()
+	if endTime == 0 {
+		fEndTime = defaultEndTime
+	} else {
+		fEndTime = util.StampUnix2Time(int64(endTime))
+	}
+
+	logger.Logger.Info("%s frequest params vehicle_id:%s,fpageSize:%s,fpageIndex:%s,fStartTime%s,fEndTime%s",
+		util.RunFuncName(), vehicleId, fpageSize, fpageIndex, fStartTime, fEndTime)
+	logger.Logger.Print("%s frequest params vehicle_id:%s,fpageSize:%s,fpageIndex:%s,fStartTime%s,fEndTime%s",
+		util.RunFuncName(), vehicleId, fpageSize, fpageIndex, fStartTime, fEndTime)
+
 }
 
 /**
