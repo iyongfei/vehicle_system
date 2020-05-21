@@ -2,8 +2,8 @@ server_ip = localhost
 
 
 #注册
-user_name=saflyer
-password=123456
+user_name=aaa
+password=bbb
 
 #终端id
 vehicle_id=754d2728b4e549c5a16c0180fcacb800
@@ -15,11 +15,11 @@ handle_mode=2
 
 
 #增加会话策略接口
-fips=192.168.1.123
-fports=8090,124
+fips=192.168.1.121
+fports=8090
 
 #获取会话策略接口
-get_flow_fstrategy_id=b7DCXxj2bm7MZqQiuK4Cq8oCMItvpJSi
+get_flow_fstrategy_id=iyTNYbaZ48g8E3vsw5hDDEdo2aHUDjvB
 
 
 #修改会话策略接口

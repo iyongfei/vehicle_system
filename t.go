@@ -58,6 +58,12 @@ flow.SrcIp = util.IpIntToString(int(sipLittleEndian))
 */
 
 func main() {
+	maper := map[string]map[string]string{}
+	//maper["a"] = map[string]string{}
+
+	fVehicleId, ok := maper["a"]
+	fmt.Println(fVehicleId, ok)
+	return
 
 	//dip := "3232235898"
 	//strDIp, _ := strconv.Atoi(dip)

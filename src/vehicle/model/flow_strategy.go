@@ -264,7 +264,7 @@ func GetFStrategyVehicles(query string, args ...interface{}) ([]*FlowStrategyVeh
 	fstrategyVehicles := []*FlowStrategyVehicleItemJoin{}
 	err = vgorm.Debug().
 		Table("fstrategies").
-		Select("fstrategies.*,fstrategy_vehicles.vehicle_id").
+		Select("fstrategies.*,fstrategy_vehicles.vehicle_id,fstrategy_vehicles.fstrategy_vehicle_id").
 		Where(query, args...).
 		Order("fstrategies.created_at desc").
 		Joins("inner join fstrategy_vehicles ON fstrategies.fstrategy_id = fstrategy_vehicles.fstrategy_id").
@@ -347,18 +347,3 @@ type VehicleSingleFlowStrategyItemsReult struct {
 	/////////////////////
 	VehicleFStrategyItemsMap map[string][]uint32
 }
-
-///**
-//查看所有的策略
-//*/
-//type VehicleFlowStrategyList struct {
-//	FstrategyId string
-//
-//	Type       uint8 //策略模式
-//	HandleMode uint8 //处理方式
-//	Enable     bool  //策略启用状态
-//	CsvPath    string
-//	VehicleId  string
-//
-//	FstrategyVehicleId string
-//}

@@ -30,11 +30,11 @@ func getConfig() map[string]string {
 func main() {
 	//addFStrategy()
 	//getFStrategy()
-	//deleFStrategy()
+	deleFStrategy()
 	//editFStrategy()
 	//getRecentFStrategy()
 	//getAllFStrategys()
-	getPartialFStrategys()
+	//getPartialFStrategys()
 	//unused
 	//getFStrategys()
 	//getStrategyVehicle()
@@ -53,7 +53,7 @@ func getPartialFStrategys() {
 		"vehicle_id":    get_flow_vehicle_id,
 		"fstrategy_ids": partial_fstrategs,
 	}
-	reqUrl := fmt.Sprintf(fstrategyUrls["get_all_fstrategs"], fip)
+	reqUrl := fmt.Sprintf(fstrategyUrls["get_partial_fstrategs"], fip)
 	resp, _ := tool.Get(reqUrl, queryParams, token)
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))

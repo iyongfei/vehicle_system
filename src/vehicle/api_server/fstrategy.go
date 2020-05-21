@@ -503,7 +503,9 @@ func DeleFStrategy(c *gin.Context) {
 	//dele FstrategyVehicleItem
 	fstrategyVehicleItem := &model.FstrategyVehicleItem{}
 	fstrategyVehicleItemModelBase := model_base.ModelBaseImpl(fstrategyVehicleItem)
-	err = fstrategyVehicleItemModelBase.DeleModelsByCondition("fstrategy_item_id in (?)", fstrategyItemIdMapSlice)
+	err = fstrategyVehicleItemModelBase.DeleModelsByCondition(
+		"fstrategy_item_id in (?) and fstrategy_vehicle_id in (?)",
+		fstrategyItemIdMapSlice, fstrategyVehicleIdMapSlice)
 	if err != nil {
 	}
 
@@ -728,6 +730,71 @@ func GetPartFstrategyIds(c *gin.Context) {
 	logger.Logger.Print("%s vehicle_id:%s", util.RunFuncName(), vehicleId)
 	logger.Logger.Info("%s vehicle_id:%s", util.RunFuncName(), vehicleId)
 
+	//过滤非法的fstrategyIds
+	fstrategyIdsRrgsTrim := util.RrgsTrim(fstrategyIds)
+	fstrategyIdSlice := strings.Split(fstrategyIdsRrgsTrim, ",")
+
+	fstrategyVehicles, err := model.GetFStrategyVehicles("fstrategy_vehicles.vehicle_id = ? and fstrategy_vehicles.fstrategy_id in (?)",
+		[]interface{}{vehicleId, fstrategyIdSlice}...)
+
+	if err != nil {
+
+	}
+	var fstrategyVehicleIds []string
+	for _, fstrategyVehicle := range fstrategyVehicles {
+
+		fVehicleId := fstrategyVehicle.FstrategyVehicleId
+		exist := util.IsExistInSlice(fVehicleId, fstrategyVehicleIds)
+		if !exist {
+			fstrategyVehicleIds = append(fstrategyVehicleIds, fVehicleId)
+		}
+	}
+
+	logger.Logger.Print("%s fstrategyVehicleIds:%+v", util.RunFuncName(), fstrategyVehicleIds)
+	logger.Logger.Info("%s fstrategyVehicleIds:%+v", util.RunFuncName(), fstrategyVehicleIds)
+
+	//fstrategyVehicleIds
+	vehicleFStrategyItems, err := model.GetVehicleFStrategyItems(
+		"fstrategy_vehicle_items.fstrategy_vehicle_id in (?) and fstrategy_items.deleted_at is null",
+		[]interface{}{fstrategyVehicleIds}...)
+
+	vehicleFStrategyItemsMap := map[string]map[string][]uint32{}
+
+	for _, vehicleFStrategyItem := range vehicleFStrategyItems {
+		_, ok := vehicleFStrategyItemsMap[vehicleFStrategyItem.FstrategyVehicleId]
+		if !ok {
+			vehicleFStrategyItemsMap[vehicleFStrategyItem.FstrategyVehicleId] = map[string][]uint32{}
+
+			_, oker := vehicleFStrategyItemsMap[vehicleFStrategyItem.FstrategyVehicleId][vehicleFStrategyItem.DstIp]
+			if !oker {
+				vehicleFStrategyItemsMap[vehicleFStrategyItem.FstrategyVehicleId][vehicleFStrategyItem.DstIp] = []uint32{vehicleFStrategyItem.DstPort}
+			}
+		} else {
+			vehicleFStrategyItemsMap[vehicleFStrategyItem.FstrategyVehicleId][vehicleFStrategyItem.DstIp] =
+				append(vehicleFStrategyItemsMap[vehicleFStrategyItem.FstrategyVehicleId][vehicleFStrategyItem.DstIp], vehicleFStrategyItem.DstPort)
+		}
+	}
+
+	var list []model.VehicleSingleFlowStrategyItemsReult
+	for _, vehicleFStrategy := range fstrategyVehicles {
+		vehicleSingleFlowStrategyItemsReult := model.VehicleSingleFlowStrategyItemsReult{
+			FstrategyId:              vehicleFStrategy.FstrategyId,
+			Type:                     vehicleFStrategy.Type,
+			HandleMode:               vehicleFStrategy.HandleMode,
+			Enable:                   vehicleFStrategy.Enable,
+			VehicleId:                vehicleFStrategy.VehicleId,
+			CsvPath:                  vehicleFStrategy.CsvPath,
+			VehicleFStrategyItemsMap: vehicleFStrategyItemsMap[vehicleFStrategy.FstrategyVehicleId],
+		}
+		list = append(list, vehicleSingleFlowStrategyItemsReult)
+	}
+
+	responseData := map[string]interface{}{
+		"fstrategys": list,
+	}
+
+	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetFStrategySuccessMsg, responseData)
+	c.JSON(http.StatusOK, retObj)
 }
 
 /**
