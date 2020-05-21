@@ -86,7 +86,7 @@ func FetchDipPortList(setCmd *FStrategySetCmd) ([]*protobuf.FlowStrategyAddParam
 
 	fstrategyVehicleItems := []*model.FstrategyItem{}
 
-	_ = model_base.ModelBaseImpl(&model.AutomatedLearningResult{}).
+	_ = model_base.ModelBaseImpl(&model.FstrategyItem{}).
 		GetModelListByCondition(&fstrategyVehicleItems,
 			"fstrategy_item_id in (?)", []interface{}{fFstrategyVehicleItems}...)
 
@@ -96,12 +96,6 @@ func FetchDipPortList(setCmd *FStrategySetCmd) ([]*protobuf.FlowStrategyAddParam
 
 		//去重
 		dip := fItem.DstIp //string
-		//strDip, _ := strconv.Atoi(dstIp)
-
-		//sipBigEndian := util.BytesToBigEndian(util.LittleToBytes(uint32(strDip)))
-		//转换
-		//
-		//dip := strconv.Itoa(int(sipBigEndian))
 
 		dport := fItem.DstPort
 

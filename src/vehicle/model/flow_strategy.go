@@ -228,7 +228,7 @@ type FlowStrategyVehicleItemJoin struct {
 	Type       uint8 //策略模式
 	HandleMode uint8 //处理方式
 	Enable     bool  //策略启用状态
-	ScvPath    string
+	CsvPath    string
 	VehicleId  string
 
 	FstrategyVehicleId string
@@ -266,6 +266,7 @@ func GetFStrategyVehicles(query string, args ...interface{}) ([]*FlowStrategyVeh
 		Table("fstrategies").
 		Select("fstrategies.*,fstrategy_vehicles.vehicle_id").
 		Where(query, args...).
+		Order("fstrategies.created_at desc").
 		Joins("inner join fstrategy_vehicles ON fstrategies.fstrategy_id = fstrategy_vehicles.fstrategy_id").
 		Scan(&fstrategyVehicles).
 		Error
@@ -283,7 +284,7 @@ type VehicleSingleFlowStrategyItemsReult struct {
 	Enable      bool  //策略启用状态
 	VehicleId   string
 
-	ScvPath string
+	CsvPath string
 	/////////////////////
 	VehicleFStrategyItemsMap map[string][]uint32
 }

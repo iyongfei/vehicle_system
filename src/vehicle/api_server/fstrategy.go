@@ -184,7 +184,7 @@ func EditFStrategy(c *gin.Context) {
 		HandleMode:               vehicleFStrategy.HandleMode,
 		Enable:                   vehicleFStrategy.Enable,
 		VehicleId:                vehicleFStrategy.VehicleId,
-		ScvPath:                  vehicleFStrategy.ScvPath,
+		CsvPath:                  vehicleFStrategy.CsvPath,
 		VehicleFStrategyItemsMap: finalDiportsMap,
 	}
 
@@ -417,7 +417,7 @@ func AddFStrategy(c *gin.Context) {
 		HandleMode:               fstrategy.HandleMode,
 		Enable:                   fstrategy.Enable,
 		VehicleId:                vehicleInfo.VehicleId,
-		ScvPath:                  fstrategy.CsvPath,
+		CsvPath:                  fstrategy.CsvPath,
 		VehicleFStrategyItemsMap: finalDiportsMap,
 	}
 
@@ -644,6 +644,82 @@ func GetVehicleFStrategyItem(c *gin.Context) {
 	c.JSON(http.StatusOK, retObj)
 }
 
+/**
+查询目前正在执行的策略
+*/
+func GetActiveFstrategy(c *gin.Context) {
+	vehicleId := c.Query("vehicle_id")
+	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId)
+	if argsTrimsEmpty {
+		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+		c.JSON(http.StatusOK, ret)
+		logger.Logger.Error("%s argsTrimsEmpty vehicleId:%s", util.RunFuncName(), vehicleId)
+		logger.Logger.Print("%s argsTrimsEmpty vehicleId:%s", util.RunFuncName(), vehicleId)
+		return
+	}
+	logger.Logger.Print("%s vehicle_id:%s", util.RunFuncName(), vehicleId)
+	logger.Logger.Info("%s vehicle_id:%s", util.RunFuncName(), vehicleId)
+
+	//查询终端id是否存在
+	vehicleInfo := &model.VehicleInfo{
+		VehicleId: vehicleId,
+	}
+
+	modelBase := model_base.ModelBaseImpl(vehicleInfo)
+
+	err, recordNotFound := modelBase.GetModelByCondition("vehicle_id = ?", []interface{}{vehicleInfo.VehicleId}...)
+
+	if err != nil {
+		logger.Logger.Error("%s vehicle_id:%s,err:%s", util.RunFuncName(), vehicleId, err)
+		logger.Logger.Print("%s vehicle_id:%s,err:%s", util.RunFuncName(), vehicleId, err)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetVehicleFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	if recordNotFound {
+		logger.Logger.Error("%s vehicle_id:%s,recordNotFound", util.RunFuncName(), vehicleId)
+		logger.Logger.Print("%s vehicle_id:%s,recordNotFound", util.RunFuncName(), vehicleId)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetVehicleUnExistMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	//查询策略
+	recentFStrategy := model.GetVehicleRecentFStrategy(vehicleId)
+
+	strategyCmd := &emq_cmd.FStrategySetCmd{
+		VehicleId: recentFStrategy.VehicleId,
+		TaskType:  int(protobuf.Command_FLOWSTRATEGY_ADD),
+
+		FstrategyId: recentFStrategy.FstrategyId,
+		Type:        recentFStrategy.Type,
+		HandleMode:  recentFStrategy.HandleMode,
+		Enable:      true,
+		GroupId:     "", //目前不实现
+	}
+
+	_, dipPortMap := emq_cmd.FetchDipPortList(strategyCmd)
+
+	logger.Logger.Print("%s dipPortMap:%+v", util.RunFuncName(), dipPortMap)
+	logger.Logger.Info("%s dipPortMap:%+v", util.RunFuncName(), dipPortMap)
+
+	vehicleSingleFlowStrategyItemsReult := model.VehicleSingleFlowStrategyItemsReult{
+		FstrategyId:              recentFStrategy.FstrategyId,
+		Type:                     uint8(recentFStrategy.Type),
+		HandleMode:               uint8(recentFStrategy.HandleMode),
+		Enable:                   recentFStrategy.Enable,
+		VehicleId:                recentFStrategy.VehicleId,
+		VehicleFStrategyItemsMap: dipPortMap,
+	}
+	responseData := map[string]interface{}{
+		"active_fstrategy": vehicleSingleFlowStrategyItemsReult,
+	}
+
+	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetFStrategySuccessMsg, responseData)
+	c.JSON(http.StatusOK, retObj)
+}
+
 // @Summary GetFStrategy
 // @Description GetFStrategy
 // @Produce json
@@ -673,6 +749,9 @@ func GetFStrategy(c *gin.Context) {
 	vehicleFStrategy, err := model.GetVehicleFStrategy(
 		"fstrategy_vehicles.vehicle_id = ? and fstrategies.fstrategy_id = ?",
 		[]interface{}{vehicleId, fstrategyId}...)
+
+	logger.Logger.Print("%s vehicleFStrategy:%+v", util.RunFuncName(), vehicleFStrategy)
+	logger.Logger.Info("%s vehicleFStrategy:%+v", util.RunFuncName(), vehicleFStrategy)
 
 	if vehicleFStrategy.FstrategyVehicleId == "" {
 		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetFStrtegyUnExistMsg, "")
@@ -720,7 +799,7 @@ func GetFStrategy(c *gin.Context) {
 		HandleMode:               vehicleFStrategy.HandleMode,
 		Enable:                   vehicleFStrategy.Enable,
 		VehicleId:                vehicleFStrategy.VehicleId,
-		ScvPath:                  vehicleFStrategy.ScvPath,
+		CsvPath:                  vehicleFStrategy.CsvPath,
 		VehicleFStrategyItemsMap: vehicleFStrategyItemsMap,
 	}
 	responseData := map[string]interface{}{

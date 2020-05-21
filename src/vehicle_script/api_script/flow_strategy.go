@@ -9,10 +9,11 @@ import (
 )
 
 var fstrategyUrls = map[string]string{
-	"post_fstrategy": "http://%s:7001/api/v1/fstrategys",
-	"dele_fstrategy": "http://%s:7001/api/v1/fstrategys/",
-	"edit_fstrategy": "http://%s:7001/api/v1/fstrategys/",
-	"get_fstrategy":  "http://%s:7001/api/v1/fstrategys/",
+	"post_fstrategy":       "http://%s:7001/api/v1/fstrategys",
+	"dele_fstrategy":       "http://%s:7001/api/v1/fstrategys/",
+	"edit_fstrategy":       "http://%s:7001/api/v1/fstrategys/",
+	"get_fstrategy":        "http://%s:7001/api/v1/fstrategys/",
+	"get_active_fstrategs": "http://%s:7001/api/v1/active_fstrategs/",
 
 	"get_fstrategys":               "http://localhost:7001/api/v1/fstrategys",
 	"get_strategy_vehicles":        "http://localhost:7001/api/v1/strategy_vehicles/9xR5vYZweMb3aRoGGEQYaIw6xhRetYV8",
@@ -26,15 +27,52 @@ func getConfig() map[string]string {
 
 func main() {
 	//addFStrategy()
-	//getFStrategy()
+	getFStrategy()
 	//deleFStrategy()
-	editFStrategy()
-
+	//editFStrategy()
+	//getRecentFStrategy()
 	//unused
 	//getFStrategys()
 	//getStrategyVehicle()
 	//getVehicleLearningResults()
 	//getStrategyVehicleLearningResults()
+}
+
+/**
+获取一条会话策略信息
+*/
+func getRecentFStrategy() {
+	configs := getConfig()
+	get_flow_vehicle_id := configs["vehicle_id"]
+	fip := configs["server_ip"]
+	token := tool.GetVehicleToken()
+
+	queryParams := map[string]interface{}{
+		"vehicle_id": get_flow_vehicle_id,
+	}
+	reqUrl := fmt.Sprintf(fstrategyUrls["get_active_fstrategs"], fip)
+	resp, _ := tool.Get(reqUrl, queryParams, token)
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+}
+
+/**
+获取一条会话策略信息
+*/
+func getFStrategy() {
+	configs := getConfig()
+	get_flow_fstrategy_id := configs["get_flow_fstrategy_id"]
+	get_flow_vehicle_id := configs["vehicle_id"]
+	fip := configs["server_ip"]
+	token := tool.GetVehicleToken()
+
+	queryParams := map[string]interface{}{
+		"vehicle_id": get_flow_vehicle_id,
+	}
+	reqUrl := fmt.Sprintf(fstrategyUrls["get_fstrategy"], fip) + get_flow_fstrategy_id
+	resp, _ := tool.Get(reqUrl, queryParams, token)
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
 }
 
 func editFStrategy() {
@@ -72,25 +110,6 @@ func deleFStrategy() {
 
 	resp, _ := tool.Delete(reqUrl, queryParams, token)
 
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
-}
-
-/**
-获取一条会话策略信息
-*/
-func getFStrategy() {
-	configs := getConfig()
-	get_flow_fstrategy_id := configs["get_flow_fstrategy_id"]
-	get_flow_vehicle_id := configs["vehicle_id"]
-	fip := configs["server_ip"]
-	token := tool.GetVehicleToken()
-
-	queryParams := map[string]interface{}{
-		"vehicle_id": get_flow_vehicle_id,
-	}
-	reqUrl := fmt.Sprintf(fstrategyUrls["get_fstrategy"], fip) + get_flow_fstrategy_id
-	resp, _ := tool.Get(reqUrl, queryParams, token)
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))
 }

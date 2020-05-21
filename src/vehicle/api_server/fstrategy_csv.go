@@ -297,7 +297,7 @@ func UploadFStrategyCsv(c *gin.Context) {
 		HandleMode:               fstrategy.HandleMode,
 		Enable:                   fstrategy.Enable,
 		VehicleId:                vehicleId,
-		ScvPath:                  fstrategy.CsvPath,
+		CsvPath:                  fstrategy.CsvPath,
 		VehicleFStrategyItemsMap: parseData[vehicleId],
 	}
 
@@ -504,7 +504,7 @@ func EditFStrategyCsv(c *gin.Context) {
 		HandleMode:               vehicleFStrategy.HandleMode,
 		Enable:                   vehicleFStrategy.Enable,
 		VehicleId:                vehicleFStrategy.VehicleId,
-		ScvPath:                  vehicleFStrategy.ScvPath,
+		CsvPath:                  vehicleFStrategy.CsvPath,
 		VehicleFStrategyItemsMap: parseData[vehicleId],
 	}
 

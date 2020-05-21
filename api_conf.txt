@@ -1,4 +1,4 @@
-server_ip = 192.168.1.198
+server_ip = localhost
 
 
 #注册
@@ -15,11 +15,11 @@ handle_mode=2
 
 
 #增加会话策略接口
-fips=192.168.1.122
-fports=2020
+fips=192.168.1.123
+fports=8090,124
 
 #获取会话策略接口
-get_flow_fstrategy_id=6dLFskgJ2cATM2bIDTP45Hf8LfI2jE8Z
+get_flow_fstrategy_id=b7DCXxj2bm7MZqQiuK4Cq8oCMItvpJSi
 
 
 #修改会话策略接口

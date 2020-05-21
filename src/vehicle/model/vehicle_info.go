@@ -44,14 +44,14 @@ func (vehicle *VehicleInfo) AfterCreate(tx *gorm.DB) error {
 	logger.Logger.Print("%s afterCreate vehicle_id:%s", util.RunFuncName(), vehicle.VehicleId)
 	logger.Logger.Info("%s afterCreate vehicle_id:%s", util.RunFuncName(), vehicle.VehicleId)
 
-	err := HandleVehicleStrategyInitAction(vehicle.VehicleId)
-	if err != nil {
-		logger.Logger.Print("%s afterCreate vehicle_id:%s,init strategy err:%s", util.RunFuncName(), vehicle.VehicleId, err)
-		logger.Logger.Info("%s afterCreate vehicle_id:%s,init strategy err:%s", util.RunFuncName(), vehicle.VehicleId, err)
-	}
-
-	//下发策略
-	initVehicleStrategy(vehicle.VehicleId)
+	//err := HandleVehicleStrategyInitAction(vehicle.VehicleId)
+	//if err != nil {
+	//	logger.Logger.Print("%s afterCreate vehicle_id:%s,init strategy err:%s", util.RunFuncName(), vehicle.VehicleId, err)
+	//	logger.Logger.Info("%s afterCreate vehicle_id:%s,init strategy err:%s", util.RunFuncName(), vehicle.VehicleId, err)
+	//}
+	//
+	////下发策略
+	//initVehicleStrategy(vehicle.VehicleId)
 	return nil
 }
 
