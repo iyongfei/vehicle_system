@@ -28,12 +28,15 @@ func checkTable(model interface{}) (error, int64) {
 
 func getTables() []interface{} {
 	//添加各个&model表
+	alayerProto := &model.AlayerProto{}
 	area := &model.AreaGroup{}
 	assetLeader := &model.AssetLeader{}
 	asset := &model.Asset{}
 	automatedLearning := &model.AutomatedLearning{}
 	automatedLearningResult := &model.AutomatedLearningResult{}
+	category := &model.Category{}
 	disk := &model.Disk{}
+	fingerPrint := &model.FingerPrint{}
 	firmwareInfo := &model.FirmwareInfo{}
 	firmwareUpdate := &model.FirmwareUpdate{}
 
@@ -65,7 +68,7 @@ func getTables() []interface{} {
 	whiteList := &model.WhiteList{}
 
 	tables := []interface{}{
-		area, asset, assetLeader, flow, tflow, flowStatistic, firmwareUpdate, firmwareInfo, vehicleInfo, vehicleLeader,
+		alayerProto, area, asset, assetLeader, category, fingerPrint, flow, tflow, flowStatistic, firmwareUpdate, firmwareInfo, vehicleInfo, vehicleLeader,
 		user, disk, threat, whiteList, vhalonet, redisInfo, portMap, strategy, strategyGroup, strategyVehicle,
 		flowStrategy, flowStrategyVehicles,
 		flowStrategyTtem, flowStrategyRelateItem, sample, strategyVehicleLearnings,

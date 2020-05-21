@@ -7,6 +7,9 @@ import (
 	"vehicle_system/src/vehicle/util"
 )
 
+/**
+{rtp:20,tcp:10,}
+*/
 type FingerPrint struct {
 	gorm.Model
 	FprintId  string
@@ -54,5 +57,5 @@ func (fingerPrint *FingerPrint) GetModelListByCondition(model interface{}, query
 }
 
 func (fingerPrint *FingerPrint) CreateModel(assetParams ...interface{}) interface{} {
-	return category
+	return fingerPrint
 }

@@ -630,7 +630,6 @@ CREATE TABLE IF NOT EXISTS `vhalo_nets`  (
 
 
 -- 应用层协议
-
 CREATE TABLE IF NOT EXISTS `alayer_protos`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -644,10 +643,7 @@ CREATE TABLE IF NOT EXISTS `alayer_protos`  (
   INDEX `idx_alayer_protos_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
-
-
 --  设备分类
-
 CREATE TABLE IF NOT EXISTS `categories`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -661,10 +657,7 @@ CREATE TABLE IF NOT EXISTS `categories`  (
   INDEX `idx_categories_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
-
-
 --  设备指纹
-
 CREATE TABLE IF NOT EXISTS `finger_prints`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -681,31 +674,3 @@ CREATE TABLE IF NOT EXISTS `finger_prints`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_finger_prints_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
