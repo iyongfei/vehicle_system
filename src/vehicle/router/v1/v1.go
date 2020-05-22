@@ -3,12 +3,11 @@ package v1
 import (
 	"github.com/gin-gonic/gin"
 	"vehicle_system/src/vehicle/api_server"
-	"vehicle_system/src/vehicle/middleware"
 )
 
 func V1Router(r *gin.Engine) {
 	apiV1 := r.Group("/api/v1")
-	apiV1.Use(middleware.AuthMiddle())
+	apiV1.Use( /**middleware.AuthMiddle()*/ )
 	{
 
 		//////////////////////////////////////////////流量接口//////////////////////////////////////////////
@@ -22,10 +21,10 @@ func V1Router(r *gin.Engine) {
 		apiV1.PUT("/fstrategys/:fstrategy_id", api_server.EditFStrategy)    //todo
 		apiV1.GET("/fstrategys/:fstrategy_id", api_server.GetFStrategy)     //todo
 
-		apiV1.GET("/ids/fstrategys", api_server.GetAllFstrategys)        //todo
-		apiV1.GET("/active/fstrategys", api_server.GetActiveFstrategy)   //todo
-		apiV1.GET("/partial/fstrategys", api_server.GetPartFstrategyIds) //todo
-		//apiV1.GET("/pagination/fstrategys", api_server.GetPaginationFstrategys) //todo
+		//apiV1.GET("/ids/fstrategys", api_server.GetAllFstrategys)        //todo
+		apiV1.GET("/active/fstrategys", api_server.GetActiveFstrategy)          //todo
+		apiV1.GET("/partial/fstrategys", api_server.GetPartFstrategyIds)        //todo
+		apiV1.GET("/pagination/fstrategys", api_server.GetPaginationFstrategys) //todo
 		//////////////////////////////////////////////会话策略下载上传//////////////////////////////////////////////
 		apiV1.GET("/fstrategy_csvs/:fstrategy_id", api_server.GetFStrategyCsv)  //todo
 		apiV1.POST("/fstrategy_csvs", api_server.UploadFStrategyCsv)            //todo

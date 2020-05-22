@@ -715,10 +715,11 @@ func GetAllFstrategys(c *gin.Context) {
 		"fstrategy_vehicles.vehicle_id = ?", []interface{}{vehicleId}...)
 
 	var fstrategys []interface{}
-	fstrategyIds := map[string]interface{}{}
+
 	for _, v := range vehicleFStrategys {
 		fstrategyId := v.FstrategyId
 		createdAt := v.CreatedAt
+		fstrategyIds := map[string]interface{}{}
 
 		fstrategyIds["CreatedAt"] = createdAt
 		fstrategyIds["FstrategyId"] = fstrategyId
@@ -846,11 +847,11 @@ func GetPaginationFstrategys(c *gin.Context) {
 	fpageSize, _ := strconv.Atoi(pageSizeP)
 	fpageIndex, _ := strconv.Atoi(pageIndexP)
 
-	var fStartTime time.Time
-	var fEndTime time.Time
-
 	startTime, _ := strconv.Atoi(startTimeP)
 	endTime, _ := strconv.Atoi(endTimeP)
+
+	var fStartTime time.Time
+	var fEndTime time.Time
 
 	//默认20
 	defaultPageSize := 20
@@ -878,11 +879,117 @@ func GetPaginationFstrategys(c *gin.Context) {
 		fEndTime = util.StampUnix2Time(int64(endTime))
 	}
 
-	logger.Logger.Info("%s frequest params vehicle_id:%s,fpageSize:%s,fpageIndex:%s,fStartTime%s,fEndTime%s",
+	logger.Logger.Info("%s frequest params vehicle_id:%s,fpageSize:%d,fpageIndex:%d,fStartTime%d,fEndTime%d",
 		util.RunFuncName(), vehicleId, fpageSize, fpageIndex, fStartTime, fEndTime)
-	logger.Logger.Print("%s frequest params vehicle_id:%s,fpageSize:%s,fpageIndex:%s,fStartTime%s,fEndTime%s",
+	logger.Logger.Print("%s frequest params vehicle_id:%s,fpageSize:%d,fpageIndex:%d,fStartTime%d,fEndTime%d",
 		util.RunFuncName(), vehicleId, fpageSize, fpageIndex, fStartTime, fEndTime)
 
+	//查询终端id是否存在
+	vehicleInfo := &model.VehicleInfo{
+		VehicleId: vehicleId,
+	}
+
+	modelBase := model_base.ModelBaseImpl(vehicleInfo)
+
+	err, recordNotFound := modelBase.GetModelByCondition("vehicle_id = ?", []interface{}{vehicleInfo.VehicleId}...)
+
+	if err != nil {
+		logger.Logger.Error("%s vehicle_id:%s,err:%s", util.RunFuncName(), vehicleId, err)
+		logger.Logger.Print("%s vehicle_id:%s,err:%s", util.RunFuncName(), vehicleId, err)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetVehicleFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	if recordNotFound {
+		logger.Logger.Error("%s vehicle_id:%s,recordNotFound", util.RunFuncName(), vehicleId)
+		logger.Logger.Print("%s vehicle_id:%s,recordNotFound", util.RunFuncName(), vehicleId)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetVehicleUnExistMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+	//终端-策略
+	vehicleFStrategys, err := model.GetFStrategyVehicles(
+		"fstrategy_vehicles.vehicle_id = ?", []interface{}{vehicleId}...)
+	if len(vehicleFStrategys) == 0 {
+		logger.Logger.Error("%s vehicle_id:%s,vehicleFStrategys null", util.RunFuncName(), vehicleId)
+		logger.Logger.Print("%s vehicle_id:%s,vehicleFStrategys null", util.RunFuncName(), vehicleId)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetStrtegyUnExistMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+	if err != nil {
+		logger.Logger.Error("%s vehicle_id:%s,vehicleFStrategys err:%+v", util.RunFuncName(), vehicleId, err)
+		logger.Logger.Print("%s vehicle_id:%s,vehicleFStrategys err:%+v", util.RunFuncName(), vehicleId, err)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetStrategyFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	//获取fstrategyVehicleIds
+	var fstrategyVehicleIds []string
+	for _, fstrategyVehicle := range vehicleFStrategys {
+
+		fVehicleId := fstrategyVehicle.FstrategyVehicleId
+		exist := util.IsExistInSlice(fVehicleId, fstrategyVehicleIds)
+		if !exist {
+			fstrategyVehicleIds = append(fstrategyVehicleIds, fVehicleId)
+		}
+	}
+	logger.Logger.Print("%s vehicle_id:%s,fstrategyVehicleIds:%+v", util.RunFuncName(), vehicleId, fstrategyVehicleIds)
+	logger.Logger.Info("%s vehicle_id:%s,fstrategyVehicleIds:%+v", util.RunFuncName(), vehicleId, fstrategyVehicleIds)
+
+	//fstrategyVehicleIds
+	vehicleFStrategyItems, err := model.GetVehicleFStrategyItems(
+		"fstrategy_vehicle_items.fstrategy_vehicle_id in (?) and fstrategy_items.deleted_at is null",
+		[]interface{}{fstrategyVehicleIds}...)
+
+	vehicleFStrategyItemsMap := map[string]map[string][]uint32{}
+
+	for _, vehicleFStrategyItem := range vehicleFStrategyItems {
+		if !util.RrgsTrimEmpty(vehicleFStrategyItem.FstrategyVehicleId) {
+			_, ok := vehicleFStrategyItemsMap[vehicleFStrategyItem.FstrategyVehicleId]
+			if !ok {
+				vehicleFStrategyItemsMap[vehicleFStrategyItem.FstrategyVehicleId] = map[string][]uint32{}
+				if !util.RrgsTrimEmpty(vehicleFStrategyItem.DstIp) {
+					_, oker := vehicleFStrategyItemsMap[vehicleFStrategyItem.FstrategyVehicleId][vehicleFStrategyItem.DstIp]
+					if !oker {
+						vehicleFStrategyItemsMap[vehicleFStrategyItem.FstrategyVehicleId][vehicleFStrategyItem.DstIp] = []uint32{vehicleFStrategyItem.DstPort}
+					}
+				}
+			} else {
+				_, oker := vehicleFStrategyItemsMap[vehicleFStrategyItem.FstrategyVehicleId][vehicleFStrategyItem.DstIp]
+				if !oker {
+					vehicleFStrategyItemsMap[vehicleFStrategyItem.FstrategyVehicleId][vehicleFStrategyItem.DstIp] = []uint32{vehicleFStrategyItem.DstPort}
+				} else {
+					vehicleFStrategyItemsMap[vehicleFStrategyItem.FstrategyVehicleId][vehicleFStrategyItem.DstIp] =
+						append(vehicleFStrategyItemsMap[vehicleFStrategyItem.FstrategyVehicleId][vehicleFStrategyItem.DstIp], vehicleFStrategyItem.DstPort)
+				}
+			}
+		}
+	}
+	//
+
+	var list []model.VehicleSingleFlowStrategyItemsReult
+	for _, vehicleFStrategy := range vehicleFStrategys {
+		vehicleSingleFlowStrategyItemsReult := model.VehicleSingleFlowStrategyItemsReult{
+			FstrategyId:              vehicleFStrategy.FstrategyId,
+			Type:                     vehicleFStrategy.Type,
+			HandleMode:               vehicleFStrategy.HandleMode,
+			Enable:                   vehicleFStrategy.Enable,
+			VehicleId:                vehicleFStrategy.VehicleId,
+			CsvPath:                  vehicleFStrategy.CsvPath,
+			VehicleFStrategyItemsMap: vehicleFStrategyItemsMap[vehicleFStrategy.FstrategyVehicleId],
+		}
+		list = append(list, vehicleSingleFlowStrategyItemsReult)
+	}
+
+	responseData := map[string]interface{}{
+		"fstrategys": list,
+	}
+
+	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetFStrategySuccessMsg, responseData)
+	c.JSON(http.StatusOK, retObj)
 }
 
 /**

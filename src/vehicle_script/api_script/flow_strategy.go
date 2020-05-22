@@ -9,14 +9,16 @@ import (
 )
 
 var fstrategyUrls = map[string]string{
-	"post_fstrategy":        "http://%s:7001/api/v1/fstrategys",
-	"dele_fstrategy":        "http://%s:7001/api/v1/fstrategys/",
-	"edit_fstrategy":        "http://%s:7001/api/v1/fstrategys/",
-	"get_fstrategy":         "http://%s:7001/api/v1/fstrategys/",
-	"get_active_fstrategs":  "http://%s:7001/api/v1/active/fstrategys",
-	"get_all_fstrategs":     "http://%s:7001/api/v1/ids/fstrategys",
-	"get_partial_fstrategs": "http://%s:7001/api/v1/partial/fstrategys",
+	"post_fstrategy":           "http://%s:7001/api/v1/fstrategys",
+	"dele_fstrategy":           "http://%s:7001/api/v1/fstrategys/",
+	"edit_fstrategy":           "http://%s:7001/api/v1/fstrategys/",
+	"get_fstrategy":            "http://%s:7001/api/v1/fstrategys/",
+	"get_active_fstrategs":     "http://%s:7001/api/v1/active/fstrategys",
+	"get_all_fstrategs":        "http://%s:7001/api/v1/ids/fstrategys",
+	"get_partial_fstrategs":    "http://%s:7001/api/v1/partial/fstrategys",
+	"get_pagination_fstrategs": "http://%s:7001/api/v1/pagination/fstrategys",
 
+	//
 	"get_fstrategys":               "http://localhost:7001/api/v1/fstrategys",
 	"get_strategy_vehicles":        "http://localhost:7001/api/v1/strategy_vehicles/9xR5vYZweMb3aRoGGEQYaIw6xhRetYV8",
 	"get_vehicle_results":          "http://localhost:7001/api/v1/vehicle_lresults/cuMwUiDA2V8NLNWGznfVI2hP5Zi3PhMJ",
@@ -30,16 +32,40 @@ func getConfig() map[string]string {
 func main() {
 	//addFStrategy()
 	//getFStrategy()
-	deleFStrategy()
+	//deleFStrategy()
 	//editFStrategy()
 	//getRecentFStrategy()
 	//getAllFStrategys()
 	//getPartialFStrategys()
+	getPaginationFstrategys()
 	//unused
 	//getFStrategys()
 	//getStrategyVehicle()
 	//getVehicleLearningResults()
 	//getStrategyVehicleLearningResults()
+}
+
+func getPaginationFstrategys() {
+	token := tool.GetVehicleToken()
+	configs := getConfig()
+	fip := configs["server_ip"]
+	vehicle_id := configs["vehicle_id"]
+	page_index := configs["page_index"]
+	page_size := configs["page_size"]
+	start_time := configs["start_time"]
+	end_time := configs["end_time"]
+
+	queryParams := map[string]interface{}{
+		"vehicle_id": vehicle_id,
+		"page_index": page_index,
+		"page_size":  page_size,
+		"start_time": start_time,
+		"end_time":   end_time,
+	}
+	reqUrl := fmt.Sprintf(fstrategyUrls["get_pagination_fstrategs"], fip)
+	resp, _ := tool.Get(reqUrl, queryParams, token)
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
 }
 
 func getPartialFStrategys() {

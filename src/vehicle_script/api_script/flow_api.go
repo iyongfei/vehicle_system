@@ -20,7 +20,7 @@ var urls = map[string]string{
 
 func main() {
 	//getFlow()
-	//getPaginationFlows()
+	getPaginationFlows()
 	getflowsDps()
 
 	//unused

@@ -33,3 +33,9 @@ flowid=1644395481
 
 #部分策略
 partial_fstrategs=slM0jAPFWZWMADkZPDsspr3Gc4IC1KYt,ZH9sLus3hDSQv4VdlZY1MAlkJbUaVcOf,b7DCXxj2bm7MZqQiuK4Cq8oCMItvpJSi
+
+#分页
+page_size=10
+page_index=1
+start_time=1
+end_time=2
