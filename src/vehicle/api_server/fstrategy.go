@@ -444,6 +444,28 @@ func DeleFStrategy(c *gin.Context) {
 	logger.Logger.Info("%s fstrategyId:%s", util.RunFuncName(), fstrategyId)
 	logger.Logger.Print("%s fstrategyId:%s", util.RunFuncName(), fstrategyId)
 
+	fStrategyObj := &model.Fstrategy{
+		FstrategyId: fstrategyId,
+	}
+
+	modelBase := model_base.ModelBaseImpl(fStrategyObj)
+	err, frecordNotFound := modelBase.GetModelByCondition("fstrategy_id = ?", []interface{}{fStrategyObj.FstrategyId}...)
+
+	if err != nil {
+		logger.Logger.Error("%s fstrategy_id:%s err:%s", util.RunFuncName(), fStrategyObj.FstrategyId, err)
+		logger.Logger.Print("%s fstrategy_id:%s err:%s", util.RunFuncName(), fStrategyObj.FstrategyId, err)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqDeleFStrategyFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+	if frecordNotFound {
+		logger.Logger.Error("%s asset_id:%s,record not exist", util.RunFuncName(), fStrategyObj.FstrategyId)
+		logger.Logger.Print("%s asset_id:%s,record not exist", util.RunFuncName(), fStrategyObj.FstrategyId)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetFStrtegyUnExistMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
 	//连表查询
 	ftrategyVehicleItems, _ := model.GetFlowStrategyVehicleItems(
 		"fstrategies.fstrategy_id = ?", []interface{}{fstrategyId}...)

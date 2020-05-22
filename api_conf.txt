@@ -2,8 +2,8 @@ server_ip = localhost
 
 
 #注册
-user_name=aaa
-password=bbb
+user_name=aaadd
+password=bbbee
 
 #终端id
 vehicle_id=754d2728b4e549c5a16c0180fcacb800
@@ -15,11 +15,11 @@ handle_mode=2
 
 
 #增加会话策略接口
-fips=192.168.1.121
-fports=8090
+fips=192.168.1.123,192.168.1.129
+fports=123,345
 
 #获取会话策略接口
-get_flow_fstrategy_id=iyTNYbaZ48g8E3vsw5hDDEdo2aHUDjvB
+get_flow_fstrategy_id=ZH9sLus3hDSQv4VdlZY1MAlkJbUaVcOf
 
 
 #修改会话策略接口
@@ -32,4 +32,4 @@ update_fports=123,125
 flowid=1644395481
 
 #部分策略
-partial_fstrategs=O3l5zjLgIZkaRrbWMPfT0miPFaKph3Rn,b7DCXxj2bm7MZqQiuK4Cq8oCMItvpJSi
+partial_fstrategs=slM0jAPFWZWMADkZPDsspr3Gc4IC1KYt,ZH9sLus3hDSQv4VdlZY1MAlkJbUaVcOf,b7DCXxj2bm7MZqQiuK4Cq8oCMItvpJSi

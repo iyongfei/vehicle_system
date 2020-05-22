@@ -13,7 +13,7 @@ var fstrategyUrls = map[string]string{
 	"dele_fstrategy":        "http://%s:7001/api/v1/fstrategys/",
 	"edit_fstrategy":        "http://%s:7001/api/v1/fstrategys/",
 	"get_fstrategy":         "http://%s:7001/api/v1/fstrategys/",
-	"get_active_fstrategs":  "http://%s:7001/api/v1/active/fstrategs",
+	"get_active_fstrategs":  "http://%s:7001/api/v1/active/fstrategys",
 	"get_all_fstrategs":     "http://%s:7001/api/v1/ids/fstrategys",
 	"get_partial_fstrategs": "http://%s:7001/api/v1/partial/fstrategys",
 
