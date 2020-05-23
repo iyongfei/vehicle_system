@@ -15,16 +15,16 @@ handle_mode=2
 
 
 #增加会话策略接口
-fips=192.168.1.123,192.168.1.129
-fports=123,345
+fips=192.168.2.43,192.168.41.12
+fports=123,3
 
 #获取会话策略接口
 get_flow_fstrategy_id=ZH9sLus3hDSQv4VdlZY1MAlkJbUaVcOf
 
 
 #修改会话策略接口
-update_fips=192.167.1.7,192.167.1.8
-update_fports=123,125
+update_fips=192.167.12.7,192.169.1.1
+update_fports=128,3
 
 
 
@@ -35,7 +35,7 @@ flowid=1644395481
 partial_fstrategs=slM0jAPFWZWMADkZPDsspr3Gc4IC1KYt,ZH9sLus3hDSQv4VdlZY1MAlkJbUaVcOf,b7DCXxj2bm7MZqQiuK4Cq8oCMItvpJSi
 
 #分页
-page_size=10
-page_index=1
+page_size=2
+page_index=3
 start_time=1
 end_time=2

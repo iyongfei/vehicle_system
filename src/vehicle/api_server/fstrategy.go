@@ -908,9 +908,12 @@ func GetPaginationFstrategys(c *gin.Context) {
 		c.JSON(http.StatusOK, ret)
 		return
 	}
+	var totalCount int
+
 	//终端-策略
-	vehicleFStrategys, err := model.GetFStrategyVehicles(
-		"fstrategy_vehicles.vehicle_id = ?", []interface{}{vehicleId}...)
+	vehicleFStrategys, err := model.GetPaginFStrategyVehicles(fpageIndex, fpageSize, &totalCount,
+		"fstrategy_vehicles.vehicle_id = ? and fstrategies.created_at BETWEEN ? AND ?", []interface{}{vehicleId, fStartTime, fEndTime}...)
+
 	if len(vehicleFStrategys) == 0 {
 		logger.Logger.Error("%s vehicle_id:%s,vehicleFStrategys null", util.RunFuncName(), vehicleId)
 		logger.Logger.Print("%s vehicle_id:%s,vehicleFStrategys null", util.RunFuncName(), vehicleId)
@@ -944,34 +947,28 @@ func GetPaginationFstrategys(c *gin.Context) {
 		"fstrategy_vehicle_items.fstrategy_vehicle_id in (?) and fstrategy_items.deleted_at is null",
 		[]interface{}{fstrategyVehicleIds}...)
 
-	vehicleFStrategyItemsMap := map[string]map[string][]uint32{}
-
-	for _, vehicleFStrategyItem := range vehicleFStrategyItems {
-		if !util.RrgsTrimEmpty(vehicleFStrategyItem.FstrategyVehicleId) {
-			_, ok := vehicleFStrategyItemsMap[vehicleFStrategyItem.FstrategyVehicleId]
-			if !ok {
-				vehicleFStrategyItemsMap[vehicleFStrategyItem.FstrategyVehicleId] = map[string][]uint32{}
-				if !util.RrgsTrimEmpty(vehicleFStrategyItem.DstIp) {
-					_, oker := vehicleFStrategyItemsMap[vehicleFStrategyItem.FstrategyVehicleId][vehicleFStrategyItem.DstIp]
-					if !oker {
-						vehicleFStrategyItemsMap[vehicleFStrategyItem.FstrategyVehicleId][vehicleFStrategyItem.DstIp] = []uint32{vehicleFStrategyItem.DstPort}
-					}
-				}
-			} else {
-				_, oker := vehicleFStrategyItemsMap[vehicleFStrategyItem.FstrategyVehicleId][vehicleFStrategyItem.DstIp]
-				if !oker {
-					vehicleFStrategyItemsMap[vehicleFStrategyItem.FstrategyVehicleId][vehicleFStrategyItem.DstIp] = []uint32{vehicleFStrategyItem.DstPort}
-				} else {
-					vehicleFStrategyItemsMap[vehicleFStrategyItem.FstrategyVehicleId][vehicleFStrategyItem.DstIp] =
-						append(vehicleFStrategyItemsMap[vehicleFStrategyItem.FstrategyVehicleId][vehicleFStrategyItem.DstIp], vehicleFStrategyItem.DstPort)
-				}
-			}
-		}
-	}
-	//
-
 	var list []model.VehicleSingleFlowStrategyItemsReult
 	for _, vehicleFStrategy := range vehicleFStrategys {
+		fVid := vehicleFStrategy.FstrategyVehicleId
+		//每个策略的ip:port列表
+		vehicleFStrategyItemsMap := map[string][]uint32{}
+		for _, vehicleFStrategyItem := range vehicleFStrategyItems {
+			fVehicleId := vehicleFStrategyItem.FstrategyVehicleId
+			if fVehicleId == fVid {
+				dip := util.RrgsTrim(vehicleFStrategyItem.DstIp)
+				dPort := vehicleFStrategyItem.DstPort
+				if _, ok := vehicleFStrategyItemsMap[dip]; ok {
+					if !util.IsExistInSlice(dPort, vehicleFStrategyItemsMap[dip]) {
+						vehicleFStrategyItemsMap[dip] = append(vehicleFStrategyItemsMap[dip], dPort)
+					}
+				} else {
+
+					vehicleFStrategyItemsMap[dip] = []uint32{dPort}
+				}
+
+			}
+
+		}
 		vehicleSingleFlowStrategyItemsReult := model.VehicleSingleFlowStrategyItemsReult{
 			FstrategyId:              vehicleFStrategy.FstrategyId,
 			Type:                     vehicleFStrategy.Type,
@@ -979,13 +976,14 @@ func GetPaginationFstrategys(c *gin.Context) {
 			Enable:                   vehicleFStrategy.Enable,
 			VehicleId:                vehicleFStrategy.VehicleId,
 			CsvPath:                  vehicleFStrategy.CsvPath,
-			VehicleFStrategyItemsMap: vehicleFStrategyItemsMap[vehicleFStrategy.FstrategyVehicleId],
+			VehicleFStrategyItemsMap: vehicleFStrategyItemsMap,
 		}
 		list = append(list, vehicleSingleFlowStrategyItemsReult)
 	}
 
 	responseData := map[string]interface{}{
 		"fstrategys": list,
+		"totalCount": totalCount,
 	}
 
 	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetFStrategySuccessMsg, responseData)

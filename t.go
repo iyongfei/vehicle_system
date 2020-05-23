@@ -58,19 +58,22 @@ flow.SrcIp = util.IpIntToString(int(sipLittleEndian))
 */
 
 func main() {
-	vehicleFStrategyItemsMap := map[string]map[string][]string{}
+	vehicleFStrategyItemsMap := map[string][]string{}
+	vehicleFStrategyItemsMap["a"] = []string{"s", "d"}
 
-	fmt.Println(vehicleFStrategyItemsMap["a"])
-	fmt.Println(vehicleFStrategyItemsMap["a"]["b"])
 	//vehicleFStrategyItemsMap["a"]["b"] = append(vehicleFStrategyItemsMap["a"]["b"], []string{"c", "d"}...)
 	//fmt.Println(vehicleFStrategyItemsMap["a"]["b"])
 
 	if v, ok := vehicleFStrategyItemsMap["a"]; ok {
-		fmt.Println(v)
+		if !util.IsExistInSlice("ddd", v) {
+			vehicleFStrategyItemsMap["a"] = append(vehicleFStrategyItemsMap["a"], "ddd")
+		}
+
 	} else {
-		fmt.Println("Key Not Found")
+		fmt.Println("Key Not Found", v, ok)
 	}
 
+	fmt.Println(vehicleFStrategyItemsMap)
 	return
 
 	//dip := "3232235898"
