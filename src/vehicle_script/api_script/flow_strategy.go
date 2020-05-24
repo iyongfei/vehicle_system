@@ -52,15 +52,15 @@ func getPaginationFstrategys() {
 	vehicle_id := configs["vehicle_id"]
 	page_index := configs["page_index"]
 	page_size := configs["page_size"]
-	//start_time := configs["start_time"]
-	//end_time := configs["end_time"]
+	start_time := configs["start_time"]
+	end_time := configs["end_time"]
 
 	queryParams := map[string]interface{}{
 		"vehicle_id": vehicle_id,
 		"page_index": page_index,
 		"page_size":  page_size,
-		//"start_time": start_time,
-		//"end_time":   end_time,
+		"start_time": start_time,
+		"end_time":   end_time,
 	}
 	reqUrl := fmt.Sprintf(fstrategyUrls["get_pagination_fstrategs"], fip)
 	resp, _ := tool.Get(reqUrl, queryParams, token)

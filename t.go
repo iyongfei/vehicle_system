@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"github.com/jinzhu/gorm"
+	"time"
 	"vehicle_system/src/vehicle/conf"
 	"vehicle_system/src/vehicle/util"
 )
@@ -58,6 +59,11 @@ flow.SrcIp = util.IpIntToString(int(sipLittleEndian))
 */
 
 func main() {
+
+	fmt.Println(time.Now().Unix())
+	defaultStartTime := util.GetFewDayAgo(5)
+	fmt.Println(defaultStartTime.Unix())
+	return
 	vehicleFStrategyItemsMap := map[string][]string{}
 	vehicleFStrategyItemsMap["a"] = []string{"s", "d"}
 
