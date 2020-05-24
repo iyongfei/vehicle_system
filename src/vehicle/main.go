@@ -6,6 +6,7 @@ import (
 	"vehicle_system/src/vehicle/db"
 	"vehicle_system/src/vehicle/emq"
 	"vehicle_system/src/vehicle/logger"
+	"vehicle_system/src/vehicle/mac"
 	"vehicle_system/src/vehicle/router"
 	"vehicle_system/src/vehicle/service/push"
 	"vehicle_system/src/vehicle/timing"
@@ -15,6 +16,7 @@ import (
 func init() {
 	logger.Setup()
 	conf.Setup()
+	mac.Setup()
 	timing.Setup()
 	db.Setup()
 	emq.Setup()

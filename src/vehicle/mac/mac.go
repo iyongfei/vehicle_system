@@ -1,31 +1,30 @@
-package main
+package mac
 
 import (
 	"strings"
+	"vehicle_system/src/vehicle/util"
 )
 
-// default path init
 var (
-	MacOrgFile = "/etc/vgwsys/mac-prefixes"
+	MacOrgFile = "mac-prefixes"
 	MacOrgData []byte
 	MacOrgMap  map[string]string
 )
 
-func init() {
+func Setup() {
 	MacOrgMap = make(map[string]string)
 	initMacOrgMap()
 }
 
 // initMacOrgMap init MacOrgMap
 func initMacOrgMap() {
-	if !utils.PathExist(MacOrgFile) {
+	if !util.PathExist(MacOrgFile) {
 		return
 	}
 
 	var err error
-	MacOrgData, err = utils.ReadFileByte(MacOrgFile)
+	MacOrgData, err = util.ReadFileByte(MacOrgFile)
 	if err != nil {
-		log.Error("File [%s] read error:%v", MacOrgFile, err)
 	}
 	macOrgLines := strings.Split(string(MacOrgData), "\n")
 	for _, macOrg := range macOrgLines {
@@ -47,11 +46,10 @@ func initMacOrgMap() {
 // GetOrgByMAC get orginazation by mac address
 // if not found, return void string
 func GetOrgByMAC(mac string) string {
-	hmac, err := utils.ToHexadecimalMac(mac)
+	hmac, err := util.ToHexadecimalMac(mac)
 	if err != nil {
 		return ""
 	}
-
 	macHead := string([]byte(hmac)[:6])
 	if v, ok := MacOrgMap[macHead]; ok {
 		return v

@@ -83,6 +83,19 @@ func GetCategorys(c *gin.Context) {
 */
 
 func DeleCategory(c *gin.Context) {
+	cateId := c.Param("cate_id")
+	argsTrimsEmpty := util.RrgsTrimsEmpty(cateId)
+	if argsTrimsEmpty {
+		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+		c.JSON(http.StatusOK, ret)
+
+		logger.Logger.Print("%s cateId:%s,cateName%s", util.RunFuncName(), cateId)
+		logger.Logger.Error("%s cateId:%s,cateName%s", util.RunFuncName(), cateId)
+		return
+	}
+
+	logger.Logger.Print("%s cateId:%s,cateName%s", util.RunFuncName(), cateId)
+	logger.Logger.Error("%s cateId:%s,cateName%s", util.RunFuncName(), cateId)
 
 }
 

@@ -17,6 +17,7 @@ message GWResult {
 		FLOWSTRATEGYSTAT = 11; // flow策略状态, 上传 FlowStrategyParam 类型
 		MONITORINFO   = 12; //监控，上报MonitorInfoParam类型
 		FLOWSTATISTIC = 13; //流量统计，上报FlowStatisticParam类型
+		FINGERPRINT = 14; //资产指纹信息，上报FingerprintParam类型
 	}
 
 	ActionType action_type = 1;//推送数据类型
@@ -68,9 +69,9 @@ enum FlowProtos {
 enum FlowSafetype {
 	FS_UNSET = 0; // 默认值
 	FS_SAFE = 1; // 会话安全
-	FS_VERY_DANGER = 2; // 病毒/木马 TELNET SSH 远程控制等代码类入侵 
+	FS_VERY_DANGER = 2; // 病毒/木马 TELNET SSH 远程控制等代码类入侵
 	FS_EMAL_LEAKAGE = 3; // 邮件类高危信息泄露威胁
-	FS_LEAKAGE = 4; // web类信息信息泄露威胁  
+	FS_LEAKAGE = 4; // web类信息信息泄露威胁
 	FS_WARNING = 5; // 异常网络行为
 }
 
@@ -104,6 +105,7 @@ message FlowParam {
 	}
 	repeated FMacItems mac_items = 1; //FMacItems
 }
+
 
 message FirwareParam {
 	enum Status {
@@ -164,22 +166,39 @@ message GwInfoParam {
 	uint32 flow_idle_time_slot = 14; //会话flow在时间段间隔之后做IDLE处理.
 }
 
+
 //小v下属关联设备（终端）
-message DeviceParam{
-	message Item{
+//v2:车载、视频会场项目相关版本
+message DeviceParam {
+	message Item {
 		string ip = 1;//ip地址
 		string mac = 2;//mac地址
-		string name = 3;//设备名称
-		string trademark = 4;//品牌名称
-		bool is_online = 5;//是否在线
+		string name = 3;//设备名称 v2 留空
+		string trademark = 4;//品牌名称 v2 留空
+		bool is_online = 5;//是否在线 v2 留空
 		uint32 last_online = 6;//最后在线时间戳
-		bool internet_switch = 7;//是否允许联网
-		bool protect_switch = 8;//是否受小V保护
-		bool lan_visit_switch = 9;//是否可以访问内网,false:访问关闭. true:访问开启
+		bool internet_switch = 7;//是否允许联网 v2 留空
+		bool protect_switch = 8;//是否受小V保护 v2 留空
+		bool lan_visit_switch = 9;//是否可以访问内网,false:访问关闭. true:访问开启 v2 留空
 	}
 
 	repeated Item device_item = 1;
 }
+
+// 资产指纹识别
+message FingerprintParam {
+	message ActiveDetect {
+		string os = 1; // 系统类型
+	}
+	message PassiveLearn {
+		uint32 dst_port = 1; // 接受者 端口号
+	}
+
+	string mac = 1;//Mac地址
+	ActiveDetect active = 2;//主动探测信息
+	PassiveLearn passive = 3;//被动学习信息
+}
+
 
 //威胁类型
 message ThreatParam{
@@ -278,10 +297,10 @@ message StrategyParam {
 // 小V 当前策略的状态
 message FlowStrategyParam {
 	enum Type {
-        FLWOTYPEDEFAULT = 0;
-        FLWOWHITEMODE =1;//白名单模式
-        FLWOBLACKMODE =2;//黑名单模式
-    }
+		FLWOTYPEDEFAULT = 0;
+		FLWOWHITEMODE =1;//白名单模式
+		FLWOBLACKMODE =2;//黑名单模式
+	}
 	enum HandleMode {
 		MODEDEFAULT = 0;
 		PREVENTWARNING = 1;//阻断并告警
