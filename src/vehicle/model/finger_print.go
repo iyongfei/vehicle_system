@@ -64,10 +64,10 @@ func (fingerPrint *FingerPrint) CreateModel(assetParams ...interface{}) interfac
 ////////////////////////////////探测类型///////////////////////////
 type FprintDetectInfo struct {
 	gorm.Model
-
-	DeviceMac string
-	VehicleId string
-	os        string
+	DetectInfoId string
+	DeviceMac    string
+	VehicleId    string
+	Os           string
 }
 
 func (fprintDetectInfo *FprintDetectInfo) InsertModel() error {
@@ -114,10 +114,10 @@ func (fprintDetectInfo *FprintDetectInfo) CreateModel(assetParams ...interface{}
 
 type FprintPassiveInfo struct {
 	gorm.Model
-
-	DeviceMac string
-	VehicleId string
-	DstPort   uint32
+	PassiveInfoId string
+	DeviceMac     string
+	VehicleId     string
+	DstPort       uint32
 }
 
 func (fprintPassiveInfo *FprintPassiveInfo) InsertModel() error {

@@ -484,7 +484,7 @@ CREATE TABLE IF NOT EXISTS `samples`  (
 
   `check` tinyint(3) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx_collect_samples_deleted_at`(`deleted_at`) USING BTREE
+  INDEX `idx_samples_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -700,9 +700,10 @@ CREATE TABLE IF NOT EXISTS `fprint_detect_infos`  (
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
 
+  `detect_info_id` varchar(255)  NULL DEFAULT NULL,
   `vehicle_id` varchar(255)  NULL DEFAULT NULL,
   `device_mac` varchar(255)  NULL DEFAULT NULL,
-   `os`   varchar(255) NULL DEFAULT NULL,
+  `os`   varchar(255) NULL DEFAULT NULL,
 
 
   PRIMARY KEY (`id`) USING BTREE,
@@ -716,13 +717,14 @@ CREATE TABLE IF NOT EXISTS `fprint_passive_infos`  (
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
 
+  `passive_info_id` varchar(255)  NULL DEFAULT NULL,
   `vehicle_id` varchar(255)  NULL DEFAULT NULL,
   `device_mac` varchar(255)  NULL DEFAULT NULL,
   `dst_port`   int(11) NULL DEFAULT NULL,
 
 
   PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx_fprint_detect_info_deleted_at`(`deleted_at`) USING BTREE
+  INDEX `idx_fprint_passive_infos_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 
