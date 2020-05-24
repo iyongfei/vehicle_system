@@ -77,7 +77,7 @@ func QueryModelRecordsByWhereCondition(models interface{}, query interface{}, ar
 	if err != nil {
 		return fmt.Errorf("%s open grom err:%v", util.RunFuncName(), err.Error())
 	}
-	err = vgorm.Where(query, args...).Find(models).Error
+	err = vgorm.Debug().Where(query, args...).Find(models).Error
 	if err != nil {
 		return fmt.Errorf("%s err %v", util.RunFuncName(), err.Error())
 	}

@@ -82,13 +82,6 @@ enum FlowStat {
 }
 
 message FlowParam {
-	//探测类型
-	enum Status {
-		PROBEDEFAULT = 0;
-		ACTIVEPROBE = 1;//主动探测
-		PASSIVEPROBE = 2;//被动探测
-	}
-
 	message FItem {
 		uint32 hash = 1; // flow-id (int型哈希值)
 		uint32 src_ip = 2; // 发起者(源)IP地址
@@ -104,15 +97,13 @@ message FlowParam {
 		uint64 src2dst_bytes = 12; // 上行流量(指src->dst方向) 单位:字节
 		uint64 dst2src_bytes = 13; // 下行流量(指dst->src方向) 单位:字节
 		FlowStat flow_stat = 14; // 当前会话活跃状态
-		string mac = 15;//发起者(源)的mac地址
-
 	}
-	
-	repeated FItem flow_item = 1; // flow集合
-	Status probe_type = 2;//探测类型
+	message FMacItems {
+		string mac = 1; //终端Mac
+		repeated FItem flow_item = 3; //FItem集合
+	}
+	repeated FMacItems mac_items = 1; //FMacItems
 }
-
-
 
 message FirwareParam {
 	enum Status {

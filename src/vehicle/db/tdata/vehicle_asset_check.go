@@ -31,5 +31,29 @@ func VehicleAssetCheck(vehicleId string, flag bool) error {
 		logger.Logger.Info("%s unmarshal vehicle init online err:%+v", util.RunFuncName(), err)
 
 	}
+
+	//初始化设备离线
+	assetModelBase := model_base.ModelBaseImpl(&model.Asset{})
+
+	var assetQuery string
+	var assetParam []interface{}
+
+	if util.RrgsTrimEmpty(vehicleId) {
+		assetQuery = ""
+		assetParam = []interface{}{}
+	} else {
+		assetQuery = "asset_id = ?"
+		assetParam = []interface{}{vehicleId}
+	}
+
+	assetAttrs := map[string]interface{}{
+		"online_status": flag,
+	}
+
+	if err := assetModelBase.UpdateModelsByCondition(assetAttrs, assetQuery, assetParam...); err != nil {
+		logger.Logger.Print("%s unmarshal vehicle asset init online err:%+v", util.RunFuncName(), err)
+		logger.Logger.Info("%s unmarshal vehicle asset init online err:%+v", util.RunFuncName(), err)
+
+	}
 	return nil
 }

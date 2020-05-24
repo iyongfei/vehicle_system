@@ -14,6 +14,7 @@ type Flow struct {
 
 	FlowId       uint32
 	VehicleId    string
+	AssetId      string
 	Hash         uint32
 	SrcIp        string
 	SrcPort      uint32

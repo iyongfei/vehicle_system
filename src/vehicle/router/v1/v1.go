@@ -39,6 +39,13 @@ func V1Router(r *gin.Engine) {
 		//apiV1.POST("/flows", api_server.AddFlow)
 		//apiV1.PUT("/flows/:flow_id", api_server.EditFlow)
 		//apiV1.GET("/flows", api_server.GetFlows)
+		//////////////////////////////////////////////指纹库标签//////////////////////////////////////////////
+		apiV1.POST("/categorys", api_server.AddCategory)          //todo
+		apiV1.GET("/all/categorys", api_server.GetCategorys)      //todo
+		apiV1.PUT("/categorys/:cate_id", api_server.EditCategory) //todo
+
+		apiV1.DELETE("/categorys/:cate_id", api_server.DeleCategory) //todo
+		apiV1.GET("/categorys/:cate_id", api_server.GetCategory)     //todo
 
 		//////////////////////////////////////////////车载接口//////////////////////////////////////////////
 		apiV1.GET("/vehicles/:vehicle_id", api_server.GetVehicle) //todo

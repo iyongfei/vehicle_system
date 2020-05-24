@@ -7,6 +7,7 @@ import (
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
+	"vehicle_system/src/vehicle/response"
 	"vehicle_system/src/vehicle/util"
 )
 
@@ -33,15 +34,37 @@ func HandleVehicleAsset(vehicleResult protobuf.GWResult, vehicleId string) error
 	if recordNotFound {
 		return fmt.Errorf("%s insert asset vehicleId recordNotFound", util.RunFuncName())
 	}
+
+	//初始化资产默认分组
+	assetGroup := &model.AreaGroup{
+		AreaName:       response.UnGroupName,
+		AreaCode:       util.RandomString(32),
+		ParentAreaCode: "",
+		TreeAreaCode:   "",
+	}
+
+	assetGroupModelBase := model_base.ModelBaseImpl(assetGroup)
+
+	_, assetGroupRecordNotFound := assetGroupModelBase.GetModelByCondition("area_name = ?",
+		[]interface{}{assetGroup.AreaName}...)
+	if assetGroupRecordNotFound {
+		err := assetGroupModelBase.InsertModel()
+		if err != nil {
+			return fmt.Errorf("%s insert asset ungroup err:%s", err)
+		}
+	}
+
 	for _, assetItem := range assetParam.GetDeviceItem() {
 		asset := &model.Asset{
-			VehicleId: vehicleId,
-			AssetId:   assetItem.GetMac(),
+			VehicleId:  vehicleId,
+			AssetId:    assetItem.GetMac(),
+			AssetGroup: assetGroup.AreaCode,
 		}
 
 		modelBase := model_base.ModelBaseImpl(asset)
-		modelBase.CreateModel(assetItem)
+
 		_, recordNotFound := modelBase.GetModelByCondition("asset_id = ?", asset.AssetId)
+		modelBase.CreateModel(assetItem)
 		if recordNotFound {
 			err := modelBase.InsertModel()
 			if err != nil {

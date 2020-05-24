@@ -15,11 +15,18 @@ message Command {
 		FIRMWARE_UPGRADE = 9;//更新版本,解析VersionNotifyParam类型
 		FLOWSTRATEGY_ADD = 10;// 更新flow策略, 解析 FlowStrategyAddParam 类型
 		FLOWSTRATEGY_SET = 11;// 设置flow策略, 解析 FlowStrategySetParam 类型
+		FINGER_PRINT_SET = 12;// 设置指纹策略, 解析 FingerPrintSetParam 类型
     }
 
     TaskType item_type = 1; //指令类型
     bytes param = 2;//具体任务内容，根据类型取相应message
     string cmdID =3; //该指令发送的ID
+}
+
+//下发指纹策略
+message FingerPrintSetParam {
+	repeated string macs = 1; //执行策略的设备Mac列表
+	FlowStrategyAddParam strategy = 2; //下发的策略信息
 }
 
 message FirmwareUpgradeParam {

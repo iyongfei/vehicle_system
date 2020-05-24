@@ -10,13 +10,13 @@ import (
 
 /**
 初始化默认分组
- */
-func TdataCheck() error{
+*/
+func TdataCheck() error {
 	areaGroup := &model.AreaGroup{
-		AreaName: response.UnGroupName,
-		AreaCode:util.RandomString(32),
-		ParentAreaCode:"",
-		TreeAreaCode:"",
+		AreaName:       response.UnGroupName,
+		AreaCode:       util.RandomString(32),
+		ParentAreaCode: "",
+		TreeAreaCode:   "",
 	}
 
 	modelBase := model_base.ModelBaseImpl(areaGroup)
@@ -25,9 +25,29 @@ func TdataCheck() error{
 		[]interface{}{areaGroup.AreaName}...)
 	if recordNotFound {
 		err := modelBase.InsertModel()
-		if err!=nil{
-			return fmt.Errorf("%s insert ungroup err:%s",err)
+		if err != nil {
+			return fmt.Errorf("%s insert ungroup err:%s", err)
 		}
 	}
+
+	//初始化资产默认分组
+	assetGroup := &model.AssetGroup{
+		AreaName:       response.UnGroupName,
+		AreaCode:       util.RandomString(32),
+		ParentAreaCode: "",
+		TreeAreaCode:   "",
+	}
+
+	assetGroupModelBase := model_base.ModelBaseImpl(assetGroup)
+
+	_, assetGroupRecordNotFound := assetGroupModelBase.GetModelByCondition("area_name = ?",
+		[]interface{}{assetGroup.AreaName}...)
+	if assetGroupRecordNotFound {
+		err := assetGroupModelBase.InsertModel()
+		if err != nil {
+			return fmt.Errorf("%s insert asset ungroup err:%s", err)
+		}
+	}
+
 	return nil
 }

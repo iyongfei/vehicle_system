@@ -37,7 +37,7 @@ xmzfn9PNpf5eq7+2FUahOXwDvWZszUs8zjKyye/++6h5AtmL2LKKPTt8G8DF6Arn
 
 const (
 	//broker_url = "tcp://127.0.0.1:1883"
-	broker_url             = "ssl://211.159.167.112:8843"
+	broker_url             = "ssl://127.0.0.1:8843"
 	client_id              = "vehicle_test"
 	keep_alive             = 5
 	auto_reconnect         = true

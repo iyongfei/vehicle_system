@@ -249,3 +249,19 @@ const (
 	//ReqGetStrategyVehicleResultListFailMsg    = "终端-学习结果列表获取失败"
 	//ReqGetStrategyVehicleResultListSuccessMsg = "终端-学习结果列表获取成功"
 )
+
+//category
+const (
+	ReqAddCategoryFailMsg    = "添加指纹类别失败"
+	ReqAddCategorySuccessMsg = "添加指纹类别成功"
+	ReqCategoryExistMsg      = "该指纹类别已存在"
+	ReqCategoryNotExistMsg   = "该指纹类别不存在"
+	ReqCategoryFailMsg       = "获取指纹类别失败"
+	ReqCategorySuccessMsg    = "获取指纹类别成功"
+
+	ReqUpdateCategoryFailMsg    = "更新指纹类别失败"
+	ReqUpdateCategorySuccessMsg = "更新指纹类别成功"
+
+	ReqCategoryListFailMsg    = "获取指纹类别列表失败"
+	ReqCategoryListSuccessMsg = "获取指纹类别列表成功"
+)

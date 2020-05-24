@@ -30,6 +30,7 @@ func getTables() []interface{} {
 	//添加各个&model表
 	alayerProto := &model.AlayerProto{}
 	area := &model.AreaGroup{}
+	assetArea := &model.AssetGroup{}
 	assetLeader := &model.AssetLeader{}
 	asset := &model.Asset{}
 	automatedLearning := &model.AutomatedLearning{}
@@ -68,7 +69,7 @@ func getTables() []interface{} {
 	whiteList := &model.WhiteList{}
 
 	tables := []interface{}{
-		alayerProto, area, asset, assetLeader, category, fingerPrint, flow, tflow, flowStatistic, firmwareUpdate, firmwareInfo, vehicleInfo, vehicleLeader,
+		alayerProto, area, assetArea, asset, assetLeader, category, fingerPrint, flow, tflow, flowStatistic, firmwareUpdate, firmwareInfo, vehicleInfo, vehicleLeader,
 		user, disk, threat, whiteList, vhalonet, redisInfo, portMap, strategy, strategyGroup, strategyVehicle,
 		flowStrategy, flowStrategyVehicles,
 		flowStrategyTtem, flowStrategyRelateItem, sample, strategyVehicleLearnings,
