@@ -703,6 +703,7 @@ CREATE TABLE IF NOT EXISTS `fprint_detect_infos`  (
   `detect_info_id` varchar(255)  NULL DEFAULT NULL,
   `vehicle_id` varchar(255)  NULL DEFAULT NULL,
   `device_mac` varchar(255)  NULL DEFAULT NULL,
+   `trade_mark` varchar(255)  NULL DEFAULT NULL,
   `os`   varchar(255) NULL DEFAULT NULL,
 
 
@@ -720,6 +721,7 @@ CREATE TABLE IF NOT EXISTS `fprint_passive_infos`  (
   `passive_info_id` varchar(255)  NULL DEFAULT NULL,
   `vehicle_id` varchar(255)  NULL DEFAULT NULL,
   `device_mac` varchar(255)  NULL DEFAULT NULL,
+  `trade_mark` varchar(255)  NULL DEFAULT NULL,
   `dst_port`   int(11) NULL DEFAULT NULL,
 
 

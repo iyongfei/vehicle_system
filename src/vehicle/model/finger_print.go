@@ -66,6 +66,7 @@ type FprintDetectInfo struct {
 	gorm.Model
 	DetectInfoId string
 	DeviceMac    string
+	TradeMark    string
 	VehicleId    string
 	Os           string
 }
@@ -116,6 +117,7 @@ type FprintPassiveInfo struct {
 	gorm.Model
 	PassiveInfoId string
 	DeviceMac     string
+	TradeMark     string
 	VehicleId     string
 	DstPort       uint32
 }

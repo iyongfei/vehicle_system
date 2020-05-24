@@ -5,6 +5,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"vehicle_system/src/vehicle/emq/protobuf"
 	"vehicle_system/src/vehicle/logger"
+	"vehicle_system/src/vehicle/mac"
 	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
 	"vehicle_system/src/vehicle/util"
@@ -24,11 +25,14 @@ func HandleVehicleFingerPrint(vehicleResult protobuf.GWResult, vehicleId string)
 	passive := fingerprintParam.GetPassive()
 
 	if detect != nil {
+		tradeMark := mac.GetOrgByMAC(fingerprintParam.GetMac())
+		fTradeMark := util.RrgsTrim(tradeMark)
 		fprintDetectInfo := &model.FprintDetectInfo{
 			DetectInfoId: util.RandomString(32),
 			DeviceMac:    fingerprintParam.GetMac(),
 			VehicleId:    vehicleId,
 			Os:           detect.GetOs(),
+			TradeMark:    fTradeMark,
 		}
 		detectInfoModelBase := model_base.ModelBaseImpl(fprintDetectInfo)
 
@@ -44,11 +48,14 @@ func HandleVehicleFingerPrint(vehicleResult protobuf.GWResult, vehicleId string)
 	}
 
 	if passive != nil {
+		tradeMark := mac.GetOrgByMAC(fingerprintParam.GetMac())
+		fTradeMark := util.RrgsTrim(tradeMark)
 		fprintPassiveInfo := &model.FprintPassiveInfo{
 			PassiveInfoId: util.RandomString(32),
 			DeviceMac:     fingerprintParam.GetMac(),
 			VehicleId:     vehicleId,
 			DstPort:       passive.GetDstPort(),
+			TradeMark:     fTradeMark,
 		}
 		passiveInfoModelBase := model_base.ModelBaseImpl(fprintPassiveInfo)
 
@@ -62,6 +69,5 @@ func HandleVehicleFingerPrint(vehicleResult protobuf.GWResult, vehicleId string)
 			}
 		}
 	}
-
 	return nil
 }
