@@ -7,9 +7,6 @@ import (
 	"vehicle_system/src/vehicle/util"
 )
 
-/**
-{rtp:20,tcp:10,}
-*/
 type FingerPrint struct {
 	gorm.Model
 	FprintId    string

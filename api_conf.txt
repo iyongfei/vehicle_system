@@ -40,3 +40,6 @@ page_size=2
 page_index=2
 start_time=1
 end_time=2
+
+#添加指纹库
+asset_ids=102C83,A88038

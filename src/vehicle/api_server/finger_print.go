@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
@@ -79,7 +80,7 @@ func GetAssetFprints(c *gin.Context) {
 	var totalCount int
 	//终端-策略
 	vehicleAssetFprints, err := model.GetPaginAssetFprints(fpageIndex, fpageSize, &totalCount,
-		"fprint_detect_infos.vehicle_id = ? and fprint_detect_infos.created_at BETWEEN ? AND ?", []interface{}{vehicleId, fStartTime, fEndTime}...)
+		"fprint_detect_infos.vehicle_id = ? and fprint_detect_infos.trade_mark IS NOT null and fprint_detect_infos.created_at BETWEEN ? AND ?", []interface{}{vehicleId, fStartTime, fEndTime}...)
 
 	if len(vehicleAssetFprints) == 0 {
 		logger.Logger.Error("%s vehicle_id:%s,vehicleAssetFprints null", util.RunFuncName(), vehicleId)
@@ -110,44 +111,64 @@ func GetAssetFprints(c *gin.Context) {
 */
 
 func AddFprint(c *gin.Context) {
-	cateName := c.PostForm("cate_name")
+	assetIds := c.PostForm("asset_ids")
+	cateId := c.PostForm("cate_id")
 
-	argsTrimsEmpty := util.RrgsTrimsEmpty(cateName)
+	argsTrimsEmpty := util.RrgsTrimsEmpty(assetIds, cateId)
 	if argsTrimsEmpty {
 		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
 		c.JSON(http.StatusOK, ret)
 
-		logger.Logger.Print("%s fprint_name:%s", util.RunFuncName(), cateName)
-		logger.Logger.Error("%s fprint_name:%s", util.RunFuncName(), cateName)
+		logger.Logger.Print("%s assetIds:%s,cateId%s", util.RunFuncName(), assetIds, cateId)
+		logger.Logger.Error("%s assetIds:%s,cateId%s", util.RunFuncName(), assetIds, cateId)
 		return
 	}
 
-	logger.Logger.Print("%s fprint_name:%s", util.RunFuncName(), cateName)
-	logger.Logger.Info("%s fprint_name:%s", util.RunFuncName(), cateName)
+	logger.Logger.Print("%s assetIds:%s,cateId%s", util.RunFuncName(), assetIds, cateId)
+	logger.Logger.Info("%s assetIds:%s,cateId%s", util.RunFuncName(), assetIds, cateId)
 
-	cate := &model.Category{
-		CateId: util.RandomString(32),
-		Name:   cateName,
+	assetIdSlice := strings.Split(assetIds, ",")
+	//todo
+	//asset_ids没有过滤
+
+	var insertFprintIds []string
+	for _, assetId := range assetIdSlice {
+		fingerPrint := &model.FingerPrint{
+			FprintId:  util.RandomString(32),
+			CateId:    cateId,
+			VehicleId: "",
+			DeviceMac: assetId,
+		}
+		fingerPrintModelBase := model_base.ModelBaseImpl(fingerPrint)
+
+		err, fingerPrintRecordNotFound := fingerPrintModelBase.GetModelByCondition("device_mac = ? and cate_id = ?",
+			[]interface{}{fingerPrint.DeviceMac, fingerPrint.CateId}...)
+
+		if fingerPrintRecordNotFound {
+			if err = fingerPrintModelBase.InsertModel(); err != nil {
+				continue
+			} else {
+				insertFprintIds = append(insertFprintIds, fingerPrint.DeviceMac)
+			}
+		} else {
+			//todo
+		}
 	}
-	cateModelBase := model_base.ModelBaseImpl(cate)
 
-	err, cateRecordNotFound := cateModelBase.GetModelByCondition("name = ?", []interface{}{cate.Name}...)
-	if !cateRecordNotFound {
-		ret := response.StructResponseObj(response.VStatusServerError, response.ReqCategoryExistMsg, "")
-		c.JSON(http.StatusOK, ret)
+	fingerPrintInsertList := []*model.FingerPrint{}
+	fingerPrintModelBase := model_base.ModelBaseImpl(&model.FingerPrint{})
+	err := fingerPrintModelBase.GetModelListByCondition(&fingerPrintInsertList,
+		"device_mac in (?)", []interface{}{insertFprintIds}...)
+
+	if err != nil {
+		retObj := response.StructResponseObj(response.VStatusServerError, response.ReqGetFprintsFailMsg, "")
+		c.JSON(http.StatusOK, retObj)
 		return
 	}
-
-	if err = cateModelBase.InsertModel(); err != nil {
-		ret := response.StructResponseObj(response.VStatusServerError, response.ReqAddCategoryFailMsg, "")
-		c.JSON(http.StatusOK, ret)
-		return
-	}
-
 	responseContent := map[string]interface{}{}
-	responseContent["category"] = cate
+	responseContent["fprints"] = fingerPrintInsertList
 
-	retObj := response.StructResponseObj(response.VStatusOK, response.ReqAddCategorySuccessMsg, responseContent)
+	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetFprintsSuccessMsg, responseContent)
 	c.JSON(http.StatusOK, retObj)
 }
 

@@ -271,4 +271,7 @@ const (
 	ReqGetAssetFprintsUnExistMsg = "资产指纹信息不存在"
 	ReqGetAssetFprintsFailMsg    = "资产指纹信息获取失败"
 	ReqGetAssetFprintsSuccessMsg = "资产指纹信息获取成功"
+
+	ReqGetFprintsFailMsg    = "指纹信息入库获取失败"
+	ReqGetFprintsSuccessMsg = "指纹信息入库获取成功"
 )
