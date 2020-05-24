@@ -265,3 +265,10 @@ const (
 	ReqCategoryListFailMsg    = "获取指纹类别列表失败"
 	ReqCategoryListSuccessMsg = "获取指纹类别列表成功"
 )
+
+//assetprint
+const (
+	ReqGetAssetFprintsUnExistMsg = "资产指纹信息不存在"
+	ReqGetAssetFprintsFailMsg    = "资产指纹信息获取失败"
+	ReqGetAssetFprintsSuccessMsg = "资产指纹信息获取成功"
+)

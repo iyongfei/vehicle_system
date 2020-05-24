@@ -161,3 +161,37 @@ func (fprintPassiveInfo *FprintPassiveInfo) GetModelListByCondition(model interf
 func (fprintPassiveInfo *FprintPassiveInfo) CreateModel(assetParams ...interface{}) interface{} {
 	return fprintPassiveInfo
 }
+
+/////////////////////////////////////////////////
+
+type FprintDetectPassiveInfo struct {
+	gorm.Model
+	DeviceMac string
+	TradeMark string
+	VehicleId string
+	Os        string
+	DstPort   uint32
+}
+
+func GetPaginAssetFprints(pageIndex int, pageSize int, totalCount *int, query interface{}, args ...interface{}) ([]*FprintDetectPassiveInfo, error) {
+	vgorm, err := mysql.GetMysqlInstance().GetMysqlDB()
+	if err != nil {
+		return nil, fmt.Errorf("%s open grom err:%v", util.RunFuncName(), err.Error())
+	}
+	assetFprints := []*FprintDetectPassiveInfo{}
+
+	err = vgorm.Debug().
+		Table("fprint_detect_infos").
+		Select("fprint_detect_infos.*,fprint_passive_infos.dst_port").
+		Where(query, args...).
+		Order("fprint_detect_infos.created_at desc").
+		Joins("inner join fprint_passive_infos ON fprint_passive_infos.device_mac = fprint_detect_infos.device_mac").
+		Offset((pageIndex - 1) * pageSize).
+		Limit(pageSize).
+		Scan(&assetFprints).
+		Limit(-1).
+		Count(totalCount).
+		Error
+
+	return assetFprints, err
+}
