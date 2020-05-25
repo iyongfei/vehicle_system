@@ -1,4 +1,4 @@
-server_ip = localhost
+server_ip = 192.168.40.10
 
 
 #注册
@@ -6,7 +6,7 @@ user_name=aaadd
 password=bbbee
 
 #终端id
-vehicle_id=754d2728b4e549c5a16c0180fcacb800
+vehicle_id=b020eccdf33d48b4aa246a89a6f04609
 
 #策略接口
 vehicle_ids=gBDvsD4qnAdR9K4cTIZoq7Zr05Ox1udr
@@ -35,7 +35,7 @@ flowid=1644395481
 partial_fstrategs=slM0jAPFWZWMADkZPDsspr3Gc4IC1KYt,ZH9sLus3hDSQv4VdlZY1MAlkJbUaVcOf,b7DCXxj2bm7MZqQiuK4Cq8oCMItvpJSi
 
 #分页
-page_size=2
-page_index=3
+page_size=50
+page_index=1
 start_time=1589912036
 end_time=1590344036
