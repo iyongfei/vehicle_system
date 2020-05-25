@@ -12,6 +12,7 @@ var fprintUrls = map[string]string{
 	"post_finger_prints":     "http://%s:7001/api/v1/finger_prints",
 	"get_all_fprints":        "http://%s:7001/api/v1/all/finger_prints",
 	"examine_fprints":        "http://%s:7001/api/v1/pagination/examine/asset_fprints",
+	"examine_fprint":         "http://%s:7001/api/v1/examine/asset_fprints/%s",
 	//"get_cates": "http://%s:7001/api/v1/all/categorys",
 	//"edit_cate": "http://%s:7001/api/v1/categorys/%s",
 	//"get_assets": "http://localhost:7001/api/v1/assets",
@@ -30,12 +31,34 @@ func main() {
 	//getAllFprints()
 	//deleFprint()
 
-	getExamineNetAssetPaginationFprint()
+	//getExamineNetAssetPaginationFprint()
+	examine_fprint()
 	//
 	//getCategorys()
 	//editCategory()
 	//getAssets()
 	//getCategory()
+
+}
+
+func examine_fprint() {
+	configs := getFprintConfig()
+	fip := configs["server_ip"]
+	//vehicle_id := configs["vehicle_id"]
+	//cateId := configs["cate_id"]
+	//assetIds := configs["asset_ids"]
+
+	token := tool.GetVehicleToken()
+	urlReq := fmt.Sprintf(fprintUrls["examine_fprint"], fip, "Ad29vaXCd52A1KxREzBFlLyY6vFOlguG")
+
+	queryParams := map[string]interface{}{
+		//"cate_id":   cateId,
+		//"asset_ids": assetIds,
+	}
+
+	resp, _ := tool.PostForm(urlReq, queryParams, token)
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
 
 }
 

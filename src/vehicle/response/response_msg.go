@@ -37,6 +37,11 @@ const (
 	UnmarshalErr = "数据解析失败"
 )
 
+//指纹库
+const (
+	Vc = "摄像头"
+)
+
 //group
 const (
 	UnGroupName           = "未分组"

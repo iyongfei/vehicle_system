@@ -54,8 +54,8 @@ func V1Router(r *gin.Engine) {
 		apiV1.DELETE("/finger_prints/:fprint_id", api_server.DeleFprint) //todo
 		apiV1.PUT("/finger_prints/:fprint_id", api_server.EditFprint)    //todo
 		//////////////////////////////////////////////入网审批，允许入网///////////////////////P///////////////////////
-		apiV1.GET("/pagination/examine/asset_fprints", api_server.GetExamineAssetFprints) //todo
-		apiV1.POST("/examine/asset_fprints", api_server.AddExamineAssetFprints)           //todo
+		apiV1.GET("/pagination/examine/asset_fprints", api_server.GetExamineAssetFprints)        //todo
+		apiV1.POST("/examine/asset_fprints/:asset_fprint_id", api_server.AddExamineAssetFprints) //todo
 		//////////////////////////////////////////////车载接口//////////////////////////////////////////////
 		apiV1.GET("/vehicles/:vehicle_id", api_server.GetVehicle) //todo
 		apiV1.POST("/vehicles", api_server.AddVehicle)

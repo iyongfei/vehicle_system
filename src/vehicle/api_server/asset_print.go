@@ -277,5 +277,122 @@ func GetExamineAssetFprints(c *gin.Context) {
 入网审批
 */
 func AddExamineAssetFprints(c *gin.Context) {
+	assetFprintId := c.Param("asset_fprint_id")
+	//vehicleId := c.PostForm("vehicle_id")
+
+	argsTrimsEmpty := util.RrgsTrimsEmpty(assetFprintId)
+	if argsTrimsEmpty {
+		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+		c.JSON(http.StatusOK, ret)
+		logger.Logger.Error("%s argsTrimsEmpty assetFprintId:%s", util.RunFuncName(), assetFprintId)
+		logger.Logger.Print("%s argsTrimsEmpty assetFprintId:%s", util.RunFuncName(), assetFprintId)
+		return
+	}
+	logger.Logger.Info("%s request params assetFprintId:%s", util.RunFuncName(), assetFprintId)
+	logger.Logger.Print("%s request params assetFprintId:%s", util.RunFuncName(), assetFprintId)
+
+	assetFprintInfo := &model.FprintInfo{
+		FprintInfoId: assetFprintId,
+	}
+	assetFprintInfoModelBase := model_base.ModelBaseImpl(assetFprintInfo)
+
+	err, fprintInfoRecordNotFound := assetFprintInfoModelBase.GetModelByCondition("fprint_info_id = ?", []interface{}{assetFprintInfo.FprintInfoId}...)
+	if fprintInfoRecordNotFound {
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetAssetFprintsUnExistMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+	if err != nil {
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetAssetFprintsFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	tMark := assetFprintInfo.TradeMark
+	deviceMac := assetFprintInfo.DeviceMac
+
+	//搜索指纹库有没有记录
+	fingerPrint := &model.FingerPrint{
+		DeviceMac: deviceMac,
+	}
+	fprintModelBase := model_base.ModelBaseImpl(fingerPrint)
+	err, fprintRecordNotFound := fprintModelBase.GetModelByCondition("device_mac = ?", []interface{}{fingerPrint.DeviceMac}...)
+
+	if !util.RrgsTrimEmpty(tMark) && !fprintRecordNotFound {
+		attrs := map[string]interface{}{
+			"examine_net": fingerPrint.CateId,
+		}
+
+		err := assetFprintInfoModelBase.UpdateModelsByCondition(attrs, "device_mac = ?", []interface{}{assetFprintInfo.DeviceMac}...)
+		if err != nil {
+			//todo wyf
+		}
+		assetFprintInfo := &model.FprintInfo{
+			FprintInfoId: assetFprintId,
+		}
+		assetFprintInfoModelBase := model_base.ModelBaseImpl(assetFprintInfo)
+
+		_, _ = assetFprintInfoModelBase.GetModelByCondition("fprint_info_id = ?", []interface{}{assetFprintInfo.FprintInfoId}...)
+
+		responseData := map[string]interface{}{
+			"asset_fprint": assetFprintInfo,
+		}
+
+		retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetAssetFprintsSuccessMsg, responseData)
+		c.JSON(http.StatusOK, retObj)
+	} else if !util.RrgsTrimEmpty(tMark) {
+
+		cate := &model.Category{
+			Name: response.Vc,
+		}
+		cateModelBase := model_base.ModelBaseImpl(cate)
+
+		err, cateRecordNotFound := cateModelBase.GetModelByCondition("name = ?", []interface{}{cate.Name}...)
+		if cateRecordNotFound {
+			ret := response.StructResponseObj(response.VStatusServerError, response.ReqCategoryNotExistMsg, "")
+			c.JSON(http.StatusOK, ret)
+			return
+		}
+		if err != nil {
+			ret := response.StructResponseObj(response.VStatusServerError, response.ReqCategoryFailMsg, "")
+			c.JSON(http.StatusOK, ret)
+			return
+		}
+		attrs := map[string]interface{}{
+			"examine_net": cate.CateId,
+		}
+
+		err = assetFprintInfoModelBase.UpdateModelsByCondition(attrs, "device_mac = ?", []interface{}{assetFprintInfo.DeviceMac}...)
+		if err != nil {
+			//todo wyf
+		}
+
+		assetFprintInfo := &model.FprintInfo{
+			FprintInfoId: assetFprintId,
+		}
+		assetFprintInfoModelBase := model_base.ModelBaseImpl(assetFprintInfo)
+
+		_, _ = assetFprintInfoModelBase.GetModelByCondition("fprint_info_id = ?", []interface{}{assetFprintInfo.FprintInfoId}...)
+		responseData := map[string]interface{}{
+			"asset_fprint": assetFprintInfo,
+		}
+
+		retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetAssetFprintsSuccessMsg, responseData)
+		c.JSON(http.StatusOK, retObj)
+	} else {
+
+		assetFprintInfo := &model.FprintInfo{
+			FprintInfoId: assetFprintId,
+		}
+		assetFprintInfoModelBase := model_base.ModelBaseImpl(assetFprintInfo)
+
+		_, _ = assetFprintInfoModelBase.GetModelByCondition("fprint_info_id = ?", []interface{}{assetFprintInfo.FprintInfoId}...)
+		responseData := map[string]interface{}{
+			"asset_fprint": assetFprintInfo,
+		}
+
+		retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetAssetFprintsSuccessMsg, responseData)
+		c.JSON(http.StatusOK, retObj)
+	}
 
 }

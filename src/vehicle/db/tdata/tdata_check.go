@@ -29,6 +29,22 @@ func TdataCheck() error {
 			return fmt.Errorf("%s insert ungroup err:%s", err)
 		}
 	}
+	//指纹库类别
+	cate := &model.Category{
+		Name:   response.Vc,
+		CateId: util.RandomString(32),
+	}
+
+	cateModelBase := model_base.ModelBaseImpl(cate)
+
+	_, cateRecordNotFound := cateModelBase.GetModelByCondition("name = ?",
+		[]interface{}{cate.Name}...)
+	if cateRecordNotFound {
+		err := cateModelBase.InsertModel()
+		if err != nil {
+			return fmt.Errorf("%s insert cate err:%s", err)
+		}
+	}
 
 	//初始化资产默认分组
 	assetGroup := &model.AssetGroup{
