@@ -66,6 +66,9 @@ type FprintDetectInfo struct {
 	TradeMark    string
 	VehicleId    string
 	Os           string
+
+	ExamineNet string
+	AccessNet  bool
 }
 
 func (fprintDetectInfo *FprintDetectInfo) InsertModel() error {
@@ -116,7 +119,8 @@ type FprintPassiveInfo struct {
 	DeviceMac     string
 	TradeMark     string
 	VehicleId     string
-	DstPort       uint32
+
+	DstPort uint32
 }
 
 func (fprintPassiveInfo *FprintPassiveInfo) InsertModel() error {
@@ -167,7 +171,11 @@ type FprintDetectPassiveInfo struct {
 	TradeMark string
 	VehicleId string
 	Os        string
-	DstPort   uint32
+
+	ExamineNet string //入网审批
+	AccessNet  bool   //允许入网
+
+	DstPort uint32
 }
 
 func GetPaginAssetFprints(pageIndex int, pageSize int, totalCount *int, query interface{}, args ...interface{}) ([]*FprintDetectPassiveInfo, error) {

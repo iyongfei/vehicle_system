@@ -33,7 +33,7 @@ func QueryRawsqlScanVariable(tname string, selectColumn string, variable interfa
 	if err != nil {
 		return fmt.Errorf("%s open grom err:%v", util.RunFuncName(), err.Error())
 	}
-	err = vgorm.Table(tname).Where(query, args...).Select(selectColumn).Row().Scan(variable) // (*sql.Row)
+	err = vgorm.Debug().Table(tname).Where(query, args...).Select(selectColumn).Row().Scan(variable) // (*sql.Row)
 	if err != nil {
 		return fmt.Errorf("%s err %v", util.RunFuncName(), err.Error())
 	}

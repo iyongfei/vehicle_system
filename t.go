@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"vehicle_system/src/vehicle/conf"
+	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/util"
 )
 
@@ -58,6 +59,8 @@ flow.SrcIp = util.IpIntToString(int(sipLittleEndian))
 */
 
 func main() {
+
+	return
 
 	//dip := "3232235898"
 	//strDIp, _ := strconv.Atoi(dip)

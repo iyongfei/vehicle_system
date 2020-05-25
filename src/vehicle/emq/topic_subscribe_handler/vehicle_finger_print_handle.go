@@ -20,7 +20,6 @@ func HandleVehicleFingerPrint(vehicleResult protobuf.GWResult, vehicleId string)
 		logger.Logger.Error("%s unmarshal vehicleFingerPrint err:%s", util.RunFuncName(), err.Error())
 		return fmt.Errorf("%s unmarshal vehicleFingerPrint err:%s", util.RunFuncName(), err.Error())
 	}
-
 	detect := fingerprintParam.GetActive()
 	passive := fingerprintParam.GetPassive()
 

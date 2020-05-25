@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"vehicle_system/src/vehicle/conf"
 	"vehicle_system/src/vehicle/cron"
 	"vehicle_system/src/vehicle/db"
+	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/emq"
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/mac"
@@ -23,6 +25,13 @@ func init() {
 	cron.Setup()
 	push.Setup()
 	vgo.Setup()
+
+	fprintsMacs := []string{}
+	//查找指纹库所有的mac
+	_ = mysql.QueryRawsqlScanVariable("finger_prints",
+		"device_mac", &fprintsMacs, "", []interface{}{}...)
+
+	fmt.Println(fprintsMacs, "---------------->")
 }
 
 // @title vehicle API
@@ -41,4 +50,5 @@ func init() {
 // @BasePath /
 func main() {
 	router.RouterHandler()
+
 }

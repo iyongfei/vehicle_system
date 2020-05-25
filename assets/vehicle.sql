@@ -706,6 +706,9 @@ CREATE TABLE IF NOT EXISTS `fprint_detect_infos`  (
    `trade_mark` varchar(255)  NULL DEFAULT NULL,
   `os`   varchar(255) NULL DEFAULT NULL,
 
+  `examine_net`  varchar(255) NULL DEFAULT NULL,
+  `access_net`  tinyint(1)  NULL DEFAULT NULL,
+
 
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_fprint_detect_info_deleted_at`(`deleted_at`) USING BTREE
