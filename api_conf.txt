@@ -43,3 +43,4 @@ end_time=2
 
 #添加指纹库
 asset_ids=102C83,A88038
+fprint_id=d5xoDqEusAwf5UIumt005PqZNwfPfm8uL

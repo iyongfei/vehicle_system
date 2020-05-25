@@ -1,7 +1,6 @@
 package mac
 
 import (
-	"fmt"
 	"strings"
 	"vehicle_system/src/vehicle/util"
 )
@@ -15,8 +14,6 @@ var (
 func Setup() {
 	MacOrgMap = make(map[string]string)
 	initMacOrgMap()
-	r := GetOrgByMAC("")
-	fmt.Println(r, "jwlejlw")
 }
 
 // initMacOrgMap init MacOrgMap

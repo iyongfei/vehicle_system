@@ -272,6 +272,19 @@ const (
 	ReqGetAssetFprintsFailMsg    = "资产指纹信息获取失败"
 	ReqGetAssetFprintsSuccessMsg = "资产指纹信息获取成功"
 
-	ReqGetFprintsFailMsg    = "指纹信息入库获取失败"
-	ReqGetFprintsSuccessMsg = "指纹信息入库获取成功"
+	ReqAddFprintsFailMsg    = "指纹信息入库获取失败"
+	ReqAddFprintsSuccessMsg = "指纹信息入库获取成功"
+)
+
+//fprint
+const (
+	//ReqGetAssetFprintsUnExistMsg = "资产指纹信息不存在"
+	//ReqGetAssetFprintsFailMsg    = "资产指纹信息获取失败"
+	//ReqGetAssetFprintsSuccessMsg = "资产指纹信息获取成功"
+
+	ReqGetFprintsFailMsg     = "指纹库获取失败"
+	ReqGetFprintsSuccessMsg  = "指纹库获取成功"
+	ReqGetFprintsUnExistMsg  = "指纹库信息不存在"
+	ReqDeleFprintsSuccessMsg = "指纹删除成功"
+	ReqDeleFprintsFailMsg    = "指纹删除失败"
 )

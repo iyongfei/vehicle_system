@@ -9,12 +9,12 @@ import (
 var fprintUrls = map[string]string{
 	"get_pagination_fprints": "http://%s:7001/api/v1/pagination/asset_fprints",
 	"post_finger_prints":     "http://%s:7001/api/v1/finger_prints",
+	"get_all_fprints":        "http://%s:7001/api/v1/all/finger_prints",
 	//"get_cates": "http://%s:7001/api/v1/all/categorys",
 	//"edit_cate": "http://%s:7001/api/v1/categorys/%s",
 	//"get_assets": "http://localhost:7001/api/v1/assets",
 	//
-	//"dele_assets": "http://localhost:7001/api/v1/assets/ypBH0VIQ",
-
+	"dele_fprints": "http://%s:7001/api/v1/finger_prints/%s",
 }
 
 func getFprintConfig() map[string]string {
@@ -22,16 +22,54 @@ func getFprintConfig() map[string]string {
 }
 
 func main() {
-	//getPaginationFprint()
-	addFingerPrints()
+	//getAssetPaginationFprint()
+	//addFingerPrints()
+	//getAllFprints()
+	deleFprint()
 	//
 	//getCategorys()
 	//editCategory()
 	//getAssets()
 	//getCategory()
 
-	//deleAsset()
 }
+
+func deleFprint() {
+	token := tool.GetVehicleToken()
+	configs := getFprintConfig()
+	fip := configs["server_ip"]
+	fprint_id := configs["fprint_id"]
+
+	queryParams := map[string]interface{}{}
+
+	reqUrl := fmt.Sprintf(fprintUrls["dele_fprints"], fip, fprint_id)
+
+	resp, _ := tool.Delete(reqUrl, queryParams, token)
+
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+
+}
+func getAllFprints() {
+	token := tool.GetVehicleToken()
+	configs := getFprintConfig()
+	fip := configs["server_ip"]
+	//start_time := configs["start_time"]
+	//end_time := configs["end_time"]
+
+	queryParams := map[string]interface{}{
+		//"vehicle_id": vehicle_id,
+		//"page_index": page_index,
+		//"page_size":  page_size,
+		//"start_time": start_time,
+		//"end_time":   end_time,
+	}
+	reqUrl := fmt.Sprintf(fprintUrls["get_all_fprints"], fip)
+	resp, _ := tool.Get(reqUrl, queryParams, token)
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+}
+
 func addFingerPrints() {
 	configs := getFprintConfig()
 	fip := configs["server_ip"]
@@ -52,7 +90,7 @@ func addFingerPrints() {
 	fmt.Printf("resp %+v", string(respMarshal))
 }
 
-func getPaginationFprint() {
+func getAssetPaginationFprint() {
 	token := tool.GetVehicleToken()
 	configs := getFprintConfig()
 	fip := configs["server_ip"]

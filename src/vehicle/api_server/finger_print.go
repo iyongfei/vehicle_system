@@ -161,14 +161,14 @@ func AddFprint(c *gin.Context) {
 		"device_mac in (?)", []interface{}{insertFprintIds}...)
 
 	if err != nil {
-		retObj := response.StructResponseObj(response.VStatusServerError, response.ReqGetFprintsFailMsg, "")
+		retObj := response.StructResponseObj(response.VStatusServerError, response.ReqAddFprintsFailMsg, "")
 		c.JSON(http.StatusOK, retObj)
 		return
 	}
 	responseContent := map[string]interface{}{}
 	responseContent["fprints"] = fingerPrintInsertList
 
-	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetFprintsSuccessMsg, responseContent)
+	retObj := response.StructResponseObj(response.VStatusOK, response.ReqAddFprintsSuccessMsg, responseContent)
 	c.JSON(http.StatusOK, retObj)
 }
 
@@ -178,19 +178,19 @@ func AddFprint(c *gin.Context) {
 
 func GetFprints(c *gin.Context) {
 
-	cateModelBase := model_base.ModelBaseImpl(&model.Category{})
-	cates := []*model.Category{}
-	err := cateModelBase.GetModelListByCondition(&cates, "", []interface{}{}...)
+	fprintModelBase := model_base.ModelBaseImpl(&model.FingerPrint{})
+	fingerPrints := []*model.FingerPrint{}
+	err := fprintModelBase.GetModelListByCondition(&fingerPrints, "", []interface{}{}...)
 	if err != nil {
-		ret := response.StructResponseObj(response.VStatusServerError, response.ReqCategoryListFailMsg, "")
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetFprintsFailMsg, "")
 		c.JSON(http.StatusOK, ret)
 		return
 	}
 
 	responseContent := map[string]interface{}{}
-	responseContent["categorys"] = cates
+	responseContent["fprints"] = fingerPrints
 
-	retObj := response.StructResponseObj(response.VStatusOK, response.ReqCategoryListSuccessMsg, responseContent)
+	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetFprintsSuccessMsg, responseContent)
 	c.JSON(http.StatusOK, retObj)
 }
 
@@ -199,20 +199,50 @@ func GetFprints(c *gin.Context) {
 */
 
 func DeleFprint(c *gin.Context) {
-	cateId := c.Param("cate_id")
-	argsTrimsEmpty := util.RrgsTrimsEmpty(cateId)
+	fprintId := c.Param("fprint_id")
+	argsTrimsEmpty := util.RrgsTrimsEmpty(fprintId)
 	if argsTrimsEmpty {
 		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
 		c.JSON(http.StatusOK, ret)
 
-		logger.Logger.Print("%s cateId:%s,cateName%s", util.RunFuncName(), cateId)
-		logger.Logger.Error("%s cateId:%s,cateName%s", util.RunFuncName(), cateId)
+		logger.Logger.Print("%s fprintId%s", util.RunFuncName(), fprintId)
+		logger.Logger.Error("%s fprintId%s", util.RunFuncName(), fprintId)
 		return
 	}
 
-	logger.Logger.Print("%s cateId:%s,cateName%s", util.RunFuncName(), cateId)
-	logger.Logger.Error("%s cateId:%s,cateName%s", util.RunFuncName(), cateId)
+	logger.Logger.Print("%s fprintId%s", util.RunFuncName(), fprintId)
+	logger.Logger.Error("%s fprintId%s", util.RunFuncName(), fprintId)
 
+	fprint := &model.FingerPrint{
+		FprintId: fprintId,
+	}
+
+	fprintModelBase := model_base.ModelBaseImpl(fprint)
+
+	err, fprintRecordNotFound := fprintModelBase.GetModelByCondition("fprint_id = ?", []interface{}{fprint.FprintId}...)
+	if fprintRecordNotFound {
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetFprintsUnExistMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+	if err != nil {
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetFprintsFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	err = fprintModelBase.DeleModelsByCondition("fprint_id = ?", []interface{}{fprint.FprintId}...)
+
+	if err != nil {
+		logger.Logger.Error("%s fprintId:%s err:%s", util.RunFuncName(), fprintId, err)
+		logger.Logger.Print("%s fprintId:%s err:%s", util.RunFuncName(), fprintId, err)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqDeleFprintsFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	retObj := response.StructResponseObj(response.VStatusOK, response.ReqDeleFprintsSuccessMsg, "")
+	c.JSON(http.StatusOK, retObj)
 }
 
 /**
