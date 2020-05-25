@@ -46,9 +46,10 @@ func V1Router(r *gin.Engine) {
 		apiV1.DELETE("/categorys/:cate_id", api_server.DeleCategory) //todo
 
 		//////////////////////////////////////////////添加FingerprintParam指纹库//////////////////////////////////////////////
-		apiV1.GET("/pagination/asset_fprints", api_server.GetAssetFprints)                //todo
+		apiV1.GET("/pagination/asset_fprints", api_server.GetAssetFprints) //todo
+		//////////////////////////////////////////////入网审批//////////////////////////////////////////////
 		apiV1.GET("/pagination/examine/asset_fprints", api_server.GetExamineAssetFprints) //todo
-
+		apiV1.POST("/examine/asset_fprints", api_server.AddExamineAssetFprints)           //todo
 		//////////////////////////////////////////////添加指纹库//////////////////////////////////////////////
 		apiV1.POST("/finger_prints", api_server.AddFprint)               //todo
 		apiV1.GET("/all/finger_prints", api_server.GetFprints)           //todo

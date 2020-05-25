@@ -25,13 +25,6 @@ func init() {
 	cron.Setup()
 	push.Setup()
 	vgo.Setup()
-
-	fprintsMacs := []string{}
-	//查找指纹库所有的mac
-	_ = mysql.QueryRawsqlScanVariable("finger_prints",
-		"device_mac", &fprintsMacs, "", []interface{}{}...)
-
-	fmt.Println(fprintsMacs, "---------------->")
 }
 
 // @title vehicle API
@@ -50,5 +43,4 @@ func init() {
 // @BasePath /
 func main() {
 	router.RouterHandler()
-
 }
