@@ -8,6 +8,7 @@ import (
 
 var fprintUrls = map[string]string{
 	"get_pagination_fprints": "http://%s:7001/api/v1/pagination/asset_fprints",
+	"get_asset_fprints":      "http://%s:7001/api/v1/asset_fprints",
 	"post_finger_prints":     "http://%s:7001/api/v1/finger_prints",
 	"get_all_fprints":        "http://%s:7001/api/v1/all/finger_prints",
 	"examine_fprints":        "http://%s:7001/api/v1/pagination/examine/asset_fprints",
@@ -23,7 +24,8 @@ func getFprintConfig() map[string]string {
 }
 
 func main() {
-	//getAssetPaginationFprint()
+	//getAssetPaginationFprint() //或者资产指纹信息列表
+	//asset_fprints()
 	//addFingerPrints()
 	//getAllFprints()
 	//deleFprint()
@@ -34,6 +36,26 @@ func main() {
 	//editCategory()
 	//getAssets()
 	//getCategory()
+
+}
+
+func asset_fprints() {
+	token := tool.GetVehicleToken()
+	configs := getFprintConfig()
+	fip := configs["server_ip"]
+	vehicle_id := configs["vehicle_id"]
+	//start_time := configs["start_time"]
+	//end_time := configs["end_time"]
+
+	queryParams := map[string]interface{}{
+		"vehicle_id": vehicle_id,
+		//"start_time": start_time,
+		//"end_time":   end_time,
+	}
+	reqUrl := fmt.Sprintf(fprintUrls["get_asset_fprints"], fip)
+	resp, _ := tool.Get(reqUrl, queryParams, token)
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
 
 }
 

@@ -3,10 +3,7 @@ package api_server
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"strconv"
 	"strings"
-	"time"
-	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
@@ -62,6 +59,8 @@ func AddFprint(c *gin.Context) {
 			//todo
 		}
 	}
+
+	//更新资产指纹信息
 
 	fingerPrintInsertList := []*model.FingerPrint{}
 	fingerPrintModelBase := model_base.ModelBaseImpl(&model.FingerPrint{})

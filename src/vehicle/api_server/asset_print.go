@@ -8,14 +8,12 @@ import (
 	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
+	"vehicle_system/src/vehicle/model/model_base"
 	"vehicle_system/src/vehicle/response"
 	"vehicle_system/src/vehicle/util"
 )
 
-/*
-获取资产指纹
-*/
-func GetAssetFprints(c *gin.Context) {
+func GetPaginationAssetFprints(c *gin.Context) {
 	vehicleId := c.Query("vehicle_id")
 	pageSizeP := c.Query("page_size")
 	pageIndexP := c.Query("page_index")
@@ -76,21 +74,16 @@ func GetAssetFprints(c *gin.Context) {
 	logger.Logger.Print("%s frequest params vehicle_id:%s,fpageSize:%s,fpageIndex:%s,fStartTime%s,fEndTime%s",
 		util.RunFuncName(), vehicleId, fpageSize, fpageIndex, fStartTime, fEndTime)
 
-	var totalCount int
-	//终端-策略
-	vehicleAssetFprints, err := model.GetPaginAssetFprints(fpageIndex, fpageSize, &totalCount,
-		"fprint_detect_infos.vehicle_id = ? and fprint_detect_infos.trade_mark IS NOT null and fprint_detect_infos.created_at BETWEEN ? AND ?", []interface{}{vehicleId, fStartTime, fEndTime}...)
+	vehicleAssetFprints := []*model.FprintInfo{}
+	var total int
 
-	if len(vehicleAssetFprints) == 0 {
-		logger.Logger.Error("%s vehicle_id:%s,vehicleAssetFprints null", util.RunFuncName(), vehicleId)
-		logger.Logger.Print("%s vehicle_id:%s,vehicleAssetFprints null", util.RunFuncName(), vehicleId)
-		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetAssetFprintsUnExistMsg, "")
-		c.JSON(http.StatusOK, ret)
-		return
-	}
+	modelBase := model_base.ModelBaseImplPagination(&model.FprintInfo{})
+
+	err := modelBase.GetModelPaginationByCondition(fpageIndex, fpageSize,
+		&total, &vehicleAssetFprints, "fprint_infos.created_at desc", "vehicle_id = ? and fprint_infos.created_at BETWEEN ? AND ?",
+		[]interface{}{vehicleId, fStartTime, fEndTime}...)
+
 	if err != nil {
-		logger.Logger.Error("%s vehicle_id:%s,vehicleAssetFprints err:%+v", util.RunFuncName(), vehicleId, err)
-		logger.Logger.Print("%s vehicle_id:%s,vehicleAssetFprints err:%+v", util.RunFuncName(), vehicleId, err)
 		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetAssetFprintsFailMsg, "")
 		c.JSON(http.StatusOK, ret)
 		return
@@ -98,7 +91,75 @@ func GetAssetFprints(c *gin.Context) {
 
 	responseData := map[string]interface{}{
 		"asset_fprints": vehicleAssetFprints,
-		"total_count":   totalCount,
+		"total_count":   total,
+	}
+
+	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetAssetFprintsSuccessMsg, responseData)
+	c.JSON(http.StatusOK, retObj)
+
+}
+
+/*
+获取资产指纹
+*/
+const FprintCount = 10
+
+func GetAssetFprints(c *gin.Context) {
+	vehicleId := c.Query("vehicle_id")
+
+	logger.Logger.Info("%s request params vehicle_id:%s", util.RunFuncName(), vehicleId)
+	logger.Logger.Print("%s request params vehicle_id:%s", util.RunFuncName(), vehicleId)
+
+	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId)
+	if argsTrimsEmpty {
+		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+		c.JSON(http.StatusOK, ret)
+		logger.Logger.Error("%s argsTrimsEmpty threatId:%s", util.RunFuncName(), argsTrimsEmpty)
+		logger.Logger.Print("%s argsTrimsEmpty threatId:%s", util.RunFuncName(), argsTrimsEmpty)
+		return
+	}
+
+	//标签库的个数
+	fprintsMacs := []string{}
+	_ = mysql.QueryPluckByModelWhere(&model.FingerPrint{}, "device_mac", &fprintsMacs,
+		"", []interface{}{}...)
+
+	if len(fprintsMacs) == 0 {
+		fprintsMacs = []string{""}
+	}
+
+	//临时
+	fTemp := []string{}
+	for _, v := range fprintsMacs {
+		if v != "" {
+			fTemp = append(fTemp, v)
+		}
+	}
+	var needInsertFprintCount = FprintCount - len(fTemp)
+
+	vehicleAssetFprints := []*model.FprintInfo{}
+	var err error
+	var total int
+	if needInsertFprintCount > 0 {
+		modelBase := model_base.ModelBaseImplPagination(&model.FprintInfo{})
+
+		var fpageSize = needInsertFprintCount
+		var fpageIndex = 1
+
+		err = modelBase.GetModelPaginationByCondition(fpageIndex, fpageSize,
+			&total, &vehicleAssetFprints, "fprint_infos.created_at asc",
+			"vehicle_id = ? and fprint_infos.device_mac not in (?) and fprint_infos.trade_mark is not null",
+			[]interface{}{vehicleId, fprintsMacs}...)
+	}
+
+	if err != nil {
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetAssetFprintsFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	responseData := map[string]interface{}{
+		"asset_fprints": vehicleAssetFprints,
 	}
 
 	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetAssetFprintsSuccessMsg, responseData)
@@ -177,13 +238,16 @@ func GetExamineAssetFprints(c *gin.Context) {
 	if len(fprintsMacs) == 0 {
 		fprintsMacs = []string{""}
 	}
-
+	//
 	var totalCount int
-	//终端-策略
-	vehicleAssetFprints, err := model.GetPaginAssetFprints(fpageIndex, fpageSize, &totalCount,
-		"fprint_detect_infos.vehicle_id = ? and fprint_detect_infos.device_mac not in (?) and fprint_detect_infos.examine_net is null "+
-			"and fprint_detect_infos.trade_mark IS NOT null and fprint_detect_infos.created_at BETWEEN ? AND ?",
-		[]interface{}{vehicleId, fprintsMacs, fStartTime, fEndTime}...)
+	////终端-策略
+	vehicleAssetFprints := []*model.FprintInfo{}
+	modelBase := model_base.ModelBaseImplPagination(&model.FprintInfo{})
+
+	err := modelBase.GetModelPaginationByCondition(fpageIndex, fpageSize,
+		&totalCount, &vehicleAssetFprints, "fprint_infos.created_at desc",
+		"fprint_infos.vehicle_id = ? and fprint_infos.examine_net is null and fprint_infos.created_at BETWEEN ? AND ?",
+		[]interface{}{vehicleId, fStartTime, fEndTime}...)
 
 	if len(vehicleAssetFprints) == 0 {
 		logger.Logger.Error("%s vehicle_id:%s,vehicleAssetFprints null", util.RunFuncName(), vehicleId)
@@ -212,6 +276,6 @@ func GetExamineAssetFprints(c *gin.Context) {
 /**
 入网审批
 */
-func AddExamineAssetFprints() {
+func AddExamineAssetFprints(c *gin.Context) {
 
 }

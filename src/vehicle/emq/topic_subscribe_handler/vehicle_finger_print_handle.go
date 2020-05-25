@@ -23,50 +23,36 @@ func HandleVehicleFingerPrint(vehicleResult protobuf.GWResult, vehicleId string)
 	detect := fingerprintParam.GetActive()
 	passive := fingerprintParam.GetPassive()
 
-	//if detect != nil {
 	tradeMark := mac.GetOrgByMAC(fingerprintParam.GetMac())
 	fTradeMark := util.RrgsTrim(tradeMark)
-	fprintDetectInfo := &model.FprintDetectInfo{
-		DetectInfoId: util.RandomString(32),
+
+	fprintInfo := &model.FprintInfo{
+		FprintInfoId: util.RandomString(32),
 		DeviceMac:    fingerprintParam.GetMac(),
 		VehicleId:    vehicleId,
 		Os:           detect.GetOs(),
 		TradeMark:    fTradeMark,
+		DstPort:      passive.GetDstPort(),
 	}
-	detectInfoModelBase := model_base.ModelBaseImpl(fprintDetectInfo)
+	detectInfoModelBase := model_base.ModelBaseImpl(fprintInfo)
 
-	_, dRecordNotFound := detectInfoModelBase.GetModelByCondition("device_mac = ? and os = ?",
-		[]interface{}{fprintDetectInfo.DeviceMac, fprintDetectInfo.Os}...)
+	_, dRecordNotFound := detectInfoModelBase.GetModelByCondition("device_mac = ?",
+		[]interface{}{fprintInfo.DeviceMac}...)
 
 	detectInfoModelBase.CreateModel(fingerprintParam)
 	if dRecordNotFound {
 		if err := detectInfoModelBase.InsertModel(); err != nil {
-			return fmt.Errorf("%s insert fprintDetectInfo err:%s", util.RunFuncName(), err.Error())
+			return fmt.Errorf("%s insert fprintInfo err:%s", util.RunFuncName(), err.Error())
+		}
+	} else {
+		attrs := map[string]interface{}{
+			"os":       fprintInfo.Os,
+			"dst_port": fprintInfo.DstPort,
+		}
+		if err := detectInfoModelBase.UpdateModelsByCondition(attrs, "device_mac = ?", fprintInfo.DeviceMac); err != nil {
+			return fmt.Errorf("%s update vehicle finger print err:%s", util.RunFuncName(), err.Error())
 		}
 	}
-	//}
 
-	//if passive != nil {
-	passiveTradeMark := mac.GetOrgByMAC(fingerprintParam.GetMac())
-	passiveFTradeMark := util.RrgsTrim(passiveTradeMark)
-	fprintPassiveInfo := &model.FprintPassiveInfo{
-		PassiveInfoId: util.RandomString(32),
-		DeviceMac:     fingerprintParam.GetMac(),
-		VehicleId:     vehicleId,
-		DstPort:       passive.GetDstPort(),
-		TradeMark:     passiveFTradeMark,
-	}
-	passiveInfoModelBase := model_base.ModelBaseImpl(fprintPassiveInfo)
-
-	_, recordNotFound := passiveInfoModelBase.GetModelByCondition("device_mac = ? and dst_port = ?",
-		[]interface{}{fprintPassiveInfo.DeviceMac, fprintPassiveInfo.DstPort}...)
-
-	passiveInfoModelBase.CreateModel(fingerprintParam)
-	if recordNotFound {
-		if err := passiveInfoModelBase.InsertModel(); err != nil {
-			return fmt.Errorf("%s insert fprintDetectInfo err:%s", util.RunFuncName(), err.Error())
-		}
-	}
-	//}
 	return nil
 }

@@ -694,44 +694,22 @@ CREATE TABLE IF NOT EXISTS `finger_prints`  (
   INDEX `idx_finger_prints_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `fprint_detect_infos`  (
+CREATE TABLE IF NOT EXISTS `fprint_infos`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
 
-  `detect_info_id` varchar(255)  NULL DEFAULT NULL,
+  `fprint_info_id` varchar(255)  NULL DEFAULT NULL,
   `vehicle_id` varchar(255)  NULL DEFAULT NULL,
   `device_mac` varchar(255)  NULL DEFAULT NULL,
    `trade_mark` varchar(255)  NULL DEFAULT NULL,
   `os`   varchar(255) NULL DEFAULT NULL,
-
-  `examine_net`  varchar(255) NULL DEFAULT NULL,
-  `access_net`  tinyint(1)  NULL DEFAULT NULL,
-
-
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx_fprint_detect_info_deleted_at`(`deleted_at`) USING BTREE
-) ENGINE = InnoDB DEFAULT CHARSET=utf8;
-
-
-CREATE TABLE IF NOT EXISTS `fprint_passive_infos`  (
-  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  `deleted_at` timestamp NULL DEFAULT NULL,
-
-  `passive_info_id` varchar(255)  NULL DEFAULT NULL,
-  `vehicle_id` varchar(255)  NULL DEFAULT NULL,
-  `device_mac` varchar(255)  NULL DEFAULT NULL,
-  `trade_mark` varchar(255)  NULL DEFAULT NULL,
   `dst_port`   int(11) NULL DEFAULT NULL,
-
-
+  `examine_net` varchar(255)  NULL DEFAULT NULL,
+  `access_net` tinyint(1) UNSIGNED NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx_fprint_passive_infos_deleted_at`(`deleted_at`) USING BTREE
+  INDEX `idx_fprint_infos_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
-
-
 
 

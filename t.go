@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"vehicle_system/src/vehicle/conf"
-	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/util"
 )
 
@@ -59,7 +58,14 @@ flow.SrcIp = util.IpIntToString(int(sipLittleEndian))
 */
 
 func main() {
-
+	fprintsMacs := []string{""}
+	f := []string{}
+	for _, v := range fprintsMacs {
+		if v != "" {
+			f = append(f, v)
+		}
+	}
+	fmt.Println(len(fprintsMacs), len(f))
 	return
 
 	//dip := "3232235898"

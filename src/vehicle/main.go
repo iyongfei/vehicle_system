@@ -1,11 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"vehicle_system/src/vehicle/conf"
 	"vehicle_system/src/vehicle/cron"
 	"vehicle_system/src/vehicle/db"
-	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/emq"
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/mac"
