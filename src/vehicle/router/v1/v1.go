@@ -50,7 +50,8 @@ func V1Router(r *gin.Engine) {
 		//////////////////////////////////////////////入网审批，允许入网//////////////////////////////////////////////
 		apiV1.GET("/pagination/asset_fprints/examines", api_server.GetExamineAssetFprints)        //todo
 		apiV1.POST("/asset_fprints/examines/:asset_fprint_id", api_server.AddExamineAssetFprints) //todo
-		//apiV1.POST("/examine/asset_fprints/:asset_fprint_id", api_server.AddExamineAssetFprints) //todo
+		//////////////////////////////////////////////允许入网//////////////////////////////////////////////
+		apiV1.POST("/asset_fprints/access_net/:asset_fprint_id", api_server.AddNetAccessAssetFprints) //todo
 		//////////////////////////////////////////////车载接口//////////////////////////////////////////////
 		apiV1.GET("/vehicles/:vehicle_id", api_server.GetVehicle) //todo
 		apiV1.POST("/vehicles", api_server.AddVehicle)

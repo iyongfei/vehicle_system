@@ -396,3 +396,67 @@ func AddExamineAssetFprints(c *gin.Context) {
 	}
 
 }
+
+/**
+注册入网
+*/
+func AddNetAccessAssetFprints(c *gin.Context) {
+	assetFprintId := c.Param("asset_fprint_id")
+	netAccessFlag := c.Param("access_net_flag")
+
+	argsTrimsEmpty := util.RrgsTrimsEmpty(assetFprintId, netAccessFlag)
+	if argsTrimsEmpty {
+		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+		c.JSON(http.StatusOK, ret)
+		logger.Logger.Error("%s argsTrimsEmpty assetFprintId:%s,netAccessFlag%s", util.RunFuncName(), assetFprintId, netAccessFlag)
+		logger.Logger.Print("%s argsTrimsEmpty assetFprintId:%s,netAccessFlag%s", util.RunFuncName(), assetFprintId, netAccessFlag)
+		return
+	}
+	logger.Logger.Info("%s argsTrimsEmpty assetFprintId:%s,netAccessFlag%s", util.RunFuncName(), assetFprintId, netAccessFlag)
+	logger.Logger.Print("%s argsTrimsEmpty assetFprintId:%s,netAccessFlag%s", util.RunFuncName(), assetFprintId, netAccessFlag)
+	fNetAccessFlag := true
+	switch netAccessFlag {
+	case "true":
+		fNetAccessFlag = true
+	case "false":
+		fNetAccessFlag = false
+	}
+
+	//查询是否存在
+	assetFprintInfo := &model.FprintInfo{
+		FprintInfoId: assetFprintId,
+	}
+	assetFprintInfoModelBase := model_base.ModelBaseImpl(assetFprintInfo)
+
+	err, fprintInfoRecordNotFound := assetFprintInfoModelBase.GetModelByCondition("fprint_info_id = ?", []interface{}{assetFprintInfo.FprintInfoId}...)
+	if fprintInfoRecordNotFound {
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetAssetFprintsUnExistMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+	if err != nil {
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetAssetFprintsFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	//允许入网标识
+	attrs := map[string]interface{}{
+		"access_net": fNetAccessFlag,
+	}
+	if err := assetFprintInfoModelBase.UpdateModelsByCondition(attrs, "fprint_info_id = ?",
+		[]interface{}{assetFprintId}...); err != nil {
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqEditFlowFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+	//查询最新的
+	_, _ = assetFprintInfoModelBase.GetModelByCondition("fprint_info_id = ?", []interface{}{assetFprintInfo.FprintInfoId}...)
+
+	responseData := map[string]interface{}{
+		"asset_fprint": assetFprintInfo,
+	}
+
+	retObj := response.StructResponseObj(response.VStatusOK, response.ReqEditFlowSuccessMsg, responseData)
+	c.JSON(http.StatusOK, retObj)
+}

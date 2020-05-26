@@ -49,6 +49,7 @@ func editFStrategy() {
 	urlReq := fmt.Sprintf(fstrategyUrls["edit_fstrategy"], fip) + update_flow_strategy_id
 
 	diports := creatFastrategyIpPortData(update_fips, update_fports)
+	fmt.Println(diports, "sjdlfsjkl")
 	queryParams := map[string]interface{}{
 		"vehicle_id": update_flow_vehicle_id,
 		"dip_ports":  diports,

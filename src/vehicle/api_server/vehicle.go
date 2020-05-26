@@ -22,7 +22,6 @@ func EditVehicle(c *gin.Context) {
 	setTypeP := c.PostForm("type")
 	setSwitchP := c.PostForm("switch")
 
-	fmt.Println("EditVehicle:::::::::", vehicleId, setTypeP, setSwitchP)
 	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId, setTypeP, setSwitchP)
 	if argsTrimsEmpty {
 		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
