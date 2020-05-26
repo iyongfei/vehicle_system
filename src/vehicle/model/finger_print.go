@@ -18,6 +18,17 @@ type FingerPrint struct {
 	CollectType uint8
 }
 
+func (fingerPrint *FingerPrint) GetModelPaginationByCondition(pageIndex int, pageSize int, totalCount *int,
+	paginModel interface{}, orderBy interface{}, query interface{}, args ...interface{}) error {
+
+	err := mysql.QueryModelPaginationByWhereCondition(fingerPrint, pageIndex, pageSize, totalCount, paginModel, orderBy, query, args...)
+
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
+	}
+	return nil
+}
+
 func (fingerPrint *FingerPrint) InsertModel() error {
 	return mysql.CreateModel(fingerPrint)
 }

@@ -125,9 +125,6 @@ func (flow *Flow) CreateModel(flowParam ...interface{}) interface{} {
 	return flow
 }
 
-//func QueryModelPaginationByWhereCondition(model interface{}, pageIndex int, pageSize int, totalCount *int,
-//	paginModel interface{}, orderBy interface{}, query interface{}, args ...interface{}) error {
-
 func (flow *Flow) GetModelPaginationByCondition(pageIndex int, pageSize int, totalCount *int,
 	paginModel interface{}, orderBy interface{}, query interface{}, args ...interface{}) error {
 

@@ -10,7 +10,7 @@ var fprintUrls = map[string]string{
 	"get_pagination_fprints": "http://%s:7001/api/v1/pagination/asset_fprints",
 	"get_asset_fprints":      "http://%s:7001/api/v1/asset_fprints",
 	"post_finger_prints":     "http://%s:7001/api/v1/finger_prints",
-	"get_all_fprints":        "http://%s:7001/api/v1/all/finger_prints",
+	"get_all_fprints":        "http://%s:7001/api/v1/pagination/finger_prints",
 	"examine_fprints":        "http://%s:7001/api/v1/pagination/examine/asset_fprints",
 	"examine_fprint":         "http://%s:7001/api/v1/examine/asset_fprints/%s",
 	//"get_cates": "http://%s:7001/api/v1/all/categorys",
@@ -28,11 +28,11 @@ func main() {
 	//getAssetPaginationFprint() //或者资产指纹信息列表
 	//asset_fprints()
 	//addFingerPrints()
-	//getAllFprints()
+	getAllFprints()
 	//deleFprint()
 
 	//getExamineNetAssetPaginationFprint()
-	examine_fprint()
+	//examine_fprint()
 	//
 	//getCategorys()
 	//editCategory()
@@ -41,6 +41,26 @@ func main() {
 
 }
 
+func getAllFprints() {
+	token := tool.GetVehicleToken()
+	configs := getFprintConfig()
+	fip := configs["server_ip"]
+	vehicle_id := configs["vehicle_id"]
+	//start_time := configs["start_time"]
+	//end_time := configs["end_time"]
+
+	queryParams := map[string]interface{}{
+		"vehicle_id": vehicle_id,
+		//"page_index": page_index,
+		//"page_size":  page_size,
+		//"start_time": start_time,
+		//"end_time":   end_time,
+	}
+	reqUrl := fmt.Sprintf(fprintUrls["get_all_fprints"], fip)
+	resp, _ := tool.Get(reqUrl, queryParams, token)
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+}
 func examine_fprint() {
 	configs := getFprintConfig()
 	fip := configs["server_ip"]
@@ -120,25 +140,6 @@ func deleFprint() {
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))
 
-}
-func getAllFprints() {
-	token := tool.GetVehicleToken()
-	configs := getFprintConfig()
-	fip := configs["server_ip"]
-	//start_time := configs["start_time"]
-	//end_time := configs["end_time"]
-
-	queryParams := map[string]interface{}{
-		//"vehicle_id": vehicle_id,
-		//"page_index": page_index,
-		//"page_size":  page_size,
-		//"start_time": start_time,
-		//"end_time":   end_time,
-	}
-	reqUrl := fmt.Sprintf(fprintUrls["get_all_fprints"], fip)
-	resp, _ := tool.Get(reqUrl, queryParams, token)
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
 }
 
 func addFingerPrints() {
