@@ -32,11 +32,6 @@ SET GOOS=linux
 SET GOARCH=amd64
 go build main.go
 
-root@FT2000:/opt/JyCenter/vcenter/script# 1589277063: mosquitto version 1.6.9 starting
-1589277063: Config loaded from /opt/JyCenter/local/emqx/mosquitto.conf.
-1589277063: Opening ipv4 listen socket on port 8843.
-1589277063: Opening ipv6 listen socket on port 8843.
-1589277063: Error: Invalid user 'mosquitto'.
 
 ####################################protoc用法###################################
 /Users/mac/go/vehicle_system/src/vehicle/emq/protobuf
@@ -78,7 +73,7 @@ $ dpkg -e   mydeb.deb   mydeb/DEBIAN    # 第一个参数为所要解压的deb�
                                         # 第二个参数为将deb包解压到指定的目录，
                                         # 这里为 mydeb/DEBIAN
 
-
+dpkg --get-selections | grep mysql
 
 ############################################
 
@@ -112,6 +107,7 @@ $SYS/brokers/emq@127.0.0.1/clients/front02/connected
 $SYS/brokers/emq@127.0.0.1/clients/122/disconnected
 mosquitto_sub -h 127.0.0.1 -t $SYS/brokers/+/clients/+/+ -d
  */
+
 
 
 
@@ -198,16 +194,6 @@ https://mirrors.tuna.tsinghua.edu.cn/debian/pool/main/e/erlang/erlang-eunit_21.2
  /home/emqx/bin/mylib/libcrypto/libcrypto.so.1.1
 https://github.com/emqx/emqx/issues/3288
 
-
-
-linux-vdso.so.1 =>  (0x00007ffe953cf000)
-
-	libcrypto.so.10 => /lib64/libcrypto.so.10 (0x00007f7135315000)
-
-	libc.so.6 => /lib64/libc.so.6 (0x00007f7134f48000)
-	libdl.so.2 => /lib64/libdl.so.2 (0x00007f7134d44000)
-	libz.so.1 => /lib64/libz.so.1 (0x00007f7134b2e000)
-	/lib64/ld-linux-x86-64.so.2 (0x00007f7135991000)
 
 ###################mysql##########################
 ALTER TABLE fstrategies CHANGE scv_path csv_path varchar(255)  NULL DEFAULT NULL;

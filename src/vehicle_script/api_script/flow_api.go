@@ -20,8 +20,8 @@ var urls = map[string]string{
 
 func main() {
 	//getFlow()
-	//getPaginationFlows()
-	getflowsDps()
+	getPaginationFlows()
+	//getflowsDps()
 
 	//unused
 	//getFlows()
@@ -92,7 +92,7 @@ func GetFewDayAgo(days int) string {
 }
 
 func getPaginationFlows() {
-	defaultStartTime := GetFewDayAgo(10) //2
+	defaultStartTime := GetFewDayAgo(20) //2
 	now := strconv.Itoa(int(time.Now().Unix()))
 
 	token := tool.GetVehicleToken()

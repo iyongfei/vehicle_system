@@ -23,6 +23,9 @@ var fStrategyCsvUrls = map[string]string{
 	"get_strategy_vehicle_results": "http://localhost:7001/api/v1/strategy_vehicle_lresults/9xR5vYZweMb3aRoGGEQYaIw6xhRetYV8",
 }
 
+func getConfiger() map[string]string {
+	return tool.InitConfig("api_conf.txt")
+}
 func main() {
 	//getFstrategyCsv()
 	//getFstrategyCsvTemp()
@@ -82,6 +85,7 @@ func getFstrategyCsv() {
 }
 
 func uploadFstrategyCsv() {
+	//token := tool.GetVehicleToken()
 	url := fStrategyCsvUrls["post_strategy_csv"]
 	mapArgs := map[string]string{
 		"vehicle_id": "754d2728b4e549c5a16c0180fcacb800",

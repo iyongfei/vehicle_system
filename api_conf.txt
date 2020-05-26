@@ -1,12 +1,13 @@
 server_ip = localhost
+server_ip = 192.168.40.10
 
 
 #注册
-user_name=saflyer
-password=123456
+user_name=aaadd
+password=bbbee
 
 #终端id
-vehicle_id=754d2728b4e549c5a16c0180fcacb800
+vehicle_id=b020eccdf33d48b4aa246a89a6f04609
 
 #策略接口
 vehicle_ids=gBDvsD4qnAdR9K4cTIZoq7Zr05Ox1udr
@@ -15,16 +16,16 @@ handle_mode=2
 
 
 #增加会话策略接口
-fips=192.168.1.122
-fports=2020
+fips=192.168.2.43,192.168.41.12
+fports=123,3
 
 #获取会话策略接口
-get_flow_fstrategy_id=6dLFskgJ2cATM2bIDTP45Hf8LfI2jE8Z
+get_flow_fstrategy_id=ZH9sLus3hDSQv4VdlZY1MAlkJbUaVcOf
 
 
 #修改会话策略接口
-update_fips=192.167.1.7,192.167.1.8
-update_fports=123,125
+update_fips=192.167.12.7,192.169.1.1
+update_fports=128,3
 
 
 
@@ -48,3 +49,11 @@ fprint_id=d5xoDqEusAwf5UIumt005PqZNwfPfm8uL
 asset_fprint_id=Ad29vaXCd52A1KxREzBFlLyY6vFOlguG
 
 access_net_flag=true
+#部分策略
+partial_fstrategs=slM0jAPFWZWMADkZPDsspr3Gc4IC1KYt,ZH9sLus3hDSQv4VdlZY1MAlkJbUaVcOf,b7DCXxj2bm7MZqQiuK4Cq8oCMItvpJSi
+
+#分页
+page_size=50
+page_index=1
+start_time=1589912036
+end_time=1590344036
