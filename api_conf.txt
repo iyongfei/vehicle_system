@@ -44,3 +44,7 @@ end_time=2
 #添加指纹库
 asset_ids=102C83,A88038
 fprint_id=d5xoDqEusAwf5UIumt005PqZNwfPfm8uL
+
+asset_fprint_id=Ad29vaXCd52A1KxREzBFlLyY6vFOlguG
+
+access_net_flag=true

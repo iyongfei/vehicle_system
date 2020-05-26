@@ -13,6 +13,7 @@ var fprintUrls = map[string]string{
 	"get_all_fprints":        "http://%s:7001/api/v1/pagination/finger_prints",
 	"examine_fprints":        "http://%s:7001/api/v1/pagination/examine/asset_fprints",
 	"examine_fprint":         "http://%s:7001/api/v1/examine/asset_fprints/%s",
+	"asset_fprints":          "http://%s:7001/api/v1/asset_fprints/access_net/%s",
 	//"get_cates": "http://%s:7001/api/v1/all/categorys",
 	//"edit_cate": "http://%s:7001/api/v1/categorys/%s",
 	//"get_assets": "http://localhost:7001/api/v1/assets",
@@ -28,16 +29,36 @@ func main() {
 	//getAssetPaginationFprint() //或者资产指纹信息列表
 	//asset_fprints()
 	//addFingerPrints()
-	getAllFprints()
+	//getAllFprints()
 	//deleFprint()
 
 	//getExamineNetAssetPaginationFprint()
 	//examine_fprint()
-	//
+	asset_fprints()
+	//unused
 	//getCategorys()
 	//editCategory()
 	//getAssets()
 	//getCategory()
+
+}
+
+func asset_fprints() {
+	configs := getFprintConfig()
+	fip := configs["server_ip"]
+	asset_fprint_id := configs["asset_fprint_id"]
+	access_net_flag := configs["access_net_flag"]
+
+	token := tool.GetVehicleToken()
+	urlReq := fmt.Sprintf(fprintUrls["asset_fprints"], fip, asset_fprint_id)
+
+	queryParams := map[string]interface{}{
+		"access_net_flag": access_net_flag,
+	}
+
+	resp, _ := tool.PostForm(urlReq, queryParams, token)
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
 
 }
 
@@ -77,26 +98,6 @@ func examine_fprint() {
 	}
 
 	resp, _ := tool.PostForm(urlReq, queryParams, token)
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
-
-}
-
-func asset_fprints() {
-	token := tool.GetVehicleToken()
-	configs := getFprintConfig()
-	fip := configs["server_ip"]
-	vehicle_id := configs["vehicle_id"]
-	//start_time := configs["start_time"]
-	//end_time := configs["end_time"]
-
-	queryParams := map[string]interface{}{
-		"vehicle_id": vehicle_id,
-		//"start_time": start_time,
-		//"end_time":   end_time,
-	}
-	reqUrl := fmt.Sprintf(fprintUrls["get_asset_fprints"], fip)
-	resp, _ := tool.Get(reqUrl, queryParams, token)
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))
 

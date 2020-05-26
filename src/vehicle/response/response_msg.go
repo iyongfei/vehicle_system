@@ -277,8 +277,10 @@ const (
 	ReqGetAssetFprintsFailMsg    = "资产指纹信息获取失败"
 	ReqGetAssetFprintsSuccessMsg = "资产指纹信息获取成功"
 
-	ReqAddFprintsFailMsg    = "指纹信息入库获取失败"
-	ReqAddFprintsSuccessMsg = "指纹信息入库获取成功"
+	ReqAddFprintsFailMsg             = "指纹信息入库获取失败"
+	ReqAddFprintsSuccessMsg          = "指纹信息入库获取成功"
+	ReqAddFprintsAccessNetSuccessMsg = "指纹入网成功"
+	ReqAddFprintsAccessNetFailMsg    = "指纹入网失败"
 )
 
 //fprint

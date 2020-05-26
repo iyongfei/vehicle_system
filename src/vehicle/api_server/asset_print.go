@@ -402,7 +402,7 @@ func AddExamineAssetFprints(c *gin.Context) {
 */
 func AddNetAccessAssetFprints(c *gin.Context) {
 	assetFprintId := c.Param("asset_fprint_id")
-	netAccessFlag := c.Param("access_net_flag")
+	netAccessFlag := c.PostForm("access_net_flag")
 
 	argsTrimsEmpty := util.RrgsTrimsEmpty(assetFprintId, netAccessFlag)
 	if argsTrimsEmpty {
@@ -446,7 +446,7 @@ func AddNetAccessAssetFprints(c *gin.Context) {
 	}
 	if err := assetFprintInfoModelBase.UpdateModelsByCondition(attrs, "fprint_info_id = ?",
 		[]interface{}{assetFprintId}...); err != nil {
-		ret := response.StructResponseObj(response.VStatusServerError, response.ReqEditFlowFailMsg, "")
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqAddFprintsAccessNetFailMsg, "")
 		c.JSON(http.StatusOK, ret)
 		return
 	}
@@ -457,6 +457,6 @@ func AddNetAccessAssetFprints(c *gin.Context) {
 		"asset_fprint": assetFprintInfo,
 	}
 
-	retObj := response.StructResponseObj(response.VStatusOK, response.ReqEditFlowSuccessMsg, responseData)
+	retObj := response.StructResponseObj(response.VStatusOK, response.ReqAddFprintsAccessNetSuccessMsg, responseData)
 	c.JSON(http.StatusOK, retObj)
 }
