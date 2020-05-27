@@ -21,7 +21,7 @@ insert_flow_strategy_vehicle_id=tianqi-R201i-1A86B1FF1B42
 
 #插入flow
 insert_flow_vehicle_id = 754d2728b4e549c5a16c0180fcacb80
-insert_flow_count = 2
+insert_flow_count = 4
 
 #端口映射
 insert_port_vehicle_id = fds

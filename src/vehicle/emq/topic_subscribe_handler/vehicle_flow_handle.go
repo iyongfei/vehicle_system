@@ -78,8 +78,6 @@ func HandleVehicleFlow(vehicleResult protobuf.GWResult, vehicleId string) error 
 				[]interface{}{flowInfo.FlowId, flowInfo.VehicleId, flowInfo.AssetId}...)
 			flowModelBase.CreateModel(flowItem)
 
-			fmt.Println(flowInfo.AssetId, "jsldfklsjfksld")
-
 			if flowRecordNotFound {
 				if err := flowModelBase.InsertModel(); err != nil {
 					logger.Logger.Print("%s insert flowParam err:%s", util.RunFuncName(), err.Error())
@@ -135,6 +133,7 @@ func HandleVehicleFlow(vehicleResult protobuf.GWResult, vehicleId string) error 
 	for _, macItems := range flowParams.MacItems {
 		mac := macItems.GetMac()
 		macFlows := macItems.GetFlowItem()
+
 		for _, flowItem := range macFlows {
 			flowItemId := flowItem.GetHash()
 			tFlowInfo := &model.TempFlow{

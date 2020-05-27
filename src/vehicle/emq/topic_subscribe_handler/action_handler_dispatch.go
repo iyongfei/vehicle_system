@@ -146,7 +146,7 @@ func (t *TopicSubscribeHandler) HanleSubscribeTopicData(topicMsg mqtt.Message) e
 	case protobuf.GWResult_DEVICE: //DeviceParam
 		handGwResultError = HandleVehicleAsset(vehicleResult, vehicleId)
 
-	case protobuf.GWResult_FINGERPRINT: //DeviceParam
+	case protobuf.GWResult_FINGERPRINT: //FINGERPRINT
 		handGwResultError = HandleVehicleFingerPrint(vehicleResult, vehicleId)
 
 	case protobuf.GWResult_THREAT: //ThreatParam
