@@ -158,6 +158,14 @@ func GetAsset(c *gin.Context) {
 	c.JSON(http.StatusOK, retObj)
 }
 
+//1、验证（录入）
+//2、不验证
+// 2-1不非法 在
+// 2-2非法 不在白名单
+/**
+获取所有的资产白名单
+*/
+
 /**
 添加
 */

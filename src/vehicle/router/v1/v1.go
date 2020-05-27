@@ -45,8 +45,11 @@ func V1Router(r *gin.Engine) {
 		apiV1.PUT("/categorys/:cate_id", api_server.EditCategory)    //todo
 		apiV1.DELETE("/categorys/:cate_id", api_server.DeleCategory) //todo
 		//////////////////////////////////////////////指纹信息接口//////////////////////////////////////////////
-		//apiV1.GET("/pagination/asset_fprints", api_server.GetPaginationAssetFprints) //todo
-		apiV1.GET("/asset_fprints", api_server.GetAssetFprints) //todo
+		apiV1.GET("/mac/asset_fprints", api_server.GetAssetFprintMacs) //todo
+		apiV1.POST("/asset_fprints", api_server.AddAssetAsset)
+
+		apiV1.GET("/pagination/asset_fprints", api_server.GetPaginationAssetFprints) //todo
+		apiV1.GET("/asset_fprints", api_server.GetAssetFprints)                      //todo
 		//////////////////////////////////////////////指纹库接口//////////////////////////////////////////////
 		apiV1.POST("/finger_prints", api_server.AddFprint)               //todo
 		apiV1.GET("/pagination/finger_prints", api_server.GetFprints)    //todo
@@ -75,13 +78,13 @@ func V1Router(r *gin.Engine) {
 		//apiV1.PUT("/threats/:threat_id", api_server.EditThreat)
 		apiV1.DELETE("/threats/:threat_id", api_server.DeleThreat)
 
-		//资产
-		apiV1.GET("/assets", api_server.GetAssets)
-		apiV1.GET("/assets/:asset_id", api_server.GetAsset)
-		apiV1.POST("/assets", api_server.AddAsset)
+		////////////////////////////////////////////////资产接口//////////////////////////////////////////////
+		apiV1.GET("/pagination/assets", api_server.GetAssets) //获取所有的资产
 		apiV1.PUT("/assets/:asset_id", api_server.EditAsset)
-		apiV1.DELETE("/assets/:asset_id", api_server.DeleAsset)
 
+		apiV1.POST("/assets", api_server.AddAsset)
+		apiV1.GET("/assets/:asset_id", api_server.GetAsset)
+		apiV1.DELETE("/assets/:asset_id", api_server.DeleAsset)
 		//////////////////////////////////////////////策略接口//////////////////////////////////////////////
 		//添加策略
 		apiV1.POST("/strategys", api_server.AddStrategy)

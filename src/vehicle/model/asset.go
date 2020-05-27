@@ -68,6 +68,10 @@ func (asset *Asset) DeleModelsByCondition(query interface{}, args ...interface{}
 	return nil
 }
 func (asset *Asset) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) error {
+	err := mysql.QueryModelRecordsByWhereCondition(model, query, args...)
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
+	}
 	return nil
 }
 
@@ -76,7 +80,6 @@ func (asset *Asset) CreateModel(assetParams ...interface{}) interface{} {
 	asset.IP = assetParam.GetIp()
 	asset.Mac = assetParam.GetMac()
 	asset.Name = assetParam.GetName()
-	asset.TradeMark = assetParam.GetTrademark()
 	asset.TradeMark = assetParam.GetTrademark()
 	asset.OnlineStatus = assetParam.GetIsOnline()
 	asset.LastOnline = assetParam.GetLastOnline()
