@@ -79,7 +79,38 @@ func EditAsset(c *gin.Context) {
 
 }
 
-func GetAssets(c *gin.Context) {
+/**
+获取所有的资产设备
+*/
+func GetAllAssets(c *gin.Context) {
+
+	var pageIndex = 1
+	var pageSize = 1000
+	assetInfos := []*model.Asset{}
+	var total int
+
+	modelBase := model_base.ModelBaseImplPagination(&model.Asset{})
+
+	err := modelBase.GetModelPaginationByCondition(pageIndex, pageSize,
+		&total, &assetInfos, "assets.created_at desc", "",
+		[]interface{}{}...)
+
+	if err != nil {
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetAssetListFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	responseData := map[string]interface{}{
+		"assets":      assetInfos,
+		"total_count": total,
+	}
+
+	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetAssetListSuccessMsg, responseData)
+	c.JSON(http.StatusOK, retObj)
+}
+
+func GetPaginationAssets(c *gin.Context) {
 	pageSizeP := c.Query("page_size")
 	pageIndexP := c.Query("page_index")
 

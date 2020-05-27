@@ -60,3 +60,4 @@ end_time=1590344036
 
 #资产
 white_asset_ids=sdf,232,3fgg,44g
+asset_id=rQC53N9M

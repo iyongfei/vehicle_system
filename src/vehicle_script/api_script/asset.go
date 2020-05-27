@@ -8,41 +8,71 @@ import (
 )
 
 var assetUrls = map[string]string{
+	"get_assets_simple": "http://%s:7001/api/v1/all/assets",
 	"get_assets":        "http://localhost:7001/api/v1/assets",
-	"get_asset":         "http://localhost:7001/api/v1/assets/YP4wZffU",
+	"get_asset":         "http://%s:7001/api/v1/assets/%s",
 	"post_assets":       "http://localhost:7001/api/v1/assets",
-	"post_white_assets": "http://%s:7001/api/v1/white/assets",
 
 	"edit_assets": "http://localhost:7001/api/v1/assets/XdUylhnx",
 	"dele_assets": "http://localhost:7001/api/v1/assets/ypBH0VIQ",
 }
 
-func getAssetConfig() map[string]string {
-	return tool.InitConfig("api_conf.txt")
+var config map[string]string
+
+func getAssetConfig() {
+	config = tool.InitConfig("api_conf.txt")
+}
+func init() {
+	getAssetConfig()
 }
 
 func main() {
-	addWhiteAsset()
-	//getAssets()
+	getAssetsimple()
 	//getAsset()
 	//addAsset()
 	//deleAsset()
 	//editAsset()
 }
 
-func addWhiteAsset() {
-	configs := getAssetConfig()
-	fip := configs["server_ip"]
-	asset_ids := configs["white_asset_ids"]
+func getAssetsimple() {
+	fip := config["server_ip"]
 
 	token := tool.GetVehicleToken()
-	urlReq := fmt.Sprintf(assetUrls["post_white_assets"], fip)
+	queryParams := map[string]interface{}{}
+	urlReq := fmt.Sprintf(assetUrls["get_assets_simple"], fip)
+	resp, _ := tool.Get(urlReq, queryParams, token)
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
 
+}
+
+/**
+获取所有的车载信息
+*/
+func getAssets() {
+	token := tool.GetVehicleToken()
 	queryParams := map[string]interface{}{
-		"asset_ids": asset_ids,
+		"page_size":  "3",
+		"page_index": "1",
 	}
+	reqUrl := assetUrls["get_assets"]
+	resp, _ := tool.Get(reqUrl, queryParams, token)
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+}
 
-	resp, _ := tool.PostForm(urlReq, queryParams, token)
+/**
+获取一条车载信息
+*/
+func getAsset() {
+	fip := config["server_ip"]
+	assetId := config["asset_id"]
+
+	token := tool.GetVehicleToken()
+	urlReq := fmt.Sprintf(assetUrls["get_asset"], fip, assetId)
+
+	queryParams := map[string]interface{}{}
+	resp, _ := tool.Get(urlReq, queryParams, token)
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))
 }
@@ -92,33 +122,6 @@ func addAsset() {
 	}
 
 	resp, _ := tool.PostJson(reqUrl, queryParams, token)
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
-}
-
-/**
-获取一条车载信息
-*/
-func getAsset() {
-	token := tool.GetVehicleToken()
-	queryParams := map[string]interface{}{}
-	reqUrl := assetUrls["get_asset"]
-	resp, _ := tool.Get(reqUrl, queryParams, token)
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
-}
-
-/**
-获取所有的车载信息
-*/
-func getAssets() {
-	token := tool.GetVehicleToken()
-	queryParams := map[string]interface{}{
-		"page_size":  "3",
-		"page_index": "1",
-	}
-	reqUrl := assetUrls["get_assets"]
-	resp, _ := tool.Get(reqUrl, queryParams, token)
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))
 }

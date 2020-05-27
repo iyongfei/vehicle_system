@@ -19,9 +19,14 @@ import (
 */
 func GetAssetFprintMacs(c *gin.Context) {
 	var deviceMacs []string
-	_ = mysql.QueryPluckByModelWhere(&model.FprintInfo{}, "device_mac", &deviceMacs,
+	err := mysql.QueryPluckByModelWhere(&model.FprintInfo{}, "device_mac", &deviceMacs,
 		"", []interface{}{}...)
 
+	if err != nil {
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetAssetFprintsFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
 	responseData := map[string]interface{}{
 		"fprint_macs": deviceMacs,
 	}
