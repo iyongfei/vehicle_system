@@ -6,9 +6,9 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
-	"vehicle_system/src/vehicle/emq/emq_cmd"
+	"strings"
+	"time"
 	"vehicle_system/src/vehicle/emq/protobuf"
-	"vehicle_system/src/vehicle/emq/topic_publish_handler"
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
@@ -22,16 +22,41 @@ func EditAsset(c *gin.Context) {
 	setSwitchP := c.PostForm("switch")
 
 	argsTrimsEmpty := util.RrgsTrimsEmpty(assetId, setTypeP, setSwitchP)
-	if argsTrimsEmpty {
+
+	//setType
+	var setTypeYes bool
+	types := protobuf.DeviceSetParam_Type_name
+
+	for k, _ := range types {
+		kstr := strconv.Itoa(int(k))
+		trimSetTypeP := util.RrgsTrim(setTypeP)
+		if kstr == trimSetTypeP {
+			setTypeYes = true
+		}
+	}
+
+	//swith
+	var setSwitchYes bool
+	switchSlice := []string{"true", "false"}
+
+	trimSetSwitchP := util.RrgsTrim(setSwitchP)
+	if util.IsExistInSlice(strings.ToLower(trimSetSwitchP), switchSlice) {
+		setSwitchYes = true
+		trimSetSwitchP = strings.ToLower(trimSetSwitchP)
+	}
+
+	if !setTypeYes || !setSwitchYes || argsTrimsEmpty { //类型错误
 		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
 		c.JSON(http.StatusOK, ret)
 		logger.Logger.Error("%s argsTrimsEmpty", util.RunFuncName())
 		logger.Logger.Print("%s argsTrimsEmpty", util.RunFuncName())
-	}
+		return
 
+	}
 	setType, _ := strconv.Atoi(setTypeP)
+
 	setSwitch := true
-	switch setSwitchP {
+	switch trimSetSwitchP {
 	case "true":
 		setSwitch = true
 	case "false":
@@ -62,21 +87,48 @@ func EditAsset(c *gin.Context) {
 		return
 	}
 
-	//更新
-	assetCmd := &emq_cmd.AssetSetCmd{
-		VehicleId: assetInfo.VehicleId,
-		TaskType:  int(protobuf.Command_DEVICE_SET),
+	switch setType {
+	case int(protobuf.DeviceSetParam_PROTECT):
 
-		Switch: setSwitch,
-		Type:   setType,
-		Mac:    assetId,
+		attrs := map[string]interface{}{
+			"protect_status": setSwitch,
+		}
+		if err := assetInfo.UpdateModelsByCondition(attrs, "asset_id = ?",
+			[]interface{}{assetInfo.AssetId}...); err != nil {
+			ret := response.StructResponseObj(response.VStatusServerError, response.ReqUpdateAssetFailMsg, "")
+			c.JSON(http.StatusOK, ret)
+			return
+		}
+
+		break
+	case int(protobuf.DeviceSetParam_INTERNET):
+		break
+	case int(protobuf.DeviceSetParam_GUEST_ACCESS_DEVICE):
+		break
+	case int(protobuf.DeviceSetParam_LANVISIT):
+		break
+
 	}
 
-	topic_publish_handler.GetPublishService().PutMsg2PublicChan(assetCmd)
+	//更新
+	//assetCmd := &emq_cmd.AssetSetCmd{
+	//	VehicleId: assetInfo.VehicleId,
+	//	TaskType:  int(protobuf.Command_DEVICE_SET),
+	//
+	//	Switch: setSwitch,
+	//	Type:   setType,
+	//	Mac:    assetId,
+	//}
+	//
+	//topic_publish_handler.GetPublishService().PutMsg2PublicChan(assetCmd)
 
-	retObj := response.StructResponseObj(response.VStatusOK, response.ReqUpdateAssetSuccessMsg, "")
+	_, _ = modelBase.GetModelByCondition("asset_id = ?", []interface{}{assetInfo.AssetId}...)
+
+	responseContent := map[string]interface{}{}
+	responseContent["assetInfo"] = assetInfo
+
+	retObj := response.StructResponseObj(response.VStatusOK, response.ReqUpdateAssetSuccessMsg, responseContent)
 	c.JSON(http.StatusOK, retObj)
-
 }
 
 /**
@@ -111,28 +163,85 @@ func GetAllAssets(c *gin.Context) {
 }
 
 func GetPaginationAssets(c *gin.Context) {
+	vehicleId := c.Query("vehicle_id")
 	pageSizeP := c.Query("page_size")
 	pageIndexP := c.Query("page_index")
+	startTimeP := c.Query("start_time")
+	endTimeP := c.Query("end_time")
 
-	argsTrimsEmpty := util.RrgsTrimsEmpty(pageSizeP, pageIndexP)
-	if argsTrimsEmpty {
-		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
-		c.JSON(http.StatusOK, ret)
-		logger.Logger.Error("%s argsTrimsEmpty pageSizeP:%s,pageIndexP:%s", util.RunFuncName(), pageSizeP, pageIndexP)
-		logger.Logger.Print("%s argsTrimsEmpty pageSizeP:%s,pageIndexP:%s", util.RunFuncName(), pageSizeP, pageIndexP)
+	logger.Logger.Info("%s request params vehicle_id:%s,page_size:%s,page_index:%s,start_time%s,endtime%s",
+		util.RunFuncName(), vehicleId, pageSizeP, pageIndexP, startTimeP, endTimeP)
+	logger.Logger.Print("%s request params vehicle_id:%s,page_size:%s,page_index:%s,start_time%s,endtime%s",
+		util.RunFuncName(), vehicleId, pageSizeP, pageIndexP, startTimeP, endTimeP)
+
+	vehicleId = util.RrgsTrim(vehicleId)
+	//if argsTrimsEmpty {
+	//	ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+	//	c.JSON(http.StatusOK, ret)
+	//	logger.Logger.Error("%s argsTrimsEmpty threatId:%s", util.RunFuncName(), argsTrimsEmpty)
+	//	logger.Logger.Print("%s argsTrimsEmpty threatId:%s", util.RunFuncName(), argsTrimsEmpty)
+	//	return
+	//}
+
+	fpageSize, _ := strconv.Atoi(pageSizeP)
+	fpageIndex, _ := strconv.Atoi(pageIndexP)
+
+	var fStartTime time.Time
+	var fEndTime time.Time
+
+	startTime, _ := strconv.Atoi(startTimeP)
+	endTime, _ := strconv.Atoi(endTimeP)
+
+	//默认20
+	defaultPageSize := 20
+	if fpageSize == 0 {
+		fpageSize = defaultPageSize
+	}
+	//默认第一页
+	defaultPageIndex := 1
+	if fpageIndex == 0 {
+		fpageIndex = defaultPageIndex
+	}
+	//默认2天前
+	defaultStartTime := util.GetFewDayAgo(2) //2
+	if startTime == 0 {
+		fStartTime = defaultStartTime
+	} else {
+		fStartTime = util.StampUnix2Time(int64(startTime))
 	}
 
-	pageSize, _ := strconv.Atoi(pageSizeP)
-	pageIndex, _ := strconv.Atoi(pageIndexP)
+	//默认当前时间
+	defaultEndTime := time.Now()
+	if endTime == 0 {
+		fEndTime = defaultEndTime
+	} else {
+		fEndTime = util.StampUnix2Time(int64(endTime))
+	}
 
-	assetInfos := []*model.Asset{}
+	logger.Logger.Info("%s frequest params vehicle_id:%s,fpageSize:%s,fpageIndex:%s,fStartTime%s,fEndTime%s",
+		util.RunFuncName(), vehicleId, fpageSize, fpageIndex, fStartTime, fEndTime)
+	logger.Logger.Print("%s frequest params vehicle_id:%s,fpageSize:%s,fpageIndex:%s,fStartTime%s,fEndTime%s",
+		util.RunFuncName(), vehicleId, fpageSize, fpageIndex, fStartTime, fEndTime)
+
+	assets := []*model.Asset{}
 	var total int
 
 	modelBase := model_base.ModelBaseImplPagination(&model.Asset{})
 
-	err := modelBase.GetModelPaginationByCondition(pageIndex, pageSize,
-		&total, &assetInfos, "", "",
-		[]interface{}{}...)
+	var sqlQuery string
+	var sqlArgs []interface{}
+
+	if vehicleId == "" {
+		sqlQuery = "assets.created_at BETWEEN ? AND ?"
+		sqlArgs = append(sqlArgs, fStartTime, fEndTime)
+	} else {
+		sqlQuery = "vehicle_id = ? and assets.created_at BETWEEN ? AND ?"
+		sqlArgs = append(sqlArgs, vehicleId, fStartTime, fEndTime)
+	}
+
+	err := modelBase.GetModelPaginationByCondition(fpageIndex, fpageSize,
+		&total, &assets, "assets.created_at desc", sqlQuery,
+		sqlArgs...)
 
 	if err != nil {
 		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetAssetListFailMsg, "")
@@ -141,8 +250,8 @@ func GetPaginationAssets(c *gin.Context) {
 	}
 
 	responseData := map[string]interface{}{
-		"vehicles":   assetInfos,
-		"totalCount": total,
+		"assets":      assets,
+		"total_count": total,
 	}
 
 	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetAssetListSuccessMsg, responseData)

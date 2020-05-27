@@ -82,7 +82,6 @@ func V1Router(r *gin.Engine) {
 		apiV1.GET("/pagination/assets", api_server.GetPaginationAssets) //获取所有的资产
 		apiV1.GET("/all/assets", api_server.GetAllAssets)               //获取所有的资产
 		apiV1.GET("/assets/:asset_id", api_server.GetAsset)
-
 		apiV1.PUT("/assets/:asset_id", api_server.EditAsset)
 		//apiV1.POST("/assets", api_server.AddAsset)
 
