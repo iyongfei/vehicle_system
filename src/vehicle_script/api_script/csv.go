@@ -9,10 +9,11 @@ import (
 )
 
 var fStrategyCsvUrls = map[string]string{
-	"csv_url":           "http://localhost:7001/fstrategy_csv/3832kYyxG3uD9DhF9VDvV5HwLLyhrAkG.csv",
-	"get_fstrategy_csv": "http://localhost:7001/api/v1/fstrategy_csvs/HFiYobVy2dqYiVcGpcsrk6GVRxUdqpuy",
-	"post_strategy_csv": "http://localhost:7001/api/v1/fstrategy_csvs",
-	"edit_strategy_csv": "http://localhost:7001/api/v1/fstrategy_csvs/RaZ8yLTOjDqybBrsQ7Tf5i3ZOJQhKfK9",
+	"csv_url":                 "http://localhost:7001/fstrategy_csv/3832kYyxG3uD9DhF9VDvV5HwLLyhrAkG.csv",
+	"get_fstrategy_csv":       "http://localhost:7001/api/v1/fstrategy_csvs/HFiYobVy2dqYiVcGpcsrk6GVRxUdqpuy",
+	"post_strategy_csv":       "http://localhost:7001/api/v1/fstrategy_csvs",
+	"edit_strategy_csv":       "http://localhost:7001/api/v1/fstrategy_csvs/RaZ8yLTOjDqybBrsQ7Tf5i3ZOJQhKfK9",
+	"post_asset_fprints_csvs": "http://%s:7001/api/v1/asset_fprints_csvs",
 	//////////////////////////////////////////////
 	"get_strategys": "http://localhost:7001/api/v1/strategys",
 
@@ -29,8 +30,28 @@ func getConfiger() map[string]string {
 func main() {
 	//getFstrategyCsv()
 	//getFstrategyCsvTemp()
-	uploadFstrategyCsv()
+	//uploadFstrategyCsv()
 	//editFstrategyCsv()
+
+	//上传资产白名单
+	uploadAssetPrintCsv()
+}
+
+func uploadAssetPrintCsv() {
+	configer := getConfiger()
+	ip := configer["server_id"]
+	token := tool.GetVehicleToken()
+	reqUrl := fmt.Sprintf(fStrategyCsvUrls["post_asset_fprints_csvs"], ip)
+	mapArgs := map[string]string{}
+
+	nameField := "upload_csv"
+	fileName := "upload_csver"
+	file, _ := os.Open("/Users/mac/go/vehicle_system/whte_asset_print.csv")
+
+	resp, _ := tool.UploadFile(reqUrl, token, mapArgs, nameField, fileName, file)
+
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
 }
 
 func editFstrategyCsv() {
@@ -85,7 +106,7 @@ func getFstrategyCsv() {
 }
 
 func uploadFstrategyCsv() {
-	//token := tool.GetVehicleToken()
+	token := tool.GetVehicleToken()
 	url := fStrategyCsvUrls["post_strategy_csv"]
 	mapArgs := map[string]string{
 		"vehicle_id": "754d2728b4e549c5a16c0180fcacb800",
@@ -95,7 +116,7 @@ func uploadFstrategyCsv() {
 	fileName := "upload_csver"
 	file, _ := os.Open("/Users/mac/go/vehicle_system/safly.csv")
 
-	resp, _ := tool.UploadFile(url, mapArgs, nameField, fileName, file)
+	resp, _ := tool.UploadFile(url, token, mapArgs, nameField, fileName, file)
 
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))

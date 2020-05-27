@@ -12,6 +12,7 @@ import (
 
 var csvFormat = fmt.Errorf("%s", "csv format error")
 
+const CsvAssetPrintAddColumn = 1
 const CsvAddColumn = 3
 const CsvEditColumn = 4
 
@@ -48,6 +49,35 @@ func getCsvFile(csvFilePathName string) *os.File {
 		return nil
 	}
 	return csvFile
+}
+
+///////////////////////////////////添加白名单//////////////////////////////////
+func (csvReaderModel *CsvReaderModel) ParseAddAssetPrintsCsvFile() ([]string, error) {
+	csvReader := csvReaderModel.csvReader
+	defer csvReaderModel.csvFile.Close()
+
+	records, err := csvReader.ReadAll()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, record := range records {
+		if len(record) != CsvAssetPrintAddColumn {
+			return nil, csvFormat
+		}
+	}
+	filterRecords := []string{}
+	//过滤非本fstrategyId
+	for _, record := range records {
+		assetMac := record[CsvColumnZeroIndex]
+
+		fAssetMac := util.RrgsTrim(assetMac)
+		if fAssetMac != "" {
+			filterRecords = append(filterRecords, fAssetMac)
+		}
+	}
+
+	return filterRecords, nil
 }
 
 /////////////////////////////////////////更新上传的CSV/////////////////////////////////////////////////

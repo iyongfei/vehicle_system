@@ -47,6 +47,7 @@ func V1Router(r *gin.Engine) {
 		//////////////////////////////////////////////指纹信息接口//////////////////////////////////////////////
 		apiV1.GET("/mac/asset_fprints", api_server.GetAssetFprintMacs) //todo
 		apiV1.POST("/asset_fprints", api_server.AddAssetAsset)
+		apiV1.POST("/asset_fprints_csvs", api_server.UploadAssetAsset)
 		apiV1.GET("/pagination/asset_fprints", api_server.GetPaginationAssetFprints) //todo
 		apiV1.GET("/asset_fprints", api_server.GetAssetFprints)                      //todo
 		//////////////////////////////////////////////指纹库接口//////////////////////////////////////////////
