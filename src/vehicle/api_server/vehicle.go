@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"time"
 	"vehicle_system/src/vehicle/emq/emq_cmd"
 	"vehicle_system/src/vehicle/emq/protobuf"
 	"vehicle_system/src/vehicle/emq/topic_publish_handler"
@@ -77,26 +78,69 @@ func EditVehicle(c *gin.Context) {
 func GetVehicles(c *gin.Context) {
 	pageSizeP := c.Query("page_size")
 	pageIndexP := c.Query("page_index")
+	startTimeP := c.Query("start_time")
+	endTimeP := c.Query("end_time")
 
-	argsTrimsEmpty := util.RrgsTrimsEmpty(pageSizeP, pageIndexP)
-	if argsTrimsEmpty {
-		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
-		c.JSON(http.StatusOK, ret)
-		logger.Logger.Error("%s argsTrimsEmpty pageSizeP:%s,pageIndexP:%s", util.RunFuncName(), pageSizeP, pageIndexP)
-		logger.Logger.Print("%s argsTrimsEmpty pageSizeP:%s,pageIndexP:%s", util.RunFuncName(), pageSizeP, pageIndexP)
+	logger.Logger.Info("%s request params page_size:%s,page_index:%s,start_time%s,endtime%s",
+		util.RunFuncName(), pageSizeP, pageIndexP, startTimeP, endTimeP)
+	logger.Logger.Print("%s request params page_size:%s,page_index:%s,start_time%s,endtime%s",
+		util.RunFuncName(), pageSizeP, pageIndexP, startTimeP, endTimeP)
+
+	fpageSize, _ := strconv.Atoi(pageSizeP)
+	fpageIndex, _ := strconv.Atoi(pageIndexP)
+
+	var fStartTime time.Time
+	var fEndTime time.Time
+
+	startTime, _ := strconv.Atoi(startTimeP)
+	endTime, _ := strconv.Atoi(endTimeP)
+
+	//默认20
+	defaultPageSize := 20
+	if fpageSize == 0 {
+		fpageSize = defaultPageSize
+	}
+	//默认第一页
+	defaultPageIndex := 1
+	if fpageIndex == 0 {
+		fpageIndex = defaultPageIndex
+	}
+	//默认2天前
+	defaultStartTime := util.GetFewDayAgo(2) //2
+	if startTime == 0 {
+		fStartTime = defaultStartTime
+	} else {
+		fStartTime = util.StampUnix2Time(int64(startTime))
 	}
 
-	pageSize, _ := strconv.Atoi(pageSizeP)
-	pageIndex, _ := strconv.Atoi(pageIndexP)
+	//默认当前时间
+	defaultEndTime := time.Now()
+	if endTime == 0 {
+		fEndTime = defaultEndTime
+	} else {
+		fEndTime = util.StampUnix2Time(int64(endTime))
+	}
 
+	logger.Logger.Info("%s request params page_size:%s,page_index:%s,start_time%s,endtime%s",
+		util.RunFuncName(), pageSizeP, pageIndexP, startTimeP, endTimeP)
+	logger.Logger.Print("%s request params page_size:%s,page_index:%s,start_time%s,endtime%s",
+		util.RunFuncName(), pageSizeP, pageIndexP, startTimeP, endTimeP)
+
+	/////////////////////
 	vehicleInfos := []*model.VehicleInfo{}
 	var total int
 
 	modelBase := model_base.ModelBaseImplPagination(&model.VehicleInfo{})
 
-	err := modelBase.GetModelPaginationByCondition(pageIndex, pageSize,
-		&total, &vehicleInfos, "", "",
-		[]interface{}{}...)
+	var sqlQuery string
+	var sqlArgs []interface{}
+
+	sqlQuery = "vehicle_infos.created_at BETWEEN ? AND ?"
+	sqlArgs = append(sqlArgs, fStartTime, fEndTime)
+
+	err := modelBase.GetModelPaginationByCondition(fpageIndex, fpageSize,
+		&total, &vehicleInfos, "vehicle_infos.created_at desc", sqlQuery,
+		sqlArgs...)
 
 	if err != nil {
 		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetVehiclesFailMsg, "")

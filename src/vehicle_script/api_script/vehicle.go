@@ -10,7 +10,7 @@ import (
 
 var vehicleUrls = map[string]string{
 	"get_vehicle":  "http://%s:7001/api/v1/vehicles/%s",
-	"get_vehicles": "http://%s:7001/api/v1/vehicles",
+	"get_vehicles": "http://%s:7001/api/v1/pagination/vehicles",
 
 	"post_vehicles": "http://localhost:7001/api/v1/vehicles",
 
@@ -28,14 +28,33 @@ func init() {
 }
 
 func main() {
-
 	//getVehicle()
-	editVehicles()
-
+	//editVehicles()
+	getVehicles()
 	//unused
 	//addVehicle()
 	//deleVehicles()
-	//getVehicles()
+}
+
+/**
+获取所有的车载信息
+*/
+func getVehicles() {
+	token := tool.GetVehicleToken()
+
+	queryParams := map[string]interface{}{
+		"page_size":  "5",
+		"page_index": "1",
+	}
+	reqUrl := vehicleUrls["get_vehicles"]
+	reqUrl = fmt.Sprintf(reqUrl, ip)
+
+	fmt.Println(reqUrl, "tok,,,,,,,,,,,")
+
+	resp, _ := tool.Get(reqUrl, queryParams, token)
+
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
 }
 
 func editVehicles() {
@@ -65,27 +84,6 @@ func getVehicle() {
 
 	reqUrl := vehicleUrls["get_vehicle"]
 	reqUrl = fmt.Sprintf(reqUrl, ip, vehicleId)
-
-	resp, _ := tool.Get(reqUrl, queryParams, token)
-
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
-}
-
-/**
-获取所有的车载信息
-*/
-func getVehicles() {
-	token := tool.GetVehicleToken()
-
-	queryParams := map[string]interface{}{
-		"page_size":  "5",
-		"page_index": "1",
-	}
-	reqUrl := vehicleUrls["get_vehicles"]
-	reqUrl = fmt.Sprintf(reqUrl, ip)
-
-	fmt.Println(reqUrl, "tok,,,,,,,,,,,")
 
 	resp, _ := tool.Get(reqUrl, queryParams, token)
 
