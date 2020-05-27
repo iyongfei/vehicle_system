@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/golang/protobuf/proto"
 	"strconv"
 	"vehicle_system/src/vehicle_script/emq_service"
@@ -25,7 +24,6 @@ func main() {
 	insertVehicleId := configMap[InsertAssetVehicleId]
 	insertVehicleAssetCount := configMap[InsertAssetCount]
 	defaultInsertVehicleAssetCount, _ := strconv.Atoi(insertVehicleAssetCount)
-	fmt.Println("defaultVehicleCount:", defaultInsertVehicleAssetCount)
 
 	emqx := emq_service.NewEmqx()
 	emqx.Publish(insertVehicleId, creatAssetProtobuf(insertVehicleId, defaultInsertVehicleAssetCount))
@@ -42,12 +40,12 @@ func creatAssetProtobuf(vehicleId string, threatCount int) []byte {
 
 	for i := 0; i < threatCount; i++ {
 		moduleItem := &protobuf.DeviceParam_Item{
-			Ip: tool.GenIpAddr(),
-			//Mac:tool.RandomString(8),
-			Mac:            "nn6pxlWd",
+			Ip:  tool.GenIpAddr(),
+			Mac: tool.RandomString(8),
+			//Mac:            "nn6pxlWd",
 			Name:           "fsdfsfsd",
 			Trademark:      tool.RandomString(8),
-			IsOnline:       false,
+			IsOnline:       true,
 			LastOnline:     tool.TimeNowToUnix(),
 			InternetSwitch: false,
 			ProtectSwitch:  true,

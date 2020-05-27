@@ -7,13 +7,15 @@ import (
 )
 
 var fprintUrls = map[string]string{
+	"post_asset_fprints":     "http://%s:7001/api/v1/asset_fprints",
 	"get_pagination_fprints": "http://%s:7001/api/v1/pagination/asset_fprints",
 	"get_asset_fprints":      "http://%s:7001/api/v1/asset_fprints",
-	"post_finger_prints":     "http://%s:7001/api/v1/finger_prints",
-	"get_all_fprints":        "http://%s:7001/api/v1/pagination/finger_prints",
-	"examine_fprints":        "http://%s:7001/api/v1/pagination/examine/asset_fprints",
-	"examine_fprint":         "http://%s:7001/api/v1/examine/asset_fprints/%s",
-	"asset_fprints":          "http://%s:7001/api/v1/asset_fprints/access_net/%s",
+
+	"post_finger_prints": "http://%s:7001/api/v1/finger_prints",
+	"get_all_fprints":    "http://%s:7001/api/v1/pagination/finger_prints",
+	"examine_fprints":    "http://%s:7001/api/v1/pagination/examine/asset_fprints",
+	"examine_fprint":     "http://%s:7001/api/v1/examine/asset_fprints/%s",
+	"asset_fprints":      "http://%s:7001/api/v1/asset_fprints/access_net/%s",
 	//"get_cates": "http://%s:7001/api/v1/all/categorys",
 	//"edit_cate": "http://%s:7001/api/v1/categorys/%s",
 	//"get_assets": "http://localhost:7001/api/v1/assets",
@@ -26,6 +28,8 @@ func getFprintConfig() map[string]string {
 }
 
 func main() {
+	//添加白名单
+	addAssetPrints()
 	//getAssetPaginationFprint() //或者资产指纹信息列表
 	//asset_fprints()
 	//addFingerPrints()
@@ -34,13 +38,31 @@ func main() {
 
 	//getExamineNetAssetPaginationFprint()
 	//examine_fprint()
-	asset_fprints()
+	//asset_fprints()
 	//unused
 	//getCategorys()
 	//editCategory()
 	//getAssets()
 	//getCategory()
 
+}
+
+func addAssetPrints() {
+	configs := getFprintConfig()
+	fip := configs["server_ip"]
+	//vehicle_id := configs["vehicle_id"]
+	assetIds := configs["asset_ids"]
+
+	token := tool.GetVehicleToken()
+	urlReq := fmt.Sprintf(fprintUrls["post_asset_fprints"], fip)
+
+	queryParams := map[string]interface{}{
+		"asset_ids": assetIds,
+	}
+
+	resp, _ := tool.PostForm(urlReq, queryParams, token)
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
 }
 
 func asset_fprints() {

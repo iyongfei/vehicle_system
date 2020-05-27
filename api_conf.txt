@@ -1,5 +1,4 @@
 server_ip = localhost
-server_ip = 192.168.40.10
 
 
 #注册
@@ -57,3 +56,7 @@ page_size=50
 page_index=1
 start_time=1589912036
 end_time=1590344036
+
+
+#资产
+white_asset_ids=sdf,232,3fgg,44g
