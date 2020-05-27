@@ -36,7 +36,7 @@ cate_name=摄像头e
 cate_id=1c8lCXFY0M2PbKX4bygV6tCJ0wrv4nwt
 
 #分页
-page_size=20
+page_size=5
 page_index=1
 start_time=1
 end_time=2
@@ -52,7 +52,7 @@ access_net_flag=true
 partial_fstrategs=slM0jAPFWZWMADkZPDsspr3Gc4IC1KYt,ZH9sLus3hDSQv4VdlZY1MAlkJbUaVcOf,b7DCXxj2bm7MZqQiuK4Cq8oCMItvpJSi
 
 #分页
-page_size=50
+page_size=5
 page_index=1
 start_time=1589912036
 end_time=1590344036

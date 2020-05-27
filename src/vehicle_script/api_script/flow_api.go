@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"strconv"
 	"time"
 	"vehicle_system/src/vehicle_script/tool"
@@ -35,6 +36,8 @@ func main() {
 
 var flowip string
 var flowId string
+var page_size string
+var page_index string
 
 var flowvehicleId string
 
@@ -43,6 +46,9 @@ func init() {
 	flowip = apiConfigMap["server_ip"]
 	flowvehicleId = apiConfigMap["vehicle_id"]
 	flowId = apiConfigMap["flowid"]
+	page_size = apiConfigMap["page_size"]
+	page_index = apiConfigMap["page_index"]
+	fmt.Println(page_index, page_size, reflect.TypeOf(page_size))
 }
 
 func getflowsDps() {
@@ -94,11 +100,15 @@ func GetFewDayAgo(days int) string {
 func getPaginationFlows() {
 	defaultStartTime := GetFewDayAgo(20) //2
 	now := strconv.Itoa(int(time.Now().Unix()))
+	//psize, _ := strconv.Atoi(page_size)
+	//pindex, _ := strconv.Atoi(page_index)
 
 	token := tool.GetVehicleToken()
 
 	queryParams := map[string]interface{}{
-		"vehicle_id": flowvehicleId,
+		//"vehicle_id": flowvehicleId,
+		"page_size":  page_size,
+		"page_index": page_index,
 		"start_time": defaultStartTime,
 		"end_time":   now,
 	}

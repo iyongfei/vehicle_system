@@ -248,14 +248,16 @@ func GetPaginationFlows(c *gin.Context) {
 	logger.Logger.Print("%s request params vehicle_id:%s,page_size:%s,page_index:%s,start_time%s,endtime%s",
 		util.RunFuncName(), vehicleId, pageSizeP, pageIndexP, startTimeP, endTimeP)
 
-	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId)
-	if argsTrimsEmpty {
-		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
-		c.JSON(http.StatusOK, ret)
-		logger.Logger.Error("%s argsTrimsEmpty threatId:%s", util.RunFuncName(), argsTrimsEmpty)
-		logger.Logger.Print("%s argsTrimsEmpty threatId:%s", util.RunFuncName(), argsTrimsEmpty)
-		return
-	}
+	vehicleId = util.RrgsTrim(vehicleId)
+
+	//argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId)
+	//if argsTrimsEmpty {
+	//	ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+	//	c.JSON(http.StatusOK, ret)
+	//	logger.Logger.Error("%s argsTrimsEmpty threatId:%s", util.RunFuncName(), argsTrimsEmpty)
+	//	logger.Logger.Print("%s argsTrimsEmpty threatId:%s", util.RunFuncName(), argsTrimsEmpty)
+	//	return
+	//}
 
 	fpageSize, _ := strconv.Atoi(pageSizeP)
 	fpageIndex, _ := strconv.Atoi(pageIndexP)
@@ -302,9 +304,19 @@ func GetPaginationFlows(c *gin.Context) {
 
 	modelBase := model_base.ModelBaseImplPagination(&model.Flow{})
 
+	var sqlQuery string
+	var sqlArgs []interface{}
+	if vehicleId == "" {
+		sqlQuery = "flows.created_at BETWEEN ? AND ?"
+		sqlArgs = append(sqlArgs, fStartTime, fEndTime)
+	} else {
+		sqlQuery = "vehicle_id = ? and flows.created_at BETWEEN ? AND ?"
+		sqlArgs = append(sqlArgs, vehicleId, fStartTime, fEndTime)
+	}
+
 	err := modelBase.GetModelPaginationByCondition(fpageIndex, fpageSize,
-		&total, &flows, "flows.created_at desc", "vehicle_id = ? and flows.created_at BETWEEN ? AND ?",
-		[]interface{}{vehicleId, fStartTime, fEndTime}...)
+		&total, &flows, "flows.created_at desc", sqlQuery,
+		sqlArgs...)
 
 	if err != nil {
 		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetFlowFailMsg, "")
@@ -312,7 +324,12 @@ func GetPaginationFlows(c *gin.Context) {
 		return
 	}
 
-	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetFlowSuccessMsg, flows)
+	responseData := map[string]interface{}{
+		"flows":       flows,
+		"total_count": total,
+	}
+
+	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetFlowSuccessMsg, responseData)
 	c.JSON(http.StatusOK, retObj)
 }
 

@@ -47,7 +47,6 @@ func V1Router(r *gin.Engine) {
 		//////////////////////////////////////////////指纹信息接口//////////////////////////////////////////////
 		apiV1.GET("/mac/asset_fprints", api_server.GetAssetFprintMacs) //todo
 		apiV1.POST("/asset_fprints", api_server.AddAssetAsset)
-
 		apiV1.GET("/pagination/asset_fprints", api_server.GetPaginationAssetFprints) //todo
 		apiV1.GET("/asset_fprints", api_server.GetAssetFprints)                      //todo
 		//////////////////////////////////////////////指纹库接口//////////////////////////////////////////////
@@ -66,6 +65,8 @@ func V1Router(r *gin.Engine) {
 		apiV1.PUT("/vehicles/:vehicle_id", api_server.EditVehicle) //todo
 		//apiV1.DELETE("/vehicles/:vehicle_id", api_server.DeleVehicle)
 		apiV1.GET("/vehicles", api_server.GetVehicles)
+
+		//////////////////////////////////////////////white_lists接口//////////////////////////////////////////////
 		apiV1.GET("/white_lists/:white_list_id", api_server.GetWhiteList)
 		apiV1.GET("/white_lists", api_server.GetWhiteLists)
 		apiV1.POST("/white_lists", api_server.AddWhiteList)
