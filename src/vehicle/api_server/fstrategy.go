@@ -835,6 +835,79 @@ func GetPartFstrategyIds(c *gin.Context) {
 获取所有的策略
 */
 func GetPaginationFstrategys(c *gin.Context) {
+	pageSizeP := c.Query("page_size")
+	pageIndexP := c.Query("page_index")
+	startTimeP := c.Query("start_time")
+	endTimeP := c.Query("end_time")
+	logger.Logger.Info("%s request params page_size:%s,page_index:%s,start_time%s,endtime%s",
+		util.RunFuncName(), pageSizeP, pageIndexP, startTimeP, endTimeP)
+	logger.Logger.Print("%s request params page_size:%s,page_index:%s,start_time%s,endtime%s",
+		util.RunFuncName(), pageSizeP, pageIndexP, startTimeP, endTimeP)
+
+	fpageSize, _ := strconv.Atoi(pageSizeP)
+	fpageIndex, _ := strconv.Atoi(pageIndexP)
+
+	var fStartTime time.Time
+	var fEndTime time.Time
+
+	startTime, _ := strconv.Atoi(startTimeP)
+	endTime, _ := strconv.Atoi(endTimeP)
+
+	//默认20
+	defaultPageSize := 20
+	if fpageSize == 0 {
+		fpageSize = defaultPageSize
+	}
+	//默认第一页
+	defaultPageIndex := 1
+	if fpageIndex == 0 {
+		fpageIndex = defaultPageIndex
+	}
+	//默认2天前
+	defaultStartTime := util.GetFewDayAgo(2) //2
+	if startTime == 0 {
+		fStartTime = defaultStartTime
+	} else {
+		fStartTime = util.StampUnix2Time(int64(startTime))
+	}
+
+	//默认当前时间
+	defaultEndTime := time.Now()
+	if endTime == 0 {
+		fEndTime = defaultEndTime
+	} else {
+		fEndTime = util.StampUnix2Time(int64(endTime))
+	}
+
+	logger.Logger.Info("%s request params page_size:%s,page_index:%s,start_time%s,endtime%s",
+		util.RunFuncName(), pageSizeP, pageIndexP, startTimeP, endTimeP)
+	logger.Logger.Print("%s request params page_size:%s,page_index:%s,start_time%s,endtime%s",
+		util.RunFuncName(), pageSizeP, pageIndexP, startTimeP, endTimeP)
+
+	var totalCount int
+	vehicleFStrategys, err := model.GetPaginFStrategyVehicles(fpageIndex, fpageSize, &totalCount,
+		"fstrategies.created_at BETWEEN ? AND ?", []interface{}{fStartTime, fEndTime}...)
+	if err != nil {
+		logger.Logger.Error("%s vehicleFStrategys err:%+v", util.RunFuncName(), err)
+		logger.Logger.Print("%s vehicleFStrategys err:%+v", util.RunFuncName(), err)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetStrategyFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+	responseData := map[string]interface{}{
+		"fstrategys":  vehicleFStrategys,
+		"total_count": totalCount,
+	}
+
+	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetFStrategySuccessMsg, responseData)
+	c.JSON(http.StatusOK, retObj)
+
+}
+
+/**
+获取所有的策略
+*/
+func GetVehiclePaginationFstrategys(c *gin.Context) {
 	vehicleId := c.Query("vehicle_id")
 	pageSizeP := c.Query("page_size")
 	pageIndexP := c.Query("page_index")
@@ -993,8 +1066,8 @@ func GetPaginationFstrategys(c *gin.Context) {
 	}
 
 	responseData := map[string]interface{}{
-		"fstrategys": list,
-		"totalCount": totalCount,
+		"fstrategys":  list,
+		"total_count": totalCount,
 	}
 
 	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetFStrategySuccessMsg, responseData)

@@ -9,14 +9,15 @@ import (
 )
 
 var fstrategyUrls = map[string]string{
-	"post_fstrategy":           "http://%s:7001/api/v1/fstrategys",
-	"dele_fstrategy":           "http://%s:7001/api/v1/fstrategys/",
-	"edit_fstrategy":           "http://%s:7001/api/v1/fstrategys/",
-	"get_fstrategy":            "http://%s:7001/api/v1/fstrategys/",
-	"get_active_fstrategs":     "http://%s:7001/api/v1/active/fstrategys",
-	"get_all_fstrategs":        "http://%s:7001/api/v1/ids/fstrategys",
-	"get_partial_fstrategs":    "http://%s:7001/api/v1/partial/fstrategys",
-	"get_pagination_fstrategs": "http://%s:7001/api/v1/pagination/fstrategys",
+	"post_fstrategy":                   "http://%s:7001/api/v1/fstrategys",
+	"dele_fstrategy":                   "http://%s:7001/api/v1/fstrategys/",
+	"edit_fstrategy":                   "http://%s:7001/api/v1/fstrategys/",
+	"get_fstrategy":                    "http://%s:7001/api/v1/fstrategys/",
+	"get_active_fstrategs":             "http://%s:7001/api/v1/active/fstrategys",
+	"get_all_fstrategs":                "http://%s:7001/api/v1/ids/fstrategys",
+	"get_partial_fstrategs":            "http://%s:7001/api/v1/partial/fstrategys",
+	"get_pagination_fstrategs":         "http://%s:7001/api/v1/pagination/fstrategys",
+	"get_pagination_vehicle_fstrategs": "http://%s:7001/api/v1/pagination/vehicle/fstrategys",
 
 	//
 	"get_fstrategys":               "http://localhost:7001/api/v1/fstrategys",
@@ -31,13 +32,14 @@ func getConfig() map[string]string {
 
 func main() {
 	//addFStrategy()
-	getFStrategy()
+	//getFStrategy()
 	//deleFStrategy()
 	//editFStrategy()
 	//getRecentFStrategy()
 	//getAllFStrategys()
 	//getPartialFStrategys()
-	//getPaginationFstrategys()
+	//getPaginationVehicleFstrategys()
+	getPaginationFstrategys()
 	//unused
 	//getFStrategys()
 	//getStrategyVehicle()
@@ -46,6 +48,27 @@ func main() {
 }
 
 func getPaginationFstrategys() {
+	token := tool.GetVehicleToken()
+	configs := getConfig()
+	fip := configs["server_ip"]
+	page_index := configs["page_index"]
+	page_size := configs["page_size"]
+	//start_time := configs["start_time"]
+	//end_time := configs["end_time"]
+
+	queryParams := map[string]interface{}{
+		"page_index": page_index,
+		"page_size":  page_size,
+		//"start_time": start_time,
+		//"end_time":   end_time,
+	}
+	reqUrl := fmt.Sprintf(fstrategyUrls["get_pagination_fstrategs"], fip)
+	resp, _ := tool.Get(reqUrl, queryParams, token)
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+}
+
+func getPaginationVehicleFstrategys() {
 	token := tool.GetVehicleToken()
 	configs := getConfig()
 	fip := configs["server_ip"]
