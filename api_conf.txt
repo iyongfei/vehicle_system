@@ -6,7 +6,7 @@ user_name=aaadd
 password=bbbee
 
 #终端id
-vehicle_id=b020eccdf33d48b4aa246a89a6f04609
+vehicle_id=754d2728b4e549c5a16c0180fcacb800
 
 #策略接口
 vehicle_ids=gBDvsD4qnAdR9K4cTIZoq7Zr05Ox1udr
@@ -19,7 +19,7 @@ fips=192.168.2.43,192.168.41.12
 fports=123,3
 
 #获取会话策略接口
-get_flow_fstrategy_id=ZH9sLus3hDSQv4VdlZY1MAlkJbUaVcOf
+get_flow_fstrategy_id=7J2joSj2jALiF37wStgqoZbwRMgWhBs2
 
 
 #修改会话策略接口

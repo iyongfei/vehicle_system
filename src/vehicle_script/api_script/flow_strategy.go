@@ -31,13 +31,13 @@ func getConfig() map[string]string {
 
 func main() {
 	//addFStrategy()
-	//getFStrategy()
+	getFStrategy()
 	//deleFStrategy()
 	//editFStrategy()
 	//getRecentFStrategy()
 	//getAllFStrategys()
 	//getPartialFStrategys()
-	getPaginationFstrategys()
+	//getPaginationFstrategys()
 	//unused
 	//getFStrategys()
 	//getStrategyVehicle()

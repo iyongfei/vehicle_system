@@ -179,13 +179,20 @@ func EditFStrategy(c *gin.Context) {
 	}
 	topic_publish_handler.GetPublishService().PutMsg2PublicChan(fstrategyCmd)
 
+	gormModel := model.Model{
+		vehicleFStrategy.ID, vehicleFStrategy.CreatedAt,
+		vehicleFStrategy.UpdatedAt, vehicleFStrategy.DeletedAt,
+	}
+
 	vehicleSingleFlowStrategyItemsReult := model.VehicleSingleFlowStrategyItemsReult{
-		FstrategyId:              vehicleFStrategy.FstrategyId,
-		Type:                     vehicleFStrategy.Type,
-		HandleMode:               vehicleFStrategy.HandleMode,
-		Enable:                   vehicleFStrategy.Enable,
-		VehicleId:                vehicleFStrategy.VehicleId,
-		CsvPath:                  vehicleFStrategy.CsvPath,
+		Model:       gormModel,
+		FstrategyId: vehicleFStrategy.FstrategyId,
+		Type:        vehicleFStrategy.Type,
+		HandleMode:  vehicleFStrategy.HandleMode,
+		Enable:      vehicleFStrategy.Enable,
+		VehicleId:   vehicleFStrategy.VehicleId,
+		CsvPath:     vehicleFStrategy.CsvPath,
+
 		VehicleFStrategyItemsMap: finalDiportsMap,
 	}
 
@@ -256,10 +263,8 @@ func AddFStrategy(c *gin.Context) {
 	//	strconv.Itoa(int(protobuf.FlowStrategyAddParam_PREVENTWARNING)),
 	//	strconv.Itoa(int(protobuf.FlowStrategyAddParam_WARNING))})
 
-	logger.Logger.Print("%s vehicle_ids:%s,diports:%v",
-		util.RunFuncName(), vehicleId, diports)
-	logger.Logger.Info("%s vehicle_ids:%s,diports:%v",
-		util.RunFuncName(), vehicleId, diports)
+	logger.Logger.Print("%s vehicle_ids:%s,diports:%v", util.RunFuncName(), vehicleId, diports)
+	logger.Logger.Info("%s vehicle_ids:%s,diports:%v", util.RunFuncName(), vehicleId, diports)
 
 	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId, diports)
 
@@ -412,13 +417,19 @@ func AddFStrategy(c *gin.Context) {
 	}
 	topic_publish_handler.GetPublishService().PutMsg2PublicChan(fstrategyCmd)
 
+	gormModel := model.Model{
+		fstrategy.ID, fstrategy.CreatedAt,
+		fstrategy.UpdatedAt, fstrategy.DeletedAt,
+	}
+
 	vehicleSingleFlowStrategyItemsReult := model.VehicleSingleFlowStrategyItemsReult{
+		Model:                    gormModel,
 		FstrategyId:              fstrategy.FstrategyId,
 		Type:                     fstrategy.Type,
 		HandleMode:               fstrategy.HandleMode,
 		Enable:                   fstrategy.Enable,
-		VehicleId:                vehicleInfo.VehicleId,
 		CsvPath:                  fstrategy.CsvPath,
+		VehicleId:                vehicleInfo.VehicleId,
 		VehicleFStrategyItemsMap: finalDiportsMap,
 	}
 
@@ -1139,7 +1150,13 @@ func GetFStrategy(c *gin.Context) {
 		}
 	}
 
+	gormModel := model.Model{
+		vehicleFStrategy.ID, vehicleFStrategy.CreatedAt,
+		vehicleFStrategy.UpdatedAt, vehicleFStrategy.DeletedAt,
+	}
+
 	vehicleSingleFlowStrategyItemsReult := model.VehicleSingleFlowStrategyItemsReult{
+		Model:                    gormModel,
 		FstrategyId:              vehicleFStrategy.FstrategyId,
 		Type:                     vehicleFStrategy.Type,
 		HandleMode:               vehicleFStrategy.HandleMode,

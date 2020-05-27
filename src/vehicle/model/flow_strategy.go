@@ -3,6 +3,7 @@ package model
 import (
 	"fmt"
 	"github.com/jinzhu/gorm"
+	"time"
 	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/emq/protobuf"
 	"vehicle_system/src/vehicle/util"
@@ -356,14 +357,23 @@ func GetVehicleFStrategyItems(query string, args ...interface{}) ([]*VehicleSing
 获取某车载的单条会话
 */
 
+type Model struct {
+	ID        uint `gorm:"primary_key"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt *time.Time `sql:"index"`
+}
+
 type VehicleSingleFlowStrategyItemsReult struct {
+	Model
 	FstrategyId string
 	Type        uint8 //策略模式
 	HandleMode  uint8 //处理方式
 	Enable      bool  //策略启用状态
-	VehicleId   string
+	CsvPath     string
 
-	CsvPath string
+	//Fstrategy
 	/////////////////////
+	VehicleId                string
 	VehicleFStrategyItemsMap map[string][]uint32
 }
