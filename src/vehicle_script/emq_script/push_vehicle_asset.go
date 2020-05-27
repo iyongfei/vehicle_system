@@ -42,13 +42,13 @@ func creatAssetProtobuf(vehicleId string, threatCount int) []byte {
 		moduleItem := &protobuf.DeviceParam_Item{
 			Ip:  tool.GenIpAddr(),
 			Mac: tool.RandomString(8),
-			//Mac:            "nn6pxlWd",
+			//Mac:            "102C83",
 			Name:           "fsdfsfsd",
 			Trademark:      tool.RandomString(8),
 			IsOnline:       true,
 			LastOnline:     tool.TimeNowToUnix(),
 			InternetSwitch: false,
-			ProtectSwitch:  true,
+			ProtectSwitch:  false,
 			LanVisitSwitch: false,
 		}
 		items = append(items, moduleItem)

@@ -18,6 +18,16 @@ import (
 查看所有的白名单
 */
 func GetAssetFprintMacs(c *gin.Context) {
+	var deviceMacs []string
+	_ = mysql.QueryPluckByModelWhere(&model.FprintInfo{}, "device_mac", &deviceMacs,
+		"", []interface{}{}...)
+
+	responseData := map[string]interface{}{
+		"fprint_macs": deviceMacs,
+	}
+
+	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetAssetFprintsSuccessMsg, responseData)
+	c.JSON(http.StatusOK, retObj)
 
 }
 

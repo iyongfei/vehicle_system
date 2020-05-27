@@ -5,6 +5,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/emq/protobuf"
+	"vehicle_system/src/vehicle/mac"
 	"vehicle_system/src/vehicle/util"
 )
 
@@ -81,6 +82,7 @@ func (asset *Asset) CreateModel(assetParams ...interface{}) interface{} {
 	asset.Mac = assetParam.GetMac()
 	asset.Name = assetParam.GetName()
 	asset.TradeMark = assetParam.GetTrademark()
+	asset.TradeMark = mac.GetOrgByMAC(assetParam.GetMac())
 	asset.OnlineStatus = assetParam.GetIsOnline()
 	asset.LastOnline = assetParam.GetLastOnline()
 	asset.InternetSwitch = assetParam.GetInternetSwitch()

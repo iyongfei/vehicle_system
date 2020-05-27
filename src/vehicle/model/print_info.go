@@ -7,15 +7,6 @@ import (
 	"vehicle_system/src/vehicle/util"
 )
 
-//
-//import (
-//	"fmt"
-//	"github.com/jinzhu/gorm"
-//	"vehicle_system/src/vehicle/db/mysql"
-//	"vehicle_system/src/vehicle/util"
-//)
-//
-
 //////////////////////////////////探测类型///////////////////////////
 type FprintInfo struct {
 	gorm.Model
@@ -80,7 +71,6 @@ func (fprintDetectInfo *FprintInfo) CreateModel(assetParams ...interface{}) inte
 	return fprintDetectInfo
 }
 
-//
 /////////////////////////////////被动探测/////////////////////////////////
 //
 //type FprintPassiveInfo struct {

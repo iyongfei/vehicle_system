@@ -7,9 +7,10 @@ import (
 )
 
 var fprintUrls = map[string]string{
-	"post_asset_fprints":     "http://%s:7001/api/v1/asset_fprints",
-	"get_pagination_fprints": "http://%s:7001/api/v1/pagination/asset_fprints",
-	"get_asset_fprints":      "http://%s:7001/api/v1/asset_fprints",
+	"mac_white_asset_fprints":  "http://%s:7001/api/v1/mac/asset_fprints",
+	"post_white_asset_fprints": "http://%s:7001/api/v1/asset_fprints",
+	"get_pagination_fprints":   "http://%s:7001/api/v1/pagination/asset_fprints",
+	"get_asset_fprints":        "http://%s:7001/api/v1/asset_fprints",
 
 	"post_finger_prints": "http://%s:7001/api/v1/finger_prints",
 	"get_all_fprints":    "http://%s:7001/api/v1/pagination/finger_prints",
@@ -29,7 +30,8 @@ func getFprintConfig() map[string]string {
 
 func main() {
 	//添加白名单
-	addAssetPrints()
+	//addAssetPWhiterints()
+	getAssetWhitePrints()
 	//getAssetPaginationFprint() //或者资产指纹信息列表
 	//asset_fprints()
 	//addFingerPrints()
@@ -47,14 +49,30 @@ func main() {
 
 }
 
-func addAssetPrints() {
+//mac_white_asset_fprints
+//"mac_white_asset_fprints":     "http://%s:7001/api/v1/mac/asset_fprints",
+
+func getAssetWhitePrints() {
+	configs := getFprintConfig()
+	fip := configs["server_ip"]
+
+	token := tool.GetVehicleToken()
+	urlReq := fmt.Sprintf(fprintUrls["mac_white_asset_fprints"], fip)
+
+	queryParams := map[string]interface{}{}
+
+	resp, _ := tool.Get(urlReq, queryParams, token)
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+}
+func addAssetPWhiterints() {
 	configs := getFprintConfig()
 	fip := configs["server_ip"]
 	//vehicle_id := configs["vehicle_id"]
 	assetIds := configs["asset_ids"]
 
 	token := tool.GetVehicleToken()
-	urlReq := fmt.Sprintf(fprintUrls["post_asset_fprints"], fip)
+	urlReq := fmt.Sprintf(fprintUrls["post_white_asset_fprints"], fip)
 
 	queryParams := map[string]interface{}{
 		"asset_ids": assetIds,

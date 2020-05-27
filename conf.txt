@@ -4,7 +4,7 @@ insert_vehicle_count=1
 
 #插入资产
 insert_asset_vehicle_id=754d2728b4e549c5a16c0180fcacb80
-insert_asset_count=3
+insert_asset_count=5
 
 
 #插入威胁
