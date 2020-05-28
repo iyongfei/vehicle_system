@@ -3,6 +3,7 @@ package emq_client
 import (
 	"time"
 	"vehicle_system/src/vehicle/db/mysql"
+	"vehicle_system/src/vehicle/db/tdata"
 	"vehicle_system/src/vehicle/emq/emq_cacha"
 	"vehicle_system/src/vehicle/emq/topic_subscribe_handler"
 	"vehicle_system/src/vehicle/logger"
@@ -14,7 +15,7 @@ func EmqReConnectTokenError() {
 
 	PushAllVehicleOffLine()
 
-	t := time.NewTicker(time.Second * 60)
+	t := time.NewTicker(time.Second * 30)
 	select {
 	case <-t.C:
 		if !EmqClient.IsConnected() {
@@ -30,6 +31,12 @@ func PushAllVehicleOffLine() {
 	vehicleCache := emq_cacha.GetVehicleCache()
 	vehicleCache.CleanAllKey()
 	//发送请求
+
+	err := tdata.VehicleAssetCheck("", false)
+	if err != nil {
+		logger.Logger.Error("tdata vehicle_asset check err:%v", err.Error())
+		logger.Logger.Print("tdata vehicle_asset check err:%v", err.Error())
+	}
 
 	var vehicleIds []string
 	_ = mysql.QueryPluckByModelWhere(&model.VehicleInfo{}, "vehicle_id", &vehicleIds,
