@@ -38,9 +38,9 @@ func getTables() []interface{} {
 	category := &model.Category{}
 	disk := &model.Disk{}
 	fingerPrint := &model.FingerPrint{}
+	fprintInfo := &model.FprintInfo{}
 	firmwareInfo := &model.FirmwareInfo{}
 	firmwareUpdate := &model.FirmwareUpdate{}
-
 	flowStatistic := &model.FlowStatistic{}
 	flow := &model.Flow{}
 	flowStrategy := &model.Fstrategy{}
@@ -55,25 +55,22 @@ func getTables() []interface{} {
 	strategyVehicle := &model.StrategyVehicle{}
 	strategyVehicleLearnings := &model.StrategyVehicleLearningResult{}
 	strategyGroup := &model.StrategyGroup{}
-
 	studyOrigin := &model.StudyOrigin{}
-
 	tflow := &model.TempFlow{}
 	threat := &model.Threat{}
 	user := &model.User{}
-
 	vehicleInfo := &model.VehicleInfo{}
 	vehicleLeader := &model.VehicleLeader{}
-
 	vhalonet := &model.VhaloNets{}
 	whiteList := &model.WhiteList{}
+	whiteAsset := &model.WhiteAsset{}
 
 	tables := []interface{}{
 		alayerProto, area, assetArea, asset, assetLeader, category, fingerPrint, flow, tflow, flowStatistic, firmwareUpdate, firmwareInfo, vehicleInfo, vehicleLeader,
 		user, disk, threat, whiteList, vhalonet, redisInfo, portMap, strategy, strategyGroup, strategyVehicle,
-		flowStrategy, flowStrategyVehicles,
+		flowStrategy, flowStrategyVehicles, fprintInfo,
 		flowStrategyTtem, flowStrategyRelateItem, sample, strategyVehicleLearnings,
-		sampleItem, studyOrigin, automatedLearning, automatedLearningResult,
+		sampleItem, studyOrigin, automatedLearning, automatedLearningResult, whiteAsset,
 	}
 
 	return tables
