@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/emq/emq_cmd"
 	"vehicle_system/src/vehicle/emq/protobuf"
 	"vehicle_system/src/vehicle/emq/topic_publish_handler"
@@ -142,6 +143,60 @@ func GetVehicles(c *gin.Context) {
 		&total, &vehicleInfos, "vehicle_infos.created_at desc", sqlQuery,
 		sqlArgs...)
 
+	////////////threat///////////////
+	vehicleIdMaps := []string{}
+	for _, vehicleInfo := range vehicleInfos {
+		vehicleIdMaps = append(vehicleIdMaps, vehicleInfo.VehicleId)
+	}
+	type FlowCount struct {
+		Count     int
+		VehicleId string
+	}
+	flowCountSql := "SELECT * from (SELECT COUNT(*) as count,vehicle_id FROM flows WHERE vehicle_id IN (?) GROUP BY vehicle_id) as temp"
+	FlowCountModelList := []*FlowCount{}
+
+	_ = mysql.QueryRawsqlScanStruct(flowCountSql, vehicleIdMaps, &FlowCountModelList)
+
+	//map
+	mapThreatCountModel := map[string]int{}
+	for _, threatCountModel := range FlowCountModelList {
+		mapThreatCountModel[threatCountModel.VehicleId] = threatCountModel.Count
+	}
+
+	var VehicleInfoResponse []*model.VehicleInfoT
+	for _, vehicle := range vehicleInfos {
+		flowCount := mapThreatCountModel[vehicle.VehicleId]
+
+		VehicleInfoTmp := &model.VehicleInfoT{
+			ID:               vehicle.ID,
+			CreatedAt:        vehicle.CreatedAt.Unix(),
+			UpdatedAt:        vehicle.UpdatedAt,
+			DeletedAt:        vehicle.DeletedAt,
+			VehicleId:        vehicle.VehicleId,
+			Name:             vehicle.Name,
+			Version:          vehicle.Version,
+			StartTime:        vehicle.StartTime,
+			FirmwareVersion:  vehicle.FirmwareVersion,
+			HardwareModel:    vehicle.HardwareModel,
+			Module:           vehicle.Module,
+			SupplyId:         vehicle.SupplyId,
+			UpRouterIp:       vehicle.UpRouterIp,
+			Ip:               vehicle.Ip,
+			Type:             vehicle.Type,
+			Mac:              vehicle.Mac,
+			TimeStamp:        vehicle.TimeStamp,
+			HbTimeout:        vehicle.HbTimeout,
+			DeployMode:       vehicle.DeployMode,
+			FlowIdleTimeSlot: vehicle.FlowIdleTimeSlot,
+			ProtectStatus:    vehicle.ProtectStatus,
+			LeaderId:         vehicle.LeaderId,
+			GroupId:          vehicle.GroupId,
+
+			FlowCount: flowCount,
+		}
+		VehicleInfoResponse = append(VehicleInfoResponse, VehicleInfoTmp)
+	}
+
 	if err != nil {
 		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetVehiclesFailMsg, "")
 		c.JSON(http.StatusOK, ret)
@@ -149,7 +204,7 @@ func GetVehicles(c *gin.Context) {
 	}
 
 	responseData := map[string]interface{}{
-		"vehicles":   vehicleInfos,
+		"vehicles":   VehicleInfoResponse,
 		"totalCount": total,
 	}
 
