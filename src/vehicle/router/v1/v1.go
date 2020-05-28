@@ -72,6 +72,7 @@ func V1Router(r *gin.Engine) {
 		apiV1.POST("/white_lists", api_server.AddWhiteList)
 		apiV1.PUT("/white_lists/:white_list_id", api_server.EditWhiteList)
 		apiV1.DELETE("/white_lists/:white_list_id", api_server.DeleWhiteList)
+		//////////////////////////////////////////////threats//////////////////////////////////////////////
 		apiV1.GET("/threats/:threat_id", api_server.GetThreat)
 		apiV1.GET("/threats", api_server.GetThreats)
 		apiV1.GET("/pagination/threats", api_server.GetPaginationThreats)
@@ -80,10 +81,10 @@ func V1Router(r *gin.Engine) {
 		apiV1.DELETE("/threats/:threat_id", api_server.DeleThreat)
 
 		////////////////////////////////////////////////资产接口//////////////////////////////////////////////
-		apiV1.GET("/pagination/assets", api_server.GetPaginationAssets) //获取所有的资产
-		apiV1.GET("/all/assets", api_server.GetAllAssets)               //获取所有的资产
-		apiV1.GET("/assets/:asset_id", api_server.GetAsset)
-		apiV1.PUT("/assets/:asset_id", api_server.EditAsset)
+		apiV1.GET("/pagination/assets", api_server.GetPaginationAssets) //todo
+		apiV1.GET("/all/assets", api_server.GetAllAssets)               //todo
+		apiV1.GET("/assets/:asset_id", api_server.GetAsset)             //todo
+		apiV1.PUT("/assets/:asset_id", api_server.EditAsset)            //todo
 		//apiV1.POST("/assets", api_server.AddAsset)
 
 		apiV1.DELETE("/assets/:asset_id", api_server.DeleAsset)
