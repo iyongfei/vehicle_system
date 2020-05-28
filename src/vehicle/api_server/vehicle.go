@@ -167,34 +167,9 @@ func GetVehicles(c *gin.Context) {
 	for _, vehicle := range vehicleInfos {
 		flowCount := mapThreatCountModel[vehicle.VehicleId]
 
-		VehicleInfoTmp := &model.VehicleInfoT{
-			ID:               vehicle.ID,
-			CreatedAt:        vehicle.CreatedAt.Unix(),
-			UpdatedAt:        vehicle.UpdatedAt,
-			DeletedAt:        vehicle.DeletedAt,
-			VehicleId:        vehicle.VehicleId,
-			Name:             vehicle.Name,
-			Version:          vehicle.Version,
-			StartTime:        vehicle.StartTime,
-			FirmwareVersion:  vehicle.FirmwareVersion,
-			HardwareModel:    vehicle.HardwareModel,
-			Module:           vehicle.Module,
-			SupplyId:         vehicle.SupplyId,
-			UpRouterIp:       vehicle.UpRouterIp,
-			Ip:               vehicle.Ip,
-			Type:             vehicle.Type,
-			Mac:              vehicle.Mac,
-			TimeStamp:        vehicle.TimeStamp,
-			HbTimeout:        vehicle.HbTimeout,
-			DeployMode:       vehicle.DeployMode,
-			FlowIdleTimeSlot: vehicle.FlowIdleTimeSlot,
-			ProtectStatus:    vehicle.ProtectStatus,
-			LeaderId:         vehicle.LeaderId,
-			GroupId:          vehicle.GroupId,
+		vehicleInfoTmp := model.CreateVehicleInfoT(vehicle, flowCount)
 
-			FlowCount: flowCount,
-		}
-		VehicleInfoResponse = append(VehicleInfoResponse, VehicleInfoTmp)
+		VehicleInfoResponse = append(VehicleInfoResponse, vehicleInfoTmp)
 	}
 
 	if err != nil {
