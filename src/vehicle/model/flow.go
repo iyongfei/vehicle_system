@@ -35,11 +35,13 @@ type Flow struct {
 func (flow *Flow) MarshalJSON() ([]byte, error) {
 	type FlowType Flow
 	return json.Marshal(&struct {
-		Protocol string
+		Protocol  string
+		CreatedAt int64
 		*FlowType
 	}{
-		Protocol: protobuf.GetFlowProtocols(int(flow.Protocol)),
-		FlowType: (*FlowType)(flow),
+		Protocol:  protobuf.GetFlowProtocols(int(flow.Protocol)),
+		CreatedAt: flow.CreatedAt.Unix(),
+		FlowType:  (*FlowType)(flow),
 	})
 }
 

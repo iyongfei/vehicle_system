@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"vehicle_system/src/vehicle/db/mysql"
@@ -28,6 +29,18 @@ type Asset struct {
 
 	AssetGroup  string
 	AssetLeader string
+}
+
+//序列化为数字类型
+func (asset *Asset) MarshalJSON() ([]byte, error) {
+	type AssetType Asset
+	return json.Marshal(&struct {
+		CreatedAt int64
+		*AssetType
+	}{
+		CreatedAt: asset.CreatedAt.Unix(),
+		AssetType: (*AssetType)(asset),
+	})
 }
 
 func (asset *Asset) GetModelPaginationByCondition(pageIndex int, pageSize int, totalCount *int,

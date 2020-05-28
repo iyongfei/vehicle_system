@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"vehicle_system/src/vehicle/db/mysql"
@@ -19,6 +20,16 @@ type WhiteAsset struct {
 	AccessNet    bool
 }
 
+func (tmp *WhiteAsset) MarshalJSON() ([]byte, error) {
+	type tempType WhiteAsset
+	return json.Marshal(&struct {
+		CreatedAt int64
+		*tempType
+	}{
+		CreatedAt: tmp.CreatedAt.Unix(),
+		tempType:  (*tempType)(tmp),
+	})
+}
 func (whiteAsset *WhiteAsset) GetModelPaginationByCondition(pageIndex int, pageSize int, totalCount *int,
 	paginModel interface{}, orderBy interface{}, query interface{}, args ...interface{}) error {
 

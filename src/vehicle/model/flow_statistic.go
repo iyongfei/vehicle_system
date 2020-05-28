@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"vehicle_system/src/vehicle/db/mysql"
@@ -18,6 +19,18 @@ type FlowStatistic struct {
 	PubFlow       uint32
 	NotlocalFlow  uint32
 	WhiteCount    uint32
+}
+
+//序列化为数字类型
+func (flowStatistic *FlowStatistic) MarshalJSON() ([]byte, error) {
+	type tempType FlowStatistic
+	return json.Marshal(&struct {
+		CreatedAt int64
+		*tempType
+	}{
+		CreatedAt: flowStatistic.CreatedAt.Unix(),
+		tempType:  (*tempType)(flowStatistic),
+	})
 }
 
 func (flowStatistic *FlowStatistic) InsertModel() error {

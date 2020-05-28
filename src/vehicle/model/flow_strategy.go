@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"time"
@@ -17,6 +18,17 @@ type Fstrategy struct {
 	Type        uint8 //策略模式
 	HandleMode  uint8 //处理方式
 	Enable      bool  //策略启用状态
+}
+
+func (fstrategy *Fstrategy) MarshalJSON() ([]byte, error) {
+	type tempType Fstrategy
+	return json.Marshal(&struct {
+		CreatedAt int64
+		*tempType
+	}{
+		CreatedAt: fstrategy.CreatedAt.Unix(),
+		tempType:  (*tempType)(fstrategy),
+	})
 }
 
 func (flowStrategy *Fstrategy) InsertModel() error {
@@ -81,6 +93,17 @@ type FstrategyVehicle struct {
 	VehicleId          string
 }
 
+func (fstrategyVehicle *FstrategyVehicle) MarshalJSON() ([]byte, error) {
+	type tempType FstrategyVehicle
+	return json.Marshal(&struct {
+		CreatedAt int64
+		*tempType
+	}{
+		CreatedAt: fstrategyVehicle.CreatedAt.Unix(),
+		tempType:  (*tempType)(fstrategyVehicle),
+	})
+}
+
 func (flowStrategyVehicle *FstrategyVehicle) InsertModel() error {
 	return mysql.CreateModel(flowStrategyVehicle)
 }
@@ -125,6 +148,17 @@ type FstrategyVehicleItem struct {
 	gorm.Model
 	FstrategyVehicleId string
 	FstrategyItemId    string
+}
+
+func (fstrategyVehicleItem *FstrategyVehicleItem) MarshalJSON() ([]byte, error) {
+	type tempType FstrategyVehicleItem
+	return json.Marshal(&struct {
+		CreatedAt int64
+		*tempType
+	}{
+		CreatedAt: fstrategyVehicleItem.CreatedAt.Unix(),
+		tempType:  (*tempType)(fstrategyVehicleItem),
+	})
 }
 
 func (flowStrategyVehicleItem *FstrategyVehicleItem) InsertModel() error {
@@ -173,6 +207,17 @@ type FstrategyItem struct {
 	VehicleId       string
 	DstIp           string
 	DstPort         uint32
+}
+
+func (tmp *FstrategyItem) MarshalJSON() ([]byte, error) {
+	type tempType FstrategyItem
+	return json.Marshal(&struct {
+		CreatedAt int64
+		*tempType
+	}{
+		CreatedAt: tmp.CreatedAt.Unix(),
+		tempType:  (*tempType)(tmp),
+	})
 }
 
 func (flowStrategyItem *FstrategyItem) SoftDeleModelImpl(query interface{}, args ...interface{}) error {
@@ -234,6 +279,17 @@ type FlowStrategyVehicleItemJoin struct {
 
 	FstrategyVehicleId string `json:"omitempty"`
 	FstrategyItemId    string `json:"omitempty"`
+}
+
+func (tmp *FlowStrategyVehicleItemJoin) MarshalJSON() ([]byte, error) {
+	type tempType FlowStrategyVehicleItemJoin
+	return json.Marshal(&struct {
+		CreatedAt int64
+		*tempType
+	}{
+		CreatedAt: tmp.CreatedAt.Unix(),
+		tempType:  (*tempType)(tmp),
+	})
 }
 
 func GetFlowStrategyVehicleItems(query string, args ...interface{}) ([]*FlowStrategyVehicleItemJoin, error) {
@@ -321,6 +377,16 @@ type VehicleSingleFlowStrategyItems struct {
 	DstPort uint32
 }
 
+func (tmp *VehicleSingleFlowStrategyItems) MarshalJSON() ([]byte, error) {
+	type tempType VehicleSingleFlowStrategyItems
+	return json.Marshal(&struct {
+		CreatedAt int64
+		*tempType
+	}{
+		CreatedAt: tmp.CreatedAt.Unix(),
+		tempType:  (*tempType)(tmp),
+	})
+}
 func GetVehicleFStrategyItems(query string, args ...interface{}) ([]*VehicleSingleFlowStrategyItems, error) {
 	vgorm, err := mysql.GetMysqlInstance().GetMysqlDB()
 	if err != nil {

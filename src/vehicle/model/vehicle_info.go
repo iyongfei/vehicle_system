@@ -47,10 +47,9 @@ type VehicleInfoT struct {
 	UpdatedAt time.Time
 	DeletedAt *time.Time `sql:"index"`
 
-	VehicleId string `gorm:"unique"` //小v ID
-	Name      string //小v名称
-	Version   string
-	//StartTime       model_base.UnixTime //启动时间
+	VehicleId       string `gorm:"unique"` //小v ID
+	Name            string //小v名称
+	Version         string
 	StartTime       time.Time //启动时间
 	FirmwareVersion string
 	HardwareModel   string

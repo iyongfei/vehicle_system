@@ -3,8 +3,10 @@ package main
 import (
 	"bytes"
 	"encoding/binary"
+	"encoding/json"
 	"fmt"
 	"github.com/jinzhu/gorm"
+	"strconv"
 	"time"
 	"vehicle_system/src/vehicle/conf"
 	"vehicle_system/src/vehicle/util"
@@ -53,20 +55,22 @@ func Str2Stamp(formatTimeStr string) int64 {
 	return millisecond
 }
 
-/**
-sipLittleEndian := util.BytesToLittleEndian(util.UintToBytes(flowItemParams.GetSrcIp()))
-flow.SrcIp = util.IpIntToString(int(sipLittleEndian))
-*/
+type CreatedAt time.Time
+
+func (ut *CreatedAt) MarshalJSON() (data []byte, err error) {
+	t := strconv.FormatInt(time.Time(*ut).Unix(), 10)
+	data = []byte(t)
+	return
+}
+
+type a struct {
+	gorm.Model
+	CreatedAt CreatedAt
+	Name      string
+}
 
 func main() {
-	fprintsMacs := []string{""}
-	f := []string{}
-	for _, v := range fprintsMacs {
-		if v != "" {
-			f = append(f, v)
-		}
-	}
-	fmt.Println(len(fprintsMacs), len(f))
+
 	return
 
 	fmt.Println(time.Now().Unix())
