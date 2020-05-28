@@ -574,22 +574,6 @@ CREATE TABLE IF NOT EXISTS `flow_statistics`  (
   INDEX `idx_flow_statistics_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
--- CREATE TABLE IF NOT EXISTS `monitors`  (
---   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
---   `created_at` timestamp NULL DEFAULT NULL,
---   `updated_at` timestamp NULL DEFAULT NULL,
---   `deleted_at` timestamp NULL DEFAULT NULL,
---
---   `monitor_id` varchar(255)  NULL DEFAULT NULL,
---   `cpu_rate` double  NULL DEFAULT NULL,
---   `mem_rate` double  NULL DEFAULT NULL,
---   `gather_time` int(11) NULL DEFAULT NULL,
---
---
---   PRIMARY KEY (`id`) USING BTREE,
---   INDEX `idx_monitors_deleted_at`(`deleted_at`) USING BTREE
--- ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
---
 
 
 CREATE TABLE IF NOT EXISTS `disks`  (
