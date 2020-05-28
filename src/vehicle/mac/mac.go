@@ -46,12 +46,12 @@ func initMacOrgMap() {
 // GetOrgByMAC get orginazation by mac address
 // if not found, return void string
 func GetOrgByMAC(mac string) string {
-	//hmac, err := util.ToHexadecimalMac(mac)
-	hmac := []string{"102C83", "4455B1", "A88038", "F80D60", "A47B85", "D06A1F"}
-	//if err != nil {
-	//	return ""
-	//}
-	macHead := string([]byte(hmac[3])[:6])
+	hmac, err := util.ToHexadecimalMac(mac)
+	//hmac := []string{"102C83", "4455B1", "A88038", "F80D60", "A47B85", "D06A1F"}
+	if err != nil {
+		return ""
+	}
+	macHead := string([]byte(hmac)[:6])
 	if v, ok := MacOrgMap[macHead]; ok {
 		return v
 	}
