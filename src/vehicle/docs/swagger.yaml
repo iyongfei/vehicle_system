@@ -2,6 +2,12 @@ basePath: /
 definitions:
   model.VehicleSingleFlowStrategyItemsReult:
     properties:
+      createdAt:
+        type: string
+      csvPath:
+        type: string
+      deletedAt:
+        type: string
       enable:
         description: 策略启用状态
         type: boolean
@@ -10,19 +16,23 @@ definitions:
       handleMode:
         description: 处理方式
         type: integer
-      scvPath:
-        type: string
+      id:
+        type: integer
       type:
         description: 策略模式
         type: integer
+      updatedAt:
+        type: string
       vehicleFStrategyItemsMap:
         additionalProperties:
           items:
             type: integer
           type: array
-        description: ///////////////////
         type: object
       vehicleId:
+        description: |-
+          Fstrategy
+          ///////////////////
         type: string
     type: object
   response.Response:

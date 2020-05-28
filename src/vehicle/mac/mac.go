@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	MacOrgFile = "mac-prefixes"
+	MacOrgFile = "macs"
 	MacOrgData []byte
 	MacOrgMap  map[string]string
 )

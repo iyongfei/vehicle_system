@@ -122,6 +122,15 @@ var doc = `{
         "model.VehicleSingleFlowStrategyItemsReult": {
             "type": "object",
             "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "csvPath": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "type": "string"
+                },
                 "enable": {
                     "description": "策略启用状态",
                     "type": "boolean"
@@ -133,15 +142,17 @@ var doc = `{
                     "description": "处理方式",
                     "type": "integer"
                 },
-                "scvPath": {
-                    "type": "string"
+                "id": {
+                    "type": "integer"
                 },
                 "type": {
                     "description": "策略模式",
                     "type": "integer"
                 },
+                "updatedAt": {
+                    "type": "string"
+                },
                 "vehicleFStrategyItemsMap": {
-                    "description": "///////////////////",
                     "type": "object",
                     "additionalProperties": {
                         "type": "array",
@@ -151,6 +162,7 @@ var doc = `{
                     }
                 },
                 "vehicleId": {
+                    "description": "Fstrategy\n///////////////////",
                     "type": "string"
                 }
             }
