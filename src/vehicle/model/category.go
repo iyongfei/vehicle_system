@@ -14,6 +14,7 @@ type Category struct {
 }
 
 func (category *Category) InsertModel() error {
+
 	return mysql.CreateModel(category)
 }
 func (category *Category) GetModelByCondition(query interface{}, args ...interface{}) (error, bool) {

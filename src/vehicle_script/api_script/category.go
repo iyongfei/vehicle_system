@@ -22,8 +22,8 @@ func getCateConfig() map[string]string {
 
 func main() {
 	//addCategory()
-	//getCategorys()
-	editCategory()
+	getCategorys()
+	//editCategory()
 	//getAssets()
 	//getCategory()
 
@@ -31,6 +31,21 @@ func main() {
 
 }
 
+/**
+//获取所有的车载信息
+//*/
+func getCategorys() {
+	configs := getCateConfig()
+	fip := configs["server_ip"]
+	token := tool.GetVehicleToken()
+	queryParams := map[string]interface{}{}
+
+	urlReq := fmt.Sprintf(categoryUrls["get_cates"], fip)
+
+	resp, _ := tool.Get(urlReq, queryParams, token)
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+}
 func editCategory() {
 	configs := getCateConfig()
 	fip := configs["server_ip"]
@@ -50,21 +65,6 @@ func editCategory() {
 
 //
 //
-///**
-//获取所有的车载信息
-//*/
-func getCategorys() {
-	configs := getCateConfig()
-	fip := configs["server_ip"]
-	token := tool.GetVehicleToken()
-	queryParams := map[string]interface{}{}
-
-	urlReq := fmt.Sprintf(categoryUrls["get_cates"], fip)
-
-	resp, _ := tool.Get(urlReq, queryParams, token)
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
-}
 
 func getCategory() {
 	configs := getCateConfig()

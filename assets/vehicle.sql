@@ -713,3 +713,20 @@ CREATE TABLE IF NOT EXISTS `fprint_infos`  (
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 
+-- 资产白名单
+CREATE TABLE IF NOT EXISTS `white_assets`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+
+  `white_asset_id` varchar(255)  NULL DEFAULT NULL,
+  `vehicle_id` varchar(255)  NULL DEFAULT NULL,
+  `device_mac` varchar(255)  NULL DEFAULT NULL,
+   `trade_mark` varchar(255)  NULL DEFAULT NULL,
+  `examine_net` varchar(255)  NULL DEFAULT NULL,
+  `access_net` tinyint(1) UNSIGNED NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_white_assets_deleted_at`(`deleted_at`) USING BTREE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+

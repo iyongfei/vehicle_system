@@ -69,7 +69,6 @@ func HandleVehicleAsset(vehicleResult protobuf.GWResult, vehicleId string) error
 		if recordNotFound {
 			//检索白名单列表
 			exist := checkoutAssetPrintInfos(asset.AssetId)
-			fmt.Println("eeeeeeeeee", exist)
 			asset.ProtectStatus = exist
 
 			err := modelBase.InsertModel()
@@ -103,12 +102,12 @@ func HandleVehicleAsset(vehicleResult protobuf.GWResult, vehicleId string) error
 }
 
 func checkoutAssetPrintInfos(assetId string) bool {
-	fprintInfo := &model.FprintInfo{
+	whiteAsset := &model.WhiteAsset{
 		DeviceMac: assetId,
 	}
-	modelBase := model_base.ModelBaseImpl(fprintInfo)
+	modelBase := model_base.ModelBaseImpl(whiteAsset)
 
-	_, recordNotFound := modelBase.GetModelByCondition("device_mac = ?", fprintInfo.DeviceMac)
+	_, recordNotFound := modelBase.GetModelByCondition("device_mac = ?", whiteAsset.DeviceMac)
 
 	if recordNotFound {
 		return false

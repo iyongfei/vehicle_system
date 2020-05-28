@@ -43,13 +43,13 @@ func V1Router(r *gin.Engine) {
 		apiV1.PUT("/categorys/:cate_id", api_server.EditCategory)    //todo
 		apiV1.DELETE("/categorys/:cate_id", api_server.DeleCategory) //todo
 		//////////////////////////////////////////////资产白名单接口//////////////////////////////////////////////
-		apiV1.POST("/asset_fprints", api_server.AddAssetAsset)
-		apiV1.POST("/asset_fprints_csvs", api_server.UploadAssetAsset)
-		apiV1.GET("/mac/asset_fprints", api_server.GetAssetFprintMacs) //todo
+		apiV1.POST("/white_assets", api_server.AddWhiteAsset)
+		apiV1.POST("/white_assets_csvs", api_server.UploadWhiteAsset)
+		apiV1.GET("/mac/white_assets", api_server.GetWhiteAssetMacs) //todo
 		//////////////////////////////////////////////指纹信息接口//////////////////////////////////////////////
 		apiV1.GET("/asset_fprints", api_server.GetAssetFprints)                      //todo
 		apiV1.GET("/pagination/asset_fprints", api_server.GetPaginationAssetFprints) //todo
-		//////////////////////////////////////////////指纹库接口//////////////////////////////////////////////
+		//指纹库接口///////////////////////////////////////////////////////////////////////////////////////////
 		apiV1.POST("/finger_prints", api_server.AddFprint)               //todo
 		apiV1.GET("/pagination/finger_prints", api_server.GetFprints)    //todo
 		apiV1.DELETE("/finger_prints/:fprint_id", api_server.DeleFprint) //todo
