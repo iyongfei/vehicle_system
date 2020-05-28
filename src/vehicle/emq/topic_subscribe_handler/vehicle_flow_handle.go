@@ -57,6 +57,9 @@ func HandleVehicleFlow(vehicleResult protobuf.GWResult, vehicleId string) error 
 		assetModelBase := model_base.ModelBaseImpl(asset)
 		_, recordNotFound := assetModelBase.GetModelByCondition("asset_id = ?", asset.AssetId)
 		if recordNotFound {
+			exist := checkoutAssetPrintInfos(asset.AssetId)
+			asset.ProtectStatus = exist
+
 			err := assetModelBase.InsertModel()
 			if err != nil {
 				continue
