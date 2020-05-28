@@ -54,30 +54,6 @@ func GetFlow(c *gin.Context) {
 	c.JSON(http.StatusOK, retObj)
 }
 
-func GetFlows(c *gin.Context) {
-	vehicleId := c.Query("vehicle_id")
-
-	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId)
-	if argsTrimsEmpty {
-		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
-		c.JSON(http.StatusOK, ret)
-		logger.Logger.Error("%s argsTrimsEmpty vehicleId:%s argsTrimsEmpty", util.RunFuncName(), vehicleId)
-		logger.Logger.Print("%s argsTrimsEmpty vehicleId:%s argsTrimsEmpty", util.RunFuncName(), vehicleId)
-		return
-	}
-
-	flows := []*model.Flow{}
-	err := model_base.ModelBaseImpl(&model.Flow{}).
-		GetModelListByCondition(&flows, "vehicle_id = ?", []interface{}{vehicleId}...)
-	if err != nil {
-		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetFlowFailMsg, "")
-		c.JSON(http.StatusOK, ret)
-		return
-	}
-
-	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetFlowSuccessMsg, flows)
-	c.JSON(http.StatusOK, retObj)
-}
 func GetFlowsDps(c *gin.Context) {
 	vehicleId := c.Query("vehicle_id")
 	startTimeP := c.Query("start_time")

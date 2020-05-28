@@ -6,7 +6,7 @@ user_name=aaadd
 password=bbbee
 
 #终端id
-vehicle_id=derXH5DghbCV3UVHFQaCNbmHitQHcTfj
+vehicle_id=754d2728b4e549c5a16c0180fcacb80
 
 #策略接口
 vehicle_ids=gBDvsD4qnAdR9K4cTIZoq7Zr05Ox1udr
@@ -29,7 +29,7 @@ update_fports=128,3
 
 
 #flowid
-flowid=1644395481
+flowid=97172
 
 #category
 cate_name=摄像头e

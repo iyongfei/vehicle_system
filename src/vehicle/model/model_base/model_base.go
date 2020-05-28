@@ -1,5 +1,10 @@
 package model_base
 
+import (
+	"strconv"
+	"time"
+)
+
 type ModelBaseImpl interface {
 	//插入
 	InsertModel() error
@@ -56,13 +61,14 @@ type CreateModelImpl interface {
 //	SoftDeleModelsByCondition(query interface{}, args ...interface{})(error)
 //}
 
-//type UnixTime time.Time
-//
-//func (ut *UnixTime) MarshalJSON() (data []byte, err error) {
-//	t := strconv.FormatInt(time.Time(*ut).Unix(), 10)
-//	data = []byte(t)
-//	return
-//}
+type CreatedAt time.Time
+
+func (ut *CreatedAt) MarshalJSON() (data []byte, err error) {
+	t := strconv.FormatInt(time.Time(*ut).Unix(), 10)
+	data = []byte(t)
+	return
+}
+
 //
 //func (ut *UnixTime) UnmarshalJSON(data []byte) (err error) {
 //	i, err := strconv.ParseInt(string(data), 10, 64)

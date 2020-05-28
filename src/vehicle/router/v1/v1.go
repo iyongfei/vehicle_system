@@ -15,16 +15,14 @@ func V1Router(r *gin.Engine) {
 		//////////////////////////////////////////////监控接口//////////////////////////////////////////////
 		apiV1.GET("/monitors", api_server.GetMonitor) //todo
 		//////////////////////////////////////////////会话策略接口//////////////////////////////////////////////
-		apiV1.POST("/fstrategys", api_server.AddFStrategy)                  //todo
-		apiV1.DELETE("/fstrategys/:fstrategy_id", api_server.DeleFStrategy) //todo
-		apiV1.PUT("/fstrategys/:fstrategy_id", api_server.EditFStrategy)    //todo
-		apiV1.GET("/fstrategys/:fstrategy_id", api_server.GetFStrategy)     //todo
-
-		//apiV1.GET("/ids/fstrategys", api_server.GetAllFstrategys)        //todo
-		apiV1.GET("/active/fstrategys", api_server.GetActiveFstrategy) //todo
-		//apiV1.GET("/partial/fstrategys", api_server.GetPartFstrategyIds)        //todo
+		apiV1.POST("/fstrategys", api_server.AddFStrategy)                                     //todo
+		apiV1.DELETE("/fstrategys/:fstrategy_id", api_server.DeleFStrategy)                    //todo
+		apiV1.PUT("/fstrategys/:fstrategy_id", api_server.EditFStrategy)                       //todo
+		apiV1.GET("/fstrategys/:fstrategy_id", api_server.GetFStrategy)                        //todo
+		apiV1.GET("/active/fstrategys", api_server.GetActiveFstrategy)                         //todo
 		apiV1.GET("/pagination/vehicle/fstrategys", api_server.GetVehiclePaginationFstrategys) //todo
 		apiV1.GET("/pagination/fstrategys", api_server.GetPaginationFstrategys)                //todo
+		//apiV1.GET("/partial/fstrategys", api_server.GetPartFstrategyIds)        //todo
 		//////////////////////////////////////////////会话策略下载上传//////////////////////////////////////////////
 		apiV1.GET("/fstrategy_csvs/:fstrategy_id", api_server.GetFStrategyCsv)  //todo
 		apiV1.POST("/fstrategy_csvs", api_server.UploadFStrategyCsv)            //todo
@@ -36,21 +34,21 @@ func V1Router(r *gin.Engine) {
 		apiV1.GET("/tflow_dps", api_server.GetTFlowsDps)              //todo
 		apiV1.GET("/tflows", api_server.GetTFlows)                    //todo
 		apiV1.GET("/flow_dps", api_server.GetFlowsDps)                //todo
-		//apiV1.DELETE("/flows/:flow_id", api_server.DeleFlow)
+		apiV1.DELETE("/flows/:flow_id", api_server.DeleFlow)
 		//apiV1.POST("/flows", api_server.AddFlow)
 		//apiV1.PUT("/flows/:flow_id", api_server.EditFlow)
-		//apiV1.GET("/flows", api_server.GetFlows)
 		//////////////////////////////////////////////指纹库标签//////////////////////////////////////////////
 		apiV1.POST("/categorys", api_server.AddCategory)             //todo
 		apiV1.GET("/all/categorys", api_server.GetCategorys)         //todo
 		apiV1.PUT("/categorys/:cate_id", api_server.EditCategory)    //todo
 		apiV1.DELETE("/categorys/:cate_id", api_server.DeleCategory) //todo
-		//////////////////////////////////////////////指纹信息接口//////////////////////////////////////////////
-		apiV1.GET("/mac/asset_fprints", api_server.GetAssetFprintMacs) //todo
+		//////////////////////////////////////////////资产白名单接口//////////////////////////////////////////////
 		apiV1.POST("/asset_fprints", api_server.AddAssetAsset)
 		apiV1.POST("/asset_fprints_csvs", api_server.UploadAssetAsset)
-		apiV1.GET("/pagination/asset_fprints", api_server.GetPaginationAssetFprints) //todo
+		apiV1.GET("/mac/asset_fprints", api_server.GetAssetFprintMacs) //todo
+		//////////////////////////////////////////////指纹信息接口//////////////////////////////////////////////
 		apiV1.GET("/asset_fprints", api_server.GetAssetFprints)                      //todo
+		apiV1.GET("/pagination/asset_fprints", api_server.GetPaginationAssetFprints) //todo
 		//////////////////////////////////////////////指纹库接口//////////////////////////////////////////////
 		apiV1.POST("/finger_prints", api_server.AddFprint)               //todo
 		apiV1.GET("/pagination/finger_prints", api_server.GetFprints)    //todo

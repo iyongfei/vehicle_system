@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"time"
 	"vehicle_system/src/vehicle/conf"
@@ -47,7 +46,7 @@ var encodedString = base64UrlEncode(header) + '.' + base64UrlEncode(payload);
 var signature = HMACSHA256(encodedString, 'secret');
 */
 var (
-	ExpiresAt = time.Now().Add(10000 * time.Hour).Unix()
+	ExpiresAt = time.Now().Add(20000 * time.Hour).Unix()
 
 	//token过期
 	TokenExpired = errors.New(response.TokenExpiredStr)
@@ -66,7 +65,6 @@ var (
 )
 
 func init() {
-	fmt.Println(ExpiresAt, "sjlfslfjslfsjfkls", time.Now().Unix())
 	Jwt = newJWT()
 }
 

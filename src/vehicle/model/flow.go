@@ -11,6 +11,7 @@ import (
 
 type Flow struct {
 	gorm.Model
+	//CreatedAt Model.CreatedAt
 
 	FlowId       uint32
 	VehicleId    string

@@ -20,8 +20,8 @@ var urls = map[string]string{
 }
 
 func main() {
-	//getFlow()
-	getPaginationFlows()
+	getFlow()
+	//getPaginationFlows()
 	//getflowsDps()
 
 	//unused
@@ -49,6 +49,23 @@ func init() {
 	page_size = apiConfigMap["page_size"]
 	page_index = apiConfigMap["page_index"]
 	fmt.Println(page_index, page_size, reflect.TypeOf(page_size))
+}
+
+func getFlow() {
+	token := tool.GetVehicleToken()
+
+	queryParams := map[string]interface{}{
+		"vehicle_id": flowvehicleId,
+	}
+
+	reqUrl := urls["get_flow"]
+	fmt.Println(reqUrl, flowip, flowId)
+	reqUrl = fmt.Sprintf(reqUrl, flowip, flowId)
+
+	resp, _ := tool.Get(reqUrl, queryParams, token)
+
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
 }
 
 func getflowsDps() {
@@ -115,21 +132,6 @@ func getPaginationFlows() {
 
 	reqUrl := urls["pagination"]
 	reqUrl = fmt.Sprintf(reqUrl, flowip)
-
-	resp, _ := tool.Get(reqUrl, queryParams, token)
-
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
-}
-func getFlow() {
-	token := tool.GetVehicleToken()
-
-	queryParams := map[string]interface{}{
-		"vehicle_id": flowvehicleId,
-	}
-
-	reqUrl := urls["get_flow"]
-	reqUrl = fmt.Sprintf(reqUrl, flowip, flowId)
 
 	resp, _ := tool.Get(reqUrl, queryParams, token)
 
