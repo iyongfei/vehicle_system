@@ -78,11 +78,11 @@ func HandleVehicleAsset(vehicleResult protobuf.GWResult, vehicleId string) error
 		} else {
 			//更新
 			attrs := map[string]interface{}{
-				"vehicle_id":       asset.VehicleId,
-				"asset_id":         asset.AssetId,
-				"ip":               asset.IP,
-				"mac":              asset.Mac,
-				"name":             asset.Name,
+				"vehicle_id": asset.VehicleId,
+				"asset_id":   asset.AssetId,
+				"ip":         asset.IP,
+				"mac":        asset.Mac,
+				//"name":             asset.Name,
 				"trade_mark":       asset.TradeMark,
 				"online_status":    asset.OnlineStatus,
 				"last_online":      asset.LastOnline,
