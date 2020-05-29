@@ -33,9 +33,9 @@ func main() {
 	//getAsset()
 	//addAsset()
 	//deleAsset()
-	//editAsset()
+	editAsset()
 
-	editVehicleAssetInfo()
+	//editVehicleAssetInfo()
 }
 
 func editVehicleAssetInfo() {

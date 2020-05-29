@@ -233,4 +233,4 @@ alter table 表名称 change 字段原名称 字段新名称 字段类型 [是�
 alter table  旧名 rename 新名;
 
 
-ALTER TABLE vehicle_infos add access_net tinyint(1) UNSIGNED NULL DEFAULT NULL;
+ALTER TABLE assets add access_net tinyint(1) UNSIGNED NULL DEFAULT NULL;

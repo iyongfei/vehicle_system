@@ -1,4 +1,4 @@
-server_ip = localhost
+server_ip = 192.168.40.234
 
 
 #注册
@@ -6,7 +6,7 @@ user_name=a
 password=a
 
 #终端id
-vehicle_id=754d2728b4e549c5a16c0180fcacb80
+vehicle_id=159402abf69f44fc926daa757cae90dc
 
 #修改名字
 vehicle_new_name=sjdlfksf
@@ -64,4 +64,4 @@ end_time=1590344036
 
 #资产
 white_asset_ids=sdf,232,3fgg,44g
-asset_id=nn6pxlWd
+asset_id=8C861E8D7EAF
