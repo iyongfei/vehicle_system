@@ -69,7 +69,7 @@ func HandleVehicleAsset(vehicleResult protobuf.GWResult, vehicleId string) error
 		if recordNotFound {
 			//检索白名单列表
 			exist := checkoutAssetPrintInfos(asset.AssetId)
-			asset.ProtectStatus = exist
+			asset.AccessNet = exist
 
 			err := modelBase.InsertModel()
 			if err != nil {

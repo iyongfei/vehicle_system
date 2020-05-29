@@ -27,5 +27,6 @@ func GetVehicleToken() string {
 		token = ret["token"].(string)
 		return token
 	}
+
 	return token
 }

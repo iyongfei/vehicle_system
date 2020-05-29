@@ -42,6 +42,12 @@ func getConnectParams() string {
 	return fmt.Sprintf("%s:%s@tcp(127.0.0.1:%d)/%s?charset=utf8&parseTime=True&loc=Local",
 		mysqlUser, mysqlPwd, mysqlPort, mysqlDbname)
 }
+
+//GormDb.Exec("truncate table area_groups;")
+func Exec(sql string) {
+	GetMysqlInstance().Exec(sql)
+}
+
 func QueryPluckWhere(model interface{}, column string, result interface{}, query interface{}, args ...interface{}) error {
 	err := GetMysqlInstance().Model(model).Where(query, args...).Pluck(column, result).Error
 	return err

@@ -2,11 +2,11 @@ server_ip = localhost
 
 
 #注册
-user_name=aaadd
-password=bbbee
+user_name=a
+password=a
 
 #终端id
-vehicle_id=754d2728b4e549c5a16c0180fcacb80
+vehicle_id=754d2728b4e549c5a16c0180fcacb800
 
 #策略接口
 vehicle_ids=gBDvsD4qnAdR9K4cTIZoq7Zr05Ox1udr
@@ -19,7 +19,7 @@ fips=192.168.2.43,192.168.41.12
 fports=123,3
 
 #获取会话策略接口
-get_flow_fstrategy_id=7J2joSj2jALiF37wStgqoZbwRMgWhBs2
+get_flow_fstrategy_id=UO0mIFLaZ7sbiE5bfK40k9BE3UfszTwm
 
 
 #修改会话策略接口

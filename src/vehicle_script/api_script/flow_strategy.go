@@ -34,12 +34,12 @@ func main() {
 	//addFStrategy()
 	//getFStrategy()
 	//deleFStrategy()
-	//editFStrategy()
+	editFStrategy()
 	//getRecentFStrategy()
 	//getAllFStrategys()
 	//getPartialFStrategys()
 	//getPaginationVehicleFstrategys()
-	getPaginationFstrategys()
+	//getPaginationFstrategys()
 	//unused
 	//getFStrategys()
 	//getStrategyVehicle()
@@ -47,6 +47,29 @@ func main() {
 	//getStrategyVehicleLearningResults()
 }
 
+func editFStrategy() {
+	configs := getConfig()
+	update_flow_vehicle_id := configs["vehicle_id"]
+	update_flow_strategy_id := configs["get_flow_fstrategy_id"]
+	fip := configs["server_ip"]
+	//update_fips := configs["update_fips"]
+	//update_fports := configs["update_fports"]
+
+	token := tool.GetVehicleToken()
+	fmt.Println("token::::::", token)
+	urlReq := fmt.Sprintf(fstrategyUrls["edit_fstrategy"], fip) + update_flow_strategy_id
+
+	//diports := creatFastrategyIpPortData(update_fips, update_fports)
+	queryParams := map[string]interface{}{
+		"vehicle_id": update_flow_vehicle_id,
+		"dip_ports":  "{}",
+	}
+
+	resp, _ := tool.PutForm(urlReq, queryParams, token)
+
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+}
 func getPaginationFstrategys() {
 	token := tool.GetVehicleToken()
 	configs := getConfig()
@@ -156,29 +179,6 @@ func getFStrategy() {
 	}
 	reqUrl := fmt.Sprintf(fstrategyUrls["get_fstrategy"], fip) + get_flow_fstrategy_id
 	resp, _ := tool.Get(reqUrl, queryParams, token)
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
-}
-
-func editFStrategy() {
-	configs := getConfig()
-	update_flow_vehicle_id := configs["vehicle_id"]
-	update_flow_strategy_id := configs["get_flow_fstrategy_id"]
-	fip := configs["server_ip"]
-	update_fips := configs["update_fips"]
-	update_fports := configs["update_fports"]
-
-	token := tool.GetVehicleToken()
-	urlReq := fmt.Sprintf(fstrategyUrls["edit_fstrategy"], fip) + update_flow_strategy_id
-
-	diports := creatFastrategyIpPortData(update_fips, update_fports)
-	queryParams := map[string]interface{}{
-		"vehicle_id": update_flow_vehicle_id,
-		"dip_ports":  diports,
-	}
-
-	resp, _ := tool.PutForm(urlReq, queryParams, token)
-
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))
 }
