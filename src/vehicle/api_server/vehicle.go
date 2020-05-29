@@ -19,6 +19,67 @@ import (
 	"vehicle_system/src/vehicle/util"
 )
 
+func EditVehicleInfo(c *gin.Context) {
+
+	vehicleId := c.Param("vehicle_id")
+	name := c.PostForm("name")
+
+	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId, name)
+	if argsTrimsEmpty {
+		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+		c.JSON(http.StatusOK, ret)
+		logger.Logger.Error("%s argsTrimsEmpty", util.RunFuncName())
+		logger.Logger.Print("%s argsTrimsEmpty", util.RunFuncName())
+	}
+
+	//查询是否存在
+	vehicleInfo := &model.VehicleInfo{
+		VehicleId: vehicleId,
+	}
+	modelBase := model_base.ModelBaseImpl(vehicleInfo)
+
+	err, recordNotFound := modelBase.GetModelByCondition("vehicle_id = ?", []interface{}{vehicleInfo.VehicleId}...)
+
+	if err != nil {
+		logger.Logger.Error("%s vehicle_id:%s,err:%s", util.RunFuncName(), vehicleId, err)
+		logger.Logger.Print("%s vehicle_id:%s,err:%s", util.RunFuncName(), vehicleId, err)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetVehicleFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	if recordNotFound {
+		logger.Logger.Error("%s vehicle_id:%s,recordNotFound", util.RunFuncName(), vehicleId)
+		logger.Logger.Print("%s vehicle_id:%s,recordNotFound", util.RunFuncName(), vehicleId)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetVehicleUnExistMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	//更新名字
+
+	//编辑
+	attrs := map[string]interface{}{
+		"name": name,
+	}
+	if err := modelBase.UpdateModelsByCondition(attrs, "vehicle_id = ?",
+		[]interface{}{vehicleInfo.VehicleId}...); err != nil {
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqUpdateVehicleFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	_, _ = modelBase.GetModelByCondition("vehicle_id = ?", []interface{}{vehicleInfo.VehicleId}...)
+
+	responseData := map[string]interface{}{
+		"vehicle": vehicleInfo,
+	}
+
+	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetVehicleSuccessMsg, responseData)
+	c.JSON(http.StatusOK, retObj)
+
+}
+
 func EditVehicle(c *gin.Context) {
 	vehicleId := c.Param("vehicle_id")
 	setTypeP := c.PostForm("type")

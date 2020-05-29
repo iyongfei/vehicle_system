@@ -14,26 +14,45 @@ var vehicleUrls = map[string]string{
 
 	"post_vehicles": "http://localhost:7001/api/v1/vehicles",
 
-	"edit_vehicles": "http://%s:7001/api/v1/vehicles/%s",
-	"dele_vehicles": "http://localhost:7001/api/v1/vehicles/WDHIAeGImCklIqrzQ2fBfojPL0kg4D7d",
+	"edit_vehicles":     "http://%s:7001/api/v1/vehicles/%s",
+	"edit_vehicle_name": "http://%s:7001/api/v1/vehicles/%s/vehicle_info",
+	"dele_vehicles":     "http://localhost:7001/api/v1/vehicles/WDHIAeGImCklIqrzQ2fBfojPL0kg4D7d",
 }
 
 var ip string
 var vehicleId string
+var vehicleName string
 
 func init() {
 	apiConfigMap := tool.InitConfig("api_conf.txt")
 	ip = apiConfigMap["server_ip"]
 	vehicleId = apiConfigMap["vehicle_id"]
+	vehicleName = apiConfigMap["vehicle_new_name"]
 }
 
 func main() {
+	editVehicleInfo()
 	//getVehicle()
 	//editVehicles()
-	getVehicles()
+	//getVehicles()
 	//unused
 	//addVehicle()
 	//deleVehicles()
+}
+
+func editVehicleInfo() {
+	token := tool.GetVehicleToken()
+	urlReq, _ := vehicleUrls["edit_vehicle_name"]
+
+	urlReq = fmt.Sprintf(urlReq, ip, vehicleId)
+
+	bodyParams := map[string]interface{}{
+		"name": vehicleName,
+	}
+	resp, _ := tool.PutForm(urlReq, bodyParams, token)
+
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
 }
 
 /**

@@ -6,7 +6,11 @@ user_name=a
 password=a
 
 #终端id
-vehicle_id=754d2728b4e549c5a16c0180fcacb800
+vehicle_id=754d2728b4e549c5a16c0180fcacb80
+
+#修改名字
+vehicle_new_name=sjdlfksf
+asset_new_name=sjdddddddddlfksf
 
 #策略接口
 vehicle_ids=gBDvsD4qnAdR9K4cTIZoq7Zr05Ox1udr
@@ -60,4 +64,4 @@ end_time=1590344036
 
 #资产
 white_asset_ids=sdf,232,3fgg,44g
-asset_id=rQC53N9M
+asset_id=nn6pxlWd

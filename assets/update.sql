@@ -21,7 +21,7 @@ begin
         execute stmt;
     END IF;
 end;
-call AddColumnUnlessExists('vehicle', 'managers', 'have_login', 'tinyint(1) default 0');
+call AddColumnUnlessExists('vehicle', 'assets', 'access_net', 'tinyint(1) UNSIGNED NULL DEFAULT NULL');
 //
 
 

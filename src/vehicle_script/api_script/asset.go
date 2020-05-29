@@ -13,8 +13,9 @@ var assetUrls = map[string]string{
 	"get_asset":         "http://%s:7001/api/v1/assets/%s",
 	"post_assets":       "http://localhost:7001/api/v1/assets",
 
-	"edit_assets": "http://%s:7001/api/v1/assets/%s",
-	"dele_assets": "http://localhost:7001/api/v1/assets/ypBH0VIQ",
+	"edit_assets":             "http://%s:7001/api/v1/assets/%s",
+	"dele_assets":             "http://localhost:7001/api/v1/assets/ypBH0VIQ",
+	"edit_vehicle_asset_name": "http://%s:7001/api/v1/assets/%s/asset_info",
 }
 
 var config map[string]string
@@ -27,12 +28,33 @@ func init() {
 }
 
 func main() {
-	getAssetsimple()
+	//getAssetsimple()
 	//getAssets()
 	//getAsset()
 	//addAsset()
 	//deleAsset()
 	//editAsset()
+
+	editVehicleAssetInfo()
+}
+
+func editVehicleAssetInfo() {
+	fip := config["server_ip"]
+	assetId := config["asset_id"]
+	token := tool.GetVehicleToken()
+	urlReq := fmt.Sprintf(assetUrls["edit_vehicle_asset_name"], fip, assetId)
+
+	vehicle_id := config["vehicle_id"]
+	asset_new_name := config["asset_new_name"]
+
+	bodyParams := map[string]interface{}{
+		"vehicle_id": vehicle_id,
+		"name":       asset_new_name,
+	}
+	resp, _ := tool.PutForm(urlReq, bodyParams, token)
+
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
 }
 
 func editAsset() {

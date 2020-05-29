@@ -16,6 +16,69 @@ import (
 	"vehicle_system/src/vehicle/util"
 )
 
+func EditAssetInfo(c *gin.Context) {
+	assetId := c.Param("asset_id")
+	vehicleId := c.PostForm("vehicle_id")
+	name := c.PostForm("name")
+
+	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId, assetId, name)
+	if argsTrimsEmpty {
+		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+		c.JSON(http.StatusOK, ret)
+		logger.Logger.Error("%s argsTrimsEmpty", util.RunFuncName())
+		logger.Logger.Print("%s argsTrimsEmpty", util.RunFuncName())
+	}
+
+	//查询是否存在
+	assetInfo := &model.Asset{
+		VehicleId: vehicleId,
+		AssetId:   assetId,
+	}
+	modelBase := model_base.ModelBaseImpl(assetInfo)
+
+	err, recordNotFound := modelBase.GetModelByCondition("vehicle_id = ? and asset_id = ?",
+		[]interface{}{assetInfo.VehicleId, assetInfo.AssetId}...)
+
+	if err != nil {
+		logger.Logger.Error("%s vehicle_id:%s,err:%s", util.RunFuncName(), vehicleId, err)
+		logger.Logger.Print("%s vehicle_id:%s,err:%s", util.RunFuncName(), vehicleId, err)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetAssetFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	if recordNotFound {
+		logger.Logger.Error("%s vehicle_id:%s,recordNotFound", util.RunFuncName(), vehicleId)
+		logger.Logger.Print("%s vehicle_id:%s,recordNotFound", util.RunFuncName(), vehicleId)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetAssetUnExistMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	//更新名字
+
+	//编辑
+	attrs := map[string]interface{}{
+		"name": name,
+	}
+	if err := modelBase.UpdateModelsByCondition(attrs, "vehicle_id = ? and asset_id = ?",
+		[]interface{}{assetInfo.VehicleId, assetInfo.AssetId}...); err != nil {
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqUpdateAssetFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	_, _ = modelBase.GetModelByCondition("vehicle_id = ? and asset_id = ?",
+		[]interface{}{assetInfo.VehicleId, assetInfo.AssetId}...)
+
+	responseData := map[string]interface{}{
+		"asset": assetInfo,
+	}
+
+	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetAssetSuccessMsg, responseData)
+	c.JSON(http.StatusOK, retObj)
+
+}
 func EditAsset(c *gin.Context) {
 	assetId := c.Param("asset_id")
 	setTypeP := c.PostForm("type")
