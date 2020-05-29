@@ -91,7 +91,7 @@ func EditAsset(c *gin.Context) {
 	case int(protobuf.DeviceSetParam_PROTECT):
 
 		attrs := map[string]interface{}{
-			"protect_status": setSwitch,
+			"access_net": setSwitch,
 		}
 		if err := assetInfo.UpdateModelsByCondition(attrs, "asset_id = ?",
 			[]interface{}{assetInfo.AssetId}...); err != nil {

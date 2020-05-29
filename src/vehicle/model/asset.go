@@ -29,6 +29,7 @@ type Asset struct {
 
 	AssetGroup  string
 	AssetLeader string
+	accessNet   bool
 }
 
 //序列化为数字类型

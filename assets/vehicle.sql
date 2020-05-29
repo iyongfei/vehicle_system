@@ -257,6 +257,7 @@ CREATE TABLE IF NOT EXISTS `assets` (
   `internet_switch` tinyint(1) NULL DEFAULT NULL,
   `protect_status` tinyint(1) NULL DEFAULT NULL,
   `lan_visit_switch` tinyint(1) NULL DEFAULT NULL,
+  `access_net` tinyint(1) UNSIGNED NULL DEFAULT NULL,
 
   `asset_group` varchar(255) NULL DEFAULT NULL,
   `asset_leader` varchar(255) NULL DEFAULT NULL,
@@ -392,9 +393,7 @@ CREATE TABLE IF NOT EXISTS `strategy_groups`  (
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 
--- ----------------------------
--- Table structure for FlowStrategy
--- ----------------------------
+
 
 
 CREATE TABLE IF NOT EXISTS `fstrategy_items`  (
@@ -631,7 +630,6 @@ CREATE TABLE IF NOT EXISTS `vhalo_nets`  (
 
 
 
--- 应用层协议
 CREATE TABLE IF NOT EXISTS `alayer_protos`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -645,7 +643,6 @@ CREATE TABLE IF NOT EXISTS `alayer_protos`  (
   INDEX `idx_alayer_protos_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
---  设备分类
 CREATE TABLE IF NOT EXISTS `categories`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -659,7 +656,6 @@ CREATE TABLE IF NOT EXISTS `categories`  (
   INDEX `idx_categories_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
---  设备指纹
 CREATE TABLE IF NOT EXISTS `finger_prints`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -697,7 +693,6 @@ CREATE TABLE IF NOT EXISTS `fprint_infos`  (
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 
--- 资产白名单
 CREATE TABLE IF NOT EXISTS `white_assets`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `created_at` timestamp NULL DEFAULT NULL,

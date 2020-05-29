@@ -92,7 +92,7 @@ func AddWhiteAsset(c *gin.Context) {
 	assetModelBase := model_base.ModelBaseImpl(assetModel)
 
 	attrs := map[string]interface{}{
-		"protect_status": assetModel.ProtectStatus,
+		"access_net": assetModel.ProtectStatus,
 	}
 	if err := assetModelBase.UpdateModelsByCondition(attrs, "asset_id in (?)", insertWhiteAssetIds); err != nil {
 
@@ -217,7 +217,7 @@ func UploadWhiteAsset(c *gin.Context) {
 	assetModelBase := model_base.ModelBaseImpl(assetModel)
 
 	attrs := map[string]interface{}{
-		"protect_status": assetModel.ProtectStatus,
+		"access_net": assetModel.ProtectStatus,
 	}
 	if err := assetModelBase.UpdateModelsByCondition(attrs, "asset_id in (?)", insertFprintIds); err != nil {
 
