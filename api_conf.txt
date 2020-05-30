@@ -1,4 +1,4 @@
-server_ip = 192.168.40.234
+server_ip = 192.168.1.123
 
 
 #注册
@@ -6,7 +6,7 @@ user_name=a
 password=a
 
 #终端id
-vehicle_id=159402abf69f44fc926daa757cae90dc
+vehicle_id=47aa3baa36d94269b9d32ed9bcf8a2f4
 
 #修改名字
 vehicle_new_name=sjdlfksf
@@ -19,7 +19,7 @@ handle_mode=2
 
 
 #增加会话策略接口
-fips=192.168.2.43,192.168.41.12
+fips=192.168.2.48
 fports=123,3
 
 #获取会话策略接口
@@ -33,7 +33,7 @@ update_fports=128,3
 
 
 #flowid
-flowid=97172
+flowid=32321
 
 #category
 cate_name=摄像头e

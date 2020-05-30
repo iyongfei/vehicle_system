@@ -39,7 +39,7 @@ func HandleVehicleFlowStrategy(vehicleResult protobuf.GWResult, vehicleId string
 		attrs := map[string]interface{}{
 			"type":        flowStrategyInfo.Type,
 			"handle_mode": flowStrategyInfo.HandleMode,
-			"enable":      flowStrategyInfo.Enable,
+			//"enable":      flowStrategyInfo.Enable,
 		}
 		if err := modelBase.UpdateModelsByCondition(attrs, "fstrategy_id = ?", flowStrategyInfo.FstrategyId); err != nil {
 			return fmt.Errorf("%s update vehicle flow strategy err:%s", util.RunFuncName(), err.Error())

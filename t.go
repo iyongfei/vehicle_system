@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/binary"
-	"encoding/json"
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"strconv"
@@ -68,6 +67,10 @@ type a struct {
 	CreatedAt CreatedAt
 	Name      string
 }
+
+type F func(int)
+
+var aaa F
 
 func main() {
 
