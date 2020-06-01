@@ -16,7 +16,7 @@ func Setup() {
 
 	go cron.Start()
 
-	cron.AddFuncSpace(int64(time.Second*5), time.Now().UnixNano()+int64(TASK_EXPIRED), licenseCron)
+	cron.AddFuncSpace(int64(TASK_SPACING_LICENSE), time.Now().UnixNano()+int64(TASK_EXPIRED), licenseCron)
 
 	//添加指定执行次数任务，并指定每次间隔时间
 	//cron.AddFuncSpaceNumber(int64(time.Second*1), 10, func() {
