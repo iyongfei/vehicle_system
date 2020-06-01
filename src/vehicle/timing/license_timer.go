@@ -8,5 +8,4 @@ import (
 func licenseCron() {
 	logger.Logger.Print("%s license", util.RunFuncName())
 	logger.Logger.Info("%s license", util.RunFuncName())
-
 }

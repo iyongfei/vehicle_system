@@ -118,6 +118,8 @@ func (this *VLogger) FormatWriteLogMsg(level int, logMsg string) {
 	defer this.m_mu.Unlock()
 	now := time.Now()
 
+	_ = this.obtainLofFile()
+
 	if now.Unix() > this.m_nexDay.Unix() /**|| int(fileSize) > this.m_MaxLogDataNum*/ {
 		err := this.obtainLofFile()
 		if err != nil {
