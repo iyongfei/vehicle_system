@@ -12,7 +12,7 @@ var fStrategyCsvUrls = map[string]string{
 	"csv_url":                 "http://localhost:7001/fstrategy_csv/3832kYyxG3uD9DhF9VDvV5HwLLyhrAkG.csv",
 	"get_fstrategy_csv":       "http://localhost:7001/api/v1/fstrategy_csvs/HFiYobVy2dqYiVcGpcsrk6GVRxUdqpuy",
 	"post_strategy_csv":       "http://localhost:7001/api/v1/fstrategy_csvs",
-	"edit_strategy_csv":       "http://localhost:7001/api/v1/fstrategy_csvs/RaZ8yLTOjDqybBrsQ7Tf5i3ZOJQhKfK9",
+	"edit_strategy_csv":       "http://localhost:7001/api/v1/fstrategy_csvs/sTgjyl99ZWDXd8NctszvU6nsmhkJeE7E",
 	"post_asset_fprints_csvs": "http://%s:7001/api/v1/asset_fprints_csvs",
 	//////////////////////////////////////////////
 	"get_strategys": "http://localhost:7001/api/v1/strategys",
@@ -31,12 +31,30 @@ func main() {
 	//getFstrategyCsv()
 	//getFstrategyCsvTemp()
 	//uploadFstrategyCsv()
-	//editFstrategyCsv()
+	editFstrategyCsv()
 
 	//上传资产白名单
-	uploadAssetPrintCsv()
+	//uploadAssetPrintCsv()
 }
 
+func editFstrategyCsv() {
+	token := tool.GetVehicleToken()
+	url := fStrategyCsvUrls["edit_strategy_csv"]
+
+	nameField := "upload_csv"
+	fileName := "upload_csver"
+
+	mapArgs := map[string]string{
+		"vehicle_id": "754d2728b4e549c5a16c0180fcacb800",
+	}
+
+	file, _ := os.Open("/Users/mac/go/vehicle_system/safly.csv")
+
+	resp, _ := tool.UploadEditFile(url, token, mapArgs, nameField, fileName, file)
+
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+}
 func uploadAssetPrintCsv() {
 	configer := getConfiger()
 	ip := configer["server_id"]
@@ -49,24 +67,6 @@ func uploadAssetPrintCsv() {
 	file, _ := os.Open("/Users/mac/go/vehicle_system/whte_asset_print.csv")
 
 	resp, _ := tool.UploadFile(reqUrl, token, mapArgs, nameField, fileName, file)
-
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
-}
-
-func editFstrategyCsv() {
-	url := fStrategyCsvUrls["edit_strategy_csv"]
-
-	nameField := "upload_csv"
-	fileName := "upload_csver"
-
-	mapArgs := map[string]string{
-		"vehicle_id": "754d2728b4e549c5a16c0180fcacb800",
-	}
-
-	file, _ := os.Open("/Users/mac/go/vehicle_system/safly.csv")
-
-	resp, _ := tool.UploadEditFile(url, mapArgs, nameField, fileName, file)
 
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))

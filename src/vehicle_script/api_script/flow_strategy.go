@@ -31,10 +31,10 @@ func getConfig() map[string]string {
 }
 
 func main() {
-	addFStrategy()
-	//getFStrategy()
+	//addFStrategy()
+	editFStrategy()
 	//deleFStrategy()
-	//editFStrategy()
+	//getFStrategy()
 	//getRecentFStrategy()
 	//getAllFStrategys()
 	//getPartialFStrategys()
@@ -45,6 +45,29 @@ func main() {
 	//getStrategyVehicle()
 	//getVehicleLearningResults()
 	//getStrategyVehicleLearningResults()
+}
+
+func getPaginationVehicleFstrategys() {
+	token := tool.GetVehicleToken()
+	configs := getConfig()
+	fip := configs["server_ip"]
+	vehicle_id := configs["vehicle_id"]
+	page_index := configs["page_index"]
+	page_size := configs["page_size"]
+	//start_time := configs["start_time"]
+	//end_time := configs["end_time"]
+
+	queryParams := map[string]interface{}{
+		"vehicle_id": vehicle_id,
+		"page_index": page_index,
+		"page_size":  page_size,
+		//"start_time": start_time,
+		//"end_time":   end_time,
+	}
+	reqUrl := fmt.Sprintf(fstrategyUrls["get_pagination_vehicle_fstrategs"], fip)
+	resp, _ := tool.Get(reqUrl, queryParams, token)
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
 }
 
 func addFStrategy() {
@@ -62,6 +85,7 @@ func addFStrategy() {
 	queryParams := map[string]interface{}{
 		"vehicle_id": flow_vehicle_id,
 		"dip_ports":  diports,
+		"name":       "策略名称1",
 	}
 	fmt.Println("req::::::", reqUrl, diports)
 
@@ -75,17 +99,18 @@ func editFStrategy() {
 	update_flow_vehicle_id := configs["vehicle_id"]
 	update_flow_strategy_id := configs["get_flow_fstrategy_id"]
 	fip := configs["server_ip"]
-	//update_fips := configs["update_fips"]
-	//update_fports := configs["update_fports"]
+	update_fips := configs["update_fips"]
+	update_fports := configs["update_fports"]
 
 	token := tool.GetVehicleToken()
 	fmt.Println("token::::::", token)
 	urlReq := fmt.Sprintf(fstrategyUrls["edit_fstrategy"], fip) + update_flow_strategy_id
 
-	//diports := creatFastrategyIpPortData(update_fips, update_fports)
+	diports := creatFastrategyIpPortData(update_fips, update_fports)
 	queryParams := map[string]interface{}{
 		"vehicle_id": update_flow_vehicle_id,
-		"dip_ports":  "{}",
+		"dip_ports":  diports,
+		"name":       "new新名字",
 	}
 
 	resp, _ := tool.PutForm(urlReq, queryParams, token)
@@ -103,29 +128,6 @@ func getPaginationFstrategys() {
 	//end_time := configs["end_time"]
 
 	queryParams := map[string]interface{}{
-		"page_index": page_index,
-		"page_size":  page_size,
-		//"start_time": start_time,
-		//"end_time":   end_time,
-	}
-	reqUrl := fmt.Sprintf(fstrategyUrls["get_pagination_fstrategs"], fip)
-	resp, _ := tool.Get(reqUrl, queryParams, token)
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
-}
-
-func getPaginationVehicleFstrategys() {
-	token := tool.GetVehicleToken()
-	configs := getConfig()
-	fip := configs["server_ip"]
-	vehicle_id := configs["vehicle_id"]
-	page_index := configs["page_index"]
-	page_size := configs["page_size"]
-	//start_time := configs["start_time"]
-	//end_time := configs["end_time"]
-
-	queryParams := map[string]interface{}{
-		"vehicle_id": vehicle_id,
 		"page_index": page_index,
 		"page_size":  page_size,
 		//"start_time": start_time,

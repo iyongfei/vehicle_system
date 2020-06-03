@@ -1,4 +1,4 @@
-server_ip = 192.168.1.123
+server_ip = localhost
 
 
 #注册
@@ -6,7 +6,7 @@ user_name=a
 password=a
 
 #终端id
-vehicle_id=47aa3baa36d94269b9d32ed9bcf8a2f4
+vehicle_id=754d2728b4e549c5a16c0180fcacb800
 
 #修改名字
 vehicle_new_name=sjdlfksf
@@ -19,11 +19,11 @@ handle_mode=2
 
 
 #增加会话策略接口
-fips=192.168.2.48
+fips=192.168.2.49
 fports=123,3
 
 #获取会话策略接口
-get_flow_fstrategy_id=UO0mIFLaZ7sbiE5bfK40k9BE3UfszTwm
+get_flow_fstrategy_id=sTgjyl99ZWDXd8NctszvU6nsmhkJeE7E
 
 
 #修改会话策略接口
