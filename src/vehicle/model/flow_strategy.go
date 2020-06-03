@@ -262,21 +262,15 @@ func (flowStrategyItem *FstrategyItem) CreateModel(strategyParams ...interface{}
 	return flowStrategyItem
 }
 
-/**
-SELECT strategies.*,strategy_vehicles.vehicle_id ,strategy_vehicle_learning_results.learning_result_id FROM strategies
-inner JOIN strategy_vehicles ON strategies.strategy_id = strategy_vehicles.strategy_id
-inner JOIN strategy_vehicle_learning_results ON strategy_vehicles.vehicle_id = strategy_vehicle_learning_results.vehicle_id
-*/
-
 type FlowStrategyVehicleItemJoin struct {
 	gorm.Model
 	FstrategyId string
-
-	Type       uint8 //策略模式
-	HandleMode uint8 //处理方式
-	Enable     bool  //策略启用状态
-	CsvPath    string
-	VehicleId  string
+	Name        string
+	Type        uint8 //策略模式
+	HandleMode  uint8 //处理方式
+	Enable      bool  //策略启用状态
+	CsvPath     string
+	VehicleId   string
 
 	FstrategyVehicleId string `json:"omitempty"`
 	FstrategyItemId    string `json:"omitempty"`

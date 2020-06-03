@@ -1471,7 +1471,6 @@ func GetVehiclePaginationFstrategys(c *gin.Context) {
 						vehicleFStrategyItemsMap[dip] = append(vehicleFStrategyItemsMap[dip], dPort)
 					}
 				} else {
-
 					vehicleFStrategyItemsMap[dip] = []uint32{dPort}
 				}
 
@@ -1479,7 +1478,8 @@ func GetVehiclePaginationFstrategys(c *gin.Context) {
 
 		}
 		vehicleSingleFlowStrategyItemsReult := model.VehicleSingleFlowStrategyItemsReult{
-			FstrategyId:              vehicleFStrategy.FstrategyId,
+			FstrategyId: vehicleFStrategy.FstrategyId,
+
 			Type:                     vehicleFStrategy.Type,
 			HandleMode:               vehicleFStrategy.HandleMode,
 			Enable:                   vehicleFStrategy.Enable,
@@ -1559,7 +1559,39 @@ func GetActiveFstrategy(c *gin.Context) {
 	logger.Logger.Print("%s dipPortMap:%+v", util.RunFuncName(), dipPortMap)
 	logger.Logger.Info("%s dipPortMap:%+v", util.RunFuncName(), dipPortMap)
 
+	//查询终端id是否存在
+	fstrategy := &model.Fstrategy{
+		FstrategyId: recentFStrategy.FstrategyId,
+	}
+
+	fstrategyModelBase := model_base.ModelBaseImpl(fstrategy)
+
+	err, fRecordNotFound := fstrategyModelBase.GetModelByCondition("fstrategy_id = ?", []interface{}{fstrategy.FstrategyId}...)
+
+	if err != nil {
+		logger.Logger.Error("%s vehicle_id:%s,err:%s", util.RunFuncName(), vehicleId, err)
+		logger.Logger.Print("%s vehicle_id:%s,err:%s", util.RunFuncName(), vehicleId, err)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetFStrategyFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	if fRecordNotFound {
+		logger.Logger.Error("%s vehicle_id:%s,recordNotFound", util.RunFuncName(), vehicleId)
+		logger.Logger.Print("%s vehicle_id:%s,recordNotFound", util.RunFuncName(), vehicleId)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetFStrtegyUnExistMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	gormModel := model.Model{
+		fstrategy.ID, fstrategy.CreatedAt.Unix(),
+		fstrategy.UpdatedAt, fstrategy.DeletedAt,
+	}
+
 	vehicleSingleFlowStrategyItemsReult := model.VehicleSingleFlowStrategyItemsReult{
+		Model:                    gormModel,
+		Name:                     fstrategy.Name,
 		FstrategyId:              recentFStrategy.FstrategyId,
 		Type:                     uint8(recentFStrategy.Type),
 		HandleMode:               uint8(recentFStrategy.HandleMode),

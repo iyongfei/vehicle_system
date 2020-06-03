@@ -15,11 +15,12 @@ func V1Router(r *gin.Engine) {
 		//////////////////////////////////////////////监控接口//////////////////////////////////////////////
 		apiV1.GET("/monitors", api_server.GetMonitor) //todo
 		//////////////////////////////////////////////会话策略接口//////////////////////////////////////////////
-		apiV1.POST("/fstrategys", api_server.AddFStrategy)                                     //todo
-		apiV1.DELETE("/fstrategys/:fstrategy_id", api_server.DeleFStrategy)                    //todo
-		apiV1.PUT("/fstrategys/:fstrategy_id", api_server.EditFStrategy)                       //todo
-		apiV1.GET("/fstrategys/:fstrategy_id", api_server.GetFStrategy)                        //todo
-		apiV1.GET("/active/fstrategys", api_server.GetActiveFstrategy)                         //todo
+		apiV1.POST("/fstrategys", api_server.AddFStrategy)                  //todo
+		apiV1.DELETE("/fstrategys/:fstrategy_id", api_server.DeleFStrategy) //todo
+		apiV1.PUT("/fstrategys/:fstrategy_id", api_server.EditFStrategy)    //todo
+		apiV1.GET("/fstrategys/:fstrategy_id", api_server.GetFStrategy)     //todo
+		apiV1.GET("/active/fstrategys", api_server.GetActiveFstrategy)      //todo
+
 		apiV1.GET("/pagination/vehicle/fstrategys", api_server.GetVehiclePaginationFstrategys) //todo
 		apiV1.GET("/pagination/fstrategys", api_server.GetPaginationFstrategys)                //todo
 		//apiV1.GET("/partial/fstrategys", api_server.GetPartFstrategyIds)        //todo
