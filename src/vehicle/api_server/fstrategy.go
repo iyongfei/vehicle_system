@@ -1438,7 +1438,7 @@ func GetVehiclePaginationFstrategys(c *gin.Context) {
 		return
 	}
 
-	//获取fstrategyVehicleIds
+	//获取终端所有的fstrategyVehicleIds
 	var fstrategyVehicleIds []string
 	for _, fstrategyVehicle := range vehicleFStrategys {
 
@@ -1477,8 +1477,15 @@ func GetVehiclePaginationFstrategys(c *gin.Context) {
 			}
 
 		}
+		gormModel := model.Model{
+			vehicleFStrategy.ID, vehicleFStrategy.CreatedAt.Unix(),
+			vehicleFStrategy.UpdatedAt, vehicleFStrategy.DeletedAt,
+		}
+
 		vehicleSingleFlowStrategyItemsReult := model.VehicleSingleFlowStrategyItemsReult{
+			Model:       gormModel,
 			FstrategyId: vehicleFStrategy.FstrategyId,
+			Name:        vehicleFStrategy.Name,
 
 			Type:                     vehicleFStrategy.Type,
 			HandleMode:               vehicleFStrategy.HandleMode,
