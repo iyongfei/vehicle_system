@@ -239,8 +239,8 @@ const (
 	ReqDeleFStrategyFailMsg    = "会话策略信息删除失败"
 	ReqDeleFStrategySuccessMsg = "会话策略信息删除成功"
 	//
-	//ReqUpdateStrategyFailMsg    = "策略信息更新失败"
-	//ReqUpdateStrategySuccessMsg = "策略信息更新成功"
+	ReqUpdateFStrategyFailMsg    = "会话策略信息更新失败"
+	ReqUpdateFStrategySuccessMsg = "会话策略信息更新成功"
 	//
 	//
 	//
