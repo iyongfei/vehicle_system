@@ -197,6 +197,7 @@ func EditFStrategy(c *gin.Context) {
 	vehicleSingleFlowStrategyItemsReult := model.VehicleSingleFlowStrategyItemsReult{
 		Model:       gormModel,
 		FstrategyId: vehicleFStrategy.FstrategyId,
+		Name:        fstrategyName,
 		Type:        vehicleFStrategy.Type,
 		HandleMode:  vehicleFStrategy.HandleMode,
 		Enable:      vehicleFStrategy.Enable,
