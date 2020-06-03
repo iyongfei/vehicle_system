@@ -180,7 +180,7 @@ func EditFStrategy(c *gin.Context) {
 	topic_publish_handler.GetPublishService().PutMsg2PublicChan(fstrategyCmd)
 
 	gormModel := model.Model{
-		vehicleFStrategy.ID, vehicleFStrategy.CreatedAt,
+		vehicleFStrategy.ID, vehicleFStrategy.CreatedAt.Unix(),
 		vehicleFStrategy.UpdatedAt, vehicleFStrategy.DeletedAt,
 	}
 
@@ -245,6 +245,239 @@ func GetFStrategys(c *gin.Context) {
 }
 
 func AddFStrategy(c *gin.Context) {
+	vehicleId := c.PostForm("vehicle_id")
+	fstrategyName := c.PostForm("name")
+	diports := c.PostForm("dip_ports")
+
+	//默认白名单
+	//sType := c.PostForm("type")
+	//默认告警
+	//handleMode := c.PostForm("handle_mode")
+	//此版本不实现
+	//sTypeValid := util.IsEleExistInSlice(sType, []interface{}{
+	//	strconv.Itoa(int(protobuf.FlowStrategyAddParam_FLWOTYPEDEFAULT)),
+	//	strconv.Itoa(int(protobuf.FlowStrategyAddParam_FLWOWHITEMODE)),
+	//	strconv.Itoa(int(protobuf.FlowStrategyAddParam_FLWOBLACKMODE))})
+	//
+	//handleModeValid := util.IsEleExistInSlice(handleMode, []interface{}{
+	//	strconv.Itoa(int(protobuf.FlowStrategyAddParam_MODEDEFAULT)),
+	//	strconv.Itoa(int(protobuf.FlowStrategyAddParam_PREVENTWARNING)),
+	//	strconv.Itoa(int(protobuf.FlowStrategyAddParam_WARNING))})
+
+	logger.Logger.Print("%s vehicle_ids:%s,diports:%v", util.RunFuncName(), vehicleId, diports)
+	logger.Logger.Info("%s vehicle_ids:%s,diports:%v", util.RunFuncName(), vehicleId, diports)
+
+	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId, diports)
+
+	diportsMap := map[string][]uint32{}
+	err := json.Unmarshal([]byte(diports), &diportsMap)
+	if argsTrimsEmpty || err != nil {
+		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+		c.JSON(http.StatusOK, ret)
+
+		logger.Logger.Print("%s vehicle_ids:%s,diports:%v", util.RunFuncName(), vehicleId, diports)
+		logger.Logger.Error("%s vehicle_ids:%s,diports:%v", util.RunFuncName(), vehicleId, diports)
+		return
+	}
+	logger.Logger.Info("%s vehicleId:%s,diports:%s", util.RunFuncName(), vehicleId, diports)
+	logger.Logger.Print("%s vehicleId:%s,diports:%s", util.RunFuncName(), vehicleId, diports)
+	//找出合法的vehicle
+	vehicleInfo := &model.VehicleInfo{
+		VehicleId: vehicleId,
+	}
+	vehicleInfoModelBase := model_base.ModelBaseImpl(vehicleInfo)
+
+	err, recordNotFound := vehicleInfoModelBase.GetModelByCondition("vehicle_id = ?", []interface{}{vehicleInfo.VehicleId}...)
+	if err != nil || recordNotFound {
+		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+		c.JSON(http.StatusOK, ret)
+
+		logger.Logger.Print("%s vehicle_id:%s recordNotFound", util.RunFuncName(), vehicleId)
+		logger.Logger.Error("%s vehicle_id:%s recordNotFound", util.RunFuncName(), vehicleId)
+		return
+	}
+
+	finalDiportsMap := map[string][]uint32{}
+	for dip, ports := range diportsMap {
+		destIpValid := util.IpFormat(dip)
+		if destIpValid {
+			for _, port := range ports {
+				portStr := strconv.Itoa(int(port))
+				if util.VerifyIpPort(portStr) {
+					finalDiportsMap[dip] = append(finalDiportsMap[dip], port)
+				}
+			}
+		}
+	}
+
+	////////////////////////////////////事务开始////////////////////////////////////////////////
+	var txFail bool
+
+	vgorm, err := mysql.GetMysqlInstance().GetMysqlDB()
+	tx := vgorm.Begin()
+
+	//fstrategy_items table
+	fstrategyItems := map[string][]string{}
+	var vehicleFstrategyItems []string
+
+	for dip, ports := range finalDiportsMap {
+		for _, dport := range ports {
+			fstrategyItem := &model.FstrategyItem{
+				FstrategyItemId: util.RandomString(32),
+				DstIp:           dip,
+				DstPort:         dport,
+			}
+
+			fstrategyItemrecordNotFound := tx.Where("dst_ip = ? and dst_port = ?",
+				[]interface{}{fstrategyItem.DstIp, fstrategyItem.DstPort}...).First(fstrategyItem).RecordNotFound()
+
+			if fstrategyItemrecordNotFound {
+				if err := tx.Create(fstrategyItem).Error; err != nil {
+					logger.Logger.Print("%s create fstrategy_item err:%+v", util.RunFuncName(), err)
+					logger.Logger.Error("%s create fstrategy_item err:%+v", util.RunFuncName(), err)
+
+					txFail = true
+					tx.Rollback()
+
+					retObj := response.StructResponseObj(response.VStatusOK, response.ReqAddFStrategyFailMsg, "")
+					c.JSON(http.StatusOK, retObj)
+					return
+				}
+			}
+
+			if !util.IsExistInSlice(fstrategyItem.FstrategyItemId, vehicleFstrategyItems) {
+				vehicleFstrategyItems = append(vehicleFstrategyItems, fstrategyItem.FstrategyItemId)
+			}
+		}
+	}
+	fstrategyItems[vehicleId] = vehicleFstrategyItems
+
+	logger.Logger.Print("%s vehicle_id:%s fstrategyItems:%+v", util.RunFuncName(), vehicleId, fstrategyItems)
+	logger.Logger.Info("%s vehicle_id:%s fstrategyItems:%+v", util.RunFuncName(), vehicleId, fstrategyItems)
+
+	//fstrategy table
+	fstrategy := &model.Fstrategy{
+		FstrategyId: util.RandomString(32),
+		Name:        fstrategyName,
+		Type:        uint8(protobuf.FlowStrategyAddParam_FLWOWHITEMODE),
+		HandleMode:  uint8(protobuf.FlowStrategyAddParam_WARNING),
+		Enable:      true,
+	}
+
+	if err := tx.Create(fstrategy).Error; err != nil {
+		logger.Logger.Print("%s create fstrategy err:%+v", util.RunFuncName(), err)
+		logger.Logger.Error("%s create fstrategy err:%+v", util.RunFuncName(), err)
+
+		txFail = true
+		tx.Rollback()
+		retObj := response.StructResponseObj(response.VStatusOK, response.ReqAddFStrategyFailMsg, "")
+		c.JSON(http.StatusOK, retObj)
+		return
+	}
+	//FstrategyVehicle table
+	fstrategyVehicle := &model.FstrategyVehicle{
+		FstrategyVehicleId: util.RandomString(32),
+		FstrategyId:        fstrategy.FstrategyId,
+		VehicleId:          vehicleId,
+	}
+
+	if err := tx.Create(fstrategyVehicle).Error; err != nil {
+
+		logger.Logger.Print("%s create fstrategyVehicle err:%+v", util.RunFuncName(), err)
+		logger.Logger.Error("%s create fstrategyVehicle err:%+v", util.RunFuncName(), err)
+		txFail = true
+		tx.Rollback()
+		retObj := response.StructResponseObj(response.VStatusOK, response.ReqAddFStrategyFailMsg, "")
+		c.JSON(http.StatusOK, retObj)
+		return
+	}
+
+	//FstrategyVehicleItem
+	vehicleFsItems := fstrategyItems[vehicleId]
+	for _, item := range vehicleFsItems {
+		fstrategyVehicleItem := &model.FstrategyVehicleItem{
+			FstrategyVehicleId: fstrategyVehicle.FstrategyVehicleId,
+			FstrategyItemId:    item,
+		}
+		if err := tx.Create(fstrategyVehicleItem).Error; err != nil {
+			txFail = true
+			tx.Rollback()
+			retObj := response.StructResponseObj(response.VStatusOK, response.ReqAddFStrategyFailMsg, "")
+			c.JSON(http.StatusOK, retObj)
+			return
+		}
+	}
+	//插入csv
+	csvModel := csv.NewCsvWriter(fstrategy.FstrategyId, csv.FileAppend)
+	fCsvHeader := csv.CreateCsvFstrategyHeader()
+	fCsvBody := csv.CreateCsvFstrategyBody(vehicleId, fstrategy.FstrategyId, finalDiportsMap)
+	csvModel.SetCsvWritData(fCsvHeader, fCsvBody)
+
+	attrs := map[string]interface{}{
+		"csv_path": csvModel.CsvFilePath,
+	}
+
+	if err := tx.Model(&model.Fstrategy{}).Where("fstrategy_id = ?", fstrategy.FstrategyId).Updates(attrs).Error; err != nil {
+
+		logger.Logger.Print("%s update fstrategy csv err:%+v", util.RunFuncName(), err)
+		logger.Logger.Error("%s update fstrategy csv err:%+v", util.RunFuncName(), err)
+
+		txFail = true
+		tx.Rollback()
+		retObj := response.StructResponseObj(response.VStatusOK, response.ReqAddFStrategyFailMsg, "")
+		c.JSON(http.StatusOK, retObj)
+		return
+	} else {
+		fstrategy.CsvPath = csvModel.CsvFilePath
+	}
+
+	tx.Commit()
+	////////////////////////////////////事务结束////////////////////////////////////////////////
+	if txFail {
+		retObj := response.StructResponseObj(response.VStatusOK, response.ReqAddFStrategyFailMsg, "")
+		c.JSON(http.StatusOK, retObj)
+		return
+	}
+
+	//下发策略
+	fstrategyCmd := &emq_cmd.FStrategySetCmd{
+		VehicleId: vehicleId,
+		TaskType:  int(protobuf.Command_FLOWSTRATEGY_ADD),
+
+		FstrategyId: fstrategy.FstrategyId,
+		Type:        int(protobuf.FlowStrategyAddParam_FLWOWHITEMODE),
+		HandleMode:  int(protobuf.FlowStrategyAddParam_WARNING),
+		Enable:      true,
+		GroupId:     "", //目前不实现
+	}
+	topic_publish_handler.GetPublishService().PutMsg2PublicChan(fstrategyCmd)
+
+	gormModel := model.Model{
+		fstrategy.ID, fstrategy.CreatedAt.Unix(),
+		fstrategy.UpdatedAt, fstrategy.DeletedAt,
+	}
+
+	vehicleSingleFlowStrategyItemsReult := model.VehicleSingleFlowStrategyItemsReult{
+		Model:                    gormModel,
+		FstrategyId:              fstrategy.FstrategyId,
+		Name:                     fstrategy.Name,
+		Type:                     fstrategy.Type,
+		HandleMode:               fstrategy.HandleMode,
+		Enable:                   fstrategy.Enable,
+		CsvPath:                  fstrategy.CsvPath,
+		VehicleId:                vehicleInfo.VehicleId,
+		VehicleFStrategyItemsMap: finalDiportsMap,
+	}
+
+	responseData := map[string]interface{}{
+		"fstrategy": vehicleSingleFlowStrategyItemsReult,
+	}
+
+	retObj := response.StructResponseObj(response.VStatusOK, response.ReqAddFStrategySuccessMsg, responseData)
+	c.JSON(http.StatusOK, retObj)
+}
+
+func AddFStrategyDiscard(c *gin.Context) {
 	vehicleId := c.PostForm("vehicle_id")
 	diports := c.PostForm("dip_ports")
 
@@ -418,7 +651,7 @@ func AddFStrategy(c *gin.Context) {
 	topic_publish_handler.GetPublishService().PutMsg2PublicChan(fstrategyCmd)
 
 	gormModel := model.Model{
-		fstrategy.ID, fstrategy.CreatedAt,
+		fstrategy.ID, fstrategy.CreatedAt.Unix(),
 		fstrategy.UpdatedAt, fstrategy.DeletedAt,
 	}
 
@@ -582,101 +815,6 @@ func DeleFStrategy(c *gin.Context) {
 	}
 
 	retObj := response.StructResponseObj(response.VStatusOK, response.ReqDeleFStrategySuccessMsg, "")
-	c.JSON(http.StatusOK, retObj)
-}
-
-/****************************************StrategyVehicle********************************************************/
-//
-//func GetStrategyVehicle(c *gin.Context) {
-//	strategyId := c.Param("strategy_id")
-//	argsTrimsEmpty := util.RrgsTrimsEmpty(strategyId)
-//	if argsTrimsEmpty {
-//		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
-//		c.JSON(http.StatusOK, ret)
-//		logger.Logger.Error("%s argsTrimsEmpty strategy_id:%s", util.RunFuncName(), strategyId)
-//		logger.Logger.Print("%s argsTrimsEmpty strategy_id:%s", util.RunFuncName(), strategyId)
-//	}
-//	strategyVehicleInfo := &model.StrategyVehicle{
-//		StrategyId: strategyId,
-//	}
-//
-//	modelBase := model_base.ModelBaseImpl(strategyVehicleInfo)
-//
-//	strategyVehicleInfos := []*model.StrategyVehicle{}
-//	err:=modelBase.GetModelListByCondition(&strategyVehicleInfos,"strategy_id = ?",[]interface{}{strategyVehicleInfo.StrategyId}...)
-//
-//	if err != nil {
-//		logger.Logger.Error("%s strategy_id:%s,err:%s", util.RunFuncName(), strategyId, err)
-//		logger.Logger.Print("%s strategy_id:%s,err:%s", util.RunFuncName(), strategyId, err)
-//		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetStrategyVehicleListFailMsg, "")
-//		c.JSON(http.StatusOK, ret)
-//		return
-//	}
-//
-//	responseData := map[string]interface{}{
-//		"strategy_vehicles": strategyVehicleInfos,
-//	}
-//
-//	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetStrategyVehicleListSuccessMsg, responseData)
-//	c.JSON(http.StatusOK, retObj)
-//}
-//
-//
-//
-///****************************************StrategyVehicleResult********************************************************/
-//
-//func GetVehicleLearningResults(c *gin.Context) {
-//	strategyVehicleId := c.Param("strategy_vehicle_id")
-//	argsTrimsEmpty := util.RrgsTrimsEmpty(strategyVehicleId)
-//	if argsTrimsEmpty {
-//		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
-//		c.JSON(http.StatusOK, ret)
-//		logger.Logger.Error("%s argsTrimsEmpty strategy_id:%s", util.RunFuncName(), strategyVehicleId)
-//		logger.Logger.Print("%s argsTrimsEmpty strategy_id:%s", util.RunFuncName(), strategyVehicleId)
-//	}
-//	vehicleLearnResultInfo := &model.StrategyVehicleLearningResult{
-//		StrategyVehicleId:strategyVehicleId,
-//	}
-//
-//	modelBase := model_base.ModelBaseImpl(vehicleLearnResultInfo)
-//
-//	strategyVehicleLearnResultInfos := []*model.StrategyVehicleLearningResult{}
-//	err:=modelBase.GetModelListByCondition(&strategyVehicleLearnResultInfos,"strategy_vehicle_id = ?",[]interface{}{vehicleLearnResultInfo.StrategyVehicleId}...)
-//
-//	if err != nil {
-//		logger.Logger.Error("%s vehicle_id:%s,err:%s", util.RunFuncName(), vehicleLearnResultInfo.StrategyVehicleId, err)
-//		logger.Logger.Print("%s vehicle_id:%s,err:%s", util.RunFuncName(), vehicleLearnResultInfo.StrategyVehicleId, err)
-//		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetStrategyVehicleResultListFailMsg, "")
-//		c.JSON(http.StatusOK, ret)
-//		return
-//	}
-//
-//	responseData := map[string]interface{}{
-//		"vehicle_results": strategyVehicleLearnResultInfos,
-//	}
-//
-//	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetStrategyVehicleResultListSuccessMsg, responseData)
-//	c.JSON(http.StatusOK, retObj)
-//}
-//
-
-func GetVehicleFStrategyItem(c *gin.Context) {
-	strategyId := c.Param("strategy_id")
-	argsTrimsEmpty := util.RrgsTrimsEmpty(strategyId)
-	if argsTrimsEmpty {
-		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
-		c.JSON(http.StatusOK, ret)
-		logger.Logger.Error("%s argsTrimsEmpty strategy_id:%s", util.RunFuncName(), strategyId)
-		logger.Logger.Print("%s argsTrimsEmpty strategy_id:%s", util.RunFuncName(), strategyId)
-	}
-
-	results, _ := model.GetStrategyVehicleLearningResults("strategy_vehicles.strategy_id = ?", []interface{}{strategyId}...)
-
-	responseData := map[string]interface{}{
-		"strategy_vehicle_results": results,
-	}
-
-	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetStrategyVehicleResultListSuccessMsg, responseData)
 	c.JSON(http.StatusOK, retObj)
 }
 
@@ -1157,7 +1295,7 @@ func GetFStrategy(c *gin.Context) {
 	}
 
 	gormModel := model.Model{
-		vehicleFStrategy.ID, vehicleFStrategy.CreatedAt,
+		vehicleFStrategy.ID, vehicleFStrategy.CreatedAt.Unix(),
 		vehicleFStrategy.UpdatedAt, vehicleFStrategy.DeletedAt,
 	}
 

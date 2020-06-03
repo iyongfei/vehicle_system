@@ -14,6 +14,7 @@ import (
 type Fstrategy struct {
 	gorm.Model
 	FstrategyId string
+	Name        string
 	CsvPath     string
 	Type        uint8 //策略模式
 	HandleMode  uint8 //处理方式
@@ -425,7 +426,7 @@ func GetVehicleFStrategyItems(query string, args ...interface{}) ([]*VehicleSing
 
 type Model struct {
 	ID        uint `gorm:"primary_key"`
-	CreatedAt time.Time
+	CreatedAt int64
 	UpdatedAt time.Time
 	DeletedAt *time.Time `sql:"index"`
 }
@@ -433,13 +434,12 @@ type Model struct {
 type VehicleSingleFlowStrategyItemsReult struct {
 	Model
 	FstrategyId string
+	Name        string
 	Type        uint8 //策略模式
 	HandleMode  uint8 //处理方式
 	Enable      bool  //策略启用状态
 	CsvPath     string
 
-	//Fstrategy
-	/////////////////////
 	VehicleId                string
 	VehicleFStrategyItemsMap map[string][]uint32
 }
