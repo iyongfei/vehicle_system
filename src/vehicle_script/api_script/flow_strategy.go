@@ -110,7 +110,7 @@ func editFStrategy() {
 	queryParams := map[string]interface{}{
 		"vehicle_id": update_flow_vehicle_id,
 		"dip_ports":  diports,
-		"name":       "new新名字",
+		"name":       "new新名werwerwwerwe字",
 	}
 
 	resp, _ := tool.PutForm(urlReq, queryParams, token)

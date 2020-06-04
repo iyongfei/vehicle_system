@@ -3,6 +3,7 @@ package api_server
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
@@ -89,14 +90,41 @@ func DeleCategory(c *gin.Context) {
 		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
 		c.JSON(http.StatusOK, ret)
 
-		logger.Logger.Print("%s cateId:%s,cateName%s", util.RunFuncName(), cateId)
-		logger.Logger.Error("%s cateId:%s,cateName%s", util.RunFuncName(), cateId)
+		logger.Logger.Print("%s cateId:%s", util.RunFuncName(), cateId)
+		logger.Logger.Error("%s cateId:%s", util.RunFuncName(), cateId)
 		return
 	}
 
 	logger.Logger.Print("%s cateId:%s,cateName%s", util.RunFuncName(), cateId)
 	logger.Logger.Error("%s cateId:%s,cateName%s", util.RunFuncName(), cateId)
 
+	vgorm, err := mysql.GetMysqlInstance().GetMysqlDB()
+
+	if err != nil {
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqDeleCategoryFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+	tx := vgorm.Begin()
+
+	//dele 删除FstrategyVehicleItem表
+	category := &model.Category{}
+
+	if err := tx.Debug().Unscoped().Where("cate_id = ?", cateId).Delete(category).Error; err != nil {
+		tx.Rollback()
+		logger.Logger.Error("%s dele category id:%s, err:%s", util.RunFuncName(), cateId, err)
+		logger.Logger.Print("%s dele category id:%s, err:%s", util.RunFuncName(), cateId, err)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqDeleCategoryFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	tx.Commit()
+
+	logger.Logger.Print("%s cateId:%s", util.RunFuncName(), cateId)
+	logger.Logger.Info("%s cateId:%s", util.RunFuncName(), cateId)
+	ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqDeleCategorySuccessMsg, "")
+	c.JSON(http.StatusOK, ret)
 }
 
 /**

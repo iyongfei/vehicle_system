@@ -255,9 +255,10 @@ func GetPaginationFlows(c *gin.Context) {
 		fpageIndex = defaultPageIndex
 	}
 	//默认2天前
-	defaultStartTime := util.GetFewDayAgo(2) //2
+	//defaultStartTime := util.GetFewDayAgo(2) //2
 	if startTime == 0 {
-		fStartTime = defaultStartTime
+		fStartTime = util.StampUnix2Time(int64(0))
+		//fStartTime = defaultStartTime
 	} else {
 		fStartTime = util.StampUnix2Time(int64(startTime))
 	}

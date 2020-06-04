@@ -10,10 +10,10 @@ var categoryUrls = map[string]string{
 	"post_cate": "http://%s:7001/api/v1/categorys",
 	"get_cates": "http://%s:7001/api/v1/all/categorys",
 	"edit_cate": "http://%s:7001/api/v1/categorys/%s",
+	"dele_cate": "http://localhost:7001/api/v1/categorys/1c8lCXFY0M2PbKX4bygV6tCJ0wrv4nwt",
+
 	///
 	"get_assets": "http://localhost:7001/api/v1/assets",
-
-	"dele_assets": "http://localhost:7001/api/v1/assets/ypBH0VIQ",
 }
 
 func getCateConfig() map[string]string {
@@ -22,13 +22,25 @@ func getCateConfig() map[string]string {
 
 func main() {
 	//addCategory()
-	getCategorys()
+	//getCategorys()
 	//editCategory()
 	//getAssets()
 	//getCategory()
 
-	//deleAsset()
+	deleCate()
 
+}
+func deleCate() {
+	token := tool.GetVehicleToken()
+	fmt.Println("token:::::::::::", token)
+	queryParams := map[string]interface{}{}
+
+	reqUrl := categoryUrls["dele_cate"]
+
+	resp, _ := tool.Delete(reqUrl, queryParams, token)
+
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
 }
 
 /**
@@ -102,17 +114,3 @@ func addCategory() {
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))
 }
-
-//func deleAsset() {
-//	token := tool.GetVehicleToken()
-//
-//	queryParams := map[string]interface{}{}
-//
-//	reqUrl := assetUrls["dele_assets"]
-//
-//	resp, _ := tool.Delete(reqUrl, queryParams, token)
-//
-//	respMarshal, _ := json.Marshal(resp)
-//	fmt.Printf("resp %+v", string(respMarshal))
-//}
-//

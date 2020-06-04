@@ -269,6 +269,9 @@ const (
 
 	ReqCategoryListFailMsg    = "获取指纹类别列表失败"
 	ReqCategoryListSuccessMsg = "获取指纹类别列表成功"
+
+	ReqDeleCategoryFailMsg    = "删除指纹类别失败"
+	ReqDeleCategorySuccessMsg = "删除指纹类别成功"
 )
 
 //assetprint

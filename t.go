@@ -73,7 +73,9 @@ type F func(int)
 var aaa F
 
 func main() {
+	fStartTime := util.StampUnix2Time(int64(0))
 
+	fmt.Println(fStartTime)
 	return
 
 	fmt.Println(time.Now().Unix())
