@@ -22,13 +22,13 @@ func AddCategory(c *gin.Context) {
 		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
 		c.JSON(http.StatusOK, ret)
 
-		logger.Logger.Print("%s fprint_name:%s", util.RunFuncName(), cateName)
-		logger.Logger.Error("%s fprint_name:%s", util.RunFuncName(), cateName)
+		logger.Logger.Print("%s category_name:%s", util.RunFuncName(), cateName)
+		logger.Logger.Error("%s category_name:%s", util.RunFuncName(), cateName)
 		return
 	}
 
-	logger.Logger.Print("%s fprint_name:%s", util.RunFuncName(), cateName)
-	logger.Logger.Info("%s fprint_name:%s", util.RunFuncName(), cateName)
+	logger.Logger.Print("%s category_name:%s", util.RunFuncName(), cateName)
+	logger.Logger.Info("%s category_name:%s", util.RunFuncName(), cateName)
 
 	cate := &model.Category{
 		CateId: util.RandomString(32),

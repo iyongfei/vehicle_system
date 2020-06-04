@@ -86,13 +86,13 @@ func AddWhiteAsset(c *gin.Context) {
 
 	//修改资产状态
 	assetModel := &model.Asset{
-		ProtectStatus: true,
+		AccessNet: true,
 	}
 
 	assetModelBase := model_base.ModelBaseImpl(assetModel)
 
 	attrs := map[string]interface{}{
-		"access_net": assetModel.ProtectStatus,
+		"access_net": assetModel.AccessNet,
 	}
 	if err := assetModelBase.UpdateModelsByCondition(attrs, "asset_id in (?)", insertWhiteAssetIds); err != nil {
 
