@@ -35,8 +35,9 @@ func main() {
 
 	//asset_fprints()
 	//添加到标签库
-	addFingerPrints()
-	//getAllFprints()
+	//addFingerPrints()
+	//获取标签库所有信息
+	getAllFprints()
 	//deleFprint()
 
 	//getExamineNetAssetPaginationFprint()
@@ -51,6 +52,28 @@ func main() {
 	//getAssets()
 	//getCategory()
 }
+
+func getAllFprints() {
+	token := tool.GetVehicleToken()
+	configs := getFprintConfig()
+	fip := configs["server_ip"]
+	//vehicle_id := configs["vehicle_id"]
+	//start_time := configs["start_time"]
+	//end_time := configs["end_time"]
+
+	queryParams := map[string]interface{}{
+		//"vehicle_id": vehicle_id,
+		//"page_index": page_index,
+		//"page_size":  page_size,
+		//"start_time": start_time,
+		//"end_time":   end_time,
+	}
+	reqUrl := fmt.Sprintf(fprintUrls["get_all_fprints"], fip)
+	resp, _ := tool.Get(reqUrl, queryParams, token)
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+}
+
 func addFingerPrints() {
 	configs := getFprintConfig()
 	fip := configs["server_ip"]
@@ -141,27 +164,6 @@ func asset_fprints() {
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))
 
-}
-
-func getAllFprints() {
-	token := tool.GetVehicleToken()
-	configs := getFprintConfig()
-	fip := configs["server_ip"]
-	vehicle_id := configs["vehicle_id"]
-	//start_time := configs["start_time"]
-	//end_time := configs["end_time"]
-
-	queryParams := map[string]interface{}{
-		"vehicle_id": vehicle_id,
-		//"page_index": page_index,
-		//"page_size":  page_size,
-		//"start_time": start_time,
-		//"end_time":   end_time,
-	}
-	reqUrl := fmt.Sprintf(fprintUrls["get_all_fprints"], fip)
-	resp, _ := tool.Get(reqUrl, queryParams, token)
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
 }
 func examine_fprint() {
 	configs := getFprintConfig()

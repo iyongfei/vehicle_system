@@ -98,7 +98,7 @@ func AddFprint(c *gin.Context) {
 	//////////////////////////////////////////事务结束////////////////////////////////////////
 
 	responseContent := map[string]interface{}{}
-	responseContent["fprints"] = fingerPrintInsertList
+	responseContent["finger_prints"] = fingerPrintInsertList
 
 	retObj := response.StructResponseObj(response.VStatusOK, response.ReqAddFprintsSuccessMsg, responseContent)
 	c.JSON(http.StatusOK, retObj)
@@ -120,14 +120,14 @@ func GetFprints(c *gin.Context) {
 	logger.Logger.Print("%s request params vehicle_id:%s,page_size:%s,page_index:%s,start_time%s,endtime%s",
 		util.RunFuncName(), vehicleId, pageSizeP, pageIndexP, startTimeP, endTimeP)
 
-	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId)
-	if argsTrimsEmpty {
-		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
-		c.JSON(http.StatusOK, ret)
-		logger.Logger.Error("%s argsTrimsEmpty threatId:%s", util.RunFuncName(), argsTrimsEmpty)
-		logger.Logger.Print("%s argsTrimsEmpty threatId:%s", util.RunFuncName(), argsTrimsEmpty)
-		return
-	}
+	//argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId)
+	//if argsTrimsEmpty {
+	//	ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+	//	c.JSON(http.StatusOK, ret)
+	//	logger.Logger.Error("%s argsTrimsEmpty threatId:%s", util.RunFuncName(), argsTrimsEmpty)
+	//	logger.Logger.Print("%s argsTrimsEmpty threatId:%s", util.RunFuncName(), argsTrimsEmpty)
+	//	return
+	//}
 
 	fpageSize, _ := strconv.Atoi(pageSizeP)
 	fpageIndex, _ := strconv.Atoi(pageIndexP)
@@ -176,17 +176,29 @@ func GetFprints(c *gin.Context) {
 
 	modelBase := model_base.ModelBaseImplPagination(&model.FingerPrint{})
 
+	var query string
+	var args []interface{}
+	vehicleIdTrimsEmpty := util.RrgsTrim(vehicleId)
+	if vehicleIdTrimsEmpty == "" {
+		query = "finger_prints.created_at BETWEEN ? AND ?"
+		args = []interface{}{fStartTime, fEndTime}
+	} else {
+		query = "vehicle_id = ? and finger_prints.created_at BETWEEN ? AND ?"
+		args = []interface{}{vehicleId, fStartTime, fEndTime}
+	}
+
 	err := modelBase.GetModelPaginationByCondition(fpageIndex, fpageSize,
-		&total, &fprints, "finger_prints.created_at desc", "vehicle_id = ? and finger_prints.created_at BETWEEN ? AND ?",
-		[]interface{}{vehicleId, fStartTime, fEndTime}...)
+		&total, &fprints, "finger_prints.created_at desc", query, args...)
 
 	if err != nil {
 		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetFprintsFailMsg, "")
 		c.JSON(http.StatusOK, ret)
 		return
 	}
-	responseContent := map[string]interface{}{}
-	responseContent["fprints"] = fprints
+	responseContent := map[string]interface{}{
+		"finger_prints": fprints,
+		"total_count":   total,
+	}
 
 	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetFprintsSuccessMsg, responseContent)
 	c.JSON(http.StatusOK, retObj)

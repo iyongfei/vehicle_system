@@ -13,7 +13,7 @@ import (
 	"vehicle_system/src/vehicle/util"
 )
 
-func GetPaginationAssetFprints(c *gin.Context) {
+func GetPaginationPrintInfos(c *gin.Context) {
 	vehicleId := c.Query("vehicle_id")
 	pageSizeP := c.Query("page_size")
 	pageIndexP := c.Query("page_index")
@@ -101,8 +101,8 @@ func GetPaginationAssetFprints(c *gin.Context) {
 	}
 
 	responseData := map[string]interface{}{
-		"asset_fprints": vehicleAssetFprints,
-		"total_count":   total,
+		"fprint_infos": vehicleAssetFprints,
+		"total_count":  total,
 	}
 
 	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetAssetFprintsSuccessMsg, responseData)
