@@ -114,69 +114,69 @@ func GetPaginationAssetFprints(c *gin.Context) {
 /*
 获取资产指纹
 */
-const FprintCount = 10
-
-func GetAssetFprints(c *gin.Context) {
-	vehicleId := c.Query("vehicle_id")
-
-	logger.Logger.Info("%s request params vehicle_id:%s", util.RunFuncName(), vehicleId)
-	logger.Logger.Print("%s request params vehicle_id:%s", util.RunFuncName(), vehicleId)
-
-	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId)
-	if argsTrimsEmpty {
-		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
-		c.JSON(http.StatusOK, ret)
-		logger.Logger.Error("%s argsTrimsEmpty threatId:%s", util.RunFuncName(), argsTrimsEmpty)
-		logger.Logger.Print("%s argsTrimsEmpty threatId:%s", util.RunFuncName(), argsTrimsEmpty)
-		return
-	}
-
-	//标签库的个数
-	fprintsMacs := []string{}
-	_ = mysql.QueryPluckByModelWhere(&model.FingerPrint{}, "device_mac", &fprintsMacs,
-		"", []interface{}{}...)
-
-	if len(fprintsMacs) == 0 {
-		fprintsMacs = []string{""}
-	}
-
-	//临时
-	fTemp := []string{}
-	for _, v := range fprintsMacs {
-		if v != "" {
-			fTemp = append(fTemp, v)
-		}
-	}
-	var needInsertFprintCount = FprintCount - len(fTemp)
-
-	vehicleAssetFprints := []*model.FprintInfo{}
-	var err error
-	var total int
-	if needInsertFprintCount > 0 {
-		modelBase := model_base.ModelBaseImplPagination(&model.FprintInfo{})
-
-		var fpageSize = needInsertFprintCount
-		var fpageIndex = 1
-
-		err = modelBase.GetModelPaginationByCondition(fpageIndex, fpageSize,
-			&total, &vehicleAssetFprints, "fprint_infos.created_at asc",
-			"vehicle_id = ? and fprint_infos.device_mac not in (?) and fprint_infos.trade_mark is not null",
-			[]interface{}{vehicleId, fprintsMacs}...)
-	}
-
-	if err != nil {
-		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetAssetFprintsFailMsg, "")
-		c.JSON(http.StatusOK, ret)
-		return
-	}
-
-	responseData := map[string]interface{}{
-		"asset_fprints": vehicleAssetFprints,
-	}
-
-	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetAssetFprintsSuccessMsg, responseData)
-	c.JSON(http.StatusOK, retObj)
-}
+//const FprintCount = 10
+//
+//func GetAssetFprints(c *gin.Context) {
+//	vehicleId := c.Query("vehicle_id")
+//
+//	logger.Logger.Info("%s request params vehicle_id:%s", util.RunFuncName(), vehicleId)
+//	logger.Logger.Print("%s request params vehicle_id:%s", util.RunFuncName(), vehicleId)
+//
+//	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId)
+//	if argsTrimsEmpty {
+//		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+//		c.JSON(http.StatusOK, ret)
+//		logger.Logger.Error("%s argsTrimsEmpty threatId:%s", util.RunFuncName(), argsTrimsEmpty)
+//		logger.Logger.Print("%s argsTrimsEmpty threatId:%s", util.RunFuncName(), argsTrimsEmpty)
+//		return
+//	}
+//
+//	//标签库的个数
+//	fprintsMacs := []string{}
+//	_ = mysql.QueryPluckByModelWhere(&model.FingerPrint{}, "device_mac", &fprintsMacs,
+//		"", []interface{}{}...)
+//
+//	if len(fprintsMacs) == 0 {
+//		fprintsMacs = []string{""}
+//	}
+//
+//	//临时
+//	fTemp := []string{}
+//	for _, v := range fprintsMacs {
+//		if v != "" {
+//			fTemp = append(fTemp, v)
+//		}
+//	}
+//	var needInsertFprintCount = FprintCount - len(fTemp)
+//
+//	vehicleAssetFprints := []*model.FprintInfo{}
+//	var err error
+//	var total int
+//	if needInsertFprintCount > 0 {
+//		modelBase := model_base.ModelBaseImplPagination(&model.FprintInfo{})
+//
+//		var fpageSize = needInsertFprintCount
+//		var fpageIndex = 1
+//
+//		err = modelBase.GetModelPaginationByCondition(fpageIndex, fpageSize,
+//			&total, &vehicleAssetFprints, "fprint_infos.created_at asc",
+//			"vehicle_id = ? and fprint_infos.device_mac not in (?) and fprint_infos.trade_mark is not null",
+//			[]interface{}{vehicleId, fprintsMacs}...)
+//	}
+//
+//	if err != nil {
+//		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetAssetFprintsFailMsg, "")
+//		c.JSON(http.StatusOK, ret)
+//		return
+//	}
+//
+//	responseData := map[string]interface{}{
+//		"asset_fprints": vehicleAssetFprints,
+//	}
+//
+//	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetAssetFprintsSuccessMsg, responseData)
+//	c.JSON(http.StatusOK, retObj)
+//}
 
 /**
 入网审批

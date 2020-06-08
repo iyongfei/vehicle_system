@@ -25,7 +25,6 @@ func AddFprint(c *gin.Context) {
 	if argsTrimsEmpty {
 		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
 		c.JSON(http.StatusOK, ret)
-
 		logger.Logger.Print("%s assetIds:%s,cateId%s", util.RunFuncName(), assetIds, cateId)
 		logger.Logger.Error("%s assetIds:%s,cateId%s", util.RunFuncName(), assetIds, cateId)
 		return
@@ -35,15 +34,37 @@ func AddFprint(c *gin.Context) {
 	logger.Logger.Info("%s assetIds:%s,cateId%s", util.RunFuncName(), assetIds, cateId)
 
 	assetIdSlice := strings.Split(assetIds, ",")
-	//todo
-	//asset_ids没有过滤
+	if len(assetIdSlice) == 0 {
+		assetIdSlice = []string{""}
+	}
+
+	//资产==>终端
+	assetVehicleIdMap := map[string]string{}
+
+	assets := []*model.Asset{}
+	assetModelBase := model_base.ModelBaseImpl(&model.Asset{})
+	err := assetModelBase.GetModelListByCondition(&assets, "asset_id in (?)", []interface{}{assetIdSlice}...)
+	if err != nil {
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqAddFprintsFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+	for _, asset := range assets {
+		assetId := asset.AssetId
+		vehicleId := asset.VehicleId
+		assetVehicleIdMap[assetId] = vehicleId
+	}
+
+	//////////////////////////////////////////事务开始////////////////////////////////////////
+	//vgorm, err := mysql.GetMysqlInstance().GetMysqlDB()
+	//tx := vgorm.Begin()
 
 	var insertFprintIds []string
-	for _, assetId := range assetIdSlice {
+	for assetId, vehicleId := range assetVehicleIdMap {
 		fingerPrint := &model.FingerPrint{
 			FprintId:  util.RandomString(32),
 			CateId:    cateId,
-			VehicleId: "",
+			VehicleId: vehicleId,
 			DeviceMac: assetId,
 		}
 		fingerPrintModelBase := model_base.ModelBaseImpl(fingerPrint)
@@ -62,11 +83,10 @@ func AddFprint(c *gin.Context) {
 		}
 	}
 
-	//更新资产指纹信息
-
+	//获取新添加的信息
 	fingerPrintInsertList := []*model.FingerPrint{}
 	fingerPrintModelBase := model_base.ModelBaseImpl(&model.FingerPrint{})
-	err := fingerPrintModelBase.GetModelListByCondition(&fingerPrintInsertList,
+	err = fingerPrintModelBase.GetModelListByCondition(&fingerPrintInsertList,
 		"device_mac in (?)", []interface{}{insertFprintIds}...)
 
 	if err != nil {
@@ -74,6 +94,9 @@ func AddFprint(c *gin.Context) {
 		c.JSON(http.StatusOK, retObj)
 		return
 	}
+
+	//////////////////////////////////////////事务结束////////////////////////////////////////
+
 	responseContent := map[string]interface{}{}
 	responseContent["fprints"] = fingerPrintInsertList
 

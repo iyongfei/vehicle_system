@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"vehicle_system/src/vehicle/db/mysql"
@@ -16,6 +17,18 @@ type FingerPrint struct {
 	FlowIds     string
 	ProtoRate   string
 	CollectType uint8
+}
+
+//序列化为数字类型
+func (fingerPrint *FingerPrint) MarshalJSON() ([]byte, error) {
+	type tempType FingerPrint
+	return json.Marshal(&struct {
+		CreatedAt int64
+		*tempType
+	}{
+		CreatedAt: fingerPrint.CreatedAt.Unix(),
+		tempType:  (*tempType)(fingerPrint),
+	})
 }
 
 func (fingerPrint *FingerPrint) GetModelPaginationByCondition(pageIndex int, pageSize int, totalCount *int,

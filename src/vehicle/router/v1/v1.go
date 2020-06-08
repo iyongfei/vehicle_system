@@ -45,11 +45,11 @@ func V1Router(r *gin.Engine) {
 		//////////////////////////////////////////////指纹信息接口//////////////////////////////////////////////
 		//apiV1.GET("/asset_fprints", api_server.GetAssetFprints)                      //todo
 		apiV1.GET("/pagination/asset_fprints", api_server.GetPaginationAssetFprints) //todo
-		//指纹库接口///////////////////////////////////////////////////////////////////////////////////////////
+		//添加标签入指纹库///////////////////////////////////////////////////////////////////////////////////////////
 		apiV1.POST("/finger_prints", api_server.AddFprint)               //todo
 		apiV1.GET("/pagination/finger_prints", api_server.GetFprints)    //todo
 		apiV1.DELETE("/finger_prints/:fprint_id", api_server.DeleFprint) //todo
-		apiV1.PUT("/finger_prints/:fprint_id", api_server.EditFprint)    //todo
+		//apiV1.PUT("/finger_prints/:fprint_id", api_server.EditFprint)    //todo
 		//////////////////////////////////////////////入网审批，允许入网//////////////////////////////////////////////
 		apiV1.GET("/pagination/asset_fprints/examines", api_server.GetExamineAssetFprints)        //todo
 		apiV1.POST("/asset_fprints/examines/:asset_fprint_id", api_server.AddExamineAssetFprints) //todo
