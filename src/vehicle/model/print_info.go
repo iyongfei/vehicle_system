@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"vehicle_system/src/vehicle/db/mysql"
@@ -18,6 +19,18 @@ type FprintInfo struct {
 	DstPort      uint32
 	ExamineNet   string
 	AccessNet    bool
+}
+
+//序列化为数字类型
+func (temp *FprintInfo) MarshalJSON() ([]byte, error) {
+	type tempType FprintInfo
+	return json.Marshal(&struct {
+		CreatedAt int64
+		*tempType
+	}{
+		CreatedAt: temp.CreatedAt.Unix(),
+		tempType:  (*tempType)(temp),
+	})
 }
 
 func (fprintDetectInfo *FprintInfo) GetModelPaginationByCondition(pageIndex int, pageSize int, totalCount *int,

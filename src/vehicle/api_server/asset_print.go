@@ -25,14 +25,14 @@ func GetPaginationAssetFprints(c *gin.Context) {
 	logger.Logger.Print("%s request params vehicle_id:%s,page_size:%s,page_index:%s,start_time%s,endtime%s",
 		util.RunFuncName(), vehicleId, pageSizeP, pageIndexP, startTimeP, endTimeP)
 
-	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId)
-	if argsTrimsEmpty {
-		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
-		c.JSON(http.StatusOK, ret)
-		logger.Logger.Error("%s argsTrimsEmpty threatId:%s", util.RunFuncName(), argsTrimsEmpty)
-		logger.Logger.Print("%s argsTrimsEmpty threatId:%s", util.RunFuncName(), argsTrimsEmpty)
-		return
-	}
+	//argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId)
+	//if argsTrimsEmpty {
+	//	ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+	//	c.JSON(http.StatusOK, ret)
+	//	logger.Logger.Error("%s argsTrimsEmpty threatId:%s", util.RunFuncName(), argsTrimsEmpty)
+	//	logger.Logger.Print("%s argsTrimsEmpty threatId:%s", util.RunFuncName(), argsTrimsEmpty)
+	//	return
+	//}
 
 	fpageSize, _ := strconv.Atoi(pageSizeP)
 	fpageIndex, _ := strconv.Atoi(pageIndexP)
@@ -80,9 +80,19 @@ func GetPaginationAssetFprints(c *gin.Context) {
 
 	modelBase := model_base.ModelBaseImplPagination(&model.FprintInfo{})
 
+	var query string
+	var args []interface{}
+	vehicleIdTrimsEmpty := util.RrgsTrim(vehicleId)
+	if vehicleIdTrimsEmpty == "" {
+		query = "fprint_infos.created_at BETWEEN ? AND ?"
+		args = []interface{}{fStartTime, fEndTime}
+	} else {
+		query = "vehicle_id = ? and fprint_infos.created_at BETWEEN ? AND ?"
+		args = []interface{}{vehicleId, fStartTime, fEndTime}
+	}
+
 	err := modelBase.GetModelPaginationByCondition(fpageIndex, fpageSize,
-		&total, &vehicleAssetFprints, "fprint_infos.created_at desc", "vehicle_id = ? and fprint_infos.created_at BETWEEN ? AND ?",
-		[]interface{}{vehicleId, fStartTime, fEndTime}...)
+		&total, &vehicleAssetFprints, "fprint_infos.created_at desc", query, args...)
 
 	if err != nil {
 		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetAssetFprintsFailMsg, "")

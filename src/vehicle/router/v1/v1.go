@@ -14,13 +14,12 @@ func V1Router(r *gin.Engine) {
 		apiV1.GET("/flow_statistics", api_server.FlowStatistics) //todo
 		//////////////////////////////////////////////监控接口//////////////////////////////////////////////
 		apiV1.GET("/monitors", api_server.GetMonitor) //todo
-		//////////////////////////////////////////////会话策略接口//////////////////////////////////////////////
-		apiV1.POST("/fstrategys", api_server.AddFStrategy)                  //todo
-		apiV1.DELETE("/fstrategys/:fstrategy_id", api_server.DeleFStrategy) //todo
-		apiV1.PUT("/fstrategys/:fstrategy_id", api_server.EditFStrategy)    //todo
-		apiV1.GET("/fstrategys/:fstrategy_id", api_server.GetFStrategy)     //todo
-		apiV1.GET("/active/fstrategys", api_server.GetActiveFstrategy)      //todo
-
+		//////////////////////////////////////////////会话策略接口///////////////////////////////////////////////
+		apiV1.POST("/fstrategys", api_server.AddFStrategy)                                     //todo
+		apiV1.DELETE("/fstrategys/:fstrategy_id", api_server.DeleFStrategy)                    //todo
+		apiV1.PUT("/fstrategys/:fstrategy_id", api_server.EditFStrategy)                       //todo
+		apiV1.GET("/fstrategys/:fstrategy_id", api_server.GetFStrategy)                        //todo
+		apiV1.GET("/active/fstrategys", api_server.GetActiveFstrategy)                         //todo
 		apiV1.GET("/pagination/vehicle/fstrategys", api_server.GetVehiclePaginationFstrategys) //todo
 		apiV1.GET("/pagination/fstrategys", api_server.GetPaginationFstrategys)                //todo
 		//apiV1.GET("/partial/fstrategys", api_server.GetPartFstrategyIds)        //todo
@@ -44,7 +43,7 @@ func V1Router(r *gin.Engine) {
 		apiV1.PUT("/categorys/:cate_id", api_server.EditCategory)    //todo
 		apiV1.DELETE("/categorys/:cate_id", api_server.DeleCategory) //todo
 		//////////////////////////////////////////////指纹信息接口//////////////////////////////////////////////
-		apiV1.GET("/asset_fprints", api_server.GetAssetFprints)                      //todo
+		//apiV1.GET("/asset_fprints", api_server.GetAssetFprints)                      //todo
 		apiV1.GET("/pagination/asset_fprints", api_server.GetPaginationAssetFprints) //todo
 		//指纹库接口///////////////////////////////////////////////////////////////////////////////////////////
 		apiV1.POST("/finger_prints", api_server.AddFprint)               //todo
@@ -88,7 +87,6 @@ func V1Router(r *gin.Engine) {
 		//apiV1.POST("/threats", api_server.AddThreat)
 		//apiV1.PUT("/threats/:threat_id", api_server.EditThreat)
 		apiV1.DELETE("/threats/:threat_id", api_server.DeleThreat)
-
 		//////////////////////////////////////////////策略接口//////////////////////////////////////////////
 		//添加策略
 		apiV1.POST("/strategys", api_server.AddStrategy)
@@ -100,10 +98,8 @@ func V1Router(r *gin.Engine) {
 		apiV1.GET("/strategy_vehicles/:strategy_id", api_server.GetStrategyVehicle)
 		apiV1.GET("/vehicle_lresults/:strategy_vehicle_id", api_server.GetVehicleLearningResults)
 		apiV1.GET("/strategy_vehicle_lresults/:strategy_id", api_server.GetStrategyVehicleLearningResults)
-
 		//车载管理信息
 		apiV1.PUT("/deployers/:deployer_id", api_server.EditDeployer)
-
 		//端口映射
 		apiV1.PUT("/port_maps/:port_map_id", api_server.EditPortMap)
 	}

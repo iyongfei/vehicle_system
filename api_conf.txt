@@ -7,7 +7,7 @@ user_name=a
 password=a
 
 #终端id
-vehicle_id=xBFFIEf9buA23WNooV48eevlI3wH1O3r
+vehicle_id=754d2728b4e549c5a16c0180fcacb800
 
 #修改名字
 vehicle_new_name=sjdlfksf

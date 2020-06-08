@@ -32,7 +32,7 @@ func main() {
 	//添加白名单
 	//addAssetPWhiterints()
 	//getAssetWhitePrints()
-	getAssetPaginationFprint() //或者资产指纹信息列表
+
 	//asset_fprints()
 	//addFingerPrints()
 	//getAllFprints()
@@ -41,11 +41,37 @@ func main() {
 	//getExamineNetAssetPaginationFprint()
 	//examine_fprint()
 	//asset_fprints()
+
+	//或者资产指纹信息列表
+	getAssetPaginationFprint()
 	//unused
 	//getCategorys()
 	//editCategory()
 	//getAssets()
 	//getCategory()
+}
+
+func getAssetPaginationFprint() {
+	token := tool.GetVehicleToken()
+	configs := getFprintConfig()
+	fip := configs["server_ip"]
+	//vehicle_id := configs["vehicle_id"]
+	page_index := configs["page_index"]
+	page_size := configs["page_size"]
+	//start_time := configs["start_time"]
+	//end_time := configs["end_time"]
+
+	queryParams := map[string]interface{}{
+		//"vehicle_id": vehicle_id,
+		"page_index": page_index,
+		"page_size":  page_size,
+		//"start_time": start_time,
+		//"end_time":   end_time,
+	}
+	reqUrl := fmt.Sprintf(fprintUrls["get_pagination_fprints"], fip)
+	resp, _ := tool.Get(reqUrl, queryParams, token)
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
 }
 
 func addAssetPWhiterints() {
@@ -195,29 +221,6 @@ func addFingerPrints() {
 	}
 
 	resp, _ := tool.PostForm(urlReq, queryParams, token)
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
-}
-
-func getAssetPaginationFprint() {
-	token := tool.GetVehicleToken()
-	configs := getFprintConfig()
-	fip := configs["server_ip"]
-	vehicle_id := configs["vehicle_id"]
-	page_index := configs["page_index"]
-	page_size := configs["page_size"]
-	//start_time := configs["start_time"]
-	//end_time := configs["end_time"]
-
-	queryParams := map[string]interface{}{
-		"vehicle_id": vehicle_id,
-		"page_index": page_index,
-		"page_size":  page_size,
-		//"start_time": start_time,
-		//"end_time":   end_time,
-	}
-	reqUrl := fmt.Sprintf(fprintUrls["get_pagination_fprints"], fip)
-	resp, _ := tool.Get(reqUrl, queryParams, token)
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))
 }

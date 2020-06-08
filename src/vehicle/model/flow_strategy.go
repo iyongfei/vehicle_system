@@ -72,7 +72,12 @@ func (flowStrategy *Fstrategy) CreateModel(flowStrategyParams ...interface{}) in
 
 	flowStrategy.Type = uint8(strategyParam.GetDefenseType())
 	flowStrategy.HandleMode = uint8(strategyParam.GetHandleMode())
-	flowStrategy.Enable = strategyParam.GetEnable()
+	enable := strategyParam.GetEnable()
+	if !enable {
+		flowStrategy.Enable = true
+	} else {
+		flowStrategy.Enable = true
+	}
 	return flowStrategy
 }
 func (flowStrategy *Fstrategy) GetModelPaginationByCondition(pageIndex int, pageSize int, totalCount *int,
