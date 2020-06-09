@@ -95,7 +95,7 @@ func main() {
 	claims2 := MyCustomClaims{
 		"bar",
 		jwt.StandardClaims{
-			ExpiresAt: 15000,
+			ExpiresAt: 10,
 			Issuer:    "test",
 		},
 	}
