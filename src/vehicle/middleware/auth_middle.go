@@ -32,7 +32,7 @@ func authMiddleHandlerFunc(c *gin.Context) {
 		return
 	}
 
-	claims, err := service.Jwt.ParseToken(token)
+	claims, err := service.NewJWT().ParseToken(token)
 
 	if err != nil {
 		ret := response.StructResponseObj(response.VStatusUnauthorized, response.AuthTokenResignin, "")

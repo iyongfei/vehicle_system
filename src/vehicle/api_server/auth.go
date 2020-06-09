@@ -68,7 +68,7 @@ func Auth(c *gin.Context) {
 			Issuer: conf.SignKey,
 		},
 	}
-	jwtToken, err := service.Jwt.CreateToken(vehicleClaims)
+	jwtToken, err := service.NewJWT().CreateToken(vehicleClaims)
 
 	if err != nil {
 		ret := response.StructResponseObj(response.VStatusServerError, response.ReqRegistAuthFailMsg, "")
