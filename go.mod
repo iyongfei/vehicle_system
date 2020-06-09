@@ -17,5 +17,6 @@ require (
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.5
+	golang.org/x/tools v0.0.0-20190614205625-5aca471b1d59
 	gopkg.in/ini.v1 v1.55.0
 )

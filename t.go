@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/jinzhu/gorm"
 	"strconv"
 	"time"
@@ -73,31 +74,35 @@ type F func(int)
 var aaa F
 
 func main() {
-	fStartTime := util.StampUnix2Time(int64(0))
+	claims1 := &jwt.StandardClaims{
+		ExpiresAt: time.Now().Add(30 * time.Second).Unix(), // 过期时间，必须设置
+		Issuer:    "wang",                                  // 可不必设置，也可以填充用户名，
+	}
+	//expired := time.Now().Add(148 * time.Hour).Unix()
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims1) //生成token
+	accessToken, _ := token.SignedString([]byte("vector.sign"))
+	fmt.Println(accessToken)
+	////////////////////////////
 
-	fmt.Println(fStartTime)
-	return
+	mySigningKey := []byte("AllYourBase")
 
-	fmt.Println(time.Now().Unix())
-	defaultStartTime := util.GetFewDayAgo(5)
-	fmt.Println(defaultStartTime.Unix())
-	return
-	vehicleFStrategyItemsMap := map[string][]string{}
-	vehicleFStrategyItemsMap["a"] = []string{"s", "d"}
-
-	//vehicleFStrategyItemsMap["a"]["b"] = append(vehicleFStrategyItemsMap["a"]["b"], []string{"c", "d"}...)
-	//fmt.Println(vehicleFStrategyItemsMap["a"]["b"])
-
-	if v, ok := vehicleFStrategyItemsMap["a"]; ok {
-		if !util.IsExistInSlice("ddd", v) {
-			vehicleFStrategyItemsMap["a"] = append(vehicleFStrategyItemsMap["a"], "ddd")
-		}
-
-	} else {
-		fmt.Println("Key Not Found", v, ok)
+	type MyCustomClaims struct {
+		Foo string `json:"foo"`
+		jwt.StandardClaims
 	}
 
-	fmt.Println(vehicleFStrategyItemsMap)
+	// Create the Claims
+	claims2 := MyCustomClaims{
+		"bar",
+		jwt.StandardClaims{
+			ExpiresAt: 15000,
+			Issuer:    "test",
+		},
+	}
+
+	token2 := jwt.NewWithClaims(jwt.SigningMethodHS256, claims2)
+	ss, err := token2.SignedString(mySigningKey)
+	fmt.Printf("%v %v", ss, err)
 	return
 
 	//dip := "3232235898"
