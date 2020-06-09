@@ -104,3 +104,59 @@ func (asset *Asset) CreateModel(assetParams ...interface{}) interface{} {
 	asset.LanVisitSwitch = assetParam.GetLanVisitSwitch()
 	return asset
 }
+
+type AssetJoinFprintJoinCategory struct {
+	gorm.Model
+	VehicleId string //关联的小v ID
+	AssetId   string `gorm:"unique"` //资产id
+
+	IP        string //小v资产 IP
+	Mac       string //资产Mac地址
+	Name      string //小v资产名称
+	TradeMark string //资产品牌
+
+	OnlineStatus bool   //在线状态
+	LastOnline   uint32 //最近活跃时间
+
+	InternetSwitch bool //是否允许联网
+	ProtectStatus  bool //是否受小V保护
+	LanVisitSwitch bool //是否可以访问内网
+
+	AssetGroup  string
+	AssetLeader string
+	AccessNet   bool
+
+	//join finger_prints
+	CateId string
+	//join categories
+	CateName string
+}
+
+//序列化为数字类型
+func (asset *AssetJoinFprintJoinCategory) MarshalJSON() ([]byte, error) {
+	type AssetType AssetJoinFprintJoinCategory
+	return json.Marshal(&struct {
+		CreatedAt int64
+		*AssetType
+	}{
+		CreatedAt: asset.CreatedAt.Unix(),
+		AssetType: (*AssetType)(asset),
+	})
+}
+
+func GetAssetJoinFprintJoinCategory(query string, args ...interface{}) (*AssetJoinFprintJoinCategory, error) {
+	vgorm, err := mysql.GetMysqlInstance().GetMysqlDB()
+	if err != nil {
+		return nil, fmt.Errorf("%s open grom err:%v", util.RunFuncName(), err.Error())
+	}
+	assetJoinFprintJoinCategory := &AssetJoinFprintJoinCategory{}
+	err = vgorm.Debug().
+		Table("assets").
+		Select("assets.*,finger_prints.cate_id,categories.name as cate_name").
+		Where(query, args...).
+		Joins("inner join finger_prints ON finger_prints.device_mac = assets.asset_id").
+		Joins("inner JOIN categories ON categories.cate_id = finger_prints.cate_id").
+		Scan(&assetJoinFprintJoinCategory).
+		Error
+	return assetJoinFprintJoinCategory, err
+}
