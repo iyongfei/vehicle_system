@@ -191,8 +191,7 @@ func (fprintInfoPassive *FprintInfoPassive) CreateModel(params ...interface{}) i
 type FprintPassiveInfo struct {
 	gorm.Model
 
-	FprintInfoId  string
-	PassiveInfoId uint32
+	FprintInfoId string
 
 	Hash         uint32
 	SrcIp        string

@@ -724,7 +724,6 @@ CREATE TABLE IF NOT EXISTS `fprint_passive_infos`  (
   `deleted_at` timestamp NULL DEFAULT NULL,
 
   `fprint_info_id` varchar(255)  NULL DEFAULT NULL,
-  `passive_info_id` int(11) UNSIGNED NULL DEFAULT NULL,
   `hash` int(11) UNSIGNED NULL DEFAULT NULL,
   `src_ip` varchar(255) NULL DEFAULT NULL,
   `src_port` int(11) NULL DEFAULT NULL,
@@ -741,7 +740,6 @@ CREATE TABLE IF NOT EXISTS `fprint_passive_infos`  (
   `dst_src_bytes`  BIGINT(20) UNSIGNED NULL DEFAULT NULL,
   `stat`  tinyint(3) UNSIGNED NULL DEFAULT NULL,
    PRIMARY KEY (`id`) USING BTREE,
-   UNIQUE KEY `passive_info_id` (`passive_info_id`),
 
   INDEX `idx_fprint_passive_infos_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
