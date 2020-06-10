@@ -44,18 +44,16 @@ func HandleVehicleFingerPrint(vehicleResult protobuf.GWResult, vehicleId string)
 		AssetId:    fingerprintParam.GetMac(),
 		AssetGroup: vehicleInfo.GroupId,
 	}
+	isAssetInfoExist := tx.Where("asset_id = ?",
+		[]interface{}{asset.AssetId}...).First(asset).RecordNotFound()
 
-	assetModelBase := model_base.ModelBaseImpl(asset)
-
-	_, assetRecordNotFound := assetModelBase.GetModelByCondition("asset_id = ?", asset.AssetId)
-	if assetRecordNotFound {
+	if isAssetInfoExist {
 		exist := checkoutAssetPrintInfos(asset.AssetId)
 		asset.AccessNet = exist
 
-		err := modelBase.InsertModel()
-		if err != nil {
+		if err = tx.Create(asset).Error; err != nil {
 			tx.Rollback()
-			return fmt.Errorf("%s insert asset err:%s", util.RunFuncName(), err.Error())
+			return fmt.Errorf("%s insert fprintInfo err:%s", util.RunFuncName(), err.Error())
 		}
 	}
 
