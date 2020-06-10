@@ -189,8 +189,11 @@ message FingerprintParam {
 	message ActiveDetect {
 		string os = 1; // 系统类型
 	}
+
 	message PassiveLearn {
 		uint32 dst_port = 1; // 接受者 端口号
+		repeated PassiveInfoItem item = 2;
+
 	}
 
 	string mac = 1;//Mac地址

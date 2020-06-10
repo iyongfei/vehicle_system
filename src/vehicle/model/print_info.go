@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"vehicle_system/src/vehicle/db/mysql"
+	"vehicle_system/src/vehicle/emq/protobuf"
 	"vehicle_system/src/vehicle/util"
 )
 
@@ -84,57 +85,192 @@ func (fprintDetectInfo *FprintInfo) CreateModel(assetParams ...interface{}) inte
 	return fprintDetectInfo
 }
 
+/////////////////////////////////主动探测/////////////////////////////////
+type FprintInfoActive struct {
+	gorm.Model
+	FprintInfoId string
+	Os           string
+}
+
+func (fprintInfoActive *FprintInfoActive) InsertModel() error {
+	return mysql.CreateModel(fprintInfoActive)
+}
+func (fprintInfoActive *FprintInfoActive) GetModelByCondition(query interface{}, args ...interface{}) (error, bool) {
+	err, recordNotFound := mysql.QueryModelOneRecordIsExistByWhereCondition(fprintInfoActive, query, args...)
+	if err != nil {
+		return err, true
+	}
+	if recordNotFound {
+		return nil, true
+	}
+	return nil, false
+}
+func (fprintInfoActive *FprintInfoActive) UpdateModelsByCondition(values interface{}, query interface{}, queryArgs ...interface{}) error {
+	err := mysql.UpdateModelByMapModel(fprintInfoActive, values, query, queryArgs...)
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
+	}
+	return nil
+}
+func (fprintInfoActive *FprintInfoActive) DeleModelsByCondition(query interface{}, args ...interface{}) error {
+	err := mysql.HardDeleteModelB(fprintInfoActive, query, args...)
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
+	}
+	return nil
+}
+
+func (fprintInfoActive *FprintInfoActive) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) error {
+	err := mysql.QueryModelRecordsByWhereCondition(model, query, args...)
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
+	}
+	return nil
+}
+
+func (fprintInfoActive *FprintInfoActive) CreateModel(params ...interface{}) interface{} {
+	fprintActiveParams := params[0].(*protobuf.FingerprintParam_ActiveDetect)
+	fprintInfoActive.Os = fprintActiveParams.GetOs()
+
+	return fprintInfoActive
+}
+
 /////////////////////////////////被动探测/////////////////////////////////
-//
-//type FprintPassiveInfo struct {
-//	gorm.Model
-//	PassiveInfoId string
-//	DeviceMac     string
-//	TradeMark     string
-//	VehicleId     string
-//
-//	DstPort uint32
-//}
-//
-//func (fprintPassiveInfo *FprintPassiveInfo) InsertModel() error {
-//	return mysql.CreateModel(fprintPassiveInfo)
-//}
-//func (fprintPassiveInfo *FprintPassiveInfo) GetModelByCondition(query interface{}, args ...interface{}) (error, bool) {
-//	err, recordNotFound := mysql.QueryModelOneRecordIsExistByWhereCondition(fprintPassiveInfo, query, args...)
-//	if err != nil {
-//		return err, true
-//	}
-//	if recordNotFound {
-//		return nil, true
-//	}
-//	return nil, false
-//}
-//func (fprintPassiveInfo *FprintPassiveInfo) UpdateModelsByCondition(values interface{}, query interface{}, queryArgs ...interface{}) error {
-//	err := mysql.UpdateModelByMapModel(fprintPassiveInfo, values, query, queryArgs...)
-//	if err != nil {
-//		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
-//	}
-//	return nil
-//}
-//func (fprintPassiveInfo *FprintPassiveInfo) DeleModelsByCondition(query interface{}, args ...interface{}) error {
-//	err := mysql.HardDeleteModelB(fprintPassiveInfo, query, args...)
-//	if err != nil {
-//		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
-//	}
-//	return nil
-//}
-//
-//func (fprintPassiveInfo *FprintPassiveInfo) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) error {
-//	err := mysql.QueryModelRecordsByWhereCondition(model, query, args...)
-//	if err != nil {
-//		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
-//	}
-//	return nil
-//}
-//
-//func (fprintPassiveInfo *FprintPassiveInfo) CreateModel(assetParams ...interface{}) interface{} {
-//	return fprintPassiveInfo
-//}
+
+type FprintInfoPassive struct {
+	gorm.Model
+	FprintInfoId string
+	DstPort      uint32
+}
+
+func (fprintInfoPassive *FprintInfoPassive) InsertModel() error {
+	return mysql.CreateModel(fprintInfoPassive)
+}
+func (fprintInfoPassive *FprintInfoPassive) GetModelByCondition(query interface{}, args ...interface{}) (error, bool) {
+	err, recordNotFound := mysql.QueryModelOneRecordIsExistByWhereCondition(fprintInfoPassive, query, args...)
+	if err != nil {
+		return err, true
+	}
+	if recordNotFound {
+		return nil, true
+	}
+	return nil, false
+}
+func (fprintInfoPassive *FprintInfoPassive) UpdateModelsByCondition(values interface{}, query interface{}, queryArgs ...interface{}) error {
+	err := mysql.UpdateModelByMapModel(fprintInfoPassive, values, query, queryArgs...)
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
+	}
+	return nil
+}
+func (fprintInfoPassive *FprintInfoPassive) DeleModelsByCondition(query interface{}, args ...interface{}) error {
+	err := mysql.HardDeleteModelB(fprintInfoPassive, query, args...)
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
+	}
+	return nil
+}
+
+func (fprintInfoPassive *FprintInfoPassive) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) error {
+	err := mysql.QueryModelRecordsByWhereCondition(model, query, args...)
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
+	}
+	return nil
+}
+
+func (fprintInfoPassive *FprintInfoPassive) CreateModel(params ...interface{}) interface{} {
+	fprintPassiveParams := params[0].(*protobuf.FingerprintParam_PassiveLearn)
+	fprintInfoPassive.DstPort = fprintPassiveParams.GetDstPort()
+
+	return fprintInfoPassive
+}
+
+//////////////////////////////////////////////////
+
+type FprintPassiveInfo struct {
+	gorm.Model
+
+	FprintInfoId  string
+	PassiveInfoId uint32
+
+	Hash         uint32
+	SrcIp        string
+	SrcPort      uint32
+	DstIp        string
+	DstPort      uint32
+	Protocol     uint8
+	FlowInfo     string
+	SafeType     uint8
+	SafeInfo     string
+	StartTime    uint32
+	LastSeenTime uint32
+	SrcDstBytes  uint64
+	DstSrcBytes  uint64
+	Stat         uint8
+}
+
+func (fprintPassiveInfo *FprintPassiveInfo) InsertModel() error {
+	return mysql.CreateModel(fprintPassiveInfo)
+}
+func (fprintPassiveInfo *FprintPassiveInfo) GetModelByCondition(query interface{}, args ...interface{}) (error, bool) {
+	err, recordNotFound := mysql.QueryModelOneRecordIsExistByWhereCondition(fprintPassiveInfo, query, args...)
+	if err != nil {
+		return err, true
+	}
+	if recordNotFound {
+		return nil, true
+	}
+	return nil, false
+}
+func (fprintPassiveInfo *FprintPassiveInfo) UpdateModelsByCondition(values interface{}, query interface{}, queryArgs ...interface{}) error {
+	err := mysql.UpdateModelByMapModel(fprintPassiveInfo, values, query, queryArgs...)
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
+	}
+	return nil
+}
+func (fprintPassiveInfo *FprintPassiveInfo) DeleModelsByCondition(query interface{}, args ...interface{}) error {
+	err := mysql.HardDeleteModelB(fprintPassiveInfo, query, args...)
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
+	}
+	return nil
+}
+
+func (fprintPassiveInfo *FprintPassiveInfo) GetModelListByCondition(model interface{}, query interface{}, args ...interface{}) error {
+	err := mysql.QueryModelRecordsByWhereCondition(model, query, args...)
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
+	}
+	return nil
+}
+
+func (fprintPassiveInfo *FprintPassiveInfo) CreateModel(params ...interface{}) interface{} {
+	fprintPassiveInfoParams := params[0].(*protobuf.PassiveInfoItem)
+	fprintPassiveInfo.Hash = fprintPassiveInfoParams.GetHash()
+
+	sipLittleEndian := util.BytesToLittleEndian(util.BigToBytes(fprintPassiveInfoParams.GetSrcIp()))
+	fprintPassiveInfo.SrcIp = util.IpIntToString(int(sipLittleEndian))
+
+	fprintPassiveInfo.SrcPort = fprintPassiveInfoParams.GetSrcPort()
+
+	dipLittleEndian := util.BytesToLittleEndian(util.BigToBytes(fprintPassiveInfoParams.GetDstIp()))
+	fprintPassiveInfo.DstIp = util.IpIntToString(int(dipLittleEndian))
+
+	fprintPassiveInfo.DstPort = fprintPassiveInfoParams.GetDstPort()
+	fprintPassiveInfo.Protocol = uint8(fprintPassiveInfoParams.GetProtocol())
+	fprintPassiveInfo.FlowInfo = fprintPassiveInfoParams.GetFlowInfo()
+	fprintPassiveInfo.SafeType = uint8(fprintPassiveInfoParams.GetSafeType())
+	fprintPassiveInfo.SafeInfo = fprintPassiveInfoParams.GetSafeInfo()
+	fprintPassiveInfo.StartTime = fprintPassiveInfoParams.GetStartTime()
+	fprintPassiveInfo.LastSeenTime = fprintPassiveInfoParams.GetLastSeenTime()
+	fprintPassiveInfo.SrcDstBytes = fprintPassiveInfoParams.GetSrc2DstBytes()
+	fprintPassiveInfo.DstSrcBytes = fprintPassiveInfoParams.GetDst2SrcBytes()
+	fprintPassiveInfo.Stat = uint8(fprintPassiveInfoParams.GetFlowStat())
+	return fprintPassiveInfo
+}
+
 //
 ///////////////////////////////////////////////////
 //

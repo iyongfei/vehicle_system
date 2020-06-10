@@ -692,7 +692,7 @@ CREATE TABLE IF NOT EXISTS `fprint_infos`  (
   INDEX `idx_fprint_infos_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `fprint_info_active`  (
+CREATE TABLE IF NOT EXISTS `fprint_info_actives`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -701,20 +701,19 @@ CREATE TABLE IF NOT EXISTS `fprint_info_active`  (
   `fprint_info_id` varchar(255)  NULL DEFAULT NULL,
   `os`   varchar(255) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx_fprint_info_active_deleted_at`(`deleted_at`) USING BTREE
+  INDEX `idx_fprint_info_actives_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `fprint_info_passive`  (
+CREATE TABLE IF NOT EXISTS `fprint_info_passives`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
 
   `fprint_info_id` varchar(255)  NULL DEFAULT NULL,
-  `passive_info_id` int(11) UNSIGNED NULL DEFAULT NULL,
   `dst_port`   int(11) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx_fprint_info_passive_deleted_at`(`deleted_at`) USING BTREE
+  INDEX `idx_fprint_info_passives_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -724,6 +723,7 @@ CREATE TABLE IF NOT EXISTS `fprint_passive_infos`  (
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
 
+  `fprint_info_id` varchar(255)  NULL DEFAULT NULL,
   `passive_info_id` int(11) UNSIGNED NULL DEFAULT NULL,
   `hash` int(11) UNSIGNED NULL DEFAULT NULL,
   `src_ip` varchar(255) NULL DEFAULT NULL,

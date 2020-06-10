@@ -34,8 +34,34 @@ func createGwFprintProbuf(vId string, mac string) []byte {
 	active := &protobuf.FingerprintParam_ActiveDetect{
 		Os: "centos",
 	}
+
+	items := []*protobuf.PassiveInfoItem{}
+	for i := 0; i < 5; i++ {
+		moduleItem := &protobuf.PassiveInfoItem{
+			Hash:         uint32(tool.RandomNumber(5)),
+			SrcIp:        131,
+			SrcPort:      23,
+			DstIp:        23,
+			DstPort:      23,
+			Protocol:     protobuf.FlowProtos(32),
+			FlowInfo:     "wklejl",
+			SafeType:     protobuf.FlowSafetype(33),
+			SafeInfo:     "jwek",
+			StartTime:    tool.TimeNowToUnix(),
+			LastSeenTime: tool.TimeNowToUnix(),
+			Src2DstBytes: 3233,
+			Dst2SrcBytes: 43444,
+			FlowStat:     protobuf.FlowStat_FST_FINISH,
+		}
+
+		items = append(items, moduleItem)
+	}
+
+	//PassiveInfoItems
+
 	passive := &protobuf.FingerprintParam_PassiveLearn{
 		DstPort: 200,
+		Item:    items,
 	}
 	params := &protobuf.FingerprintParam{
 		Mac:     mac,
