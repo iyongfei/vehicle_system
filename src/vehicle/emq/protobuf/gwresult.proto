@@ -197,7 +197,22 @@ message FingerprintParam {
 	ActiveDetect active = 2;//主动探测信息
 	PassiveLearn passive = 3;//被动学习信息
 }
-
+message PassiveInfoItem {
+	uint32 hash = 1; // flow-id (int型哈希值)
+	uint32 src_ip = 2; // 发起者(源)IP地址
+	uint32 src_port = 3; // 发起者 端口号
+	uint32 dst_ip = 4; // 接受者(目标)IP地址
+	uint32 dst_port = 5; // 接受者 端口号
+	FlowProtos protocol = 6; // flow的协议类型
+	string flow_info = 7; // 会话信息 (url, pop3, 邮件协议 邮箱地址, 密码)
+	FlowSafetype safe_type = 8; // 会话安全类型
+	string safe_info = 9; // 安全类型结果(无结果为空)
+	uint32 start_time = 10; // 启动时间戳
+	uint32 last_seen_time = 11; // 最后探测时间戳
+	uint64 src2dst_bytes = 12; // 上行流量(指src->dst方向) 单位:字节
+	uint64 dst2src_bytes = 13; // 下行流量(指dst->src方向) 单位:字节
+	FlowStat flow_stat = 14; // 当前会话活跃状态
+}
 
 //威胁类型
 message ThreatParam{

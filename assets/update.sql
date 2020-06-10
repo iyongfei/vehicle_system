@@ -27,3 +27,7 @@ call AddColumnUnlessExists('vehicle', 'fstrategies', 'name', 'varchar(255)  NULL
 
 
 
+新增
+fprint_info_active
+fprint_info_passive
+fprint_passive_infos
