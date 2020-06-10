@@ -64,7 +64,9 @@ func Auth(c *gin.Context) {
 		PassWord: user.Password,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(20000 * time.Hour).Unix(),
-			Issuer:    conf.SignKey,
+
+			//ExpiresAt: service.ExpiresAt,
+			Issuer: conf.SignKey,
 		},
 	}
 	jwtToken, err := service.NewJWT().CreateToken(vehicleClaims)

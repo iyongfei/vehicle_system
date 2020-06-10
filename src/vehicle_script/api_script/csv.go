@@ -13,7 +13,7 @@ var fStrategyCsvUrls = map[string]string{
 	"get_fstrategy_csv":       "http://localhost:7001/api/v1/fstrategy_csvs/HFiYobVy2dqYiVcGpcsrk6GVRxUdqpuy",
 	"post_strategy_csv":       "http://localhost:7001/api/v1/fstrategy_csvs",
 	"edit_strategy_csv":       "http://localhost:7001/api/v1/fstrategy_csvs/sTgjyl99ZWDXd8NctszvU6nsmhkJeE7E",
-	"post_asset_fprints_csvs": "http://%s:7001/api/v1/asset_fprints_csvs",
+	"post_asset_fprints_csvs": "http://%s:7001/api/v1/white_assets_csvs",
 	//////////////////////////////////////////////
 	"get_strategys": "http://localhost:7001/api/v1/strategys",
 
@@ -31,10 +31,10 @@ func main() {
 	//getFstrategyCsv()
 	//getFstrategyCsvTemp()
 	//uploadFstrategyCsv()
-	editFstrategyCsv()
-
+	//editFstrategyCsv()
+	//
 	//上传资产白名单
-	//uploadAssetPrintCsv()
+	uploadAssetPrintCsv()
 }
 
 func editFstrategyCsv() {
@@ -60,7 +60,9 @@ func uploadAssetPrintCsv() {
 	ip := configer["server_id"]
 	token := tool.GetVehicleToken()
 	reqUrl := fmt.Sprintf(fStrategyCsvUrls["post_asset_fprints_csvs"], ip)
-	mapArgs := map[string]string{}
+	mapArgs := map[string]string{
+		"vh": "111",
+	}
 
 	nameField := "upload_csv"
 	fileName := "upload_csver"
