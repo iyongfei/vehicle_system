@@ -2,10 +2,8 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"time"
-	"vehicle_system/src/vehicle/conf"
 	"vehicle_system/src/vehicle/response"
 )
 
@@ -61,16 +59,10 @@ var (
 	ValidationErrorUnverifiable = errors.New(response.ValidationErrorUnverifiableStr)
 	//签名验证失败
 	ValidationErrorSignatureInvalid = errors.New(response.ValidationErrorSignatureInvalidStr)
-	Jwt                             *JWT
-	SignKey                         = conf.SignKey
+	SignKey                         = "vehicle"
 )
 
-func init() {
-	fmt.Println(ExpiresAt, "sjlfslfjslfsjfkls", time.Now().Unix())
-	Jwt = newJWT()
-}
-
-func newJWT() *JWT {
+func NewJWT() *JWT {
 	return &JWT{
 		[]byte(SignKey),
 	}
