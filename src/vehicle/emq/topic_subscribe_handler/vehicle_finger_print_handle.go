@@ -8,6 +8,7 @@ import (
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/mac"
 	"vehicle_system/src/vehicle/model"
+	"vehicle_system/src/vehicle/model/model_base"
 	"vehicle_system/src/vehicle/util"
 )
 
@@ -21,9 +22,42 @@ func HandleVehicleFingerPrint(vehicleResult protobuf.GWResult, vehicleId string)
 		return fmt.Errorf("%s unmarshal vehicleFingerPrint err:%s", util.RunFuncName(), err.Error())
 	}
 
+	//查询终端
+	vehicleInfo := &model.VehicleInfo{
+		VehicleId: vehicleId,
+	}
+	modelBase := model_base.ModelBaseImpl(vehicleInfo)
+
+	_, recordNotFound := modelBase.GetModelByCondition("vehicle_id = ?", vehicleInfo.VehicleId)
+
+	if recordNotFound {
+		return fmt.Errorf("%s insert asset vehicleId recordNotFound", util.RunFuncName())
+	}
+
 	//////////////////////////事务开始//////////////////////
 	vgorm, err := mysql.GetMysqlInstance().GetMysqlDB()
 	tx := vgorm.Begin()
+
+	//插入asset
+	asset := &model.Asset{
+		VehicleId:  vehicleId,
+		AssetId:    fingerprintParam.GetMac(),
+		AssetGroup: vehicleInfo.GroupId,
+	}
+
+	assetModelBase := model_base.ModelBaseImpl(asset)
+
+	_, assetRecordNotFound := assetModelBase.GetModelByCondition("asset_id = ?", asset.AssetId)
+	if assetRecordNotFound {
+		exist := checkoutAssetPrintInfos(asset.AssetId)
+		asset.AccessNet = exist
+
+		err := modelBase.InsertModel()
+		if err != nil {
+			tx.Rollback()
+			return fmt.Errorf("%s insert asset err:%s", util.RunFuncName(), err.Error())
+		}
+	}
 
 	detect := fingerprintParam.GetActive()
 	passive := fingerprintParam.GetPassive()

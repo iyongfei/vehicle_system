@@ -2,8 +2,6 @@
 USE vehicle;
 
 
-
-
 CREATE TABLE IF NOT EXISTS `fprint_info_actives`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `created_at` timestamp NULL DEFAULT NULL,

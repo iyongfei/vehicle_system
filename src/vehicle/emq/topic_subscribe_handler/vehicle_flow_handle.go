@@ -25,6 +25,7 @@ func HandleVehicleFlow(vehicleResult protobuf.GWResult, vehicleId string) error 
 
 	_, assetGroupRecordNotFound := assetGroupModelBase.GetModelByCondition("area_name = ?",
 		[]interface{}{assetGroup.AreaName}...)
+
 	if assetGroupRecordNotFound {
 		err := assetGroupModelBase.InsertModel()
 		if err != nil {
