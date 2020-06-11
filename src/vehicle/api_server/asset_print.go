@@ -12,6 +12,96 @@ import (
 	"vehicle_system/src/vehicle/util"
 )
 
+/**
+获取某个资产的指纹采集信息
+*/
+func GetAssetPrintInfos(c *gin.Context) {
+	assetId := c.Param("asset_id")
+	vehicleId := c.Query("vehicle_id")
+	pageSizeP := c.Query("page_size")
+	pageIndexP := c.Query("page_index")
+
+	logger.Logger.Info("%s request params vehicle_id:%s,assetId:%s,pageSizeP:%s,pageIndexP:%s",
+		util.RunFuncName(), vehicleId, assetId, pageSizeP, pageIndexP)
+	logger.Logger.Print("%s request params vehicle_id:%s,assetId:%s,pageSizeP:%s,pageIndexP:%s",
+		util.RunFuncName(), vehicleId, assetId, pageSizeP, pageIndexP)
+
+	//参数判断
+	argsTrimsEmpty := util.RrgsTrimsEmpty(assetId, vehicleId)
+	if argsTrimsEmpty {
+		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+		c.JSON(http.StatusOK, ret)
+		logger.Logger.Error("%s argsTrimsEmpty vehicle_id:%s,assetId:%s", util.RunFuncName(), vehicleId, assetId)
+		logger.Logger.Print("%s argsTrimsEmpty vehicle_id:%s,assetId:%s", util.RunFuncName(), vehicleId, assetId)
+		return
+	}
+	fpageSize, _ := strconv.Atoi(pageSizeP)
+	fpageIndex, _ := strconv.Atoi(pageIndexP)
+	//默认20
+	defaultPageSize := 20
+	if fpageSize == 0 {
+		fpageSize = defaultPageSize
+	}
+	//默认第一页
+	defaultPageIndex := 1
+	if fpageIndex == 0 {
+		fpageIndex = defaultPageIndex
+	}
+
+	//是否存在
+	asset := &model.Asset{
+		VehicleId: vehicleId,
+		AssetId:   assetId,
+	}
+	assetModelBase := model_base.ModelBaseImpl(asset)
+
+	err, assetRecordNotFound := assetModelBase.GetModelByCondition(
+		"asset_id = ? and vehicle_id = ? ", []interface{}{asset.AssetId, asset.VehicleId}...)
+
+	if assetRecordNotFound {
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetAssetUnExistMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+	if err != nil {
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetAssetFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	//主动探测，被动探测连表
+	fprintInfoJoinActivePassvie, err := model.GetFprintInfoJoinPassvie(
+		"fprint_infos.device_mac = ?", []interface{}{asset.AssetId}...)
+	if err != nil {
+		//todo
+	}
+
+	//被动探测采集信息列表
+	fprintPassiveInfos := []*model.FprintPassiveInfo{}
+	var total int
+
+	fprintPassiveInfoModelBase := model_base.ModelBaseImplPagination(&model.FprintPassiveInfo{})
+
+	err = fprintPassiveInfoModelBase.GetModelPaginationByCondition(fpageIndex, fpageSize,
+		&total, &fprintPassiveInfos,
+		"fprint_passive_infos.created_at desc", "fprint_info_id = ?",
+		[]interface{}{fprintInfoJoinActivePassvie.FprintInfoId}...)
+
+	if err != nil {
+		//todo
+	}
+
+	fprintInfoJoinActivePassvie.FprintPassiveInfos = fprintPassiveInfos
+	fprintInfoJoinActivePassvie.TotalCount = total
+
+	responseData := map[string]interface{}{
+		"fprint_info": fprintInfoJoinActivePassvie,
+	}
+
+	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetAssetFprintsSuccessMsg, responseData)
+	c.JSON(http.StatusOK, retObj)
+
+}
 func GetPaginationPrintInfos(c *gin.Context) {
 	vehicleId := c.Query("vehicle_id")
 	pageSizeP := c.Query("page_size")

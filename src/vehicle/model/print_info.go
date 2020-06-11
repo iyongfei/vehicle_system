@@ -187,6 +187,47 @@ func (fprintInfoPassive *FprintInfoPassive) CreateModel(params ...interface{}) i
 }
 
 //////////////////////////////////////////////////
+type FprintInfoJoinPassvie struct {
+	gorm.Model
+	FprintInfoId string
+	VehicleId    string
+	DeviceMac    string
+
+	DstPort uint32
+
+	FprintPassiveInfos []*FprintPassiveInfo
+	TotalCount         int
+}
+
+func (tmp *FprintInfoJoinPassvie) MarshalJSON() ([]byte, error) {
+	type tempType FprintInfoJoinPassvie
+	return json.Marshal(&struct {
+		CreatedAt int64
+		*tempType
+	}{
+		CreatedAt: tmp.CreatedAt.Unix(),
+		tempType:  (*tempType)(tmp),
+	})
+}
+
+func GetFprintInfoJoinPassvie(query string, args ...interface{}) (*FprintInfoJoinPassvie, error) {
+	vgorm, err := mysql.GetMysqlInstance().GetMysqlDB()
+	if err != nil {
+		return nil, fmt.Errorf("%s open grom err:%v", util.RunFuncName(), err.Error())
+	}
+	fprintInfoJoinPassvie := &FprintInfoJoinPassvie{}
+
+	err = vgorm.Debug().
+		Table("fprint_infos").
+		Select("fprint_infos.*,fprint_info_passives.dst_port").
+		Where(query, args...).
+		Joins("inner join fprint_info_passives ON fprint_infos.fprint_info_id = fprint_info_passives.fprint_info_id").
+		Scan(fprintInfoJoinPassvie).
+		Error
+	return fprintInfoJoinPassvie, err
+}
+
+//////////////////////////////////////////////////
 
 type FprintPassiveInfo struct {
 	gorm.Model
@@ -207,6 +248,28 @@ type FprintPassiveInfo struct {
 	SrcDstBytes  uint64
 	DstSrcBytes  uint64
 	Stat         uint8
+}
+
+func (tmp *FprintPassiveInfo) MarshalJSON() ([]byte, error) {
+	type tempType FprintPassiveInfo
+	return json.Marshal(&struct {
+		CreatedAt int64
+		*tempType
+	}{
+		CreatedAt: tmp.CreatedAt.Unix(),
+		tempType:  (*tempType)(tmp),
+	})
+}
+
+func (fprintPassiveInfo *FprintPassiveInfo) GetModelPaginationByCondition(pageIndex int, pageSize int, totalCount *int,
+	paginModel interface{}, orderBy interface{}, query interface{}, args ...interface{}) error {
+
+	err := mysql.QueryModelPaginationByWhereCondition(fprintPassiveInfo, pageIndex, pageSize, totalCount, paginModel, orderBy, query, args...)
+
+	if err != nil {
+		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
+	}
+	return nil
 }
 
 func (fprintPassiveInfo *FprintPassiveInfo) InsertModel() error {
