@@ -48,11 +48,17 @@ func AddFprint(c *gin.Context) {
 
 	err, cateRecordNotFound := cateModelBase.GetModelByCondition("cate_id = ?", []interface{}{cate.CateId}...)
 	if cateRecordNotFound {
+		logger.Logger.Print("%s cateId%s,cateRecordNotFound", util.RunFuncName(), cateId)
+		logger.Logger.Error("%s cateId%s,cateRecordNotFound", util.RunFuncName(), cateId)
+
 		ret := response.StructResponseObj(response.VStatusServerError, response.ReqCategoryNotExistMsg, "")
 		c.JSON(http.StatusOK, ret)
 		return
 	}
 	if err != nil {
+		logger.Logger.Print("%s cateId%s,get category err:%+v", util.RunFuncName(), cateId, err)
+		logger.Logger.Error("%s cateId%s,get category err:%+v", util.RunFuncName(), cateId, err)
+
 		ret := response.StructResponseObj(response.VStatusServerError, response.ReqCategoryFailMsg, "")
 		c.JSON(http.StatusOK, ret)
 		return
@@ -81,6 +87,16 @@ func AddFprint(c *gin.Context) {
 
 	var insertFprintIds []string
 	for assetId, vehicleId := range assetVehicleIdMap {
+		//删除
+		err = tx.Unscoped().Where("device_mac = ?",
+			[]interface{}{assetId}...).Delete(&model.FingerPrint{}).Error
+
+		if err != nil {
+			logger.Logger.Print("%s finger_print err:%+v,dele assetId:%s", util.RunFuncName(), err, assetId)
+			logger.Logger.Error("%s finger_print err:%+v,dele assetId:%s", util.RunFuncName(), err, assetId)
+
+			continue
+		}
 
 		//查找每个资产的上传的指纹列表
 		protos, protoRate := model.GetAssetFprintProtolRate(assetId)
@@ -98,19 +114,19 @@ func AddFprint(c *gin.Context) {
 			Protos:    protosJson,
 			ProtoRate: protoRateJson,
 		}
-		//todo 有点花就不添加了
 
-		fingerPrintRecordNotFound := tx.Where("device_mac = ? and cate_id = ?",
-			[]interface{}{fingerPrint.DeviceMac, fingerPrint.CateId}...).First(fingerPrint).RecordNotFound()
+		fingerPrintRecordNotFound := tx.Where("device_mac = ?",
+			[]interface{}{fingerPrint.DeviceMac}...).First(fingerPrint).RecordNotFound()
 
 		if fingerPrintRecordNotFound {
 			if err = tx.Create(fingerPrint).Error; err != nil {
+				logger.Logger.Print("%s create finger_print err:%+v,assetId:%s", util.RunFuncName(), err, assetId)
+				logger.Logger.Error("%s create finger_print err:%+v,assetId:%s", util.RunFuncName(), err, assetId)
+
 				continue
 			} else {
 				insertFprintIds = append(insertFprintIds, fingerPrint.DeviceMac)
 			}
-		} else {
-			//todo
 		}
 	}
 
