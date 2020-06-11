@@ -1,11 +1,13 @@
 package api_server
 
 import (
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
+	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
@@ -21,6 +23,7 @@ func AddFprint(c *gin.Context) {
 	assetIds := c.PostForm("asset_ids")
 	cateId := c.PostForm("cate_id")
 
+	///参数校验,不能为空
 	argsTrimsEmpty := util.RrgsTrimsEmpty(assetIds, cateId)
 	if argsTrimsEmpty {
 		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
@@ -37,13 +40,30 @@ func AddFprint(c *gin.Context) {
 	if len(assetIdSlice) == 0 {
 		assetIdSlice = []string{""}
 	}
+	//校验类别是否存在
+	cate := &model.Category{
+		CateId: cateId,
+	}
+	cateModelBase := model_base.ModelBaseImpl(cate)
 
-	//资产==>终端
+	err, cateRecordNotFound := cateModelBase.GetModelByCondition("cate_id = ?", []interface{}{cate.CateId}...)
+	if cateRecordNotFound {
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqCategoryNotExistMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+	if err != nil {
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqCategoryFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	//获取合法的资产，构造map数据类型，资产==>终端
 	assetVehicleIdMap := map[string]string{}
 
 	assets := []*model.Asset{}
 	assetModelBase := model_base.ModelBaseImpl(&model.Asset{})
-	err := assetModelBase.GetModelListByCondition(&assets, "asset_id in (?)", []interface{}{assetIdSlice}...)
+	err = assetModelBase.GetModelListByCondition(&assets, "asset_id in (?)", []interface{}{assetIdSlice}...)
 	if err != nil {
 		ret := response.StructResponseObj(response.VStatusServerError, response.ReqAddFprintsFailMsg, "")
 		c.JSON(http.StatusOK, ret)
@@ -56,24 +76,34 @@ func AddFprint(c *gin.Context) {
 	}
 
 	//////////////////////////////////////////事务开始////////////////////////////////////////
-	//vgorm, err := mysql.GetMysqlInstance().GetMysqlDB()
-	//tx := vgorm.Begin()
+	vgorm, err := mysql.GetMysqlInstance().GetMysqlDB()
+	tx := vgorm.Begin()
 
 	var insertFprintIds []string
 	for assetId, vehicleId := range assetVehicleIdMap {
+
+		//查找每个资产的上传的指纹列表
+		protos, protoRate := model.GetAssetFprintProtolRate(assetId)
+		protosBytes, _ := json.Marshal(protos)
+		protoRateBytes, _ := json.Marshal(protoRate)
+
+		protosJson := string(protosBytes)
+		protoRateJson := string(protoRateBytes)
+
 		fingerPrint := &model.FingerPrint{
 			FprintId:  util.RandomString(32),
 			CateId:    cateId,
 			VehicleId: vehicleId,
 			DeviceMac: assetId,
+			Protos:    protosJson,
+			ProtoRate: protoRateJson,
 		}
-		fingerPrintModelBase := model_base.ModelBaseImpl(fingerPrint)
 
-		err, fingerPrintRecordNotFound := fingerPrintModelBase.GetModelByCondition("device_mac = ? and cate_id = ?",
-			[]interface{}{fingerPrint.DeviceMac, fingerPrint.CateId}...)
+		fingerPrintRecordNotFound := tx.Where("device_mac = ? and cate_id = ?",
+			[]interface{}{fingerPrint.DeviceMac, fingerPrint.CateId}...).First(fingerPrint).RecordNotFound()
 
 		if fingerPrintRecordNotFound {
-			if err = fingerPrintModelBase.InsertModel(); err != nil {
+			if err = tx.Create(fingerPrint).Error; err != nil {
 				continue
 			} else {
 				insertFprintIds = append(insertFprintIds, fingerPrint.DeviceMac)
@@ -82,6 +112,8 @@ func AddFprint(c *gin.Context) {
 			//todo
 		}
 	}
+
+	tx.Commit()
 
 	//获取新添加的信息
 	fingerPrintInsertList := []*model.FingerPrint{}

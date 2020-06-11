@@ -14,7 +14,7 @@ type FingerPrint struct {
 	CateId      string
 	VehicleId   string
 	DeviceMac   string
-	FlowIds     string
+	Protos      string
 	ProtoRate   string
 	CollectType uint8
 }

@@ -16,8 +16,6 @@ type FprintInfo struct {
 	VehicleId    string
 	DeviceMac    string
 	TradeMark    string
-	Os           string
-	DstPort      uint32
 	ExamineNet   string
 	AccessNet    bool
 }
@@ -195,10 +193,12 @@ type FprintInfoJoinPassvie struct {
 
 	DstPort uint32
 
+	/////////
 	FprintPassiveInfos []*FprintPassiveInfo
 	TotalCount         int
 }
 
+///opt/JyCenter/script/nginx_operate.sh restart
 func (tmp *FprintInfoJoinPassvie) MarshalJSON() ([]byte, error) {
 	type tempType FprintInfoJoinPassvie
 	return json.Marshal(&struct {

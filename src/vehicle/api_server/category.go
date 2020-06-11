@@ -43,6 +43,11 @@ func AddCategory(c *gin.Context) {
 		c.JSON(http.StatusOK, ret)
 		return
 	}
+	if err != nil {
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqCategoryFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
 
 	if err = cateModelBase.InsertModel(); err != nil {
 		ret := response.StructResponseObj(response.VStatusServerError, response.ReqAddCategoryFailMsg, "")
