@@ -7,7 +7,7 @@ user_name=a
 password=a
 
 #终端id
-vehicle_id=754d2728b4e549c5a16c0180fcacb80
+vehicle_id=754d2728b4e549c5a16c0180fcacb800
 
 #修改名字
 vehicle_new_name=sjdlfksf
@@ -41,13 +41,13 @@ cate_name=摄像头e
 cate_id=8Ae3FuvVKu0nHaLiwIGfFqCyWoEUE1r7
 
 #分页
-page_size=5
+page_size=3
 page_index=1
 start_time=1
 end_time=2
 
 #添加指纹库
-asset_ids=nn6pxlWd,AABBCCDDEEFF,123,124444
+asset_ids=F80D69,AABBCCDDEEFF,123
 fprint_id=d5xoDqEusAwf5UIumt005PqZNwfPfm8uL
 
 asset_fprint_id=Ad29vaXCd52A1KxREzBFlLyY6vFOlguG
@@ -57,7 +57,7 @@ access_net_flag=true
 partial_fstrategs=slM0jAPFWZWMADkZPDsspr3Gc4IC1KYt,ZH9sLus3hDSQv4VdlZY1MAlkJbUaVcOf,b7DCXxj2bm7MZqQiuK4Cq8oCMItvpJSi
 
 #分页
-page_size=5
+page_size=3
 page_index=1
 start_time=1589912036
 end_time=1590344036
@@ -65,4 +65,4 @@ end_time=1590344036
 
 #资产
 white_asset_ids=sdf,232,3fgg,44g
-asset_id=8C861E8D7EAF
+asset_id=F80D69

@@ -74,6 +74,9 @@ type F func(int)
 var aaa F
 
 func main() {
+	TR := fmt.Sprintf("%.2f", float64(32)/float64(24))
+	fmt.Println(TR)
+	return
 	claims1 := &jwt.StandardClaims{
 		ExpiresAt: time.Now().Add(30 * time.Second).Unix(), // 过期时间，必须设置
 		Issuer:    "wang",                                  // 可不必设置，也可以填充用户名，

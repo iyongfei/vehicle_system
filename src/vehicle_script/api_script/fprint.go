@@ -10,6 +10,7 @@ var fprintUrls = map[string]string{
 	"mac_white_asset_fprints":  "http://%s:7001/api/v1/mac/white_assets",
 	"post_white_asset_fprints": "http://%s:7001/api/v1/white_assets",
 	"get_pagination_fprints":   "http://%s:7001/api/v1/pagination/asset_fprints",
+	"get_fprint_info":          "http://%s:7001/api/v1/fprint_infos/%s",
 	"get_asset_fprints":        "http://%s:7001/api/v1/asset_fprints",
 
 	"post_finger_prints": "http://%s:7001/api/v1/finger_prints",
@@ -35,7 +36,7 @@ func main() {
 
 	//asset_fprints()
 	//添加到标签库
-	//addFingerPrints()
+	addFingerPrints()
 	//获取标签库所有信息
 	//getAllFprints()
 	//删除某标签库信息
@@ -43,17 +44,40 @@ func main() {
 
 	//getExamineNetAssetPaginationFprint()
 	//审批资产属性
-	examine_fprint()
+	//examine_fprint()
 	//asset_fprints()
 
 	//或者资产指纹信息列表
 	//getAssetPaginationFprint()
+	//或者资产指纹信息
+	//getAssetFprint()
 	//unused
 	//getCategorys()
 	//editCategory()
 	//getAssets()
 	//getCategory()
 }
+
+func getAssetFprint() {
+	token := tool.GetVehicleToken()
+	configs := getFprintConfig()
+	fip := configs["server_ip"]
+	vehicle_id := configs["vehicle_id"]
+	assetId := configs["asset_id"]
+	page_index := configs["page_index"]
+	page_size := configs["page_size"]
+
+	queryParams := map[string]interface{}{
+		"vehicle_id": vehicle_id,
+		"page_size":  page_size,
+		"page_index": page_index,
+	}
+	reqUrl := fmt.Sprintf(fprintUrls["get_fprint_info"], fip, assetId)
+	resp, _ := tool.Get(reqUrl, queryParams, token)
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+}
+
 func examine_fprint() {
 	configs := getFprintConfig()
 	fip := configs["server_ip"]

@@ -198,6 +198,40 @@ https://github.com/emqx/emqx/issues/3288
 ###################mysql##########################
 ALTER TABLE fstrategies CHANGE scv_path csv_path varchar(255)  NULL DEFAULT NULL;
 
+ALTER TABLE finger_prints  ADD  `ssssssddd` varchar(500) NULL DEFAULT NULL;
+
+
+Mysql
+删除，添加或修改表字段
+删除
+ALTER TABLE testalter_tbl DROP i;
+新增
+ALTER TABLE testalter_tbl ADD i INT;
+指定位置新增
+ALTER TABLE testalter_tbl DROP i;
+ALTER TABLE testalter_tbl ADD i INT FIRST;
+ALTER TABLE testalter_tbl DROP i;
+ALTER TABLE testalter_tbl ADD i INT AFTER c;
+
+修改字段类型及名称
+修改字段类型
+例如，把字段 c 的类型从 CHAR(1) 改为 CHAR(10)，可以执行以下命令:
+ALTER TABLE testalter_tbl MODIFY c CHAR(10);
+修改字段名
+ALTER TABLE testalter_tbl CHANGE i j BIGINT;
+注
+当你修改字段时，你可以指定是否包含值或者是否设置默认值。
+以下实例，指定字段 j 为 NOT NULL 且默认值为100 。
+ALTER TABLE testalter_tbl MODIFY j BIGINT NOT NULL DEFAULT 100;
+
+修改删除字段默认值
+修改
+ALTER TABLE testalter_tbl ALTER i SET DEFAULT 1000;
+删除
+ALTER TABLE testalter_tbl ALTER i DROP DEFAULT;
+
+修改表名
+ALTER TABLE testalter_tbl RENAME TO alter_tbl;
 
 #################################
 emq_pids=`ps -ef | grep /opt/JyCenter/local/emqx | grep -v grep | awk '{print $2}'`

@@ -80,3 +80,58 @@ call AddColumnUnlessExists('vehicle', 'assets', 'access_net', 'tinyint(1) UNSIGN
 call AddColumnUnlessExists('vehicle', 'fstrategies', 'name', 'varchar(255)  NULL DEFAULT NULL');
 //
 
+
+
+delimiter //
+drop procedure if exists UpdateColumnUnlessExists;
+create procedure UpdateColumnUnlessExists(
+    IN dbName tinytext,
+    IN tableName tinytext,
+    IN oldFieldName tinytext,
+    IN fieldName tinytext,
+    IN fieldDef text)
+begin
+    IF EXISTS (
+            SELECT * FROM information_schema.COLUMNS
+            WHERE column_name=oldFieldName
+              and table_name=tableName
+              and table_schema=dbName
+        )
+    THEN
+        set @ddl=CONCAT('ALTER TABLE ',dbName,'.',tableName,
+                        ' CHANGE ',oldFieldName,' ',fieldName,' ',fieldDef);
+        prepare stmt from @ddl;
+        execute stmt;
+    END IF;
+end;
+
+call UpdateColumnUnlessExists('vehicle', 'finger_prints', 'flow_ids','protos', 'varchar(500)  NULL DEFAULT NULL');
+//
+
+
+delimiter //
+drop procedure if exists DeleColumnUnlessExists;
+create procedure DeleColumnUnlessExists(
+    IN dbName tinytext,
+    IN tableName tinytext,
+    IN fieldName tinytext)
+begin
+    IF EXISTS (
+            SELECT * FROM information_schema.COLUMNS
+            WHERE column_name=fieldName
+              and table_name=tableName
+              and table_schema=dbName
+        )
+    THEN
+        set @ddl=CONCAT('ALTER TABLE ',dbName,'.',tableName,
+                        ' DROP ',fieldName);
+        prepare stmt from @ddl;
+        execute stmt;
+    END IF;
+end;
+call DeleColumnUnlessExists('vehicle', 'fprint_infos', 'dst_port');
+call DeleColumnUnlessExists('vehicle', 'fprint_infos', 'os');
+//
+
+
+
