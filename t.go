@@ -74,8 +74,10 @@ type F func(int)
 var aaa F
 
 func main() {
-	TR := fmt.Sprintf("%.2f", float64(32)/float64(24))
-	fmt.Println(TR)
+
+	a := []string{"a", "b", "c", "d", "e"}
+
+	fmt.Println(a[0:])
 	return
 	claims1 := &jwt.StandardClaims{
 		ExpiresAt: time.Now().Add(30 * time.Second).Unix(), // 过期时间，必须设置

@@ -98,6 +98,7 @@ func AddFprint(c *gin.Context) {
 			Protos:    protosJson,
 			ProtoRate: protoRateJson,
 		}
+		//todo 有点花就不添加了
 
 		fingerPrintRecordNotFound := tx.Where("device_mac = ? and cate_id = ?",
 			[]interface{}{fingerPrint.DeviceMac, fingerPrint.CateId}...).First(fingerPrint).RecordNotFound()
