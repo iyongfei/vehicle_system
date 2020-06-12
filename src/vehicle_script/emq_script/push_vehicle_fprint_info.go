@@ -36,21 +36,21 @@ func createGwFprintProbuf(vId string, mac string) []byte {
 	}
 
 	items := []*protobuf.PassiveInfoItem{}
-	for i := 0; i < 5; i++ {
+	for i := 0; i < 15; i++ {
 		moduleItem := &protobuf.PassiveInfoItem{
 			Hash:         uint32(tool.RandomNumber(5)),
 			SrcIp:        131,
 			SrcPort:      23,
 			DstIp:        23,
 			DstPort:      23,
-			Protocol:     protobuf.FlowProtos(32),
+			Protocol:     protobuf.FlowProtos(tool.RandOneToMaxNumber(239)),
 			FlowInfo:     "wklejl",
 			SafeType:     protobuf.FlowSafetype(33),
 			SafeInfo:     "jwek",
 			StartTime:    tool.TimeNowToUnix(),
 			LastSeenTime: tool.TimeNowToUnix(),
-			Src2DstBytes: 3233,
-			Dst2SrcBytes: 43444,
+			Src2DstBytes: uint64(tool.RandOneToMaxNumber(10000)),
+			Dst2SrcBytes: uint64(tool.RandOneToMaxNumber(10000)),
 			FlowStat:     protobuf.FlowStat_FST_FINISH,
 		}
 

@@ -1,21 +1,22 @@
 package model
 
 import (
-	"fmt"
 	"sort"
-	"strconv"
 	"vehicle_system/src/vehicle/emq/protobuf"
 	"vehicle_system/src/vehicle/model/model_base"
 )
 
-func GetAssetFprintProtolRate(mac string) (map[string]int, map[string]float64) {
+var total = "t"
 
-	protos := map[string]int{}
-	protoRate := map[string]float64{}
+func GetAssetFprintProtolRate(mac string) (map[string]uint64, map[string]uint64) {
+	var totalProtos uint64
+	protos := map[string]uint64{}
+	//protoRate := map[string]float64{}
 
-	protosFlowBytes := map[string]uint64{}
 	var totalFlowBytes uint64
+	protosFlowBytes := map[string]uint64{}
 
+	//获取指纹信息
 	fprintInfo := &FprintInfo{
 		DeviceMac: mac,
 	}
@@ -24,15 +25,16 @@ func GetAssetFprintProtolRate(mac string) (map[string]int, map[string]float64) {
 	err, fprintExist := fprintInfoModelBase.GetModelByCondition("device_mac = ?", []interface{}{fprintInfo.DeviceMac}...)
 
 	if err != nil {
-		return protos, protoRate
+		return protos, protosFlowBytes
 	}
 
 	if fprintExist {
-		return protos, protoRate
+		return protos, protosFlowBytes
 	}
 
 	fprintInfoId := fprintInfo.FprintInfoId
 
+	//捕获的指纹列表
 	fprintPassiveInfos := []*FprintPassiveInfo{}
 
 	fprintPassiveInfoModelBase := model_base.ModelBaseImpl(&FprintPassiveInfo{})
@@ -40,14 +42,14 @@ func GetAssetFprintProtolRate(mac string) (map[string]int, map[string]float64) {
 	err = fprintPassiveInfoModelBase.GetModelListByCondition(&fprintPassiveInfos, "fprint_info_id = ?", []interface{}{fprintInfoId}...)
 
 	if err != nil {
-		return protos, protoRate
+		return protos, protosFlowBytes
 	}
+
+	//totalProtos = uint64(len(fprintPassiveInfos))
+
 	/**
-		/**
-	{"HTTP":2,"KONTIKI":2,"MDNS":3,"NFS":1,"NTP":3,"SNMP":3,"SSDP":1}
-	{"HTTP":2,"KONTIKI":2,"NFS":1,"NTP":3,"SSDP":1}
-	{"HTTP":"0.012","KONTIKI":"0.043","MDNS":"0.459","NFS":"0.059","NTP":"0.060","SNMP":"0.264","SSDP":"0.102"}
-	{"HTTP":0.012,"KONTIKI":0.043,"NFS":0.059,"NTP":0.06,"SSDP":0.102}
+	{"DIAMETER":1,"FREE_205":1,"NETFLOW":1,"RADIUS":1,"RX":1,"SOULSEEK":1,"SSDP":1,"STEAM":1,"SYSLOG":1,"t":15}
+	{"FREE_205":17173,"NETFLOW":15120,"RADIUS":11934,"SMBV1":10380,"SSDP":10224,"STEALTHNET":12220,"STEAM":13530,"TELEGRAM":11538,"WHOIS_DAS":16362,"t":146951}
 	*/
 	//种类，占比
 	for _, fprintPassiveInfo := range fprintPassiveInfos {
@@ -71,78 +73,36 @@ func GetAssetFprintProtolRate(mac string) (map[string]int, map[string]float64) {
 			protosFlowBytes[protocolStr] = srcDstBytes + dstSrcBytes
 		}
 		totalFlowBytes += srcDstBytes + dstSrcBytes
+		if protocolStr != "" {
+			totalProtos += 1
+		}
+
 	}
 
-	for protocol, bytes := range protosFlowBytes {
-		rate := fmt.Sprintf("%.3f", float64(bytes)/float64(totalFlowBytes))
+	protos[total] = totalProtos
+	protosFlowBytes[total] = totalFlowBytes
 
-		floatRate, _ := strconv.ParseFloat(rate, 64)
-
-		protoRate[protocol] = floatRate
-	}
+	//for protocol, bytes := range protosFlowBytes {
+	//	rate := fmt.Sprintf("%.3f", float64(bytes)/float64(totalFlowBytes))
+	//
+	//	floatRate, _ := strconv.ParseFloat(rate, 64)
+	//
+	//	protoRate[protocol] = floatRate
+	//}
 
 	fprotos := sortProtos(protos)
-	fprotoRate := sortProtosRate(protoRate)
+	fprotosFlowBytes := sortProtos(protosFlowBytes)
 
-	return fprotos, fprotoRate
+	return fprotos, fprotosFlowBytes
 }
 
-const REMAIN_MAX = 5
+const REMAIN_MAX = 10
 const REMAIN_MIN = 1
-
-///////////////////////////////////////////////////////////////////////////////////////
-func sortProtosRate(protoRate map[string]float64) map[string]float64 {
-	fprotoRate := map[string]float64{}
-
-	var ProtoRateListData ProtoRateList
-	for protoId, protoCount := range protoRate {
-		obj := ProtoRate{Key: protoId, Value: protoCount}
-		ProtoRateListData = append(ProtoRateListData, obj)
-	}
-
-	sort.Sort(ProtoRateListData)
-
-	var tmpProtoRateListData ProtoRateList
-	if len(ProtoRateListData) <= REMAIN_MAX && len(ProtoRateListData) >= REMAIN_MIN {
-		tmpProtoRateListData = ProtoRateListData[0:]
-	}
-	if len(ProtoRateListData) > REMAIN_MAX {
-		tmpProtoRateListData = ProtoRateListData[0:REMAIN_MAX]
-	}
-
-	fmt.Println("tmpProtoRateListData::", tmpProtoRateListData)
-	for _, v := range tmpProtoRateListData {
-		key := v.Key
-		value := v.Value
-		fprotoRate[key] = value
-	}
-
-	return fprotoRate
-}
-
-type ProtoRateList []ProtoRate
-
-type ProtoRate struct {
-	Key   string
-	Value float64
-}
-
-func (list ProtoRateList) Len() int {
-	return len(list)
-}
-
-func (list ProtoRateList) Less(i, j int) bool {
-	return list[i].Value > list[j].Value
-}
-
-func (list ProtoRateList) Swap(i, j int) {
-	list[i], list[j] = list[j], list[i]
-}
 
 /////////////////////////////////////////////////////////////////
 
-func sortProtos(protos map[string]int) map[string]int {
-	fprotos := map[string]int{}
+func sortProtos(protos map[string]uint64) map[string]uint64 {
+	fprotos := map[string]uint64{}
 	//排序
 	var ProtoListData ProtoList
 	for protoId, protoCount := range protos {
@@ -151,7 +111,6 @@ func sortProtos(protos map[string]int) map[string]int {
 	}
 
 	sort.Sort(ProtoListData)
-	fmt.Println("tmpProtoListData::", ProtoListData)
 
 	var tmpProtoListData ProtoList
 	if len(ProtoListData) <= REMAIN_MAX && len(ProtoListData) >= REMAIN_MIN {
@@ -161,7 +120,6 @@ func sortProtos(protos map[string]int) map[string]int {
 		tmpProtoListData = ProtoListData[0:REMAIN_MAX]
 	}
 
-	fmt.Println("tmpProtoListData::", tmpProtoListData)
 	for _, v := range tmpProtoListData {
 		key := v.Key
 		value := v.Value
@@ -175,7 +133,7 @@ type ProtoList []Protos
 
 type Protos struct {
 	Key   string
-	Value int
+	Value uint64
 }
 
 func (list ProtoList) Len() int {
@@ -183,6 +141,7 @@ func (list ProtoList) Len() int {
 }
 
 func (list ProtoList) Less(i, j int) bool {
+
 	return list[i].Value > list[j].Value
 }
 

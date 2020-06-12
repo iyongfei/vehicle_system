@@ -60,4 +60,4 @@ insert_flowstatistic_vehicle_id = 754d2728b4e549c5a16c0180fcacb800
 
 #添加fprint
 insert_fprint_vehicle_id = 754d2728b4e549c5a16c0180fcacb800
-insert_fprint_mac = F80D69
+insert_fprint_mac = DfQWLAOw

@@ -38,7 +38,7 @@ flowid=32321
 
 #category
 cate_name=摄像头e
-cate_id=8Ae3FuvVKu0nHaLiwIGfFqCyWoEUE1r7
+cate_id=8Ae3FuvVKu0nHaLiwIGfFqCyWoEUE1
 
 #分页
 page_size=3
@@ -47,7 +47,7 @@ start_time=1
 end_time=2
 
 #添加指纹库
-asset_ids=F80D69,AABBCCDDEEFF,123
+asset_ids=DfQWLAOw,AABBCCDDEEFF,123,rQC53N9M
 fprint_id=d5xoDqEusAwf5UIumt005PqZNwfPfm8uL
 
 asset_fprint_id=Ad29vaXCd52A1KxREzBFlLyY6vFOlguG
@@ -65,4 +65,4 @@ end_time=1590344036
 
 #资产
 white_asset_ids=sdf,232,3fgg,44g
-asset_id=F80D69
+asset_id=DfQWLAOw

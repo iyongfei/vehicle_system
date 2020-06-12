@@ -6,10 +6,12 @@ import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/jinzhu/gorm"
+	"math/rand"
 	"strconv"
 	"time"
 	"vehicle_system/src/vehicle/conf"
 	"vehicle_system/src/vehicle/util"
+	"vehicle_system/src/vehicle_script/tool"
 )
 
 func BytesToInt32(buf []byte) uint32 {
@@ -69,15 +71,36 @@ type a struct {
 	Name      string
 }
 
-type F func(int)
-
-var aaa F
+/**
+次方
+*/
+func pow(x, n int) int {
+	ret := 1 // 结果初始为0次方的值，整数0次方为1。如果是矩阵，则为单元矩阵。
+	for n != 0 {
+		if n%2 != 0 {
+			ret = ret * x
+		}
+		n /= 2
+		x = x * x
+	}
+	return ret
+}
+func RandToMaxNumber(ln int) int32 {
+	r := rand.New(rand.NewSource(time.Now().UnixNano())).Int31n(int32(pow(10, ln)))
+	return r
+}
 
 func main() {
 
-	a := []string{"a", "b", "c", "d", "e"}
+	ret := tool.RandOneToMaxNumber(239)
 
-	fmt.Println(a[0:])
+	fmt.Println(ret)
+	return
+
+	aat := `{"KONTIKI":0.029,"MDNS":0.291,"MGCP":0.076,"NFS":0.04,"NTP":0.041,"RDP":0.04,"RTP":0.031,"SNMP":0.178,"SSDP":0.069,"TFTP":0.171}`
+
+	fmt.Println(len(aat))
+
 	return
 	claims1 := &jwt.StandardClaims{
 		ExpiresAt: time.Now().Add(30 * time.Second).Unix(), // 过期时间，必须设置

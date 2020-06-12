@@ -23,6 +23,9 @@ func AddFprint(c *gin.Context) {
 	assetIds := c.PostForm("asset_ids")
 	cateId := c.PostForm("cate_id")
 
+	model.GetFingerPrintProtolRate()
+
+	return
 	///参数校验,不能为空
 	argsTrimsEmpty := util.RrgsTrimsEmpty(assetIds, cateId)
 	if argsTrimsEmpty {
