@@ -11,7 +11,6 @@ import (
 	"time"
 	"vehicle_system/src/vehicle/conf"
 	"vehicle_system/src/vehicle/util"
-	"vehicle_system/src/vehicle_script/tool"
 )
 
 func BytesToInt32(buf []byte) uint32 {
@@ -91,10 +90,8 @@ func RandToMaxNumber(ln int) int32 {
 }
 
 func main() {
-
-	ret := tool.RandOneToMaxNumber(239)
-
-	fmt.Println(ret)
+	a := 99
+	fmt.Println(float64(a))
 	return
 
 	aat := `{"KONTIKI":0.029,"MDNS":0.291,"MGCP":0.076,"NFS":0.04,"NTP":0.041,"RDP":0.04,"RTP":0.031,"SNMP":0.178,"SSDP":0.069,"TFTP":0.171}`

@@ -6,7 +6,7 @@ import (
 	"vehicle_system/src/vehicle/model/model_base"
 )
 
-var total = "t"
+const TOTAL = "t"
 
 func GetAssetFprintProtolRate(mac string) (map[string]uint64, map[string]uint64) {
 	var totalProtos uint64
@@ -45,8 +45,6 @@ func GetAssetFprintProtolRate(mac string) (map[string]uint64, map[string]uint64)
 		return protos, protosFlowBytes
 	}
 
-	//totalProtos = uint64(len(fprintPassiveInfos))
-
 	/**
 	{"DIAMETER":1,"FREE_205":1,"NETFLOW":1,"RADIUS":1,"RX":1,"SOULSEEK":1,"SSDP":1,"STEAM":1,"SYSLOG":1,"t":15}
 	{"FREE_205":17173,"NETFLOW":15120,"RADIUS":11934,"SMBV1":10380,"SSDP":10224,"STEALTHNET":12220,"STEAM":13530,"TELEGRAM":11538,"WHOIS_DAS":16362,"t":146951}
@@ -79,16 +77,8 @@ func GetAssetFprintProtolRate(mac string) (map[string]uint64, map[string]uint64)
 
 	}
 
-	protos[total] = totalProtos
-	protosFlowBytes[total] = totalFlowBytes
-
-	//for protocol, bytes := range protosFlowBytes {
-	//	rate := fmt.Sprintf("%.3f", float64(bytes)/float64(totalFlowBytes))
-	//
-	//	floatRate, _ := strconv.ParseFloat(rate, 64)
-	//
-	//	protoRate[protocol] = floatRate
-	//}
+	protos[TOTAL] = totalProtos
+	protosFlowBytes[TOTAL] = totalFlowBytes
 
 	fprotos := sortProtos(protos)
 	fprotosFlowBytes := sortProtos(protosFlowBytes)
@@ -96,7 +86,7 @@ func GetAssetFprintProtolRate(mac string) (map[string]uint64, map[string]uint64)
 	return fprotos, fprotosFlowBytes
 }
 
-const REMAIN_MAX = 10
+const REMAIN_MAX = 100
 const REMAIN_MIN = 1
 
 /////////////////////////////////////////////////////////////////
