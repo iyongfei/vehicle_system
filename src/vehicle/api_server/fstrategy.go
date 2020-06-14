@@ -17,6 +17,7 @@ import (
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
+	"vehicle_system/src/vehicle/model/model_helper"
 	"vehicle_system/src/vehicle/response"
 	"vehicle_system/src/vehicle/util"
 )
@@ -1011,7 +1012,7 @@ func DeleFStrategy(c *gin.Context) {
 
 	//下发会话策略
 	for k := range fVehicleIdMap {
-		fStrategySetCmd := model.GetVehicleRecentFStrategy(k)
+		fStrategySetCmd := model_helper.GetVehicleRecentFStrategy(k)
 		strategyCmd := &emq_cmd.FStrategySetCmd{
 			VehicleId: fStrategySetCmd.VehicleId,
 			TaskType:  int(protobuf.Command_FLOWSTRATEGY_ADD),
@@ -1155,7 +1156,7 @@ func DeleFStrategyDiscard(c *gin.Context) {
 
 	//下发会话策略
 	for k := range fVehicleIdMap {
-		fStrategySetCmd := model.GetVehicleRecentFStrategy(k)
+		fStrategySetCmd := model_helper.GetVehicleRecentFStrategy(k)
 		strategyCmd := &emq_cmd.FStrategySetCmd{
 			VehicleId: fStrategySetCmd.VehicleId,
 			TaskType:  int(protobuf.Command_FLOWSTRATEGY_ADD),
@@ -1551,7 +1552,7 @@ func GetActiveFstrategy(c *gin.Context) {
 	}
 
 	//查询策略
-	recentFStrategy := model.GetVehicleRecentFStrategy(vehicleId)
+	recentFStrategy := model_helper.GetVehicleRecentFStrategy(vehicleId)
 
 	strategyCmd := &emq_cmd.FStrategySetCmd{
 		VehicleId: recentFStrategy.VehicleId,

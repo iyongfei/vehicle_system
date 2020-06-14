@@ -1,7 +1,8 @@
-package model
+package model_helper
 
 import (
 	"vehicle_system/src/vehicle/emq/protobuf"
+	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
 	"vehicle_system/src/vehicle/util"
 )
@@ -19,7 +20,7 @@ type FStrategySetCmd struct {
 }
 
 func GetVehicleRecentFStrategy(vehicleId string) *FStrategySetCmd {
-	vehicleAllFStrategys, err := GetFStrategyVehicles(
+	vehicleAllFStrategys, err := model.GetFStrategyVehicles(
 		"fstrategy_vehicles.vehicle_id = ?",
 		[]interface{}{vehicleId}...)
 
@@ -30,7 +31,7 @@ func GetVehicleRecentFStrategy(vehicleId string) *FStrategySetCmd {
 
 	if len(vehicleAllFStrategys) == 0 {
 		//fstrategy table
-		fstrategy := &Fstrategy{
+		fstrategy := &model.Fstrategy{
 			FstrategyId: util.RandomString(32),
 			Type:        uint8(protobuf.FlowStrategyAddParam_FLWOWHITEMODE),
 			HandleMode:  uint8(protobuf.FlowStrategyAddParam_WARNING),
@@ -43,7 +44,7 @@ func GetVehicleRecentFStrategy(vehicleId string) *FStrategySetCmd {
 		}
 
 		//fstrategyVehicle table
-		fstrategyVehicle := &FstrategyVehicle{
+		fstrategyVehicle := &model.FstrategyVehicle{
 			FstrategyVehicleId: util.RandomString(32),
 			FstrategyId:        fstrategy.FstrategyId,
 			VehicleId:          vehicleId,

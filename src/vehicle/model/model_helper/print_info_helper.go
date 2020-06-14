@@ -1,8 +1,9 @@
-package model
+package model_helper
 
 import (
 	"sort"
 	"vehicle_system/src/vehicle/emq/protobuf"
+	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
 )
 
@@ -17,7 +18,7 @@ func GetAssetFprintProtolRate(mac string) (map[string]uint64, map[string]uint64)
 	protosFlowBytes := map[string]uint64{}
 
 	//获取指纹信息
-	fprintInfo := &FprintInfo{
+	fprintInfo := &model.FprintInfo{
 		DeviceMac: mac,
 	}
 	fprintInfoModelBase := model_base.ModelBaseImpl(fprintInfo)
@@ -35,9 +36,9 @@ func GetAssetFprintProtolRate(mac string) (map[string]uint64, map[string]uint64)
 	fprintInfoId := fprintInfo.FprintInfoId
 
 	//捕获的指纹列表
-	fprintPassiveInfos := []*FprintPassiveInfo{}
+	fprintPassiveInfos := []*model.FprintPassiveInfo{}
 
-	fprintPassiveInfoModelBase := model_base.ModelBaseImpl(&FprintPassiveInfo{})
+	fprintPassiveInfoModelBase := model_base.ModelBaseImpl(&model.FprintPassiveInfo{})
 
 	err = fprintPassiveInfoModelBase.GetModelListByCondition(&fprintPassiveInfos, "fprint_info_id = ?", []interface{}{fprintInfoId}...)
 

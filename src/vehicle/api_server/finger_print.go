@@ -11,6 +11,7 @@ import (
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
+	"vehicle_system/src/vehicle/model/model_helper"
 	"vehicle_system/src/vehicle/response"
 	"vehicle_system/src/vehicle/util"
 )
@@ -23,7 +24,7 @@ func AddFprint(c *gin.Context) {
 	assetIds := c.PostForm("asset_ids")
 	cateId := c.PostForm("cate_id")
 
-	model.GetFingerPrintProtolRate()
+	model_helper.GetFingerPrintProtolFlowsRate()
 
 	return
 	///参数校验,不能为空
@@ -102,7 +103,7 @@ func AddFprint(c *gin.Context) {
 		}
 
 		//查找每个资产的上传的指纹列表
-		protos, protoRate := model.GetAssetFprintProtolRate(assetId)
+		protos, protoRate := model_helper.GetAssetFprintProtolRate(assetId)
 		protosBytes, _ := json.Marshal(protos)
 		protoRateBytes, _ := json.Marshal(protoRate)
 

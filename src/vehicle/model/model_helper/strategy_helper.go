@@ -1,7 +1,8 @@
-package model
+package model_helper
 
 import (
 	"vehicle_system/src/vehicle/emq/protobuf"
+	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
 	"vehicle_system/src/vehicle/util"
 )
@@ -19,22 +20,22 @@ type StrategySetCmd struct {
 }
 
 func GetVehicleRecentStrategy(vehicleId string) *StrategySetCmd {
-	vehicleAllStrategys ,err := GetVehicleAllStrategys(
+	vehicleAllStrategys, err := model.GetVehicleAllStrategys(
 		"strategy_vehicles.vehicle_id = ?",
 		[]interface{}{vehicleId}...)
 
-	if err!=nil{
+	if err != nil {
 		return nil
 	}
 	strategySetCmd := &StrategySetCmd{}
 
-	if  len(vehicleAllStrategys) == 0{
+	if len(vehicleAllStrategys) == 0 {
 		//strategy table
-		strategy := &Strategy{
-			StrategyId:util.RandomString(32),
-			Type:      uint8(protobuf.StrategyParam_WHITEMODE),
-			HandleMode:     uint8(protobuf.StrategyParam_WARNING),
-			Enable: true,
+		strategy := &model.Strategy{
+			StrategyId: util.RandomString(32),
+			Type:       uint8(protobuf.StrategyParam_WHITEMODE),
+			HandleMode: uint8(protobuf.StrategyParam_WARNING),
+			Enable:     true,
 		}
 		strategyModelBase := model_base.ModelBaseImpl(strategy)
 
@@ -42,10 +43,10 @@ func GetVehicleRecentStrategy(vehicleId string) *StrategySetCmd {
 			return nil
 		}
 		//strategyVehicle table
-		strategyVehicle := &StrategyVehicle{
-			StrategyVehicleId:util.RandomString(32),
-			StrategyId:strategy.StrategyId,
-			VehicleId:vehicleId,
+		strategyVehicle := &model.StrategyVehicle{
+			StrategyVehicleId: util.RandomString(32),
+			StrategyId:        strategy.StrategyId,
+			VehicleId:         vehicleId,
 		}
 		strategyVehicleModelBase := model_base.ModelBaseImpl(strategyVehicle)
 		if err := strategyVehicleModelBase.InsertModel(); err != nil {
@@ -55,19 +56,19 @@ func GetVehicleRecentStrategy(vehicleId string) *StrategySetCmd {
 		strategySetCmd.VehicleId = vehicleId
 		strategySetCmd.TaskType = int(protobuf.Command_STRATEGY_ADD)
 		strategySetCmd.StrategyId = strategy.StrategyId
-		strategySetCmd.Type =  int(strategy.Type)
-		strategySetCmd.HandleMode =  int(strategy.HandleMode)
-		strategySetCmd.Enable =  true
+		strategySetCmd.Type = int(strategy.Type)
+		strategySetCmd.HandleMode = int(strategy.HandleMode)
+		strategySetCmd.Enable = true
 		strategySetCmd.GroupId = ""
-	}else{
+	} else {
 		vehicleRecentStrategy := vehicleAllStrategys[0]
 
 		strategySetCmd.VehicleId = vehicleId
 		strategySetCmd.TaskType = int(protobuf.Command_STRATEGY_ADD)
 		strategySetCmd.StrategyId = vehicleRecentStrategy.StrategyId
-		strategySetCmd.Type =   int(vehicleRecentStrategy.Type)
-		strategySetCmd.HandleMode =  int(vehicleRecentStrategy.HandleMode)
-		strategySetCmd.Enable =  true
+		strategySetCmd.Type = int(vehicleRecentStrategy.Type)
+		strategySetCmd.HandleMode = int(vehicleRecentStrategy.HandleMode)
+		strategySetCmd.Enable = true
 		strategySetCmd.GroupId = ""
 	}
 	return strategySetCmd

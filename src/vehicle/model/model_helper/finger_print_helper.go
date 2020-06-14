@@ -1,4 +1,4 @@
-package model
+package model_helper
 
 import (
 	"encoding/json"
@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/logger"
+	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
 	"vehicle_system/src/vehicle/util"
 )
@@ -168,9 +169,9 @@ func GetAllCatesProtosAverage() map[string]float64 {
 */
 
 func GetCateOneFingerPrintProtolFlows(cateId string) [][]string {
-	fprints := []*FingerPrint{}
+	fprints := []*model.FingerPrint{}
 
-	fingerPrintModelBase := model_base.ModelBaseImpl(&FingerPrint{})
+	fingerPrintModelBase := model_base.ModelBaseImpl(&model.FingerPrint{})
 
 	err := fingerPrintModelBase.GetModelListByCondition(&fprints, "cate_id = ?", []interface{}{cateId}...)
 	if err != nil {
@@ -204,12 +205,12 @@ func GetCateOneFingerPrintProtolFlows(cateId string) [][]string {
 func GetCateFingerPrintProtolFlows(cateId string) map[string]map[string]uint64 {
 	//获取该表下某分类的所有资产
 
-	fingerPrint := &FingerPrint{
+	fingerPrint := &model.FingerPrint{
 		CateId: cateId,
 	}
 	fingerPrintModelBase := model_base.ModelBaseImpl(fingerPrint)
 
-	fingerPrintList := []*FingerPrint{}
+	fingerPrintList := []*model.FingerPrint{}
 	err := fingerPrintModelBase.GetModelListByCondition(&fingerPrintList, "cate_id = ?", []interface{}{fingerPrint.CateId}...)
 	if err != nil {
 		//todo
