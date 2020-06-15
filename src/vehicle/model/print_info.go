@@ -138,7 +138,6 @@ func (fprintInfoActive *FprintInfoActive) CreateModel(params ...interface{}) int
 type FprintInfoPassive struct {
 	gorm.Model
 	FprintInfoId string
-	DstPort      uint32
 }
 
 func (fprintInfoPassive *FprintInfoPassive) InsertModel() error {
@@ -178,8 +177,7 @@ func (fprintInfoPassive *FprintInfoPassive) GetModelListByCondition(model interf
 }
 
 func (fprintInfoPassive *FprintInfoPassive) CreateModel(params ...interface{}) interface{} {
-	fprintPassiveParams := params[0].(*protobuf.FingerprintParam_PassiveLearn)
-	fprintInfoPassive.DstPort = fprintPassiveParams.GetDstPort()
+	//fprintPassiveParams := params[0].(*protobuf.FingerprintParam_PassiveLearn)
 
 	return fprintInfoPassive
 }

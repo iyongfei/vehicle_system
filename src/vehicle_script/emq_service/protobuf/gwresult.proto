@@ -1,4 +1,4 @@
-﻿syntax = "proto3";
+syntax = "proto3";
 package protobuf;
 //小v请求的基本格式
 message GWResult {
@@ -69,9 +69,9 @@ enum FlowProtos {
 enum FlowSafetype {
 	FS_UNSET = 0; // 默认值
 	FS_SAFE = 1; // 会话安全
-	FS_VERY_DANGER = 2; // 病毒/木马 TELNET SSH 远程控制等代码类入侵
+	FS_VERY_DANGER = 2; // 病毒/木马 TELNET SSH 远程控制等代码类入侵 
 	FS_EMAL_LEAKAGE = 3; // 邮件类高危信息泄露威胁
-	FS_LEAKAGE = 4; // web类信息信息泄露威胁
+	FS_LEAKAGE = 4; // web类信息信息泄露威胁  
 	FS_WARNING = 5; // 异常网络行为
 }
 
@@ -82,23 +82,58 @@ enum FlowStat {
 	FST_IDLE = 3; // 会话空闲(超时)
 }
 
-message FlowParam {
-	message FItem {
-		uint32 hash = 1; // flow-id (int型哈希值)
-		uint32 src_ip = 2; // 发起者(源)IP地址
-		uint32 src_port = 3; // 发起者 端口号
-		uint32 dst_ip = 4; // 接受者(目标)IP地址
-		uint32 dst_port = 5; // 接受者 端口号
-		FlowProtos protocol = 6; // flow的协议类型
-		string flow_info = 7; // 会话信息 (url, pop3, 邮件协议 邮箱地址, 密码)
-		FlowSafetype safe_type = 8; // 会话安全类型
-		string safe_info = 9; // 安全类型结果(无结果为空)
-		uint32 start_time = 10; // 启动时间戳
-		uint32 last_seen_time = 11; // 最后探测时间戳
-		uint64 src2dst_bytes = 12; // 上行流量(指src->dst方向) 单位:字节
-		uint64 dst2src_bytes = 13; // 下行流量(指dst->src方向) 单位:字节
-		FlowStat flow_stat = 14; // 当前会话活跃状态
+message FItem {
+	enum DataRatioStatus {
+		DR_DEFATULT = 0; // 默认值
+		DR_DOWNLOAD = 1; // 下载
+		DR_UPLOAD = 2; // 上传
+		DR_MIXED = 3; // 交互
 	}
+
+	uint32 hash = 1; // flow-id (int型哈希值)
+	uint32 src_ip = 2; // 发起者(源)IP地址
+	uint32 src_port = 3; // 发起者 端口号
+	uint32 dst_ip = 4; // 接受者(目标)IP地址
+	uint32 dst_port = 5; // 接受者 端口号
+	FlowProtos protocol = 6; // flow的协议类型
+	string flow_info = 7; // 会话信息 (url, pop3, 邮件协议 邮箱地址, 密码)
+	FlowSafetype safe_type = 8; // 会话安全类型
+	string safe_info = 9; // 安全类型结果(无结果为空)
+	uint32 start_time = 10; // 启动时间戳
+	uint32 last_seen_time = 11; // 最后探测时间戳
+	uint64 src2dst_bytes = 12; // 上行流量(指src->dst方向) 单位:字节
+	uint64 dst2src_bytes = 13; // 下行流量(指dst->src方向) 单位:字节
+	uint64 src2dst_packets = 14; 
+	uint32 dst2src_packets = 15;
+	FlowStat flow_stat = 16; // 当前会话活跃状态
+
+	string host_name = 17; // DHCP/NETBIOS等协议中携带的主机名称信息
+
+	// 以下字段在被动指纹探测时输出
+	bool has_passive = 100; // 是否包含被动指纹信息 true: 以下字段有意义 /v1:每次都是true
+
+	// int64 iat_flow_min = 101; // 数据报最小时间间隔(ms)
+	float iat_flow_avg = 102; // 数据报平均时间间隔(ms)
+	// int64 iat_flow_max = 103; // 数据报最大时间间隔(ms)
+	float iat_flow_stddev = 104; // 数据报时间间隔标准差(ms)
+	float data_ratio = 110; // 数据量比(上下行偏重比) 正: 上行, 负: 下行
+	DataRatioStatus str_data_radio = 111; // 从数据量比上分析flow行为结果
+	// uint32 pktlen_c_to_s_min = 120; // 客户端到服务端最小包长度
+	float pktlen_c_to_s_avg = 121; // 客户端到服务端平均包长度
+	// uint32 pktlen_c_to_s_max = 122; // 客户端到服务端最大包长度
+	float pktlen_c_to_s_stddev = 123; // 客户端到服务端包长度标准差
+	// uint32 pktlen_s_to_c_min = 124; // 服务端到客户端最小包长度
+	float pktlen_s_to_c_avg = 125;
+	// uint32 pktlen_s_to_c_max = 126;
+	float pktlen_s_to_c_stddev = 127; // 服务端到客户端包长度标准差
+	string tls_client_info = 130; // TLS通信携带客户端域名信息
+	// string tls_version = 131; // TLS 版本
+	string ja3c = 132; // 客户端ja3值--重要指纹依据
+	// string ja3s = 133; // 服务端ja3值
+	double total_entropy = 140; // 信息熵
+}
+
+message FlowParam {
 	message FMacItems {
 		string mac = 1; //终端Mac
 		repeated FItem flow_item = 3; //FItem集合
@@ -106,6 +141,16 @@ message FlowParam {
 	repeated FMacItems mac_items = 1; //FMacItems
 }
 
+// 资产指纹识别
+message FingerprintParam {
+	message ActiveDetect {
+		string os = 1; // 系统类型
+	}
+
+	string mac = 1;//Mac地址
+	ActiveDetect active = 2;//主动探测信息
+	string id = 4; //接收命令的ID
+}
 
 message FirwareParam {
 	enum Status {
@@ -126,7 +171,6 @@ message FirwareParam {
 	Status upgrade_status = 3; //升级状态
 	uint32 timeout = 4; //　下载超时, 单位秒
 }
-
 
 
 //小v盒子的基本信息
@@ -164,6 +208,7 @@ message GwInfoParam {
 	int32 hb_timeout = 12; //心跳超时(秒),用于显示小V在线/离线
 	DeployMode deploy_mode = 13; //网关部署模式
 	uint32 flow_idle_time_slot = 14; //会话flow在时间段间隔之后做IDLE处理.
+	uint32 flow_space_time = 15; //flow上传间隔时间
 }
 
 
@@ -172,7 +217,7 @@ message GwInfoParam {
 message DeviceParam {
 	message Item {
 		string ip = 1;//ip地址
-		string mac = 2;//mac地址
+		string mac = 2;//mac地址 
 		string name = 3;//设备名称 v2 留空
 		string trademark = 4;//品牌名称 v2 留空
 		bool is_online = 5;//是否在线 v2 留空
@@ -181,41 +226,10 @@ message DeviceParam {
 		bool protect_switch = 8;//是否受小V保护 v2 留空
 		bool lan_visit_switch = 9;//是否可以访问内网,false:访问关闭. true:访问开启 v2 留空
 	}
+
 	repeated Item device_item = 1;
 }
 
-// 资产指纹识别
-message FingerprintParam {
-	message ActiveDetect {
-		string os = 1; // 系统类型
-	}
-
-	message PassiveLearn {
-		uint32 dst_port = 1; // 接受者 端口号
-		repeated PassiveInfoItem item = 2;
-
-	}
-
-	string mac = 1;//Mac地址
-	ActiveDetect active = 2;//主动探测信息
-	PassiveLearn passive = 3;//被动学习信息
-}
-message PassiveInfoItem {
-	uint32 hash = 1; // flow-id (int型哈希值)
-	uint32 src_ip = 2; // 发起者(源)IP地址
-	uint32 src_port = 3; // 发起者 端口号
-	uint32 dst_ip = 4; // 接受者(目标)IP地址
-	uint32 dst_port = 5; // 接受者 端口号
-	FlowProtos protocol = 6; // flow的协议类型
-	string flow_info = 7; // 会话信息 (url, pop3, 邮件协议 邮箱地址, 密码)
-	FlowSafetype safe_type = 8; // 会话安全类型
-	string safe_info = 9; // 安全类型结果(无结果为空)
-	uint32 start_time = 10; // 启动时间戳
-	uint32 last_seen_time = 11; // 最后探测时间戳
-	uint64 src2dst_bytes = 12; // 上行流量(指src->dst方向) 单位:字节
-	uint64 dst2src_bytes = 13; // 下行流量(指dst->src方向) 单位:字节
-	FlowStat flow_stat = 14; // 当前会话活跃状态
-}
 
 //威胁类型
 message ThreatParam{
@@ -314,10 +328,10 @@ message StrategyParam {
 // 小V 当前策略的状态
 message FlowStrategyParam {
 	enum Type {
-		FLWOTYPEDEFAULT = 0;
-		FLWOWHITEMODE =1;//白名单模式
-		FLWOBLACKMODE =2;//黑名单模式
-	}
+        FLWOTYPEDEFAULT = 0;
+        FLWOWHITEMODE =1;//白名单模式
+        FLWOBLACKMODE =2;//黑名单模式
+    }
 	enum HandleMode {
 		MODEDEFAULT = 0;
 		PREVENTWARNING = 1;//阻断并告警

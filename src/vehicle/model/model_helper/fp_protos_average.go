@@ -45,25 +45,25 @@ func GetFpProtosAverage() map[string]float64 {
 
 	//{"cate_id":["dns","dbs"]}
 	for tcid, tcidProtos := range fprintMaps {
-		fmt.Println("fprintMaps:::::", tcid, tcidProtos)
+		//fmt.Println("fprintMaps:::::", tcid, tcidProtos)
 		var cid = tcid
 		var cidProtos = tcidProtos
 		//获取每一个类别下的条目["dns","rtp"]
-		fmt.Println("cidProtos===", cidProtos)
+		//fmt.Println("cidProtos===", cidProtos)
 		var fpProtoRateSlice []float64
 
 		cidFlows := GetCateOneFingerPrintProtolFlows(cid)
 
 		for _, cidFlow := range cidFlows {
 			//[SMBV1 STEALTHNET STEAM t DIAMETER NETFLOW RADIUS DIRECTCONNECT SSDP TELEGRAM]
-			fmt.Println("cidFlow::::", cidFlow)
+			//fmt.Println("cidFlow::::", cidFlow)
 
 			tempCidFlow := []string{}
 
 			for _, macProto := range cidFlow {
 
 				if util.IsExistInSlice(macProto, cidProtos) {
-					fmt.Println("macProto===", macProto)
+					//fmt.Println("macProto===", macProto)
 					tempCidFlow = append(tempCidFlow, macProto)
 				}
 			}

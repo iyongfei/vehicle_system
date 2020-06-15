@@ -23,10 +23,26 @@ message Command {
     string cmdID =3; //该指令发送的ID
 }
 
-//下发指纹策略
+// 下发指纹策略
 message FingerPrintSetParam {
-	repeated string macs = 1; //执行策略的设备Mac列表
-	FlowStrategyAddParam strategy = 2; //下发的策略信息
+	enum FingerType {
+		DEFAULT_FT = 0;
+		ACTIVE_DETECT = 1; // 0x01
+		PASSIVE_LEARN = 2; // 0x02
+	}
+
+	// message PassivePrintParam {
+	// 	uint32 collect_time_remain = 2; //采集时长 (单位 秒)
+	// }
+
+	message FingerTargetParam {
+		string mac = 1; //执行策略的设备Mac列表
+		string id = 5; // 用于指纹采集的样本任务ID
+	}
+
+	FingerType finger_type = 2; // 按位与计算指纹采集方式
+	// PassivePrintParam passivePrint = 3; //下发被动采集指令内容（只主动探测时该字段无效，不解析）
+	repeated FingerTargetParam targets = 4; 
 }
 
 message FirmwareUpgradeParam {
