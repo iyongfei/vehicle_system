@@ -2,6 +2,7 @@ package api_server
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -24,7 +25,8 @@ func AddFprint(c *gin.Context) {
 	assetIds := c.PostForm("asset_ids")
 	cateId := c.PostForm("cate_id")
 
-	model_helper.GetFingerPrintProtolFlowsRate()
+	ret := model_helper.GetFpProtosAverage()
+	fmt.Println(ret)
 
 	return
 	///参数校验,不能为空

@@ -1,12 +1,14 @@
 package main
 
-func main() {
-	//protos := "{"CITRIX":1,"CNN":2,"HTTP_DOWNLOAD":1,"INSTAGRAM":1,"PPLIVE":1,"QQLIVE":1,"RTSP":1,"TELNET":1,"TFTP":1,"t":15}"
+import (
+	"fmt"
+	"strconv"
+)
 
-	//var protosMap map[string]uint64
-	//protoUnmarshalErr := json.Unmarshal([]byte(protos), &protosMap)
-	//if protoUnmarshalErr != nil {
-	//	fmt.Println(protoUnmarshalErr, "jsonerr....")
-	//}
-	//fmt.Println(protosMap)
+func main() {
+
+	rate := fmt.Sprintf("%.3f", 1.0/1.0)
+	frate, _ := strconv.ParseFloat(rate, 64)
+
+	fmt.Println(frate, frate)
 }
