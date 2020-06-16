@@ -20,8 +20,9 @@ flow_strategy_id=RfL4oNP3VpwsFfqOGNDjuC0FeqTynMqV
 insert_flow_strategy_vehicle_id=tianqi-R201i-1A86B1FF1B42
 
 #插入flow
-insert_flow_vehicle_id = 754d2728b4e549c5a16c0180fcacb80
-insert_flow_count = 4
+insert_flow_vehicle_id = 754d2728b4e549c5a16c0180fcacb800
+insert_flow_count = 5
+insert_assetids=DfQWLAOw,F80D69
 
 #端口映射
 insert_port_vehicle_id = fds

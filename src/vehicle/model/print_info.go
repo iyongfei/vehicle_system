@@ -307,27 +307,27 @@ func (fprintPassiveInfo *FprintPassiveInfo) GetModelListByCondition(model interf
 }
 
 func (fprintPassiveInfo *FprintPassiveInfo) CreateModel(params ...interface{}) interface{} {
-	fprintPassiveInfoParams := params[0].(*protobuf.PassiveInfoItem)
-	fprintPassiveInfo.Hash = fprintPassiveInfoParams.GetHash()
-
-	sipLittleEndian := util.BytesToLittleEndian(util.BigToBytes(fprintPassiveInfoParams.GetSrcIp()))
-	fprintPassiveInfo.SrcIp = util.IpIntToString(int(sipLittleEndian))
-
-	fprintPassiveInfo.SrcPort = fprintPassiveInfoParams.GetSrcPort()
-
-	dipLittleEndian := util.BytesToLittleEndian(util.BigToBytes(fprintPassiveInfoParams.GetDstIp()))
-	fprintPassiveInfo.DstIp = util.IpIntToString(int(dipLittleEndian))
-
-	fprintPassiveInfo.DstPort = fprintPassiveInfoParams.GetDstPort()
-	fprintPassiveInfo.Protocol = uint8(fprintPassiveInfoParams.GetProtocol())
-	fprintPassiveInfo.FlowInfo = fprintPassiveInfoParams.GetFlowInfo()
-	fprintPassiveInfo.SafeType = uint8(fprintPassiveInfoParams.GetSafeType())
-	fprintPassiveInfo.SafeInfo = fprintPassiveInfoParams.GetSafeInfo()
-	fprintPassiveInfo.StartTime = fprintPassiveInfoParams.GetStartTime()
-	fprintPassiveInfo.LastSeenTime = fprintPassiveInfoParams.GetLastSeenTime()
-	fprintPassiveInfo.SrcDstBytes = fprintPassiveInfoParams.GetSrc2DstBytes()
-	fprintPassiveInfo.DstSrcBytes = fprintPassiveInfoParams.GetDst2SrcBytes()
-	fprintPassiveInfo.Stat = uint8(fprintPassiveInfoParams.GetFlowStat())
+	//fprintPassiveInfoParams := params[0].(*protobuf.PassiveInfoItem)
+	//fprintPassiveInfo.Hash = fprintPassiveInfoParams.GetHash()
+	//
+	//sipLittleEndian := util.BytesToLittleEndian(util.BigToBytes(fprintPassiveInfoParams.GetSrcIp()))
+	//fprintPassiveInfo.SrcIp = util.IpIntToString(int(sipLittleEndian))
+	//
+	//fprintPassiveInfo.SrcPort = fprintPassiveInfoParams.GetSrcPort()
+	//
+	//dipLittleEndian := util.BytesToLittleEndian(util.BigToBytes(fprintPassiveInfoParams.GetDstIp()))
+	//fprintPassiveInfo.DstIp = util.IpIntToString(int(dipLittleEndian))
+	//
+	//fprintPassiveInfo.DstPort = fprintPassiveInfoParams.GetDstPort()
+	//fprintPassiveInfo.Protocol = uint8(fprintPassiveInfoParams.GetProtocol())
+	//fprintPassiveInfo.FlowInfo = fprintPassiveInfoParams.GetFlowInfo()
+	//fprintPassiveInfo.SafeType = uint8(fprintPassiveInfoParams.GetSafeType())
+	//fprintPassiveInfo.SafeInfo = fprintPassiveInfoParams.GetSafeInfo()
+	//fprintPassiveInfo.StartTime = fprintPassiveInfoParams.GetStartTime()
+	//fprintPassiveInfo.LastSeenTime = fprintPassiveInfoParams.GetLastSeenTime()
+	//fprintPassiveInfo.SrcDstBytes = fprintPassiveInfoParams.GetSrc2DstBytes()
+	//fprintPassiveInfo.DstSrcBytes = fprintPassiveInfoParams.GetDst2SrcBytes()
+	//fprintPassiveInfo.Stat = uint8(fprintPassiveInfoParams.GetFlowStat())
 	return fprintPassiveInfo
 }
 

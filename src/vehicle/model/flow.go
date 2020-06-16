@@ -29,6 +29,24 @@ type Flow struct {
 	SrcDstBytes  uint64
 	DstSrcBytes  uint64
 	Stat         uint8
+
+	//add
+	SrcDstPackets uint64
+	DstSrcPackets uint64
+
+	HostName string
+
+	HasPassive       bool
+	IatFlowAvg       float32
+	IatFlowStddev    float32
+	DataRatio        float32
+	StrDataRatio     uint8
+	PktlenCToSAvg    float32
+	PktlenCToSStddev float32
+	PktlenSToCAvg    float32
+	PktlenSToCStddev float32
+	TlsClientInfo    string
+	Ja3c             string
 }
 
 //序列化为数字类型
@@ -106,7 +124,7 @@ func (f *Flow) GetModelListByCondition(model interface{}, query interface{}, arg
 }
 
 func (flow *Flow) CreateModel(flowParam ...interface{}) interface{} {
-	flowItemParams := flowParam[0].(*protobuf.FlowParam_FItem)
+	flowItemParams := flowParam[0].(*protobuf.FItem)
 	flow.Hash = flowItemParams.GetHash()
 
 	sipLittleEndian := util.BytesToLittleEndian(util.BigToBytes(flowItemParams.GetSrcIp()))
@@ -126,7 +144,23 @@ func (flow *Flow) CreateModel(flowParam ...interface{}) interface{} {
 	flow.LastSeenTime = flowItemParams.GetLastSeenTime()
 	flow.SrcDstBytes = flowItemParams.GetSrc2DstBytes()
 	flow.DstSrcBytes = flowItemParams.GetDst2SrcBytes()
+
 	flow.Stat = uint8(flowItemParams.GetFlowStat())
+
+	//add
+	flow.SrcDstPackets = flowItemParams.GetSrc2DstPackets()
+	flow.DstSrcPackets = uint64(flowItemParams.GetDst2SrcPackets())
+	flow.HasPassive = flowItemParams.GetHasPassive()
+	flow.IatFlowAvg = flowItemParams.GetIatFlowAvg()
+	flow.IatFlowStddev = flowItemParams.GetIatFlowStddev()
+	flow.DataRatio = flowItemParams.GetDataRatio()
+	flow.StrDataRatio = uint8(flowItemParams.GetStrDataRadio())
+	flow.PktlenCToSAvg = flowItemParams.GetPktlenCToSAvg()
+	flow.PktlenCToSStddev = flowItemParams.GetPktlenCToSStddev()
+	flow.PktlenSToCAvg = flowItemParams.GetPktlenSToCAvg()
+	flow.PktlenSToCStddev = flowItemParams.GetPktlenSToCStddev()
+	flow.TlsClientInfo = flowItemParams.GetTlsClientInfo()
+	flow.Ja3c = flowItemParams.GetJa3C()
 	return flow
 }
 

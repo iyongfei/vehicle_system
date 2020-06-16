@@ -108,6 +108,7 @@ message FItem {
 	FlowStat flow_stat = 16; // 当前会话活跃状态
 
 	string host_name = 17; // DHCP/NETBIOS等协议中携带的主机名称信息
+	uint32 category = 18; // 协议门类
 
 	// 以下字段在被动指纹探测时输出
 	bool has_passive = 100; // 是否包含被动指纹信息 true: 以下字段有意义 /v1:每次都是true
@@ -117,7 +118,7 @@ message FItem {
 	// int64 iat_flow_max = 103; // 数据报最大时间间隔(ms)
 	float iat_flow_stddev = 104; // 数据报时间间隔标准差(ms)
 	float data_ratio = 110; // 数据量比(上下行偏重比) 正: 上行, 负: 下行
-	DataRatioStatus str_data_radio = 111; // 从数据量比上分析flow行为结果
+	DataRatioStatus str_data_ratio = 111; // 从数据量比上分析flow行为结果
 	// uint32 pktlen_c_to_s_min = 120; // 客户端到服务端最小包长度
 	float pktlen_c_to_s_avg = 121; // 客户端到服务端平均包长度
 	// uint32 pktlen_c_to_s_max = 122; // 客户端到服务端最大包长度
@@ -130,7 +131,7 @@ message FItem {
 	// string tls_version = 131; // TLS 版本
 	string ja3c = 132; // 客户端ja3值--重要指纹依据
 	// string ja3s = 133; // 服务端ja3值
-	double total_entropy = 140; // 信息熵
+	// double total_entropy = 140; // 信息熵
 }
 
 message FlowParam {
