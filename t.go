@@ -90,8 +90,8 @@ func RandToMaxNumber(ln int) int32 {
 }
 
 func main() {
-	a := 99
-	fmt.Println(float64(a))
+	a := time.Duration(1)
+	fmt.Println(a)
 	return
 
 	aat := `{"KONTIKI":0.029,"MDNS":0.291,"MGCP":0.076,"NFS":0.04,"NTP":0.041,"RDP":0.04,"RTP":0.031,"SNMP":0.178,"SSDP":0.069,"TFTP":0.171}`

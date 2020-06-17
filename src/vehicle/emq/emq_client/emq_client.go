@@ -8,6 +8,7 @@ import (
 	"vehicle_system/src/vehicle/emq/subscribe_server_test"
 	"vehicle_system/src/vehicle/emq/topic_router"
 	"vehicle_system/src/vehicle/logger"
+	"vehicle_system/src/vehicle/model/model_helper"
 	"vehicle_system/src/vehicle/util"
 )
 
@@ -81,6 +82,9 @@ func (m *EmqInstance) InitEmqClient() {
 
 	logger.Logger.Print("%s,emqClient init success:%v", util.RunFuncName(), &EmqClient)
 	logger.Logger.Info("%s,emqClient init success:%v", util.RunFuncName(), &EmqClient)
+
+	model_helper.JudgeAssetCollectTime("DfQWLAOw")
+
 }
 
 func (m *EmqInstance) NewClientOptions() *mqtt.ClientOptions {

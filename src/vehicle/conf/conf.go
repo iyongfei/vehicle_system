@@ -54,6 +54,11 @@ var (
 
 	//jwt
 	SignKey string
+
+	//fp
+	CollectTime  uint32
+	ProtoCount   uint32
+	CollectTotal uint32
 )
 
 func Setup() {
@@ -124,8 +129,18 @@ func Setup() {
 		EmqBrokerUrl, EmqClientId, EmqKeepAlive, AutoReconnect, ConnectTimeOut, EmqPingTimeOut, EmqCleanSession,
 		EmqUser, EmqPassword, MaxReconnectInterval, EmqQos, PublishChanCapa, PublishChanIdle, SubscribeChanCapa, SubscribeChanIdle)
 
+	//jwt
 	SignKey = iniParser.GetString("jwt", "sign_key")
 
 	logger.Logger.Info("SignKey:%s", SignKey)
 	logger.Logger.Print("SignKey:%s", SignKey)
+
+	//fp
+	CollectTime = iniParser.GetUint32("fp", "collect_time")
+	ProtoCount = iniParser.GetUint32("fp", "proto_count")
+	CollectTotal = iniParser.GetUint32("fp", "collect_total")
+
+	logger.Logger.Info("collect_time:%d,proto_count:%d,collect_total:%d", CollectTime, ProtoCount, CollectTotal)
+	logger.Logger.Print("collect_time:%d,proto_count:%d,collect_total:%d", CollectTime, ProtoCount, CollectTotal)
+
 }

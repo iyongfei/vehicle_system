@@ -150,11 +150,12 @@ func (flow *Flow) CreateModel(flowParam ...interface{}) interface{} {
 	//add
 	flow.SrcDstPackets = flowItemParams.GetSrc2DstPackets()
 	flow.DstSrcPackets = uint64(flowItemParams.GetDst2SrcPackets())
+	flow.HostName = flowItemParams.GetHostName()
 	flow.HasPassive = flowItemParams.GetHasPassive()
 	flow.IatFlowAvg = flowItemParams.GetIatFlowAvg()
 	flow.IatFlowStddev = flowItemParams.GetIatFlowStddev()
 	flow.DataRatio = flowItemParams.GetDataRatio()
-	flow.StrDataRatio = uint8(flowItemParams.GetStrDataRadio())
+	flow.StrDataRatio = uint8(flowItemParams.GetStrDataRatio())
 	flow.PktlenCToSAvg = flowItemParams.GetPktlenCToSAvg()
 	flow.PktlenCToSStddev = flowItemParams.GetPktlenCToSStddev()
 	flow.PktlenSToCAvg = flowItemParams.GetPktlenSToCAvg()
