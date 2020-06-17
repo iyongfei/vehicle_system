@@ -86,5 +86,33 @@ CREATE TABLE IF NOT EXISTS `fprint_flows`  (
    PRIMARY KEY (`id`) USING BTREE,
    UNIQUE KEY `flow_id` (`flow_id`),
 
-  INDEX `idx_flows_deleted_at`(`deleted_at`) USING BTREE
+  INDEX `idx_fprint_flows_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+
+
+
+CREATE TABLE IF NOT EXISTS `fprints`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+
+  `fprint_id` int(11) UNSIGNED NULL DEFAULT NULL,
+  `vehicle_id` varchar(255) NULL DEFAULT NULL,
+  `asset_id` varchar(255) NULL DEFAULT NULL,
+
+  `collect_time` int(11) NULL DEFAULT NULL,
+  `collect_proto_rate` double NULL DEFAULT NULL,
+  `collect_host` varchar(255) NULL DEFAULT NULL,
+  `collect_tls` varchar(255) NULL DEFAULT NULL,
+  `collect_bytes` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
+  `collect_start` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
+  `collect_end` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
+
+   PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_fprints_deleted_at`(`deleted_at`) USING BTREE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+
+

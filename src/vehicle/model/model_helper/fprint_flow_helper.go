@@ -9,13 +9,7 @@ import (
 	"vehicle_system/src/vehicle/util"
 )
 
-/**
-collect_time=300
-proto_count=5
-collect_total=1048576
-是否采集到了hostname
-是否采集到了tls_client_info
-*/
+//################asset元数据###########
 
 /**
 判断某个设备采集的总流量
@@ -23,8 +17,8 @@ collect_total=1048576
 const MinTotalRate = 0.6
 
 func JudgeAssetCollectByteTotal(assetId string) float64 {
-	const MAX_BYTESTOTAL_RATE = 0.2
-	const MAX_BYTESTOTAL = 100 * 1024 * 1024 //字节
+	collectTotalRate := conf.CollectTotalRate
+	collectTotal := conf.CollectTotal //字节
 
 	var ftatalBytes float64
 	fprintFlows := []*model.FprintFlow{}
@@ -42,10 +36,10 @@ func JudgeAssetCollectByteTotal(assetId string) float64 {
 		flowByte := dstSrcBytes + srcDstBytes
 		totalBytes += flowByte
 	}
-	if totalBytes > MAX_BYTESTOTAL {
-		ftatalBytes = MAX_BYTESTOTAL_RATE
+	if totalBytes > collectTotal {
+		ftatalBytes = collectTotalRate
 	} else {
-		ftatalBytes = float64(float64(totalBytes)/float64(MAX_BYTESTOTAL)) * MAX_BYTESTOTAL_RATE
+		ftatalBytes = float64(float64(totalBytes)/float64(collectTotal)) * collectTotalRate
 	}
 
 	return ftatalBytes
@@ -56,7 +50,7 @@ func JudgeAssetCollectByteTotal(assetId string) float64 {
 */
 
 func JudgeAssetCollectTlsInfo(assetId string) float64 {
-	const MAX_TLS_RATE = 0.1
+	MAX_TLS_RATE := conf.CollectTlsRate
 	var ftls float64
 	fprintFlows := []*model.FprintFlow{}
 
@@ -80,7 +74,7 @@ SELECT * FROM flows WHERE vehicle_id = '';
 */
 
 func JudgeAssetCollectHostName(assetId string) float64 {
-	const MAX_HOSTNAME_RATE = 0.2
+	MAX_HOSTNAME_RATE := conf.CollectHostRate
 	var fhost float64
 	fprintFlows := []*model.FprintFlow{}
 
@@ -104,8 +98,8 @@ func JudgeAssetCollectHostName(assetId string) float64 {
 */
 
 func JudgeAssetCollectProtos(assetId string) float64 {
-	const PROTOS = 5
-	const MAX_PROTOS_RATE = 0.3
+	PROTOS := conf.ProtoCount
+	MAX_PROTOS_RATE := conf.ProtoCountRate
 
 	var fProtos float64
 	var protocols []string
@@ -128,7 +122,7 @@ func JudgeAssetCollectProtos(assetId string) float64 {
 		protosCountSlice = append(protosCountSlice, proto)
 	}
 
-	if len(protosCountSlice) > PROTOS {
+	if len(protosCountSlice) > int(PROTOS) {
 		fProtos = MAX_PROTOS_RATE
 	} else {
 		fProtos = float64(float64(len(protosCountSlice))/float64(PROTOS)) * MAX_PROTOS_RATE
@@ -140,9 +134,10 @@ func JudgeAssetCollectProtos(assetId string) float64 {
 /**
 判断某个设备采集时长是否达标
 */
+
 func JudgeAssetCollectTime(assetId string) float64 {
-	const CTIME = 300
-	const MAX_COLLECT_RATE = 0.2
+	CTIME := conf.CollectTime
+	MAX_COLLECT_RATE := conf.CollectTimeRate
 
 	var fcollect float64
 
@@ -182,7 +177,7 @@ func JudgeAssetCollectTime(assetId string) float64 {
 	lastAbsTime := math.Abs(float64(lastFprintFlow.CreatedAt.Unix()))
 
 	//差值
-	distanceTime := uint32(math.Abs(lastAbsTime - firstAbsTime))
+	distanceTime := uint64(math.Abs(lastAbsTime - firstAbsTime))
 
 	logger.Logger.Print("%s, last fprint flow assetId:%s,distanceTime:%d", util.RunFuncName(), assetId, distanceTime)
 

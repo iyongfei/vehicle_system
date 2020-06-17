@@ -56,9 +56,16 @@ var (
 	SignKey string
 
 	//fp
-	CollectTime  uint32
-	ProtoCount   uint32
-	CollectTotal uint32
+	CollectTime  uint64
+	ProtoCount   uint64
+	CollectTotal uint64
+
+	CollectTimeRate  float64
+	ProtoCountRate   float64
+	CollectTotalRate float64
+	CollectHostRate  float64
+	CollectTlsRate   float64
+	MinRate          float64
 )
 
 func Setup() {
@@ -136,11 +143,23 @@ func Setup() {
 	logger.Logger.Print("SignKey:%s", SignKey)
 
 	//fp
-	CollectTime = iniParser.GetUint32("fp", "collect_time")
-	ProtoCount = iniParser.GetUint32("fp", "proto_count")
-	CollectTotal = iniParser.GetUint32("fp", "collect_total")
+
+	CollectTime = iniParser.GetUint64("fp", "collect_time")
+	ProtoCount = iniParser.GetUint64("fp", "proto_count")
+	CollectTotal = iniParser.GetUint64("fp", "collect_total")
 
 	logger.Logger.Info("collect_time:%d,proto_count:%d,collect_total:%d", CollectTime, ProtoCount, CollectTotal)
 	logger.Logger.Print("collect_time:%d,proto_count:%d,collect_total:%d", CollectTime, ProtoCount, CollectTotal)
 
+	CollectTimeRate = iniParser.GetFloat64("fp", "collect_time_rate")
+	ProtoCountRate = iniParser.GetFloat64("fp", "proto_count_rate")
+	CollectTotalRate = iniParser.GetFloat64("fp", "collect_total_rate")
+	CollectHostRate = iniParser.GetFloat64("fp", "collect_host_rate")
+	CollectTlsRate = iniParser.GetFloat64("fp", "collect_tls_rate")
+	MinRate = iniParser.GetFloat64("fp", "min_rate")
+
+	logger.Logger.Info("collect_time_rate:%f,proto_count_rate:%f,collect_total_rate:%f,collect_host_rate:%f,collect_tls_rate:%f,min_rate:%f",
+		CollectTimeRate, ProtoCountRate, CollectTotalRate, CollectHostRate, CollectTlsRate, MinRate)
+	logger.Logger.Print("collect_time_rate:%f,proto_count_rate:%f,collect_total_rate:%f,collect_host_rate:%f,collect_tls_rate:%f,min_rate:%f",
+		CollectTimeRate, ProtoCountRate, CollectTotalRate, CollectHostRate, CollectTlsRate, MinRate)
 }
