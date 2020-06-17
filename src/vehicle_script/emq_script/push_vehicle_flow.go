@@ -69,7 +69,7 @@ func creatFlowProtobuf(vehicleId string, InsertAssetids string, flowCount int) [
 				IatFlowAvg:       3.2,
 				IatFlowStddev:    2.3,
 				DataRatio:        1.2,
-				StrDataRadio:     protobuf.FItem_DR_DOWNLOAD,
+				StrDataRatio:     protobuf.FItem_DR_DOWNLOAD,
 				PktlenCToSAvg:    100.2,
 				PktlenCToSStddev: 233.3,
 				PktlenSToCAvg:    1.333,

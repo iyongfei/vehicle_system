@@ -42,3 +42,49 @@ call AddColumnUnlessExists('vehicle', 'flows', 'ja3c', 'varchar(255) NULL DEFAUL
 //
 
 
+
+CREATE TABLE IF NOT EXISTS `fprint_flows`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+
+  `flow_id` int(11) UNSIGNED NULL DEFAULT NULL,
+  `vehicle_id` varchar(255) NULL DEFAULT NULL,
+  `asset_id` varchar(255) NULL DEFAULT NULL,
+  `hash` int(11) UNSIGNED NULL DEFAULT NULL,
+  `src_ip` varchar(255) NULL DEFAULT NULL,
+  `src_port` int(11) NULL DEFAULT NULL,
+  `dst_ip` varchar(255) NULL DEFAULT NULL,
+  `dst_port` int(11) NULL DEFAULT NULL,
+
+  `protocol` tinyint(3) UNSIGNED NULL DEFAULT NULL,
+  `flow_info` varchar(255) NULL DEFAULT NULL,
+  `safe_type` tinyint(3) UNSIGNED NULL DEFAULT NULL,
+  `safe_info` varchar(255) NULL DEFAULT NULL,
+  `start_time`  int(11) UNSIGNED NULL DEFAULT NULL,
+  `last_seen_time` int(11)  UNSIGNED NULL DEFAULT NULL,
+  `src_dst_bytes`  BIGINT(20) UNSIGNED NULL DEFAULT NULL,
+  `dst_src_bytes`  BIGINT(20) UNSIGNED NULL DEFAULT NULL,
+  `stat`  tinyint(3) UNSIGNED NULL DEFAULT NULL,
+
+   `src_dst_packets`  BIGINT(20) UNSIGNED NULL DEFAULT NULL,
+   `dst_src_packets`  BIGINT(20) UNSIGNED NULL DEFAULT NULL,
+   `host_name` varchar(255) NULL DEFAULT NULL,
+   `has_passive` tinyint(1) NULL DEFAULT NULL,
+   `iat_flow_avg` double  NULL DEFAULT NULL,
+   `iat_flow_stddev` double  NULL DEFAULT NULL,
+   `data_ratio` double  NULL DEFAULT NULL,
+   `str_data_ratio` tinyint(3) UNSIGNED NULL DEFAULT NULL,
+   `pktlen_c_to_s_avg` double  NULL DEFAULT NULL,
+   `pktlen_c_to_s_stddev` double  NULL DEFAULT NULL,
+   `pktlen_s_to_c_avg` double  NULL DEFAULT NULL,
+   `pktlen_s_to_c_stddev` double  NULL DEFAULT NULL,
+   `tls_client_info` varchar(255) NULL DEFAULT NULL,
+   `ja3c` varchar(255) NULL DEFAULT NULL,
+
+   PRIMARY KEY (`id`) USING BTREE,
+   UNIQUE KEY `flow_id` (`flow_id`),
+
+  INDEX `idx_flows_deleted_at`(`deleted_at`) USING BTREE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
