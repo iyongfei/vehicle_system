@@ -7,6 +7,7 @@ import (
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
+	"vehicle_system/src/vehicle/model/model_helper"
 	"vehicle_system/src/vehicle/response"
 	"vehicle_system/src/vehicle/service/push"
 	"vehicle_system/src/vehicle/util"
@@ -162,6 +163,19 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 
 	for _, macItems := range flowParams.MacItems {
 		mac := macItems.GetMac()
+
+		//判断资产是否达标指纹完整度
+
+		totalByRate := model_helper.JudgeAssetCollectByteTotal(mac)
+		tlsRate := model_helper.JudgeAssetCollectTlsInfo(mac)
+		hostRate := model_helper.JudgeAssetCollectHostName(mac)
+		protoRate := model_helper.JudgeAssetCollectProtos(mac)
+		collectRate := model_helper.JudgeAssetCollectTime(mac)
+
+		totalRate := totalByRate + tlsRate + hostRate + protoRate + collectRate
+		if totalRate >= model_helper.MinTotalRate {
+			continue
+		}
 		macFlows := macItems.GetFlowItem()
 		for _, flowItem := range macFlows {
 			flowItemId := flowItem.GetHash()

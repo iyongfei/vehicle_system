@@ -87,6 +87,21 @@ func QueryModelRecordsByWhereCondition(models interface{}, query interface{}, ar
 /**
 获取某记录排序
 */
+func QueryModelOneRecordByWhereSelectOrderBy(model interface{}, selects []string, orderBy interface{}, query interface{}, args ...interface{}) error {
+	vgorm, err := GetMysqlInstance().GetMysqlDB()
+	if err != nil {
+		return fmt.Errorf("%s open grom err:%v", util.RunFuncName(), err.Error())
+	}
+	err = vgorm.Where(query, args...).Select(selects).Order(orderBy).First(model).Error
+	if err != nil {
+		return fmt.Errorf("%s err %v", util.RunFuncName(), err.Error())
+	}
+	return nil
+}
+
+/**
+获取某记录排序
+*/
 func QueryModelOneRecordByWhereConditionOrderBy(model interface{}, orderBy interface{}, query interface{}, args ...interface{}) error {
 	vgorm, err := GetMysqlInstance().GetMysqlDB()
 	if err != nil {
