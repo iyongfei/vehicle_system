@@ -38,6 +38,12 @@ func PushAllVehicleOffLine() {
 		logger.Logger.Print("tdata vehicle_asset check err:%v", err.Error())
 	}
 
+	err = tdata.AssetFprintCheck()
+	if err != nil {
+		logger.Logger.Error("tdata vehicle_asset check fprint err:%v", err.Error())
+		logger.Logger.Print("tdata vehicle_asset check fprint err:%v", err.Error())
+	}
+
 	var vehicleIds []string
 	_ = mysql.QueryPluckByModelWhere(&model.VehicleInfo{}, "vehicle_id", &vehicleIds,
 		"", []interface{}{}...)

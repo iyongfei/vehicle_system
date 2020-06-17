@@ -190,7 +190,7 @@ func HanleSubscribeTopicLineData(topicMsg mqtt.Message) error {
 	}
 
 	var err error
-	if util.RrgsTrimEmpty(vehicleId) {
+	if !util.RrgsTrimEmpty(vehicleId) {
 		vehicleCache := emq_cacha.GetVehicleCache()
 		vehicleCache.Clean(vehicleId)
 		err = HandleVehicleOfflineStatus(vehicleId, false)

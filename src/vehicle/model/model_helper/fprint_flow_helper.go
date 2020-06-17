@@ -1,74 +1,97 @@
 package model_helper
 
 import (
-	"math"
+	"fmt"
 	"vehicle_system/src/vehicle/conf"
 	"vehicle_system/src/vehicle/db/mysql"
+	"vehicle_system/src/vehicle/emq/protobuf"
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
+	"vehicle_system/src/vehicle/model/model_base"
 	"vehicle_system/src/vehicle/util"
 )
 
-//################asset元数据###########
-
-/**
+/****************************************************************************************************
 判断某个设备采集的总流量
 */
-const MinTotalRate = 0.6
 
 func JudgeAssetCollectByteTotal(assetId string) float64 {
 	collectTotalRate := conf.CollectTotalRate
 	collectTotal := conf.CollectTotal //字节
 
 	var ftatalBytes float64
-	fprintFlows := []*model.FprintFlow{}
 
+	totalBytes := GetAssetCollectByteTotal(assetId)
+
+	logger.Logger.Print("%s totalBytes:%d", util.RunFuncName(), totalBytes)
+	logger.Logger.Info("%s totalBytes:%d", util.RunFuncName(), totalBytes)
+
+	if totalBytes > collectTotal {
+		ftatalBytes = collectTotalRate
+	} else {
+		ftatalBytes = float64(float64(totalBytes)/float64(collectTotal)) * collectTotalRate
+	}
+	logger.Logger.Print("%s ftatalBytes:%f", util.RunFuncName(), ftatalBytes)
+	logger.Logger.Info("%s ftatalBytes:%f", util.RunFuncName(), ftatalBytes)
+
+	return ftatalBytes
+}
+
+func GetAssetCollectByteTotal(assetId string) uint64 {
+	var totalBytes uint64
+
+	fprintFlows := []*model.FprintFlow{}
 	err := mysql.QueryModelRecordsByWhereCondition(&fprintFlows, "asset_id = ?", []interface{}{assetId}...)
 
 	if err != nil {
-		return 0
+		return totalBytes
 	}
 
-	var totalBytes uint64
 	for _, fprintFlow := range fprintFlows {
 		dstSrcBytes := fprintFlow.DstSrcBytes
 		srcDstBytes := fprintFlow.SrcDstBytes
 		flowByte := dstSrcBytes + srcDstBytes
 		totalBytes += flowByte
 	}
-	if totalBytes > collectTotal {
-		ftatalBytes = collectTotalRate
-	} else {
-		ftatalBytes = float64(float64(totalBytes)/float64(collectTotal)) * collectTotalRate
-	}
-
-	return ftatalBytes
+	return totalBytes
 }
 
-/**
+/**************************************************************************************************
 判断某个设备采集的tls
 */
 
 func JudgeAssetCollectTlsInfo(assetId string) float64 {
 	MAX_TLS_RATE := conf.CollectTlsRate
 	var ftls float64
-	fprintFlows := []*model.FprintFlow{}
 
-	err := mysql.QueryModelRecordsByWhereCondition(&fprintFlows, "asset_id = ? and tls_client_info != ''", []interface{}{assetId}...)
+	tlsInfo := GetAssetCollectTlsInfo(assetId)
 
-	if err != nil {
-		return 0
-	}
+	logger.Logger.Print("%s tlsInfo:%s", util.RunFuncName(), tlsInfo)
+	logger.Logger.Info("%s tlsInfo:%s", util.RunFuncName(), tlsInfo)
 
-	if len(fprintFlows) == 0 {
+	if tlsInfo == "" {
 		ftls = 0
 	} else {
 		ftls = MAX_TLS_RATE
 	}
+	logger.Logger.Print("%s tlsInfo:%f", util.RunFuncName(), ftls)
+	logger.Logger.Info("%s tlsInfo:%f", util.RunFuncName(), ftls)
+
 	return ftls
 }
+func GetAssetCollectTlsInfo(assetId string) string {
 
-/**
+	fprintFlow := &model.FprintFlow{}
+
+	err := mysql.QueryModelRecordsByWhereCondition(&fprintFlow, "asset_id = ? and tls_client_info != ''", []interface{}{assetId}...)
+
+	if err != nil {
+		return fprintFlow.TlsClientInfo
+	}
+	return fprintFlow.TlsClientInfo
+}
+
+/**************************************************************************************************
 判断某个设备采集的hostname
 SELECT * FROM flows WHERE vehicle_id = '';
 */
@@ -76,62 +99,115 @@ SELECT * FROM flows WHERE vehicle_id = '';
 func JudgeAssetCollectHostName(assetId string) float64 {
 	MAX_HOSTNAME_RATE := conf.CollectHostRate
 	var fhost float64
-	fprintFlows := []*model.FprintFlow{}
 
-	err := mysql.QueryModelRecordsByWhereCondition(&fprintFlows, "asset_id = ? and host_name != ''", []interface{}{assetId}...)
+	hostName := GetAssetCollectHostName(assetId)
+	logger.Logger.Print("%s hostName:%s", util.RunFuncName(), hostName)
+	logger.Logger.Info("%s hostName:%s", util.RunFuncName(), hostName)
 
-	if err != nil {
-		return 0
-	}
-
-	if len(fprintFlows) == 0 {
+	if hostName == "" {
 		fhost = 0
 	} else {
 		fhost = MAX_HOSTNAME_RATE
 	}
-
+	logger.Logger.Print("%s fhost:%f", util.RunFuncName(), fhost)
+	logger.Logger.Info("%s fhost:%f", util.RunFuncName(), fhost)
 	return fhost
 }
 
-/**
+func GetAssetCollectHostName(assetId string) string {
+	fprintFlows := &model.FprintFlow{}
+
+	err := mysql.QueryModelRecordsByWhereCondition(&fprintFlows, "asset_id = ? and host_name != ''", []interface{}{assetId}...)
+
+	if err != nil {
+		return fprintFlows.TlsClientInfo
+	}
+
+	return fprintFlows.TlsClientInfo
+}
+
+/**************************************************************************************************
 判断某个设备采集的协议种类数
 */
+func getAssetCollectProtosRate(assetId string) map[string]float64 {
+	fprotosMap := map[string]float64{}
+
+	fprintFlows := []*model.FprintFlow{}
+	err := mysql.QueryModelRecordsByWhereCondition(&fprintFlows, "asset_id = ?", []interface{}{assetId}...)
+
+	if err != nil {
+		return fprotosMap
+	}
+
+	fprotosBytesMap := map[string]uint64{}
+
+	for _, fpFlow := range fprintFlows {
+
+		protocolStr := protobuf.GetFlowProtocols(int(fpFlow.Protocol))
+
+		upProtocol := fmt.Sprintf("UP_%s", protocolStr)
+		downProtocol := fmt.Sprintf("DOWN_%s", protocolStr)
+
+		srcDstBytes := fpFlow.SrcDstBytes //up
+		dstSrcBytes := fpFlow.DstSrcBytes //down
+
+		if v, ok := fprotosBytesMap[upProtocol]; ok {
+			fprotosBytesMap[upProtocol] = v + srcDstBytes
+		} else {
+			fprotosBytesMap[upProtocol] = srcDstBytes
+		}
+
+		if v, ok := fprotosBytesMap[downProtocol]; ok {
+			fprotosBytesMap[downProtocol] = v + dstSrcBytes
+		} else {
+			fprotosBytesMap[downProtocol] = dstSrcBytes
+		}
+
+	}
+
+	//总流量大小
+	var totalBytes uint64
+	for _, fprintFlow := range fprintFlows {
+		dstSrcBytes := fprintFlow.DstSrcBytes
+		srcDstBytes := fprintFlow.SrcDstBytes
+		flowByte := dstSrcBytes + srcDstBytes
+		totalBytes += flowByte
+	}
+	for p, pb := range fprotosBytesMap {
+		pbRate := float64(float64(pb) / float64(totalBytes))
+
+		if v, ok := fprotosMap[p]; ok {
+			fprotosMap[p] = pbRate + v
+		} else {
+			fprotosMap[p] = pbRate
+		}
+	}
+	return fprotosMap
+}
 
 func JudgeAssetCollectProtos(assetId string) float64 {
 	PROTOS := conf.ProtoCount
 	MAX_PROTOS_RATE := conf.ProtoCountRate
 
-	var fProtos float64
-	var protocols []string
-	_ = mysql.QueryPluckByModelWhere(&model.FprintFlow{}, "protocol", &protocols,
-		"asset_id = ?", []interface{}{assetId}...)
+	var fcollectProto float64
+	collectProtosRate := getAssetCollectProtosRate(assetId)
 
-	protocolMap := map[string]int{}
+	logger.Logger.Print("%s collectProtosRate:%v", util.RunFuncName(), collectProtosRate)
+	logger.Logger.Info("%s collectProtosRate:%v", util.RunFuncName(), collectProtosRate)
 
-	for _, protocol := range protocols {
-		if protocolCount, ok := protocolMap[protocol]; ok {
-			protocolMap[protocol] = protocolCount + 1
-		} else {
-			protocolMap[protocol] = 1
-		}
-	}
-
-	protosCountSlice := []string{}
-
-	for proto, _ := range protocolMap {
-		protosCountSlice = append(protosCountSlice, proto)
-	}
-
-	if len(protosCountSlice) > int(PROTOS) {
-		fProtos = MAX_PROTOS_RATE
+	if len(collectProtosRate) > int(PROTOS) {
+		fcollectProto = MAX_PROTOS_RATE
 	} else {
-		fProtos = float64(float64(len(protosCountSlice))/float64(PROTOS)) * MAX_PROTOS_RATE
+		fcollectProto = float64(float64(len(collectProtosRate))/float64(PROTOS)) * MAX_PROTOS_RATE
 	}
 
-	return fProtos
+	logger.Logger.Print("%s collectProtosRate:%f", util.RunFuncName(), fcollectProto)
+	logger.Logger.Info("%s collectProtosRate:%f", util.RunFuncName(), fcollectProto)
+
+	return fcollectProto
 }
 
-/**
+/******************************************************************************************
 判断某个设备采集时长是否达标
 */
 
@@ -139,53 +215,45 @@ func JudgeAssetCollectTime(assetId string) float64 {
 	CTIME := conf.CollectTime
 	MAX_COLLECT_RATE := conf.CollectTimeRate
 
-	var fcollect float64
+	var fcollect_time float64
 
-	ctime := conf.CollectTime
+	collectTime := GetAssetCollectTime(assetId)
 
-	if ctime == 0 {
-		ctime = CTIME
+	logger.Logger.Print("%s collectTime:%d", util.RunFuncName(), collectTime)
+	logger.Logger.Info("%s collectTime:%d", util.RunFuncName(), collectTime)
+	//计算百分比
+	if collectTime > CTIME {
+		fcollect_time = MAX_COLLECT_RATE
+	} else {
+		fcollect_time = float64(float64(collectTime)/float64(CTIME)) * MAX_COLLECT_RATE
 	}
+
+	logger.Logger.Print("%s fcollect_time:%f", util.RunFuncName(), fcollect_time)
+	logger.Logger.Info("%s fcollect_time:%f", util.RunFuncName(), fcollect_time)
+	return fcollect_time
+}
+
+func GetAssetCollectTime(assetId string) uint64 {
+	var collectTime uint64
 
 	//起始时间
-	firstFprintFlow := &model.FprintFlow{}
-
-	err := mysql.QueryModelOneRecordByWhereSelectOrderBy(firstFprintFlow, []string{"created_at"},
-		"created_at", "asset_id = ?", []interface{}{assetId}...)
-
-	logger.Logger.Print("%s, firt fprint flow assetId:%s,createdAt:%d", util.RunFuncName(), assetId, firstFprintFlow.CreatedAt.Unix())
-
-	if err != nil {
-		logger.Logger.Error("%s, first fprint flow assetId:%s,err:%+v", util.RunFuncName(), assetId, err)
-		logger.Logger.Print("%s, first fprint flow assetId:%s,err:%+v", util.RunFuncName(), assetId, err)
-		return 0
-	}
-	//截止时间
-	lastFprintFlow := &model.FprintFlow{}
-	err = mysql.QueryModelOneRecordByWhereSelectOrderBy(lastFprintFlow, []string{"created_at"},
-		"created_at desc", "asset_id = ?", []interface{}{assetId}...)
-	if err != nil {
-		logger.Logger.Error("%s, last fprint flow assetId:%s,err:%+v", util.RunFuncName(), assetId, err)
-		logger.Logger.Print("%s, last fprint flow assetId:%s,err:%+v", util.RunFuncName(), assetId, err)
-		return 0
+	fprint := &model.Fprint{
+		AssetId: assetId,
 	}
 
-	logger.Logger.Print("%s, last fprint flow assetId:%s,createdAt:%d", util.RunFuncName(), assetId, lastFprintFlow.CreatedAt.Unix())
+	fpModelBase := model_base.ModelBaseImpl(fprint)
 
-	//计算起始时间绝对值
-	firstAbsTime := math.Abs(float64(firstFprintFlow.CreatedAt.Unix()))
-	lastAbsTime := math.Abs(float64(lastFprintFlow.CreatedAt.Unix()))
+	err, recordNotFound := fpModelBase.GetModelByCondition("asset_id = ?", []interface{}{fprint.AssetId}...)
 
-	//差值
-	distanceTime := uint64(math.Abs(lastAbsTime - firstAbsTime))
-
-	logger.Logger.Print("%s, last fprint flow assetId:%s,distanceTime:%d", util.RunFuncName(), assetId, distanceTime)
-
-	//计算百分比
-	if distanceTime > ctime {
-		fcollect = MAX_COLLECT_RATE
-	} else {
-		fcollect = float64(float64(distanceTime)/float64(ctime)) * MAX_COLLECT_RATE
+	if err != nil || recordNotFound {
+		return collectTime
 	}
-	return fcollect
+
+	startTime := fprint.CollectStart
+	endTime := fprint.CollectEnd
+	ctime := fprint.CollectTime
+
+	collectTime = uint64(ctime) + (endTime - startTime)
+
+	return collectTime
 }

@@ -3,6 +3,8 @@ package topic_subscribe_handler
 import (
 	"fmt"
 	"github.com/golang/protobuf/proto"
+	"time"
+	"vehicle_system/src/vehicle/conf"
 	"vehicle_system/src/vehicle/emq/protobuf"
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
@@ -162,6 +164,7 @@ func HandleVehicleFlow(vehicleResult protobuf.GWResult, vehicleId string) error 
 func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 
 	for _, macItems := range flowParams.MacItems {
+
 		mac := macItems.GetMac()
 
 		//判断资产是否达标指纹完整度
@@ -169,13 +172,16 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 		totalByRate := model_helper.JudgeAssetCollectByteTotal(mac)
 		tlsRate := model_helper.JudgeAssetCollectTlsInfo(mac)
 		hostRate := model_helper.JudgeAssetCollectHostName(mac)
-		protoRate := model_helper.JudgeAssetCollectProtos(mac)
+		//protoRate := model_helper.JudgeAssetCollectProtos(mac)
 		collectRate := model_helper.JudgeAssetCollectTime(mac)
 
-		totalRate := totalByRate + tlsRate + hostRate + protoRate + collectRate
-		if totalRate >= model_helper.MinTotalRate {
+		totalRate := totalByRate + tlsRate + hostRate + collectRate
+		if totalRate >= conf.MinRate {
 			continue
 		}
+		//更新采集时间
+		updateAssetCollectTime(mac)
+
 		macFlows := macItems.GetFlowItem()
 		for _, flowItem := range macFlows {
 			flowItemId := flowItem.GetHash()
@@ -240,6 +246,45 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 					continue
 				}
 			}
+		}
+	}
+}
+func updateAssetCollectTime(mac string) {
+	fprint := &model.Fprint{
+		AssetId:      mac,
+		CollectStart: uint64(time.Now().Unix()),
+	}
+
+	fpModelBase := model_base.ModelBaseImpl(fprint)
+
+	err, recordNotFound := fpModelBase.GetModelByCondition("asset_id = ?", []interface{}{fprint.AssetId}...)
+	if err != nil {
+		//todo
+	}
+
+	if recordNotFound {
+		insertErr := fpModelBase.InsertModel()
+		if insertErr != nil {
+			//todo
+
+		}
+	} else {
+		var attrs map[string]interface{}
+		if fprint.CollectStart == 0 {
+			attrs = map[string]interface{}{
+				"collect_start": uint64(time.Now().Unix()),
+				"collect_end":   uint64(time.Now().Unix()),
+			}
+		} else {
+			attrs = map[string]interface{}{
+				"collect_end": uint64(time.Now().Unix()),
+			}
+		}
+
+		if err := fpModelBase.UpdateModelsByCondition(attrs,
+			"asset_id = ?", []interface{}{fprint.AssetId}...); err != nil {
+			//logger.Logger.Print("%s update flowParam err:%s", util.RunFuncName(), err.Error())
+			//logger.Logger.Error("%s update flowParam err:%s", util.RunFuncName(), err.Error())
 		}
 	}
 }

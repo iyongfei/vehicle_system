@@ -63,9 +63,6 @@ func (flow *Flow) MarshalJSON() ([]byte, error) {
 	})
 }
 
-type FlowSafeTypeResponse struct {
-}
-
 ////todo
 ////删除os,dst_port列
 //改为text
