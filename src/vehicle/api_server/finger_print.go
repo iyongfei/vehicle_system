@@ -1,18 +1,14 @@
 package api_server
 
 import (
-	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
-	"vehicle_system/src/vehicle/model/model_helper"
 	"vehicle_system/src/vehicle/response"
 	"vehicle_system/src/vehicle/util"
 )
@@ -22,36 +18,27 @@ import (
 */
 
 func AddFprint(c *gin.Context) {
-	assetIds := c.PostForm("asset_ids")
+	fprintId := c.PostForm("fprint_id")
 	cateId := c.PostForm("cate_id")
 
-	ret := model_helper.GetFpProtosAverage()
-	fmt.Println(ret)
-
-	return
 	///参数校验,不能为空
-	argsTrimsEmpty := util.RrgsTrimsEmpty(assetIds, cateId)
+	argsTrimsEmpty := util.RrgsTrimsEmpty(fprintId, cateId)
 	if argsTrimsEmpty {
 		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
 		c.JSON(http.StatusOK, ret)
-		logger.Logger.Print("%s assetIds:%s,cateId%s", util.RunFuncName(), assetIds, cateId)
-		logger.Logger.Error("%s assetIds:%s,cateId%s", util.RunFuncName(), assetIds, cateId)
+		logger.Logger.Print("%s fprintId:%s,cateId%s", util.RunFuncName(), fprintId, cateId)
+		logger.Logger.Error("%s fprintId:%s,cateId%s", util.RunFuncName(), fprintId, cateId)
 		return
 	}
 
-	logger.Logger.Print("%s assetIds:%s,cateId%s", util.RunFuncName(), assetIds, cateId)
-	logger.Logger.Info("%s assetIds:%s,cateId%s", util.RunFuncName(), assetIds, cateId)
+	logger.Logger.Print("%s fprintId:%s,cateId%s", util.RunFuncName(), fprintId, cateId)
+	logger.Logger.Info("%s fprintId:%s,cateId%s", util.RunFuncName(), fprintId, cateId)
 
-	assetIdSlice := strings.Split(assetIds, ",")
-	if len(assetIdSlice) == 0 {
-		assetIdSlice = []string{""}
-	}
 	//校验类别是否存在
 	cate := &model.Category{
 		CateId: cateId,
 	}
 	cateModelBase := model_base.ModelBaseImpl(cate)
-
 	err, cateRecordNotFound := cateModelBase.GetModelByCondition("cate_id = ?", []interface{}{cate.CateId}...)
 	if cateRecordNotFound {
 		logger.Logger.Print("%s cateId%s,cateRecordNotFound", util.RunFuncName(), cateId)
@@ -70,92 +57,96 @@ func AddFprint(c *gin.Context) {
 		return
 	}
 
-	//获取合法的资产，构造map数据类型，资产==>终端
-	assetVehicleIdMap := map[string]string{}
+	//查看是否是完成的资产指纹
 
-	assets := []*model.Asset{}
-	assetModelBase := model_base.ModelBaseImpl(&model.Asset{})
-	err = assetModelBase.GetModelListByCondition(&assets, "asset_id in (?)", []interface{}{assetIdSlice}...)
-	if err != nil {
-		ret := response.StructResponseObj(response.VStatusServerError, response.ReqAddFprintsFailMsg, "")
+	fprint := &model.Fprint{
+		FprintId: fprintId,
+	}
+	fprintModelBase := model_base.ModelBaseImpl(fprint)
+
+	err, fpRecordNotFound := fprintModelBase.GetModelByCondition("fprint_id = ?", []interface{}{fprint.FprintId}...)
+	if fpRecordNotFound {
+		logger.Logger.Print("%s fprintId%s,fprint RecordNotFound", util.RunFuncName(), fprintId)
+		logger.Logger.Error("%s fprintId%s,fprint RecordNotFound", util.RunFuncName(), fprintId)
+
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetAssetFprintsUnExistMsg, "")
 		c.JSON(http.StatusOK, ret)
 		return
 	}
-	for _, asset := range assets {
-		assetId := asset.AssetId
-		vehicleId := asset.VehicleId
-		assetVehicleIdMap[assetId] = vehicleId
+	if err != nil {
+		logger.Logger.Print("%s fprintId%s,get fprint err:%+v", util.RunFuncName(), fprintId, err)
+		logger.Logger.Error("%s fprintId%s,get fprint err:%+v", util.RunFuncName(), fprintId, err)
+
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetAssetFprintsFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	//获取合法的资
+	//校验类别是否存在
+	asset := &model.Asset{
+		AssetId: fprint.AssetId,
+	}
+	assetModelBase := model_base.ModelBaseImpl(asset)
+
+	err, assetRecordNotFound := assetModelBase.GetModelByCondition("asset_id = ?", []interface{}{asset.AssetId}...)
+	if assetRecordNotFound {
+		logger.Logger.Print("%s asset_id%s,asset RecordNotFound", util.RunFuncName(), asset.AssetId)
+		logger.Logger.Error("%s asset_id%s,asset RecordNotFound", util.RunFuncName(), asset.AssetId)
+
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetAssetUnExistMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+	if err != nil {
+		logger.Logger.Print("%s asset_id%s,get asset err:%+v", util.RunFuncName(), asset.AssetId, err)
+		logger.Logger.Error("%s asset_id%s,get asset err:%+v", util.RunFuncName(), asset.AssetId, err)
+
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetAssetFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	//贴标签
+
+	if !util.RrgsTrimEmpty(fprint.CateId) {
+		logger.Logger.Print("%s asset_id%s,get asset err:%+v", util.RunFuncName(), asset.AssetId, err)
+		logger.Logger.Error("%s asset_id%s,get asset err:%+v", util.RunFuncName(), asset.AssetId, err)
+
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetAssetFprintsCateExistMsg, "")
+		c.JSON(http.StatusOK, ret)
+
+		return
 	}
 
 	//////////////////////////////////////////事务开始////////////////////////////////////////
 	vgorm, err := mysql.GetMysqlInstance().GetMysqlDB()
 	tx := vgorm.Begin()
 
-	var insertFprintIds []string
-	for assetId, vehicleId := range assetVehicleIdMap {
-		//删除
-		err = tx.Unscoped().Where("device_mac = ?",
-			[]interface{}{assetId}...).Delete(&model.FingerPrint{}).Error
+	//删除
+	attrs := map[string]interface{}{
+		"cate_id": cateId,
+	}
+	if err := fprintModelBase.UpdateModelsByCondition(attrs, "fprint_id = ?", []interface{}{fprint.FprintId}...); err != nil {
+		logger.Logger.Print("%s update fprint err:%s", util.RunFuncName(), err.Error())
+		logger.Logger.Error("%s update fprint err:%s", util.RunFuncName(), err.Error())
 
-		if err != nil {
-			logger.Logger.Print("%s finger_print err:%+v,dele assetId:%s", util.RunFuncName(), err, assetId)
-			logger.Logger.Error("%s finger_print err:%+v,dele assetId:%s", util.RunFuncName(), err, assetId)
-
-			continue
-		}
-
-		//查找每个资产的上传的指纹列表
-		protos, protoRate := model_helper.GetAssetFprintProtolRate(assetId)
-		protosBytes, _ := json.Marshal(protos)
-		protoRateBytes, _ := json.Marshal(protoRate)
-
-		protosJson := string(protosBytes)
-		protoRateJson := string(protoRateBytes)
-
-		fingerPrint := &model.FingerPrint{
-			FprintId:  util.RandomString(32),
-			CateId:    cateId,
-			VehicleId: vehicleId,
-			DeviceMac: assetId,
-			Protos:    protosJson,
-			ProtoRate: protoRateJson,
-		}
-
-		fingerPrintRecordNotFound := tx.Where("device_mac = ?",
-			[]interface{}{fingerPrint.DeviceMac}...).First(fingerPrint).RecordNotFound()
-
-		if fingerPrintRecordNotFound {
-			if err = tx.Create(fingerPrint).Error; err != nil {
-				logger.Logger.Print("%s create finger_print err:%+v,assetId:%s", util.RunFuncName(), err, assetId)
-				logger.Logger.Error("%s create finger_print err:%+v,assetId:%s", util.RunFuncName(), err, assetId)
-
-				continue
-			} else {
-				insertFprintIds = append(insertFprintIds, fingerPrint.DeviceMac)
-			}
-		}
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqAddAssetFprintsCateFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
 	}
 
 	tx.Commit()
 
 	//获取新添加的信息
-	fingerPrintInsertList := []*model.FingerPrint{}
-	fingerPrintModelBase := model_base.ModelBaseImpl(&model.FingerPrint{})
-	err = fingerPrintModelBase.GetModelListByCondition(&fingerPrintInsertList,
-		"device_mac in (?)", []interface{}{insertFprintIds}...)
-
-	if err != nil {
-		retObj := response.StructResponseObj(response.VStatusServerError, response.ReqAddFprintsFailMsg, "")
-		c.JSON(http.StatusOK, retObj)
-		return
-	}
+	_, _ = fprintModelBase.GetModelByCondition("fprint_id = ?", []interface{}{fprint.FprintId}...)
 
 	//////////////////////////////////////////事务结束////////////////////////////////////////
 
 	responseContent := map[string]interface{}{}
-	responseContent["finger_prints"] = fingerPrintInsertList
+	responseContent["fprint"] = fprint
 
-	retObj := response.StructResponseObj(response.VStatusOK, response.ReqAddFprintsSuccessMsg, responseContent)
+	retObj := response.StructResponseObj(response.VStatusOK, response.ReqAddAssetFprintsCateSuccessMsg, responseContent)
 	c.JSON(http.StatusOK, retObj)
 }
 

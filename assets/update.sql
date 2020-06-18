@@ -100,6 +100,7 @@ CREATE TABLE IF NOT EXISTS `fprints`  (
   `fprint_id` varchar(255)  NULL DEFAULT NULL,
   `vehicle_id` varchar(255) NULL DEFAULT NULL,
   `asset_id` varchar(255) NULL DEFAULT NULL,
+  `cateId` varchar(255) NULL DEFAULT NULL,
 
   `collect_time` int(11) NULL DEFAULT NULL,
   `collect_proto_rate` double NULL DEFAULT NULL,

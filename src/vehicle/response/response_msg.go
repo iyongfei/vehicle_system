@@ -284,6 +284,10 @@ const (
 	ReqAddFprintsSuccessMsg          = "指纹信息入库获取成功"
 	ReqAddFprintsAccessNetSuccessMsg = "指纹入网成功"
 	ReqAddFprintsAccessNetFailMsg    = "指纹入网失败"
+
+	ReqGetAssetFprintsCateExistMsg   = "资产类别信息已存在"
+	ReqAddAssetFprintsCateFailMsg    = "资产类别信息添加失败"
+	ReqAddAssetFprintsCateSuccessMsg = "资产类别信息添加成功"
 )
 
 //fprint

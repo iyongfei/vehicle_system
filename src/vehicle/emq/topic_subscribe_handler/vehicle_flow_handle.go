@@ -185,7 +185,7 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 			util.RunFuncName(), totalByRate, tlsRate, hostRate, protoRate, collectRate, totalRate)
 
 		if totalRate >= conf.MinRate {
-			insertFprint(mac)
+			insertFprint(vehicleId, mac)
 			continue
 		}
 		//更新采集时间
@@ -262,7 +262,7 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 /**
 插入指纹资产
 */
-func insertFprint(mac string) {
+func insertFprint(vehicleId string, mac string) {
 	//插入资产指纹信息
 	protoFlow := model_helper.GetRankAssetCollectProtoFlow(mac)
 	protoFlowBys, _ := json.Marshal(protoFlow)
@@ -275,8 +275,7 @@ func insertFprint(mac string) {
 	collectTime := model_helper.GetAssetCollectTime(mac)
 
 	fprint := &model.Fprint{
-		FprintId: util.RandomString(32),
-		AssetId:  mac,
+		AssetId: mac,
 	}
 
 	fpModelBase := model_base.ModelBaseImpl(fprint)
@@ -288,6 +287,8 @@ func insertFprint(mac string) {
 	fprint.CollectTls = tlsInfo
 	fprint.CollectBytes = totalBytes
 	fprint.CollectTime = collectTime
+	fprint.FprintId = util.RandomString(32)
+	fprint.VehicleId = vehicleId
 
 	if err != nil {
 		//todo

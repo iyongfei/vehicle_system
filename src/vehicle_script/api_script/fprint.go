@@ -126,14 +126,14 @@ func addFingerPrints() {
 	fip := configs["server_ip"]
 	//vehicle_id := configs["vehicle_id"]
 	cateId := configs["cate_id"]
-	assetIds := configs["asset_ids"]
+	fprint_id := configs["fprint_id"]
 
 	token := tool.GetVehicleToken()
 	urlReq := fmt.Sprintf(fprintUrls["post_finger_prints"], fip)
 
 	queryParams := map[string]interface{}{
 		"cate_id":   cateId,
-		"asset_ids": assetIds,
+		"fprint_id": fprint_id,
 	}
 
 	resp, _ := tool.PostForm(urlReq, queryParams, token)

@@ -15,6 +15,7 @@ type Fprint struct {
 
 	VehicleId string
 	AssetId   string
+	CateId    string
 
 	//CollectProtoRate  float64 //流量占比
 	CollectProtoFlows string //流量占比

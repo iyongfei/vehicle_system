@@ -48,7 +48,7 @@ end_time=2
 
 #添加指纹库
 asset_ids=F80D69,DfQWLAOw
-fprint_id=d5xoDqEusAwf5UIumt005PqZNwfPfm8uL
+fprint_id=aa
 
 asset_fprint_id=Ad29vaXCd52A1KxREzBFlLyY6vFOlguG
 
