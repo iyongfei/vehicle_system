@@ -179,10 +179,10 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 
 		totalRate := totalByRate + tlsRate + hostRate + collectRate + protoRate
 
-		logger.Logger.Print("%s unmarshal totalByRate:%f, tlsRate:%f,hostRate:%f,protoRate:%f,collectRate:%f",
-			util.RunFuncName(), totalByRate, tlsRate, hostRate, protoRate, collectRate)
-		logger.Logger.Info("%s unmarshal totalByRate:%f, tlsRate:%f,hostRate:%f,protoRate:%f,collectRate:%f",
-			util.RunFuncName(), totalByRate, tlsRate, hostRate, protoRate, collectRate)
+		logger.Logger.Print("%s unmarshal totalByRate:%f, tlsRate:%f,hostRate:%f,protoRate:%f,collectRate:%f,totalRate:%f",
+			util.RunFuncName(), totalByRate, tlsRate, hostRate, protoRate, collectRate, totalRate)
+		logger.Logger.Info("%s unmarshal totalByRate:%f, tlsRate:%f,hostRate:%f,protoRate:%f,collectRate:%f,totalRate:%f",
+			util.RunFuncName(), totalByRate, tlsRate, hostRate, protoRate, collectRate, totalRate)
 
 		if totalRate >= conf.MinRate {
 			insertFprint(mac)
@@ -264,7 +264,7 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 */
 func insertFprint(mac string) {
 	//插入资产指纹信息
-	protoFlow := model_helper.GetAssetCollectProtoFlow(mac)
+	protoFlow := model_helper.GetRankAssetCollectProtoFlow(mac)
 	protoFlowBys, _ := json.Marshal(protoFlow)
 	fprotoFlowStr := string(protoFlowBys)
 

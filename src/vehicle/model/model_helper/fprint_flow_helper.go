@@ -2,6 +2,7 @@ package model_helper
 
 import (
 	"fmt"
+	"sort"
 	"vehicle_system/src/vehicle/conf"
 	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/emq/protobuf"
@@ -129,6 +130,57 @@ func GetAssetCollectHostName(assetId string) string {
 /**************************************************************************************************
 判断某个设备采集的协议种类数
 */
+func GetRankAssetCollectProtoFlow(assetId string) map[string]float64 {
+	fprotoBytesFloat := map[string]float64{}
+	PROTOS := conf.ProtoCount
+	fprotosBytesMap := GetAssetCollectProtoFlow(assetId)
+
+	var protoByteFListData ProtoByteFList
+	for protoId, protoByteF := range fprotosBytesMap {
+		obj := ProtoByteF{Key: protoId, Value: protoByteF}
+		protoByteFListData = append(protoByteFListData, obj)
+	}
+
+	sort.Sort(protoByteFListData)
+
+	var tmpProtoByteFListData ProtoByteFList
+
+	if len(protoByteFListData) <= int(PROTOS) && len(protoByteFListData) >= REMAIN_MIN {
+		tmpProtoByteFListData = protoByteFListData[0:]
+	}
+	if len(protoByteFListData) > int(PROTOS) {
+		tmpProtoByteFListData = protoByteFListData[0:int(PROTOS)]
+	}
+
+	for _, v := range tmpProtoByteFListData {
+		key := v.Key
+		value := v.Value
+		fprotoBytesFloat[key] = value
+	}
+	return fprotoBytesFloat
+
+}
+
+type ProtoByteFList []ProtoByteF
+
+type ProtoByteF struct {
+	Key   string
+	Value float64
+}
+
+func (list ProtoByteFList) Len() int {
+	return len(list)
+}
+
+func (list ProtoByteFList) Less(i, j int) bool {
+
+	return list[i].Value > list[j].Value
+}
+
+func (list ProtoByteFList) Swap(i, j int) {
+	list[i], list[j] = list[j], list[i]
+}
+
 func GetAssetCollectProtoFlow(assetId string) map[string]float64 {
 	fprotosMap := map[string]float64{}
 
@@ -173,6 +225,7 @@ func GetAssetCollectProtoFlow(assetId string) map[string]float64 {
 		flowByte := dstSrcBytes + srcDstBytes
 		totalBytes += flowByte
 	}
+
 	for p, pb := range fprotosBytesMap {
 		pbRate := float64(float64(pb) / float64(totalBytes))
 
