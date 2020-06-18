@@ -15,9 +15,9 @@ import (
 判断某个设备采集的总流量
 */
 
-func JudgeAssetCollectByteTotal(assetId string) float64 {
-	collectTotalRate := conf.CollectTotalRate
-	collectTotal := conf.CollectTotal //字节
+func JudgeAssetCollectByteTotalRate(assetId string) float64 {
+	collectTotalRate := conf.CollectTotalRate //0.2
+	collectTotal := conf.CollectTotal         //字节104857600
 
 	var ftatalBytes float64
 
@@ -60,7 +60,7 @@ func GetAssetCollectByteTotal(assetId string) uint64 {
 判断某个设备采集的tls
 */
 
-func JudgeAssetCollectTlsInfo(assetId string) float64 {
+func JudgeAssetCollectTlsInfoRate(assetId string) float64 {
 	MAX_TLS_RATE := conf.CollectTlsRate
 	var ftls float64
 
@@ -96,7 +96,7 @@ func GetAssetCollectTlsInfo(assetId string) string {
 SELECT * FROM flows WHERE vehicle_id = '';
 */
 
-func JudgeAssetCollectHostName(assetId string) float64 {
+func JudgeAssetCollectHostNameRate(assetId string) float64 {
 	MAX_HOSTNAME_RATE := conf.CollectHostRate
 	var fhost float64
 
@@ -120,16 +120,16 @@ func GetAssetCollectHostName(assetId string) string {
 	err := mysql.QueryModelRecordsByWhereCondition(&fprintFlows, "asset_id = ? and host_name != ''", []interface{}{assetId}...)
 
 	if err != nil {
-		return fprintFlows.TlsClientInfo
+		return fprintFlows.HostName
 	}
 
-	return fprintFlows.TlsClientInfo
+	return fprintFlows.HostName
 }
 
 /**************************************************************************************************
 判断某个设备采集的协议种类数
 */
-func getAssetCollectProtosRate(assetId string) map[string]float64 {
+func GetAssetCollectProtoFlow(assetId string) map[string]float64 {
 	fprotosMap := map[string]float64{}
 
 	fprintFlows := []*model.FprintFlow{}
@@ -185,12 +185,12 @@ func getAssetCollectProtosRate(assetId string) map[string]float64 {
 	return fprotosMap
 }
 
-func JudgeAssetCollectProtos(assetId string) float64 {
+func JudgeAssetCollectProtoFlowRate(assetId string) float64 {
 	PROTOS := conf.ProtoCount
 	MAX_PROTOS_RATE := conf.ProtoCountRate
 
 	var fcollectProto float64
-	collectProtosRate := getAssetCollectProtosRate(assetId)
+	collectProtosRate := GetAssetCollectProtoFlow(assetId)
 
 	logger.Logger.Print("%s collectProtosRate:%v", util.RunFuncName(), collectProtosRate)
 	logger.Logger.Info("%s collectProtosRate:%v", util.RunFuncName(), collectProtosRate)
@@ -211,7 +211,7 @@ func JudgeAssetCollectProtos(assetId string) float64 {
 判断某个设备采集时长是否达标
 */
 
-func JudgeAssetCollectTime(assetId string) float64 {
+func JudgeAssetCollectTimeRate(assetId string) float64 {
 	CTIME := conf.CollectTime
 	MAX_COLLECT_RATE := conf.CollectTimeRate
 
@@ -233,8 +233,8 @@ func JudgeAssetCollectTime(assetId string) float64 {
 	return fcollect_time
 }
 
-func GetAssetCollectTime(assetId string) uint64 {
-	var collectTime uint64
+func GetAssetCollectTime(assetId string) uint32 {
+	var collectTime uint32
 
 	//起始时间
 	fprint := &model.Fprint{
@@ -248,12 +248,16 @@ func GetAssetCollectTime(assetId string) uint64 {
 	if err != nil || recordNotFound {
 		return collectTime
 	}
-
-	startTime := fprint.CollectStart
 	endTime := fprint.CollectEnd
 	ctime := fprint.CollectTime
+	startTime := fprint.CollectStart
 
-	collectTime = uint64(ctime) + (endTime - startTime)
+	collectTime = uint32(ctime) + uint32(endTime-startTime)
 
+	fmt.Println(util.UnixStamp2Str(int64(endTime)))
+	fmt.Println(util.UnixStamp2Str(int64(ctime)))
+	fmt.Println(util.UnixStamp2Str(int64(startTime)))
+	//2702494284
+	fmt.Println("sss", endTime, ctime, startTime, collectTime)
 	return collectTime
 }

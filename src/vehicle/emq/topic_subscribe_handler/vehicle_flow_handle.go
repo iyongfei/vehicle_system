@@ -1,8 +1,10 @@
 package topic_subscribe_handler
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/golang/protobuf/proto"
+	"github.com/jinzhu/gorm"
 	"time"
 	"vehicle_system/src/vehicle/conf"
 	"vehicle_system/src/vehicle/emq/protobuf"
@@ -169,14 +171,21 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 
 		//判断资产是否达标指纹完整度
 
-		totalByRate := model_helper.JudgeAssetCollectByteTotal(mac)
-		tlsRate := model_helper.JudgeAssetCollectTlsInfo(mac)
-		hostRate := model_helper.JudgeAssetCollectHostName(mac)
-		//protoRate := model_helper.JudgeAssetCollectProtos(mac)
-		collectRate := model_helper.JudgeAssetCollectTime(mac)
+		totalByRate := model_helper.JudgeAssetCollectByteTotalRate(mac) //总流量
+		tlsRate := model_helper.JudgeAssetCollectTlsInfoRate(mac)       //tls
+		hostRate := model_helper.JudgeAssetCollectHostNameRate(mac)     //host
+		protoRate := model_helper.JudgeAssetCollectProtoFlowRate(mac)   //各协议流量
+		collectRate := model_helper.JudgeAssetCollectTimeRate(mac)      //采集时间
 
-		totalRate := totalByRate + tlsRate + hostRate + collectRate
+		totalRate := totalByRate + tlsRate + hostRate + collectRate + protoRate
+
+		logger.Logger.Print("%s unmarshal totalByRate:%f, tlsRate:%f,hostRate:%f,protoRate:%f,collectRate:%f",
+			util.RunFuncName(), totalByRate, tlsRate, hostRate, protoRate, collectRate)
+		logger.Logger.Info("%s unmarshal totalByRate:%f, tlsRate:%f,hostRate:%f,protoRate:%f,collectRate:%f",
+			util.RunFuncName(), totalByRate, tlsRate, hostRate, protoRate, collectRate)
+
 		if totalRate >= conf.MinRate {
+			insertFprint(mac)
 			continue
 		}
 		//更新采集时间
@@ -249,10 +258,71 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 		}
 	}
 }
+
+/**
+插入指纹资产
+*/
+func insertFprint(mac string) {
+	//插入资产指纹信息
+	protoFlow := model_helper.GetAssetCollectProtoFlow(mac)
+	protoFlowBys, _ := json.Marshal(protoFlow)
+	fprotoFlowStr := string(protoFlowBys)
+
+	totalBytes := model_helper.GetAssetCollectByteTotal(mac) //总流量大小
+	tlsInfo := model_helper.GetAssetCollectTlsInfo(mac)
+	hostName := model_helper.GetAssetCollectHostName(mac)
+
+	collectTime := model_helper.GetAssetCollectTime(mac)
+
+	fprint := &model.Fprint{
+		FprintId: util.RandomString(32),
+		AssetId:  mac,
+	}
+
+	fpModelBase := model_base.ModelBaseImpl(fprint)
+
+	err, recordNotFound := fpModelBase.GetModelByCondition("asset_id = ?", []interface{}{fprint.AssetId}...)
+
+	fprint.CollectProtoFlows = fprotoFlowStr
+	fprint.CollectHost = hostName
+	fprint.CollectTls = tlsInfo
+	fprint.CollectBytes = totalBytes
+	fprint.CollectTime = collectTime
+
+	if err != nil {
+		//todo
+	}
+	if recordNotFound {
+		err := fprint.InsertModel()
+		if err != nil {
+			//todo
+		}
+	} else {
+		attrs := map[string]interface{}{
+			"fprint_id":           fprint.FprintId,
+			"vehicle_id":          fprint.VehicleId,
+			"collect_proto_flows": fprint.CollectProtoFlows,
+			"collect_host":        fprint.CollectHost,
+			"collect_tls":         fprint.CollectTls,
+			"collect_bytes":       fprint.CollectBytes,
+			"collect_time":        gorm.Expr("collect_time + collect_end - collect_start"),
+		}
+		if err := fpModelBase.UpdateModelsByCondition(attrs, "asset_id = ?", []interface{}{fprint.AssetId}...); err != nil {
+			//todo
+			logger.Logger.Print("%s update flowParam err:%s", util.RunFuncName(), err.Error())
+			logger.Logger.Error("%s update flowParam err:%s", util.RunFuncName(), err.Error())
+		}
+	}
+}
+
+/*
+更新采集时间
+*/
 func updateAssetCollectTime(mac string) {
 	fprint := &model.Fprint{
 		AssetId:      mac,
 		CollectStart: uint64(time.Now().Unix()),
+		CollectEnd:   uint64(time.Now().Unix()),
 	}
 
 	fpModelBase := model_base.ModelBaseImpl(fprint)

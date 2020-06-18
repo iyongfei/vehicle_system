@@ -56,7 +56,7 @@ var (
 	SignKey string
 
 	//fp
-	CollectTime  uint64
+	CollectTime  uint32
 	ProtoCount   uint64
 	CollectTotal uint64
 
@@ -144,7 +144,7 @@ func Setup() {
 
 	//fp
 
-	CollectTime = iniParser.GetUint64("fp", "collect_time")
+	CollectTime = iniParser.GetUint32("fp", "collect_time")
 	ProtoCount = iniParser.GetUint64("fp", "proto_count")
 	CollectTotal = iniParser.GetUint64("fp", "collect_total")
 

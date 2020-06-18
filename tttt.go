@@ -11,9 +11,13 @@ func main() {
 	//
 	//fmt.Println(frate, frate)
 
-	fcollect := float64(float64(200)/float64(300)) * 0.2
-	fmt.Println(fcollect)
+	//fcollect := float64(float64(200)/float64(300)) * 0.2
+	//fmt.Println(fcollect)
 
 	//fcollect = float64(float64(distanceTime) / float64(ctime)) * MAX_COLLECT_RATE
-
+	//-1592473012
+	a := uint64(1)
+	b := uint64(1592473012)
+	fmt.Println(a - b)
+	//fmt.Println(uint64(1 - 2))
 }

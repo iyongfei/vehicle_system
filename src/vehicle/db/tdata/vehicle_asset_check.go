@@ -80,3 +80,24 @@ func AssetFprintCheck() error {
 
 	return nil
 }
+
+func VehicleAssetFprintCheck(vehicleId string) error {
+	attrs := map[string]interface{}{
+		"collect_time": gorm.Expr("collect_time + collect_end - collect_start"),
+	}
+	err := mysql.UpdateModelByMapModel(&model.Fprint{}, attrs, "vehicle_id = ?", []interface{}{vehicleId}...)
+	if err != nil {
+		return err
+	}
+
+	attrsNull := map[string]interface{}{
+		"collect_end":   nil,
+		"collect_start": nil,
+	}
+	err = mysql.UpdateModelByMapModel(&model.Fprint{}, attrsNull, "", []interface{}{}...)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

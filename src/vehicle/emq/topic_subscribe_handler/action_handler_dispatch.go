@@ -196,5 +196,13 @@ func HanleSubscribeTopicLineData(topicMsg mqtt.Message) error {
 		err = HandleVehicleOfflineStatus(vehicleId, false)
 	}
 
+	//更新指纹
+	if !util.RrgsTrimEmpty(vehicleId) {
+		err = tdata.VehicleAssetFprintCheck(vehicleId)
+		if err != nil {
+			logger.Logger.Error("tdata vehicle_asset check fprint err:%v", err.Error())
+			logger.Logger.Print("tdata vehicle_asset check fprint err:%v", err.Error())
+		}
+	}
 	return err
 }

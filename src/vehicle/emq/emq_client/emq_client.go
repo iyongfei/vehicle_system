@@ -1,7 +1,6 @@
 package emq_client
 
 import (
-	"fmt"
 	"github.com/eclipse/paho.mqtt.golang"
 	"sync"
 	"time"
@@ -9,7 +8,6 @@ import (
 	"vehicle_system/src/vehicle/emq/subscribe_server_test"
 	"vehicle_system/src/vehicle/emq/topic_router"
 	"vehicle_system/src/vehicle/logger"
-	"vehicle_system/src/vehicle/model/model_helper"
 	"vehicle_system/src/vehicle/util"
 )
 
@@ -84,14 +82,15 @@ func (m *EmqInstance) InitEmqClient() {
 	logger.Logger.Print("%s,emqClient init success:%v", util.RunFuncName(), &EmqClient)
 	logger.Logger.Info("%s,emqClient init success:%v", util.RunFuncName(), &EmqClient)
 
-	a := model_helper.JudgeAssetCollectByteTotal("DfQWLAOw")
-	b := model_helper.JudgeAssetCollectTlsInfo("DfQWLAOw")
-	c := model_helper.JudgeAssetCollectHostName("DfQWLAOw")
-	d := model_helper.JudgeAssetCollectProtos("DfQWLAOw")
-	e := model_helper.JudgeAssetCollectTime("DfQWLAOw")
-	fmt.Println(a, b, c, d, e)
-
-	fmt.Println(a + b + c + d + e)
+	//a := model_helper.JudgeAssetCollectByteTotalRate("DfQWLAOw")
+	//b := model_helper.JudgeAssetCollectTlsInfoRate("DfQWLAOw")
+	//c := model_helper.JudgeAssetCollectHostNameRate("DfQWLAOw")
+	//d := model_helper.JudgeAssetCollectProtoFlowRate("DfQWLAOw")
+	//e := model_helper.JudgeAssetCollectTimeRate("DfQWLAOw")
+	//
+	//fmt.Println(a, b, c, d, e)
+	//
+	//fmt.Println("rate....", a+b+c+d+e)
 
 }
 

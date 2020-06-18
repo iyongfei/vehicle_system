@@ -91,19 +91,19 @@ CREATE TABLE IF NOT EXISTS `fprint_flows`  (
 
 
 
-
 CREATE TABLE IF NOT EXISTS `fprints`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
 
-  `fprint_id` int(11) UNSIGNED NULL DEFAULT NULL,
+  `fprint_id` varchar(255)  NULL DEFAULT NULL,
   `vehicle_id` varchar(255) NULL DEFAULT NULL,
   `asset_id` varchar(255) NULL DEFAULT NULL,
 
   `collect_time` int(11) NULL DEFAULT NULL,
   `collect_proto_rate` double NULL DEFAULT NULL,
+  `collect_proto_flows`  varchar(1000) NULL DEFAULT NULL,
   `collect_host` varchar(255) NULL DEFAULT NULL,
   `collect_tls` varchar(255) NULL DEFAULT NULL,
   `collect_bytes` BIGINT(20) UNSIGNED NULL DEFAULT NULL,

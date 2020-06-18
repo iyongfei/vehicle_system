@@ -11,17 +11,20 @@ import (
 type Fprint struct {
 	gorm.Model
 
-	FprintId uint32
+	FprintId string
 
-	VehicleId        string
-	AssetId          string
-	CollectTime      uint32
-	CollectProtoRate float64
-	CollectHost      string
-	CollectTls       string
-	CollectBytes     uint64
-	CollectStart     uint64
-	CollectEnd       uint64
+	VehicleId string
+	AssetId   string
+
+	//CollectProtoRate  float64 //流量占比
+	CollectProtoFlows string //流量占比
+	CollectHost       string //hostname
+	CollectTls        string //tls
+	CollectBytes      uint64 //采集流量
+	CollectTime       uint32 //采集时间
+
+	CollectStart uint64
+	CollectEnd   uint64
 }
 
 //序列化为数字类型
