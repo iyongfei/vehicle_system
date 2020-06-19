@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"flag"
 	"github.com/jinzhu/gorm"
 	"vehicle_system/src/vehicle_script/mysql_script/tools"
 )
@@ -19,6 +20,10 @@ func init() {
 const PasswordSecret = "vgw-1214-pwd-key-vgw-1214-pwd-key"
 
 func main() {
+	var extraVehicleAuth string
+	flag.StringVar(&extraVehicleAuth, "v", "", "插入小v数量")
+	flag.Parse()
+
 	TdataVehicleAuthCheck()
 }
 

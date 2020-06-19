@@ -71,14 +71,14 @@ func authMiddleHandlerFunc(c *gin.Context) {
 	_ = mysql.QueryPluckByModelWhere(&model.VehicleInfo{}, "vehicle_id", &vehicleIds,
 		"", []interface{}{}...)
 
-	vehicleIdAllInAuths := true
+	vehicleIdAllInAuths := false
 
 	for _, vehicleId := range vehicleIds {
 
 		vehicleIdMd5 := util.Md5(vehicleId + response.VehiclePasswordSecret)
 		exist := util.IsExistInSlice(vehicleIdMd5, vehicleIdAuths)
-		if !exist {
-			vehicleIdAllInAuths = false
+		if exist {
+			vehicleIdAllInAuths = true
 		}
 	}
 
