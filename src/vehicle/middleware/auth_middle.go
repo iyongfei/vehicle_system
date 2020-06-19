@@ -3,6 +3,7 @@ package middleware
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
@@ -55,6 +56,36 @@ func authMiddleHandlerFunc(c *gin.Context) {
 	if recordNotFound {
 		ret := response.StructResponseObj(response.VStatusUnauthorized, response.ValidationErrorUnverifiableStr, "")
 		c.JSON(http.StatusOK, ret)
+		c.Abort()
+		logger.Logger.Error("%s token:%s,verify user_id:%s err", util.RunFuncName(), token, claims.UserId)
+		logger.Logger.Print("%s token:%s,verify user_id:%s err", util.RunFuncName(), token, claims.UserId)
+		return
+	}
+
+	//校验vehicle授权
+	var vehicleIdAuths []string
+	_ = mysql.QueryPluckByModelWhere(&model.VehicleAuth{}, "vehicle_id", &vehicleIdAuths,
+		"", []interface{}{}...)
+
+	var vehicleIds []string
+	_ = mysql.QueryPluckByModelWhere(&model.VehicleInfo{}, "vehicle_id", &vehicleIds,
+		"", []interface{}{}...)
+
+	vehicleIdAllInAuths := true
+
+	for _, vehicleId := range vehicleIds {
+
+		vehicleIdMd5 := util.Md5(vehicleId + response.PasswordSecret)
+		exist := util.IsExistInSlice(vehicleIdMd5, vehicleIdAuths)
+		if !exist {
+			vehicleIdAllInAuths = false
+		}
+	}
+
+	if !vehicleIdAllInAuths {
+		ret := response.StructResponseObj(response.VStatusUnauthorized, response.ValidationVehicleAuthErrorUnverifiableStr, "")
+		c.JSON(http.StatusOK, ret)
+		c.Abort()
 		logger.Logger.Error("%s token:%s,verify user_id:%s err", util.RunFuncName(), token, claims.UserId)
 		logger.Logger.Print("%s token:%s,verify user_id:%s err", util.RunFuncName(), token, claims.UserId)
 		return

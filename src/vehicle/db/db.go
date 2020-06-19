@@ -28,6 +28,13 @@ func Setup() {
 		logger.Logger.Print("tdata group check err:%v", err.Error())
 	}
 
+	//检测表数据vehicle_auths
+	err = tdata.TdataVehicleAuthCheck()
+	if err != nil {
+		logger.Logger.Error("tdata vehicle auth check err:%v", err.Error())
+		logger.Logger.Print("tdata vehicle auth check err:%v", err.Error())
+	}
+
 	//检测设备
 	err = tdata.VehicleAssetCheck("", false)
 	if err != nil {

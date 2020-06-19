@@ -18,12 +18,13 @@ const (
 )
 
 const (
-	TokenExpiredStr                    = "token过期"
-	TokenNotValidYetStr                = "token未激活"
-	TokenMalformedStr                  = "token不合法"
-	TokenInvalidStr                    = "token未知"
-	ValidationErrorUnverifiableStr     = "签名信息错误，无法验证token"
-	ValidationErrorSignatureInvalidStr = "签名验证失败"
+	TokenExpiredStr                           = "token过期"
+	TokenNotValidYetStr                       = "token未激活"
+	TokenMalformedStr                         = "token不合法"
+	TokenInvalidStr                           = "token未知"
+	ValidationErrorUnverifiableStr            = "签名信息错误，无法验证token"
+	ValidationVehicleAuthErrorUnverifiableStr = "硬件签名信息授权失败"
+	ValidationErrorSignatureInvalidStr        = "签名验证失败"
 )
 
 //token
