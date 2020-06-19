@@ -8,6 +8,7 @@ import (
 	"vehicle_system/src/vehicle/emq/subscribe_server_test"
 	"vehicle_system/src/vehicle/emq/topic_router"
 	"vehicle_system/src/vehicle/logger"
+	"vehicle_system/src/vehicle/model/model_helper"
 	"vehicle_system/src/vehicle/util"
 )
 
@@ -91,6 +92,8 @@ func (m *EmqInstance) InitEmqClient() {
 	//fmt.Println(a, b, c, d, e)
 	//
 	//fmt.Println("rate....", a+b+c+d+e)
+
+	model_helper.GetAssetCateMark("DfQWLAOw")
 
 }
 

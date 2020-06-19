@@ -20,4 +20,6 @@ func main() {
 	b := uint64(1592473012)
 	fmt.Println(a - b)
 	//fmt.Println(uint64(1 - 2))
+
+	fmt.Println(int(1.333))
 }

@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strconv"
 	"time"
-	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
@@ -83,7 +82,6 @@ func AddFprint(c *gin.Context) {
 	}
 
 	//获取合法的资
-	//校验类别是否存在
 	asset := &model.Asset{
 		AssetId: fprint.AssetId,
 	}
@@ -107,9 +105,18 @@ func AddFprint(c *gin.Context) {
 		return
 	}
 
-	//贴标签
+	//查询标签是否存在
 
-	if !util.RrgsTrimEmpty(fprint.CateId) {
+	assetPrint := &model.AssetFprint{
+		AssetFprintId: util.RandomString(32),
+		AssetId:       fprint.AssetId,
+		CateId:        cateId,
+	}
+	assetPrintModelBase := model_base.ModelBaseImpl(assetPrint)
+
+	err, assetPrintRecordNotFound := assetPrintModelBase.GetModelByCondition("asset_id = ? and cate_id = ? ", []interface{}{assetPrint.AssetId, assetPrint.CateId}...)
+
+	if !assetPrintRecordNotFound {
 		logger.Logger.Print("%s asset_id%s,get asset err:%+v", util.RunFuncName(), asset.AssetId, err)
 		logger.Logger.Error("%s asset_id%s,get asset err:%+v", util.RunFuncName(), asset.AssetId, err)
 
@@ -119,32 +126,41 @@ func AddFprint(c *gin.Context) {
 		return
 	}
 
-	//////////////////////////////////////////事务开始////////////////////////////////////////
-	vgorm, err := mysql.GetMysqlInstance().GetMysqlDB()
-	tx := vgorm.Begin()
-
-	//删除
-	attrs := map[string]interface{}{
-		"cate_id": cateId,
-	}
-	if err := fprintModelBase.UpdateModelsByCondition(attrs, "fprint_id = ?", []interface{}{fprint.FprintId}...); err != nil {
-		logger.Logger.Print("%s update fprint err:%s", util.RunFuncName(), err.Error())
-		logger.Logger.Error("%s update fprint err:%s", util.RunFuncName(), err.Error())
+	//贴标签
+	err = assetPrintModelBase.InsertModel()
+	if err != nil {
+		logger.Logger.Print("%s asset_id%s,get asset err:%+v", util.RunFuncName(), asset.AssetId, err)
+		logger.Logger.Error("%s asset_id%s,get asset err:%+v", util.RunFuncName(), asset.AssetId, err)
 
 		ret := response.StructResponseObj(response.VStatusServerError, response.ReqAddAssetFprintsCateFailMsg, "")
 		c.JSON(http.StatusOK, ret)
 		return
 	}
-
-	tx.Commit()
+	//////////////////////////////////////////事务开始////////////////////////////////////////
+	//vgorm, err := mysql.GetMysqlInstance().GetMysqlDB()
+	//tx := vgorm.Begin()
+	//
+	//attrs := map[string]interface{}{
+	//	"cate_id": cateId,
+	//}
+	//if err := fprintModelBase.UpdateModelsByCondition(attrs, "fprint_id = ?", []interface{}{fprint.FprintId}...); err != nil {
+	//	logger.Logger.Print("%s update fprint err:%s", util.RunFuncName(), err.Error())
+	//	logger.Logger.Error("%s update fprint err:%s", util.RunFuncName(), err.Error())
+	//
+	//	ret := response.StructResponseObj(response.VStatusServerError, response.ReqAddAssetFprintsCateFailMsg, "")
+	//	c.JSON(http.StatusOK, ret)
+	//	return
+	//}
+	//
+	//tx.Commit()
 
 	//获取新添加的信息
-	_, _ = fprintModelBase.GetModelByCondition("fprint_id = ?", []interface{}{fprint.FprintId}...)
+	_, _ = assetPrintModelBase.GetModelByCondition("asset_id = ? and cate_id = ? ", []interface{}{assetPrint.AssetId, assetPrint.CateId}...)
 
 	//////////////////////////////////////////事务结束////////////////////////////////////////
 
 	responseContent := map[string]interface{}{}
-	responseContent["fprint"] = fprint
+	responseContent["asset_fprint"] = assetPrint
 
 	retObj := response.StructResponseObj(response.VStatusOK, response.ReqAddAssetFprintsCateSuccessMsg, responseContent)
 	c.JSON(http.StatusOK, retObj)

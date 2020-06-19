@@ -184,12 +184,13 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 		logger.Logger.Info("%s unmarshal totalByRate:%f, tlsRate:%f,hostRate:%f,protoRate:%f,collectRate:%f,totalRate:%f",
 			util.RunFuncName(), totalByRate, tlsRate, hostRate, protoRate, collectRate, totalRate)
 
+		//更新采集时间,采集完毕
+		updateAssetCollectTime(mac)
+
 		if totalRate >= conf.MinRate {
 			insertFprint(vehicleId, mac)
 			continue
 		}
-		//更新采集时间
-		updateAssetCollectTime(mac)
 
 		macFlows := macItems.GetFlowItem()
 		for _, flowItem := range macFlows {
