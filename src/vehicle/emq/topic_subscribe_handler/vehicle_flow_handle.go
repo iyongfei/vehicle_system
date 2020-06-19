@@ -37,7 +37,6 @@ func HandleVehicleFlow(vehicleResult protobuf.GWResult, vehicleId string) error 
 		//输出log
 		logger.Logger.Print("%s handle_flow%+v", util.RunFuncName(), flowInfo)
 		logger.Logger.Info("%s handle_flow%+v", util.RunFuncName(), flowInfo)
-
 		if recordNotFound {
 			if err := modelBase.InsertModel(); err != nil {
 				logger.Logger.Print("%s insert flowParam err:%s", util.RunFuncName(), err.Error())
