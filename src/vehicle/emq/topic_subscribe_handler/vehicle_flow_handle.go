@@ -24,9 +24,6 @@ func HandleVehicleFlow(vehicleResult protobuf.GWResult, vehicleId string) error 
 	var sendFlows []*model.Flow
 
 	for _, flowItem := range flowParams.FlowItem {
-		//输出log
-		logger.Logger.Print("%s handle_flow%+v", util.RunFuncName(), *flowItem)
-		logger.Logger.Info("%s handle_flow%+v", util.RunFuncName(), *flowItem)
 
 		flowItemId := flowItem.GetHash()
 		flowInfo := &model.Flow{
@@ -37,7 +34,9 @@ func HandleVehicleFlow(vehicleResult protobuf.GWResult, vehicleId string) error 
 		_, recordNotFound := modelBase.GetModelByCondition(
 			"flow_id = ? and vehicle_id = ?", []interface{}{flowInfo.FlowId, flowInfo.VehicleId}...)
 		modelBase.CreateModel(flowItem)
-
+		//输出log
+		logger.Logger.Print("%s handle_flow%+v", util.RunFuncName(), flowInfo)
+		logger.Logger.Info("%s handle_flow%+v", util.RunFuncName(), flowInfo)
 		if recordNotFound {
 			if err := modelBase.InsertModel(); err != nil {
 				logger.Logger.Print("%s insert flowParam err:%s", util.RunFuncName(), err.Error())
