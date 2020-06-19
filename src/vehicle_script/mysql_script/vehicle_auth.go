@@ -59,7 +59,9 @@ func TdataVehicleAuthCheck(vid string) error {
 
 func GetVehicleAuths(vid string) []string {
 
-	vehicleAuths := []string{}
+	vehicleAuths := []string{
+		"sdfsd",
+	}
 
 	fvehicleAuths := []string{}
 	for _, vi := range vehicleAuths {
