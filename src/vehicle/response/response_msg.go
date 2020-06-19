@@ -48,7 +48,9 @@ const (
 
 //regist
 const (
-	PasswordSecret      = "vgw-1214-pwd-key"
+	PasswordSecret        = "vgw-1214-pwd-key"
+	VehiclePasswordSecret = "vgw-1214-pwd-key-vgw-1214-pwd-key"
+
 	ReqRegistFailMsg    = "用户注册失败"
 	ReqRegistSuccessMsg = "用户注册成功"
 	ReqRegistExistMsg   = "该用户已注册"

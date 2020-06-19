@@ -75,7 +75,7 @@ func authMiddleHandlerFunc(c *gin.Context) {
 
 	for _, vehicleId := range vehicleIds {
 
-		vehicleIdMd5 := util.Md5(vehicleId + response.PasswordSecret)
+		vehicleIdMd5 := util.Md5(vehicleId + response.VehiclePasswordSecret)
 		exist := util.IsExistInSlice(vehicleIdMd5, vehicleIdAuths)
 		if !exist {
 			vehicleIdAllInAuths = false

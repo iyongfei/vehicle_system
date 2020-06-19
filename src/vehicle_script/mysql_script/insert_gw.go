@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 	"vehicle_system/src/vehicle_script/mysql_script/model"
-	"vehicle_system/src/vehicle_script/mysql_script/mysql_util"
+	"vehicle_system/src/vehicle_script/mysql_script/tools"
 )
 
 func main() {
