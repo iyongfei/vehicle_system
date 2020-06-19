@@ -4,13 +4,14 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"flag"
-	"fmt"
 	"github.com/jinzhu/gorm"
+	"strings"
 	"vehicle_system/src/vehicle_script/mysql_script/tools"
 )
 
 /**
 授权脚本
+CGO_ENABLED=0 GOOS=linux GOARCH=arm go build
 */
 
 func init() {
@@ -21,27 +22,25 @@ func init() {
 const PasswordSecret = "vgw-1214-pwd-key-vgw-1214-pwd-key"
 
 func main() {
-	vehicleIdMd5 := Md5("fc17200ed95edfed490de570f26f2a06" + PasswordSecret)
-	fmt.Println(vehicleIdMd5)
 
-	return
 	var extraVehicleAuth string
-	flag.StringVar(&extraVehicleAuth, "v", "", "插入小v数量")
+	flag.StringVar(&extraVehicleAuth, "v", "", "vid")
 	flag.Parse()
 
-	TdataVehicleAuthCheck()
+	extraVehicleAuth = strings.Trim(extraVehicleAuth, " ")
+
+	TdataVehicleAuthCheck(extraVehicleAuth)
 }
 
 /**
 初始化授权列表
 */
-func TdataVehicleAuthCheck() error {
-	vehicleAuths := GetVehicleAuths()
+func TdataVehicleAuthCheck(vid string) error {
+	vehicleAuths := GetVehicleAuths(vid)
 	for _, vehicleId := range vehicleAuths {
-		vehicleIdMd5 := Md5(vehicleId + PasswordSecret)
 
 		vehicleAuth := &VehicleAuth{
-			VehicleId: vehicleIdMd5,
+			VehicleId: vehicleId,
 		}
 
 		recordNotFound := tools.QueryFirstModelRecord(vehicleAuth, "vehicle_id = ?", []interface{}{vehicleAuth.VehicleId}...)
@@ -58,11 +57,20 @@ func TdataVehicleAuthCheck() error {
 	return nil
 }
 
-func GetVehicleAuths() []string {
-	vehicleAuths := []string{
-		"ad29258414587f8aab117932a470df45",
+func GetVehicleAuths(vid string) []string {
+
+	vehicleAuths := []string{}
+
+	fvehicleAuths := []string{}
+	for _, vi := range vehicleAuths {
+		vehicleIdMd5 := Md5(vi + PasswordSecret)
+		fvehicleAuths = append(fvehicleAuths, vehicleIdMd5)
 	}
-	return vehicleAuths
+
+	if vid != "" {
+		fvehicleAuths = append(fvehicleAuths, vid)
+	}
+	return fvehicleAuths
 }
 
 type VehicleAuth struct {
