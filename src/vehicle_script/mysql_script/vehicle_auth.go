@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"flag"
+	"fmt"
 	"github.com/jinzhu/gorm"
 	"vehicle_system/src/vehicle_script/mysql_script/tools"
 )
@@ -20,6 +21,10 @@ func init() {
 const PasswordSecret = "vgw-1214-pwd-key-vgw-1214-pwd-key"
 
 func main() {
+	vehicleIdMd5 := Md5("fc17200ed95edfed490de570f26f2a06" + PasswordSecret)
+	fmt.Println(vehicleIdMd5)
+
+	return
 	var extraVehicleAuth string
 	flag.StringVar(&extraVehicleAuth, "v", "", "插入小v数量")
 	flag.Parse()
