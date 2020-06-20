@@ -10,7 +10,7 @@ import (
 const (
 	mysqlUser   = "root"
 	mysqlPwd    = "root"
-	mysqlPort   = 3306
+	mysqlPort   = 33066
 	mysqlDbname = "vehicle"
 
 	maxIdleConns = 10

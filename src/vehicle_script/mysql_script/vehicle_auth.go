@@ -60,7 +60,9 @@ func TdataVehicleAuthCheck(vid string) error {
 func GetVehicleAuths(vid string) []string {
 
 	//添加需要授权的唯一标识码
-	vehicleAuths := []string{}
+	vehicleAuths := []string{
+		//"123",
+	}
 
 	fvehicleAuths := []string{}
 	for _, vi := range vehicleAuths {
