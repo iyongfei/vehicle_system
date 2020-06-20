@@ -21,5 +21,4 @@ func main() {
 	fmt.Println(a - b)
 	//fmt.Println(uint64(1 - 2))
 
-	fmt.Println(int(1.333))
 }

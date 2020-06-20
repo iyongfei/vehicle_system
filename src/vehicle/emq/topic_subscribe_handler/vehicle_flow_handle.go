@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/golang/protobuf/proto"
-	"github.com/jinzhu/gorm"
 	"time"
 	"vehicle_system/src/vehicle/conf"
 	"vehicle_system/src/vehicle/emq/protobuf"
@@ -184,8 +183,14 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 		logger.Logger.Info("%s unmarshal totalByRate:%f, tlsRate:%f,hostRate:%f,protoRate:%f,collectRate:%f,totalRate:%f",
 			util.RunFuncName(), totalByRate, tlsRate, hostRate, protoRate, collectRate, totalRate)
 
+		//无记录，更新
+
+		//达标插入
+
 		//更新采集时间,采集完毕
 		updateAssetCollectTime(mac)
+
+		//有记录
 
 		if totalRate >= conf.MinRate {
 			insertFprint(vehicleId, mac)
@@ -307,7 +312,7 @@ func insertFprint(vehicleId string, mac string) {
 			"collect_host":        fprint.CollectHost,
 			"collect_tls":         fprint.CollectTls,
 			"collect_bytes":       fprint.CollectBytes,
-			"collect_time":        gorm.Expr("collect_time + collect_end - collect_start"),
+			"collect_time":        fprint.CollectTime,
 		}
 		if err := fpModelBase.UpdateModelsByCondition(attrs, "asset_id = ?", []interface{}{fprint.AssetId}...); err != nil {
 			//todo
@@ -342,7 +347,7 @@ func updateAssetCollectTime(mac string) {
 		}
 	} else {
 		var attrs map[string]interface{}
-		if fprint.CollectStart == 0 {
+		if fprint.CollectStart == 0 && fprint.CollectEnd == 0 {
 			attrs = map[string]interface{}{
 				"collect_start": uint64(time.Now().Unix()),
 				"collect_end":   uint64(time.Now().Unix()),
