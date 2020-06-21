@@ -165,11 +165,9 @@ func HandleVehicleFlow(vehicleResult protobuf.GWResult, vehicleId string) error 
 func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 
 	for _, macItems := range flowParams.MacItems {
-
 		mac := macItems.GetMac()
 
 		//判断资产是否达标指纹完整度
-
 		totalByRate := model_helper.JudgeAssetCollectByteTotalRate(mac) //总流量
 		tlsRate := model_helper.JudgeAssetCollectTlsInfoRate(mac)       //tls
 		hostRate := model_helper.JudgeAssetCollectHostNameRate(mac)     //host
@@ -177,25 +175,32 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 		collectRate := model_helper.JudgeAssetCollectTimeRate(mac)      //采集时间
 
 		totalRate := totalByRate + tlsRate + hostRate + collectRate + protoRate
-
 		logger.Logger.Print("%s unmarshal totalByRate:%f, tlsRate:%f,hostRate:%f,protoRate:%f,collectRate:%f,totalRate:%f",
 			util.RunFuncName(), totalByRate, tlsRate, hostRate, protoRate, collectRate, totalRate)
 		logger.Logger.Info("%s unmarshal totalByRate:%f, tlsRate:%f,hostRate:%f,protoRate:%f,collectRate:%f,totalRate:%f",
 			util.RunFuncName(), totalByRate, tlsRate, hostRate, protoRate, collectRate, totalRate)
 
 		//无记录，更新
-
-		//达标插入
-
-		//更新采集时间,采集完毕
-		updateAssetCollectTime(mac)
-
-		//有记录
-
-		if totalRate >= conf.MinRate {
-			insertFprint(vehicleId, mac)
+		fp := &model.Fprint{
+			AssetId: mac,
+		}
+		fpModelBase := model_base.ModelBaseImpl(fp)
+		err, _ := fpModelBase.GetModelByCondition("asset_id = ?", []interface{}{fp.AssetId}...)
+		if err != nil {
 			continue
 		}
+
+		//有记录
+		if totalRate >= conf.MinRate {
+			if fp.AssetId != "" {
+				updateAssetCollectTime(mac)
+				updateFprint(vehicleId, mac)
+			}
+			continue
+		}
+
+		//如果没有记录，并且没有
+		updateAssetCollectTime(mac)
 
 		macFlows := macItems.GetFlowItem()
 		for _, flowItem := range macFlows {
@@ -268,7 +273,7 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 /**
 插入指纹资产
 */
-func insertFprint(vehicleId string, mac string) {
+func updateFprint(vehicleId string, mac string) {
 	//插入资产指纹信息
 	protoFlow := model_helper.GetRankAssetCollectProtoFlow(mac)
 	protoFlowBys, _ := json.Marshal(protoFlow)
@@ -277,7 +282,6 @@ func insertFprint(vehicleId string, mac string) {
 	totalBytes := model_helper.GetAssetCollectByteTotal(mac) //总流量大小
 	tlsInfo := model_helper.GetAssetCollectTlsInfo(mac)
 	hostName := model_helper.GetAssetCollectHostName(mac)
-
 	collectTime := model_helper.GetAssetCollectTime(mac)
 
 	fprint := &model.Fprint{
