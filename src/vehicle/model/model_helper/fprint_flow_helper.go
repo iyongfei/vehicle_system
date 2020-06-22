@@ -155,14 +155,13 @@ func GetRankAssetCollectProtoFlow(assetId string) map[string]float64 {
 	for _, v := range tmpProtoByteFListData {
 		key := v.Key
 		value := v.Value
+		value = util.Decimal(value)
 		fprotoBytesFloat[key] = value
 	}
 	return fprotoBytesFloat
-
 }
 
 type ProtoByteFList []ProtoByteF
-
 type ProtoByteF struct {
 	Key   string
 	Value float64
@@ -171,52 +170,39 @@ type ProtoByteF struct {
 func (list ProtoByteFList) Len() int {
 	return len(list)
 }
-
 func (list ProtoByteFList) Less(i, j int) bool {
-
 	return list[i].Value > list[j].Value
 }
-
 func (list ProtoByteFList) Swap(i, j int) {
 	list[i], list[j] = list[j], list[i]
 }
 
+////
 func GetAssetCollectProtoFlow(assetId string) map[string]float64 {
 	fprotosMap := map[string]float64{}
-
 	fprintFlows := []*model.FprintFlow{}
 	err := mysql.QueryModelRecordsByWhereCondition(&fprintFlows, "asset_id = ?", []interface{}{assetId}...)
-
 	if err != nil {
 		return fprotosMap
 	}
-
 	fprotosBytesMap := map[string]uint64{}
-
 	for _, fpFlow := range fprintFlows {
-
 		protocolStr := protobuf.GetFlowProtocols(int(fpFlow.Protocol))
-
 		upProtocol := fmt.Sprintf("UP_%s", protocolStr)
 		downProtocol := fmt.Sprintf("DOWN_%s", protocolStr)
-
 		srcDstBytes := fpFlow.SrcDstBytes //up
 		dstSrcBytes := fpFlow.DstSrcBytes //down
-
 		if v, ok := fprotosBytesMap[upProtocol]; ok {
 			fprotosBytesMap[upProtocol] = v + srcDstBytes
 		} else {
 			fprotosBytesMap[upProtocol] = srcDstBytes
 		}
-
 		if v, ok := fprotosBytesMap[downProtocol]; ok {
 			fprotosBytesMap[downProtocol] = v + dstSrcBytes
 		} else {
 			fprotosBytesMap[downProtocol] = dstSrcBytes
 		}
-
 	}
-
 	//总流量大小
 	var totalBytes uint64
 	for _, fprintFlow := range fprintFlows {
@@ -225,7 +211,6 @@ func GetAssetCollectProtoFlow(assetId string) map[string]float64 {
 		flowByte := dstSrcBytes + srcDstBytes
 		totalBytes += flowByte
 	}
-
 	for p, pb := range fprotosBytesMap {
 		pbRate := float64(float64(pb) / float64(totalBytes))
 
@@ -256,7 +241,6 @@ func JudgeAssetCollectProtoFlowRate(assetId string) float64 {
 
 	logger.Logger.Print("%s collectProtosRate:%f", util.RunFuncName(), fcollectProto)
 	logger.Logger.Info("%s collectProtosRate:%f", util.RunFuncName(), fcollectProto)
-
 	return fcollectProto
 }
 
@@ -311,6 +295,5 @@ func GetAssetCollectTime(assetId string) uint32 {
 	fmt.Println(util.UnixStamp2Str(int64(ctime)))
 	fmt.Println(util.UnixStamp2Str(int64(startTime)))
 	//2702494284
-	fmt.Println("sss", endTime, ctime, startTime, collectTime)
 	return collectTime
 }

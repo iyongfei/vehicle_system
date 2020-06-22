@@ -94,7 +94,8 @@ func VehicleAssetFprintCheck(vehicleId string) error {
 		"collect_end":   nil,
 		"collect_start": nil,
 	}
-	err = mysql.UpdateModelByMapModel(&model.Fprint{}, attrsNull, "", []interface{}{}...)
+	err = mysql.UpdateModelByMapModel(&model.Fprint{}, attrsNull, "",
+		[]interface{}{}...)
 	if err != nil {
 		return err
 	}

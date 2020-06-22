@@ -74,7 +74,7 @@ func creatFlowProtobuf(vehicleId string, InsertAssetids string, flowCount int) [
 				PktlenCToSStddev: 233.3,
 				PktlenSToCAvg:    1.333,
 				PktlenSToCStddev: 3.43,
-				TlsClientInfo:    "tls1",
+				TlsClientInfo:    "tls",
 				Ja3C:             "23_232,kk23",
 			}
 

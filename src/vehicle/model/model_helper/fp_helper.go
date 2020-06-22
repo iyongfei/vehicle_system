@@ -5,12 +5,51 @@ import (
 	"fmt"
 	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
-	"vehicle_system/src/vehicle/util"
 )
 
-func GetAssetCateMark(assetId string) float64 {
-	var assetCateMark float64
+/**
+获取指纹的流量/协议 标准值
+{"DOWN_PPSTREAM":0.2404,"DOWN_RSYNC":0.2531,"UP_NEST_LOG_SINK":0.13311,"UP_PPSTREAM":0.12605,"UP_SSDP":0.12194}
+*/
+func GetAssetCateStdMark() float64 {
+	protoByteMap := GetAssetCateStdProtoFlow()
+	fmt.Println("assetCateMark protoByteMap->", protoByteMap)
 
+	var assetCateMark float64
+	for _, v := range protoByteMap {
+		v2 := v * v * 100
+		assetCateMark += v2
+	}
+	fmt.Println("assetCateMark->", assetCateMark)
+	return 0
+}
+
+func GetAssetCateStdProtoFlow() map[string]float64 {
+	protoByteMap := map[string]float64{}
+	//标签列表
+	assetFps := []*model.AssetFprint{}
+	assetFpModelBase := model_base.ModelBaseImpl(&model.AssetFprint{})
+	err := assetFpModelBase.GetModelListByCondition(&assetFps, "", []interface{}{}...)
+
+	if err != nil {
+		return protoByteMap
+	}
+
+	if len(assetFps) <= 0 {
+		return protoByteMap
+	}
+
+	//目前选取第一个资产标签
+	assetFp := assetFps[0]
+
+	fp := GetAssetFp(assetFp.AssetId)
+
+	_ = json.Unmarshal([]byte(fp.CollectProtoFlows), &protoByteMap)
+	return protoByteMap
+}
+
+func GetAssetFp(assetId string) *model.Fprint {
+	//获取对应的信息
 	fp := &model.Fprint{
 		AssetId: assetId,
 	}
@@ -19,22 +58,19 @@ func GetAssetCateMark(assetId string) float64 {
 
 	err, recordNotFound := fpModelBase.GetModelByCondition("asset_id = ?", []interface{}{fp.AssetId}...)
 
-	if err != nil || recordNotFound || util.RrgsTrimEmpty(fp.CollectProtoFlows) {
-		return assetCateMark
+	if err != nil {
+		//todo
 	}
 
-	fmt.Println("fp", fp)
-	protoByteMap := map[string]float64{}
-	_ = json.Unmarshal([]byte(fp.CollectProtoFlows), &protoByteMap)
-
-	for _, v := range protoByteMap {
-		v2 := v * v * 100
-		fmt.Println("v2222", v2)
-		assetCateMark += v2
+	if recordNotFound {
+		//todo
 	}
-	fmt.Println(assetCateMark)
-	return 0
+	return fp
 }
 
-//{"DOWN_PANDO":0.11356555159611187,"UP_GOOGLE_SERVICES":0.17339875743950448,
-// "UP_HTTP_ACTIVESYNC":0.12406947890818859,"UP_PANDO":0.08819194387955,"UP_PPLIVE":0.18420119778354074}
+func GetAssetCateMark(assetId string) float64 {
+	//fp := GetAssetFp(assetId)
+	//stdProtoRate := GetAssetCateStdProtoFlow()
+
+	return 0
+}

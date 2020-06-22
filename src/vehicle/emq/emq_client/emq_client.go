@@ -93,7 +93,7 @@ func (m *EmqInstance) InitEmqClient() {
 	//
 	//fmt.Println("rate....", a+b+c+d+e)
 
-	model_helper.GetAssetCateMark("DfQWLAOw")
+	model_helper.GetAssetCateStdMark()
 
 }
 

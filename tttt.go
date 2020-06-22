@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"encoding/json"
 )
 
 func main() {
@@ -16,9 +16,10 @@ func main() {
 
 	//fcollect = float64(float64(distanceTime) / float64(ctime)) * MAX_COLLECT_RATE
 	//-1592473012
-	a := uint64(1)
-	b := uint64(1592473012)
-	fmt.Println(a - b)
 	//fmt.Println(uint64(1 - 2))
+
+	protoByteMap := map[string]interface{}{}
+
+	_ = json.Unmarshal([]byte(""), &protoByteMap)
 
 }

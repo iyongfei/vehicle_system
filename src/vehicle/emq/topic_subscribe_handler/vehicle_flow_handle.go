@@ -190,9 +190,9 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 			continue
 		}
 
-		//有记录
 		if totalRate >= conf.MinRate {
-			if fp.AssetId != "" {
+			fmt.Println("fp.CollectBytes::", fp.CollectBytes)
+			if fp.CollectBytes == 0 {
 				updateAssetCollectTime(mac)
 				updateFprint(vehicleId, mac)
 			}
@@ -335,37 +335,49 @@ func updateAssetCollectTime(mac string) {
 		CollectStart: uint64(time.Now().Unix()),
 		CollectEnd:   uint64(time.Now().Unix()),
 	}
+	fmt.Printf("111%+v", fprint)
 
 	fpModelBase := model_base.ModelBaseImpl(fprint)
 
 	err, recordNotFound := fpModelBase.GetModelByCondition("asset_id = ?", []interface{}{fprint.AssetId}...)
 	if err != nil {
 		//todo
+		logger.Logger.Print("%s asset:%s,err:%s", util.RunFuncName(), fprint.AssetId, err.Error())
+		logger.Logger.Error("%s asset:%s,err:%s", util.RunFuncName(), fprint.AssetId, err.Error())
 	}
+	fmt.Printf("222%+v\n", fprint)
 
 	if recordNotFound {
 		insertErr := fpModelBase.InsertModel()
+		fmt.Printf("333%+v\n", fprint)
+
 		if insertErr != nil {
 			//todo
+			logger.Logger.Print("%s asset:%s,err:%s", util.RunFuncName(), fprint.AssetId, insertErr.Error())
+			logger.Logger.Error("%s asset:%s,err:%s", util.RunFuncName(), fprint.AssetId, insertErr.Error())
 
 		}
 	} else {
+		fmt.Printf("444%+v\n", fprint)
 		var attrs map[string]interface{}
 		if fprint.CollectStart == 0 && fprint.CollectEnd == 0 {
 			attrs = map[string]interface{}{
 				"collect_start": uint64(time.Now().Unix()),
 				"collect_end":   uint64(time.Now().Unix()),
 			}
+
+			fmt.Println("555")
 		} else {
 			attrs = map[string]interface{}{
 				"collect_end": uint64(time.Now().Unix()),
 			}
+			fmt.Println("666")
 		}
 
 		if err := fpModelBase.UpdateModelsByCondition(attrs,
 			"asset_id = ?", []interface{}{fprint.AssetId}...); err != nil {
-			//logger.Logger.Print("%s update flowParam err:%s", util.RunFuncName(), err.Error())
-			//logger.Logger.Error("%s update flowParam err:%s", util.RunFuncName(), err.Error())
+			logger.Logger.Print("%s asset:%s,err:%s", util.RunFuncName(), fprint.AssetId, err.Error())
+			logger.Logger.Error("%s asset:%s,err:%s", util.RunFuncName(), fprint.AssetId, err.Error())
 		}
 	}
 }
