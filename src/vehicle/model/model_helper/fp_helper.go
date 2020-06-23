@@ -2,7 +2,7 @@ package model_helper
 
 import (
 	"encoding/json"
-	"fmt"
+	"vehicle_system/src/vehicle/conf"
 	"vehicle_system/src/vehicle/mac"
 	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
@@ -13,43 +13,9 @@ import (
 获取指纹的流量/协议 标准值
 {"DOWN_PPSTREAM":0.2404,"DOWN_RSYNC":0.2531,"UP_NEST_LOG_SINK":0.13311,"UP_PPSTREAM":0.12605,"UP_SSDP":0.12194}
 */
-func GetAssetCateStdMark() float64 {
-	protoByteMap := GetAssetCateStdProtoFlow()
-	fmt.Println("assetCateMark protoByteMap->", protoByteMap)
-
-	var assetCateMark float64
-	for _, v := range protoByteMap {
-		v2 := v * v * 100
-		assetCateMark += v2
-	}
-	fmt.Println("assetCateMark->", assetCateMark)
-	return 0
-}
-
-/**
-获取某fprint,某字段
-*/
-func GetAssetCateStdProtoFlow(fp *model.Fprint) map[string]float64 {
+func GetFprintProtoFlow(fp *model.Fprint) map[string]float64 {
 	protoByteMap := map[string]float64{}
-	////标签列表
-	//assetFps := []*model.AssetFprint{}
-	//assetFpModelBase := model_base.ModelBaseImpl(&model.AssetFprint{})
-	//err := assetFpModelBase.GetModelListByCondition(&assetFps, "", []interface{}{}...)
-	//
-	//if err != nil {
-	//	return protoByteMap
-	//}
-	//
-	//if len(assetFps) <= 0 {
-	//	return protoByteMap
-	//}
-	//
-	////目前选取第一个资产标签
-	//assetFp := assetFps[0]
-	//
-	//fp := GetAssetFp(assetFp.AssetId)
 	protoFlows := fp.CollectProtoFlows
-
 	_ = json.Unmarshal([]byte(protoFlows), &protoByteMap)
 	return protoByteMap
 }
@@ -58,26 +24,20 @@ func GetAssetCateStdProtoFlow(fp *model.Fprint) map[string]float64 {
 获取某fprint,某字段
 */
 func GetAssetCateStd() *model.Fprint {
-
 	var fp *model.Fprint
 	//标签列表
 	assetFps := []*model.AssetFprint{}
 	assetFpModelBase := model_base.ModelBaseImpl(&model.AssetFprint{})
 	err := assetFpModelBase.GetModelListByCondition(&assetFps, "", []interface{}{}...)
-
 	if err != nil {
 		return fp
 	}
-
 	if len(assetFps) <= 0 {
 		return fp
 	}
-
 	//目前选取第一个资产标签
 	assetFp := assetFps[0]
-
 	fp = GetAssetFp(assetFp.AssetId)
-
 	return fp
 }
 
@@ -105,23 +65,35 @@ func GetAssetFp(assetId string) *model.Fprint {
 }
 
 func GetAssetCateMark(assetId string) float64 {
+	const Hundred = 100
+
+	mainProtoWeight := conf.MainProtoWeight
+	protosKindWeight := conf.ProtosKindWeight
+	hostnameWeight := conf.HostnameWeight
+	macWeight := conf.MacWeight
+	//typeWeight := conf.TypeWeight
+	tlsWeight := conf.TlsWeight
+	MinRateWeight := conf.MinRateWeight
+
+	//获取需要识别属性的资产
 	fp := GetAssetFp(assetId)
+	//或者指纹库资产
 	AssetCateStd := GetAssetCateStd()
 
-	fpProtoFlowMap := GetAssetCateStdProtoFlow(fp)
-	stdFpProtoFlowMap := GetAssetCateStdProtoFlow(AssetCateStd)
+	//1.基础分
+	fpProtoFlowMap := GetFprintProtoFlow(fp)
+	stdFpProtoFlowMap := GetFprintProtoFlow(AssetCateStd)
 
-	//基础分
 	var stdCateMark float64
 	var assetCateMark float64
 	for stdFlow, _ := range stdFpProtoFlowMap {
 
 		for fpFlow, value := range fpProtoFlowMap {
-			v2 := value * value * 100
+			v2 := value * value * Hundred
 			stdCateMark += v2
 
 			if fpFlow == stdFlow {
-				v2 := value * value * 100
+				v2 := value * value * Hundred
 				assetCateMark += v2
 			}
 		}
@@ -133,7 +105,6 @@ func GetAssetCateMark(assetId string) float64 {
 	fpProtoKinds := []string{}
 
 	//主协议
-	mainProtoRate := 0.1
 	maxKey := ""
 	for k, max := range stdFpProtoFlowMap {
 		maxKey = k
@@ -149,7 +120,7 @@ func GetAssetCateMark(assetId string) float64 {
 
 	for k, _ := range fpProtoFlowMap {
 		if k == maxKey {
-			weightRate += mainProtoRate
+			weightRate += mainProtoWeight
 		}
 
 		if util.IsExistInSlice(k, stdProtoKinds) {
@@ -157,54 +128,36 @@ func GetAssetCateMark(assetId string) float64 {
 		}
 	}
 	//协议种类
-	protoKindRate := 0.1
-	fprotoKindRate := float64(len(fpProtoKinds)) / float64(len(stdProtoKinds)) * protoKindRate
+	fprotoKindRate := float64(len(fpProtoKinds)) / float64(len(stdProtoKinds)) * protosKindWeight
 	weightRate += fprotoKindRate
 
 	//相同的mac地址，厂商
-
-	macRate := 0.2
 	fpTradeMark := mac.GetOrgByMAC(fp.AssetId)
 	assetCateStdTradeMark := mac.GetOrgByMAC(AssetCateStd.AssetId)
 
 	if util.RrgsTrim(assetCateStdTradeMark) == util.RrgsTrim(fpTradeMark) {
-		macRate = 0.2
-
-	} else {
-		macRate = 0
+		weightRate += macWeight
 	}
-	weightRate += macRate
 
 	//相同的hostname
-	hostNameRate := 0.4
 	fpHost := fp.CollectHost
 	assetCateStdHost := AssetCateStd.CollectHost
 
 	if util.RrgsTrim(fpHost) == util.RrgsTrim(assetCateStdHost) {
-		hostNameRate = 0.4
-
-	} else {
-		hostNameRate = 0
+		weightRate += hostnameWeight
 	}
-
-	weightRate += hostNameRate
 
 	//相同分类
 
 	//相同的clienname
-	clientInfoRate := 0.1
 	fpTls := fp.CollectTls
 	assetCateStdTls := AssetCateStd.CollectTls
 	if util.RrgsTrim(fpTls) == util.RrgsTrim(assetCateStdTls) {
-		clientInfoRate = 0.1
-	} else {
-		clientInfoRate = 0
+		weightRate += tlsWeight
 	}
-	weightRate += clientInfoRate
-
 	assetCateMark = assetCateMark * (1 + weightRate)
 
-	stdCateMark = stdCateMark * (1 + 0.5)
+	stdCateMark = stdCateMark * (1 + MinRateWeight)
 
 	ret := float64(assetCateMark) / float64(stdCateMark)
 

@@ -268,3 +268,27 @@ alter table  旧名 rename 新名;
 
 
 ALTER TABLE assets add access_net tinyint(1) UNSIGNED NULL DEFAULT NULL;
+
+
+
+
+
+
+
+
+
+
+
+
+##########problems
+hostname
+
+
+
+
+
+
+
+
+
+

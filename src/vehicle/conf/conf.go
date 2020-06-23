@@ -66,6 +66,15 @@ var (
 	CollectHostRate  float64
 	CollectTlsRate   float64
 	MinRate          float64
+
+	//权重占比
+	MainProtoWeight  float64
+	ProtosKindWeight float64
+	HostnameWeight   float64
+	MacWeight        float64
+	TypeWeight       float64
+	TlsWeight        float64
+	MinRateWeight    float64
 )
 
 func Setup() {
@@ -162,4 +171,19 @@ func Setup() {
 		CollectTimeRate, ProtoCountRate, CollectTotalRate, CollectHostRate, CollectTlsRate, MinRate)
 	logger.Logger.Print("collect_time_rate:%f,proto_count_rate:%f,collect_total_rate:%f,collect_host_rate:%f,collect_tls_rate:%f,min_rate:%f",
 		CollectTimeRate, ProtoCountRate, CollectTotalRate, CollectHostRate, CollectTlsRate, MinRate)
+
+	MainProtoWeight = iniParser.GetFloat64("fp", "main_proto_weight")
+	ProtosKindWeight = iniParser.GetFloat64("fp", "protos_kind_weight")
+	HostnameWeight = iniParser.GetFloat64("fp", "hostname_weight")
+	MacWeight = iniParser.GetFloat64("fp", "mac_weight")
+	TypeWeight = iniParser.GetFloat64("fp", "type_weight")
+	TlsWeight = iniParser.GetFloat64("fp", "tls_weight")
+	MinRateWeight = iniParser.GetFloat64("fp", "min_rate_weight")
+
+	logger.Logger.Info("main_proto_weight:%f,protos_kind_weight:%f,hostname_weight:%f,mac_weight:%f,type_weight:%f,tls_weight:%f,MinRateWeight:%f",
+		MainProtoWeight, ProtosKindWeight, HostnameWeight, MacWeight, TypeWeight, TlsWeight, MinRateWeight)
+
+	logger.Logger.Print("main_proto_weight:%f,protos_kind_weight:%f,hostname_weight:%f,mac_weight:%f,type_weight:%f,tls_weight:%f,MinRateWeight:%f",
+		MainProtoWeight, ProtosKindWeight, HostnameWeight, MacWeight, TypeWeight, TlsWeight, MinRateWeight)
+
 }
