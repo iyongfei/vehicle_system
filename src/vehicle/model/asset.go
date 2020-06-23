@@ -152,10 +152,10 @@ func GetAssetJoinFprintJoinCategory(query string, args ...interface{}) (*AssetJo
 	assetJoinFprintJoinCategory := &AssetJoinFprintJoinCategory{}
 	err = vgorm.Debug().
 		Table("assets").
-		Select("assets.*,finger_prints.cate_id,categories.name as cate_name").
+		Select("assets.*,asset_fprints.cate_id,categories.name as cate_name").
 		Where(query, args...).
-		Joins("inner join finger_prints ON finger_prints.device_mac = assets.asset_id").
-		Joins("inner JOIN categories ON categories.cate_id = finger_prints.cate_id").
+		Joins("inner join asset_fprints ON asset_fprints.asset_id = assets.asset_id").
+		Joins("inner JOIN categories ON categories.cate_id = asset_fprints.cate_id").
 		Scan(&assetJoinFprintJoinCategory).
 		Error
 	return assetJoinFprintJoinCategory, err

@@ -63,8 +63,9 @@ func editAsset() {
 	token := tool.GetVehicleToken()
 	urlReq := fmt.Sprintf(assetUrls["edit_assets"], fip, assetId)
 	bodyParams := map[string]interface{}{
-		"type":   "1",
-		"switch": "false",
+		"type":    "1",
+		"switch":  "false",
+		"cate_id": "8Ae3FuvVKu0nHaLiwIGfFqCyWoEUE1r7",
 	}
 	resp, _ := tool.PutForm(urlReq, bodyParams, token)
 

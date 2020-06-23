@@ -163,10 +163,8 @@ func HandleVehicleFlow(vehicleResult protobuf.GWResult, vehicleId string) error 
 处理指纹库flows
 */
 func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
-
 	for _, macItems := range flowParams.MacItems {
 		mac := macItems.GetMac()
-
 		//判断资产是否达标指纹完整度
 		totalByRate := model_helper.JudgeAssetCollectByteTotalRate(mac) //总流量
 		tlsRate := model_helper.JudgeAssetCollectTlsInfoRate(mac)       //tls
@@ -192,9 +190,9 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 
 		if totalRate >= conf.MinRate {
 			fmt.Println("fp.CollectBytes::", fp.CollectBytes)
-			if fp.CollectBytes == 0 {
+			if !fp.CollectFinish {
 				updateAssetCollectTime(mac)
-				updateFprint(vehicleId, mac)
+				updateFprint(vehicleId, mac, true)
 			}
 			continue
 		}
@@ -267,13 +265,18 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 				}
 			}
 		}
+
+		//更新指纹库
+		updateFprint(vehicleId, mac, false)
+		//如果没有记录，并且没有
+		updateAssetCollectTime(mac)
 	}
 }
 
 /**
 插入指纹资产
 */
-func updateFprint(vehicleId string, mac string) {
+func updateFprint(vehicleId string, mac string, finishFlg bool) {
 	//插入资产指纹信息
 	protoFlow := model_helper.GetRankAssetCollectProtoFlow(mac)
 	protoFlowBys, _ := json.Marshal(protoFlow)
@@ -299,6 +302,7 @@ func updateFprint(vehicleId string, mac string) {
 	fprint.CollectTime = collectTime
 	fprint.FprintId = util.RandomString(32)
 	fprint.VehicleId = vehicleId
+	fprint.CollectFinish = finishFlg
 
 	if err != nil {
 		//todo
@@ -317,6 +321,7 @@ func updateFprint(vehicleId string, mac string) {
 			"collect_tls":         fprint.CollectTls,
 			"collect_bytes":       fprint.CollectBytes,
 			"collect_time":        fprint.CollectTime,
+			"collect_finish":      fprint.CollectFinish,
 		}
 		if err := fpModelBase.UpdateModelsByCondition(attrs, "asset_id = ?", []interface{}{fprint.AssetId}...); err != nil {
 			//todo

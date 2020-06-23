@@ -15,7 +15,7 @@ import (
 获取指纹的流量/协议 标准值
 {"DOWN_PPSTREAM":0.2404,"DOWN_RSYNC":0.2531,"UP_NEST_LOG_SINK":0.13311,"UP_PPSTREAM":0.12605,"UP_SSDP":0.12194}
 */
-func GetFprintProtoFlow(fp *model.Fprint) map[string]float64 {
+func GetFprintProtoFlow(fp model.Fprint) map[string]float64 {
 	protoByteMap := map[string]float64{}
 	protoFlows := fp.CollectProtoFlows
 	_ = json.Unmarshal([]byte(protoFlows), &protoByteMap)
@@ -25,8 +25,8 @@ func GetFprintProtoFlow(fp *model.Fprint) map[string]float64 {
 /**
 获取某fprint
 */
-func GetAssetCateStd() *model.Fprint {
-	var fp *model.Fprint
+func GetAssetCateStd() model.Fprint {
+	var fp model.Fprint
 	//标签列表
 	assetFps := []*model.AssetFprint{}
 	assetFpModelBase := model_base.ModelBaseImpl(&model.AssetFprint{})
@@ -46,7 +46,7 @@ func GetAssetCateStd() *model.Fprint {
 /**
 获取某fprint
 */
-func GetAssetFp(assetId string) *model.Fprint {
+func GetAssetFp(assetId string) model.Fprint {
 	//获取对应的信息
 	fp := &model.Fprint{
 		AssetId: assetId,
@@ -63,7 +63,7 @@ func GetAssetFp(assetId string) *model.Fprint {
 	if recordNotFound {
 		//todo
 	}
-	return fp
+	return *fp
 }
 
 func GetAssetCateMark(assetId string) float64 {

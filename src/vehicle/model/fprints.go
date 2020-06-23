@@ -23,8 +23,9 @@ type Fprint struct {
 	CollectBytes      uint64 //采集流量
 	CollectTime       uint32 //采集时间
 
-	CollectStart uint64
-	CollectEnd   uint64
+	CollectStart  uint64
+	CollectEnd    uint64
+	CollectFinish bool
 }
 
 //序列化为数字类型

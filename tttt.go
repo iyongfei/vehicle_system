@@ -1,8 +1,6 @@
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
 func main() {
 
@@ -18,25 +16,11 @@ func main() {
 	//-1592473012
 	//fmt.Println(uint64(1 - 2))
 
-	stdFpProtoFlowMap := map[string]int{
-		"a": 1,
-		"b": 3,
-		"c": 1,
-		"d": 14,
-		"e": 5,
-	}
+	var v Name
 
-	maxKey := ""
-	for k, max := range stdFpProtoFlowMap {
-		maxKey = k
-		for k1, v1 := range stdFpProtoFlowMap {
-			if v1 > max {
-				maxKey = k1
-				max = v1
-			}
-		}
-		break
-	}
+	fmt.Println(v.Nam)
+}
 
-	fmt.Println(maxKey)
+type Name struct {
+	Nam string
 }

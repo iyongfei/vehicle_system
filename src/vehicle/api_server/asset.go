@@ -83,10 +83,19 @@ func EditAsset(c *gin.Context) {
 	assetId := c.Param("asset_id")
 	setTypeP := c.PostForm("type")
 	setSwitchP := c.PostForm("switch")
+	cateId := c.PostForm("cate_id")
 
 	argsTrimsEmpty := util.RrgsTrimsEmpty(assetId, setTypeP, setSwitchP)
 
 	//setType
+	/**
+	var DeviceSetParam_Type_name = map[int32]string{
+	0: "DEFAULT",
+	1: "PROTECT",
+	2: "INTERNET",
+	3: "GUEST_ACCESS_DEVICE",
+	4: "LANVISIT",}
+	*/
 	var setTypeYes bool
 	types := protobuf.DeviceSetParam_Type_name
 
@@ -149,6 +158,61 @@ func EditAsset(c *gin.Context) {
 		c.JSON(http.StatusOK, ret)
 		return
 	}
+	//判断类别是否存在
+	if !util.RrgsTrimEmpty(cateId) {
+		cate := &model.Category{
+			CateId: cateId,
+		}
+		cateModelBase := model_base.ModelBaseImpl(cate)
+
+		err, cateRecordNotFound := cateModelBase.GetModelByCondition("cate_id = ?", []interface{}{cate.CateId}...)
+
+		if cateRecordNotFound {
+			ret := response.StructResponseObj(response.VStatusServerError, response.ReqCategoryNotExistMsg, "")
+			c.JSON(http.StatusOK, ret)
+			return
+		}
+		if err != nil {
+			ret := response.StructResponseObj(response.VStatusServerError, response.ReqCategoryFailMsg, "")
+			c.JSON(http.StatusOK, ret)
+			return
+		}
+
+		//贴标签
+		assetPrint := &model.AssetFprint{
+			AssetFprintId: util.RandomString(32),
+			AssetId:       assetId,
+			CateId:        cateId,
+		}
+		assetPrintModelBase := model_base.ModelBaseImpl(assetPrint)
+
+		err, assetPrintRecordNotFound := assetPrintModelBase.GetModelByCondition("asset_id = ?", []interface{}{assetPrint.AssetId}...)
+
+		if assetPrintRecordNotFound {
+			//贴标签
+			err = assetPrintModelBase.InsertModel()
+			if err != nil {
+				logger.Logger.Print("%s asset_id%s,get asset err:%+v", util.RunFuncName(), assetPrint.AssetId, err)
+				logger.Logger.Error("%s asset_id%s,get asset err:%+v", util.RunFuncName(), assetPrint.AssetId, err)
+
+				ret := response.StructResponseObj(response.VStatusServerError, response.ReqAddAssetFprintsCateFailMsg, "")
+				c.JSON(http.StatusOK, ret)
+				return
+			}
+		} else {
+			assetPrint.CateId = cateId
+			//编辑
+			attrs := map[string]interface{}{
+				"cate_id": assetPrint.CateId,
+			}
+			if err := assetPrintModelBase.UpdateModelsByCondition(attrs, "asset_id = ?",
+				[]interface{}{assetPrint.AssetId}...); err != nil {
+				ret := response.StructResponseObj(response.VStatusServerError, response.ReqUpdateCategoryFailMsg, "")
+				c.JSON(http.StatusOK, ret)
+				return
+			}
+		}
+	}
 
 	switch setType {
 	case int(protobuf.DeviceSetParam_PROTECT):
@@ -185,10 +249,10 @@ func EditAsset(c *gin.Context) {
 	//
 	//topic_publish_handler.GetPublishService().PutMsg2PublicChan(assetCmd)
 
-	_, _ = modelBase.GetModelByCondition("asset_id = ?", []interface{}{assetInfo.AssetId}...)
+	assetJoinFprintJoinCategory, _ := model.GetAssetJoinFprintJoinCategory("assets.asset_id = ?", []interface{}{assetInfo.AssetId}...)
 
 	responseContent := map[string]interface{}{}
-	responseContent["assetInfo"] = assetInfo
+	responseContent["assetInfo"] = assetJoinFprintJoinCategory
 
 	retObj := response.StructResponseObj(response.VStatusOK, response.ReqUpdateAssetSuccessMsg, responseContent)
 	c.JSON(http.StatusOK, retObj)
