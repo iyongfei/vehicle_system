@@ -1,7 +1,7 @@
 package main
 
 import (
-	"encoding/json"
+	"fmt"
 )
 
 func main() {
@@ -18,8 +18,25 @@ func main() {
 	//-1592473012
 	//fmt.Println(uint64(1 - 2))
 
-	protoByteMap := map[string]interface{}{}
+	stdFpProtoFlowMap := map[string]int{
+		"a": 1,
+		"b": 3,
+		"c": 1,
+		"d": 14,
+		"e": 5,
+	}
 
-	_ = json.Unmarshal([]byte(""), &protoByteMap)
+	maxKey := ""
+	for k, max := range stdFpProtoFlowMap {
+		maxKey = k
+		for k1, v1 := range stdFpProtoFlowMap {
+			if v1 > max {
+				maxKey = k1
+				max = v1
+			}
+		}
+		break
+	}
 
+	fmt.Println(maxKey)
 }
