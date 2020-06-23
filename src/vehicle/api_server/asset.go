@@ -68,14 +68,21 @@ func EditAssetInfo(c *gin.Context) {
 		return
 	}
 
-	assetJoinFprintJoinCategory, _ := model.GetAssetJoinFprintJoinCategory("assets.asset_id = ?", []interface{}{assetInfo.AssetId}...)
+	_, _ = modelBase.GetModelByCondition("asset_id = ?", []interface{}{assetInfo.AssetId}...)
+
+	assetFprintCateJoin, _ := model.GetAssetFprintCateJoin("asset_id = ?", []interface{}{assetInfo.AssetId}...)
+
+	AssetJoinFprintJoinCategory := model.AssetJoinFprintJoinCategory{
+		Asset:    assetInfo,
+		CateId:   assetFprintCateJoin.CateId,
+		CateName: assetFprintCateJoin.CateName,
+	}
 
 	responseContent := map[string]interface{}{}
-	responseContent["asset"] = assetJoinFprintJoinCategory
+	responseContent["asset"] = AssetJoinFprintJoinCategory
 
 	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetAssetSuccessMsg, responseContent)
 	c.JSON(http.StatusOK, retObj)
-
 }
 func EditAsset(c *gin.Context) {
 	assetId := c.Param("asset_id")
@@ -247,10 +254,18 @@ func EditAsset(c *gin.Context) {
 	//
 	//topic_publish_handler.GetPublishService().PutMsg2PublicChan(assetCmd)
 
-	assetJoinFprintJoinCategory, _ := model.GetAssetJoinFprintJoinCategory("assets.asset_id = ?", []interface{}{assetInfo.AssetId}...)
+	_, _ = modelBase.GetModelByCondition("asset_id = ?", []interface{}{assetInfo.AssetId}...)
+
+	assetFprintCateJoin, _ := model.GetAssetFprintCateJoin("asset_id = ?", []interface{}{assetInfo.AssetId}...)
+
+	AssetJoinFprintJoinCategory := model.AssetJoinFprintJoinCategory{
+		Asset:    assetInfo,
+		CateId:   assetFprintCateJoin.CateId,
+		CateName: assetFprintCateJoin.CateName,
+	}
 
 	responseContent := map[string]interface{}{}
-	responseContent["asset"] = assetJoinFprintJoinCategory
+	responseContent["asset"] = AssetJoinFprintJoinCategory
 
 	retObj := response.StructResponseObj(response.VStatusOK, response.ReqUpdateAssetSuccessMsg, responseContent)
 	c.JSON(http.StatusOK, retObj)
@@ -418,14 +433,22 @@ func GetAsset(c *gin.Context) {
 		return
 	}
 
-	assetJoinFprintJoinCategory, _ := model.GetAssetJoinFprintJoinCategory("assets.asset_id = ?", []interface{}{assetId}...)
+	_, _ = modelBase.GetModelByCondition("asset_id = ?", []interface{}{assetInfo.AssetId}...)
 
-	responseData := map[string]interface{}{
-		"asset": assetJoinFprintJoinCategory,
+	assetFprintCateJoin, _ := model.GetAssetFprintCateJoin("asset_id = ?", []interface{}{assetInfo.AssetId}...)
+
+	AssetJoinFprintJoinCategory := model.AssetJoinFprintJoinCategory{
+		Asset:    assetInfo,
+		CateId:   assetFprintCateJoin.CateId,
+		CateName: assetFprintCateJoin.CateName,
 	}
 
-	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetAssetSuccessMsg, responseData)
+	responseContent := map[string]interface{}{}
+	responseContent["asset"] = AssetJoinFprintJoinCategory
+
+	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetAssetSuccessMsg, responseContent)
 	c.JSON(http.StatusOK, retObj)
+
 }
 
 //1、验证（录入）

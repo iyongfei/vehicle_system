@@ -11,7 +11,7 @@ vehicle_id=754d2728b4e549c5a16c0180fcacb800
 
 #修改名字
 vehicle_new_name=sjdlfksf
-asset_new_name=为二位
+asset_new_name=为二位werwer
 
 #策略接口
 vehicle_ids=gBDvsD4qnAdR9K4cTIZoq7Zr05Ox1udr

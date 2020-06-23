@@ -81,3 +81,28 @@ func (flow *AssetFprint) GetModelPaginationByCondition(pageIndex int, pageSize i
 	}
 	return nil
 }
+
+type AssetFprintCateJoin struct {
+	gorm.Model
+	AssetId       string
+	AssetFprintId string
+	CateId        string
+
+	CateName string
+}
+
+func GetAssetFprintCateJoin(query string, args ...interface{}) (*AssetFprintCateJoin, error) {
+	vgorm, err := mysql.GetMysqlInstance().GetMysqlDB()
+	if err != nil {
+		return nil, fmt.Errorf("%s open grom err:%v", util.RunFuncName(), err.Error())
+	}
+	assetFprintCateJoin := &AssetFprintCateJoin{}
+	err = vgorm.Debug().
+		Table("asset_fprints").
+		Select("asset_fprints.*,categories.name as cate_name").
+		Where(query, args...).
+		Joins("inner JOIN categories ON categories.cate_id = asset_fprints.cate_id").
+		Scan(&assetFprintCateJoin).
+		Error
+	return assetFprintCateJoin, err
+}
