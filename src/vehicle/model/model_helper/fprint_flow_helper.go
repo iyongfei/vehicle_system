@@ -270,7 +270,6 @@ func JudgeAssetCollectTimeRate(assetId string) float64 {
 	logger.Logger.Info("%s fcollect_time:%f", util.RunFuncName(), fcollect_time)
 	return fcollect_time
 }
-
 func GetAssetCollectTime(assetId string) uint32 {
 	var collectTime uint32
 

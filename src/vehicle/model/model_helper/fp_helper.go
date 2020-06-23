@@ -2,7 +2,9 @@ package model_helper
 
 import (
 	"encoding/json"
+	"fmt"
 	"vehicle_system/src/vehicle/conf"
+	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/mac"
 	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
@@ -21,7 +23,7 @@ func GetFprintProtoFlow(fp *model.Fprint) map[string]float64 {
 }
 
 /**
-获取某fprint,某字段
+获取某fprint
 */
 func GetAssetCateStd() *model.Fprint {
 	var fp *model.Fprint
@@ -84,20 +86,34 @@ func GetAssetCateMark(assetId string) float64 {
 	fpProtoFlowMap := GetFprintProtoFlow(fp)
 	stdFpProtoFlowMap := GetFprintProtoFlow(AssetCateStd)
 
+	logger.Logger.Print("%s fpProtoFlowMap:%+v", util.RunFuncName(), fpProtoFlowMap)
+	logger.Logger.Info("%s fpProtoFlowMap:%+v", util.RunFuncName(), fpProtoFlowMap)
+
+	logger.Logger.Print("%s stdFpProtoFlowMap:%+v", util.RunFuncName(), stdFpProtoFlowMap)
+	logger.Logger.Info("%s stdFpProtoFlowMap:%+v", util.RunFuncName(), stdFpProtoFlowMap)
+
 	var stdCateMark float64
 	var assetCateMark float64
-	for stdFlow, _ := range stdFpProtoFlowMap {
+	for stdFlow, stdValue := range stdFpProtoFlowMap {
+		stdValue2 := stdValue * stdValue * Hundred
+		stdCateMark += stdValue2
 
-		for fpFlow, value := range fpProtoFlowMap {
-			v2 := value * value * Hundred
-			stdCateMark += v2
+		for fpFlow, fpValue := range fpProtoFlowMap {
 
 			if fpFlow == stdFlow {
-				v2 := value * value * Hundred
-				assetCateMark += v2
+				fpValue2 := fpValue * stdValue * Hundred
+				fmt.Println("value:", fpValue2)
+				assetCateMark += fpValue2
 			}
 		}
 	}
+
+	logger.Logger.Print("%s stdCateMark:%f", util.RunFuncName(), stdCateMark)
+	logger.Logger.Info("%s stdCateMark:%f", util.RunFuncName(), stdCateMark)
+
+	logger.Logger.Print("%s assetCateMark:%f", util.RunFuncName(), assetCateMark)
+	logger.Logger.Info("%s assetCateMark:%f", util.RunFuncName(), assetCateMark)
+
 	//得到标准指纹，占比最多的协议
 	var weightRate float64
 
@@ -127,13 +143,21 @@ func GetAssetCateMark(assetId string) float64 {
 			fpProtoKinds = append(fpProtoKinds, k)
 		}
 	}
+	logger.Logger.Print("%s stdProtoKinds:%v,fpProtoKinds:%v", util.RunFuncName(), stdProtoKinds, fpProtoKinds)
+	logger.Logger.Info("%s stdProtoKinds:%v,fpProtoKinds:%v", util.RunFuncName(), stdProtoKinds, fpProtoKinds)
+
 	//协议种类
 	fprotoKindRate := float64(len(fpProtoKinds)) / float64(len(stdProtoKinds)) * protosKindWeight
+	logger.Logger.Print("%s fprotoKindRate:%f", util.RunFuncName(), fprotoKindRate)
+	logger.Logger.Info("%s fprotoKindRate:%f", util.RunFuncName(), fprotoKindRate)
 	weightRate += fprotoKindRate
 
 	//相同的mac地址，厂商
 	fpTradeMark := mac.GetOrgByMAC(fp.AssetId)
 	assetCateStdTradeMark := mac.GetOrgByMAC(AssetCateStd.AssetId)
+
+	logger.Logger.Print("%s assetCateStdTradeMark:%s", util.RunFuncName(), assetCateStdTradeMark)
+	logger.Logger.Info("%s assetCateStdTradeMark:%s", util.RunFuncName(), assetCateStdTradeMark)
 
 	if util.RrgsTrim(assetCateStdTradeMark) == util.RrgsTrim(fpTradeMark) {
 		weightRate += macWeight
@@ -146,6 +170,8 @@ func GetAssetCateMark(assetId string) float64 {
 	if util.RrgsTrim(fpHost) == util.RrgsTrim(assetCateStdHost) {
 		weightRate += hostnameWeight
 	}
+	logger.Logger.Print("%s assetCateStdHost:%s", util.RunFuncName(), assetCateStdHost)
+	logger.Logger.Info("%s assetCateStdHost:%s", util.RunFuncName(), assetCateStdHost)
 
 	//相同分类
 

@@ -44,6 +44,10 @@ func creatFlowProtobuf(vehicleId string, InsertAssetids string, flowCount int) [
 
 	list := []*protobuf.FlowParam_FMacItems{}
 
+	protocols := []int{
+		0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+	}
+
 	for _, assetId := range fAssetids {
 		flows := []*protobuf.FItem{}
 		for i := 0; i < flowCount; i++ {
@@ -53,18 +57,18 @@ func creatFlowProtobuf(vehicleId string, InsertAssetids string, flowCount int) [
 				SrcPort:          23,
 				DstIp:            23,
 				DstPort:          23,
-				Protocol:         protobuf.FlowProtos(tool.RandOneToMaxNumber(239)),
+				Protocol:         protobuf.FlowProtos(protocols[tool.RandOneToMaxNumber(10)]),
 				FlowInfo:         "wklejl",
 				SafeType:         protobuf.FlowSafetype(33),
 				SafeInfo:         "jwek",
 				StartTime:        tool.TimeNowToUnix(),
 				LastSeenTime:     tool.TimeNowToUnix(),
-				Src2DstBytes:     uint64(tool.RandomNumber(4)),
-				Dst2SrcBytes:     uint64(tool.RandomNumber(4)),
+				Src2DstBytes:     uint64(tool.RandomNumber(6)),
+				Dst2SrcBytes:     uint64(tool.RandomNumber(6)),
 				Src2DstPackets:   323232,
 				Dst2SrcPackets:   200,
 				FlowStat:         protobuf.FlowStat_FST_FINISH,
-				HostName:         "hostname",
+				HostName:         "",
 				HasPassive:       true,
 				IatFlowAvg:       3.2,
 				IatFlowStddev:    2.3,

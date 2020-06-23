@@ -335,7 +335,6 @@ func updateAssetCollectTime(mac string) {
 		CollectStart: uint64(time.Now().Unix()),
 		CollectEnd:   uint64(time.Now().Unix()),
 	}
-	fmt.Printf("111%+v", fprint)
 
 	fpModelBase := model_base.ModelBaseImpl(fprint)
 
@@ -345,11 +344,9 @@ func updateAssetCollectTime(mac string) {
 		logger.Logger.Print("%s asset:%s,err:%s", util.RunFuncName(), fprint.AssetId, err.Error())
 		logger.Logger.Error("%s asset:%s,err:%s", util.RunFuncName(), fprint.AssetId, err.Error())
 	}
-	fmt.Printf("222%+v\n", fprint)
 
 	if recordNotFound {
 		insertErr := fpModelBase.InsertModel()
-		fmt.Printf("333%+v\n", fprint)
 
 		if insertErr != nil {
 			//todo
@@ -358,7 +355,6 @@ func updateAssetCollectTime(mac string) {
 
 		}
 	} else {
-		fmt.Printf("444%+v\n", fprint)
 		var attrs map[string]interface{}
 		if fprint.CollectStart == 0 && fprint.CollectEnd == 0 {
 			attrs = map[string]interface{}{
@@ -366,12 +362,10 @@ func updateAssetCollectTime(mac string) {
 				"collect_end":   uint64(time.Now().Unix()),
 			}
 
-			fmt.Println("555")
 		} else {
 			attrs = map[string]interface{}{
 				"collect_end": uint64(time.Now().Unix()),
 			}
-			fmt.Println("666")
 		}
 
 		if err := fpModelBase.UpdateModelsByCondition(attrs,
