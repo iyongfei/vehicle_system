@@ -68,14 +68,12 @@ func EditAssetInfo(c *gin.Context) {
 		return
 	}
 
-	_, _ = modelBase.GetModelByCondition("vehicle_id = ? and asset_id = ?",
-		[]interface{}{assetInfo.VehicleId, assetInfo.AssetId}...)
+	assetJoinFprintJoinCategory, _ := model.GetAssetJoinFprintJoinCategory("assets.asset_id = ?", []interface{}{assetInfo.AssetId}...)
 
-	responseData := map[string]interface{}{
-		"asset": assetInfo,
-	}
+	responseContent := map[string]interface{}{}
+	responseContent["asset"] = assetJoinFprintJoinCategory
 
-	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetAssetSuccessMsg, responseData)
+	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetAssetSuccessMsg, responseContent)
 	c.JSON(http.StatusOK, retObj)
 
 }
@@ -252,7 +250,7 @@ func EditAsset(c *gin.Context) {
 	assetJoinFprintJoinCategory, _ := model.GetAssetJoinFprintJoinCategory("assets.asset_id = ?", []interface{}{assetInfo.AssetId}...)
 
 	responseContent := map[string]interface{}{}
-	responseContent["assetInfo"] = assetJoinFprintJoinCategory
+	responseContent["asset"] = assetJoinFprintJoinCategory
 
 	retObj := response.StructResponseObj(response.VStatusOK, response.ReqUpdateAssetSuccessMsg, responseContent)
 	c.JSON(http.StatusOK, retObj)
@@ -395,6 +393,7 @@ func GetAsset(c *gin.Context) {
 		logger.Logger.Error("%s argsTrimsEmpty vehicle_id:%s", util.RunFuncName(), assetId)
 		logger.Logger.Print("%s argsTrimsEmpty vehicle_id:%s", util.RunFuncName(), assetId)
 	}
+
 	assetInfo := &model.Asset{
 		AssetId: assetId,
 	}
@@ -418,11 +417,14 @@ func GetAsset(c *gin.Context) {
 		c.JSON(http.StatusOK, ret)
 		return
 	}
+
+	assetJoinFprintJoinCategory, _ := model.GetAssetJoinFprintJoinCategory("assets.asset_id = ?", []interface{}{assetId}...)
+
 	responseData := map[string]interface{}{
-		"asset": assetInfo,
+		"asset": assetJoinFprintJoinCategory,
 	}
 
-	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetVehicleSuccessMsg, responseData)
+	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetAssetSuccessMsg, responseData)
 	c.JSON(http.StatusOK, retObj)
 }
 
