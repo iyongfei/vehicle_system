@@ -131,6 +131,7 @@ func GetAssetCollectHostName(assetId string) string {
 判断某个设备采集的协议种类数
 */
 func GetRankAssetCollectProtoFlow(assetId string) map[string]float64 {
+	const REMAIN_MIN = 5
 	fprotoBytesFloat := map[string]float64{}
 	PROTOS := conf.ProtoCount
 	fprotosBytesMap := GetAssetCollectProtoFlow(assetId)

@@ -44,12 +44,12 @@ func V1Router(r *gin.Engine) {
 		apiV1.DELETE("/categorys/:cate_id", api_server.DeleCategory) //todo
 		//////////////////////////////////////////////指纹信息接口//////////////////////////////////////////////
 		//apiV1.GET("/asset_fprints", api_server.GetAssetFprints)                      //todo
-		apiV1.GET("/pagination/fprint_infos", api_server.GetPaginationPrintInfos) //todo
-		apiV1.GET("/fprint_infos/:asset_id", api_server.GetAssetPrintInfos)       //todo
+		//apiV1.GET("/pagination/fprint_infos", api_server.GetPaginationPrintInfos) //todo dele
+		//apiV1.GET("/fprint_infos/:asset_id", api_server.GetAssetPrintInfos)       //todo dele
 		////////////////////////////////////////////////添加标签/////////////////////////////////////////////
-		apiV1.POST("/finger_prints", api_server.AddFprint)               //todo
-		apiV1.GET("/pagination/finger_prints", api_server.GetFprints)    //todo
-		apiV1.DELETE("/finger_prints/:fprint_id", api_server.DeleFprint) //todo
+		apiV1.POST("/finger_prints", api_server.AddFprint) //todo
+		//apiV1.GET("/pagination/finger_prints", api_server.GetFprints)    //todo dele
+		//apiV1.DELETE("/finger_prints/:fprint_id", api_server.DeleFprint) //todo dele
 		//apiV1.PUT("/finger_prints/:fprint_id", api_server.EditFprint)    //todo
 		//////////////////////////////////////////////资产标签识别//////////////////////////////////////////////
 		//apiV1.GET("/pagination/asset_fprints/examines", api_server.GetExamineAssetFprints)        //todo
@@ -67,12 +67,12 @@ func V1Router(r *gin.Engine) {
 		apiV1.POST("/white_assets_csvs", api_server.UploadWhiteAsset)
 		apiV1.GET("/mac/white_assets", api_server.GetWhiteAssetMacs) //todo
 		////////////////////////////////////////////////资产接口//////////////////////////////////////////////
-		apiV1.GET("/pagination/assets", api_server.GetPaginationAssets)             //todo
-		apiV1.GET("/all/assets", api_server.GetAllAssets)                           //todo
-		apiV1.GET("/assets/:asset_id", api_server.GetAsset)                         //todo
-		apiV1.PUT("/assets/:asset_id", api_server.EditAsset)                        //todo
-		apiV1.PUT("/assets/:asset_id/asset_info", api_server.EditAssetInfo)         //todo
-		apiV1.POST("/assets/examines/:asset_id", api_server.AddExamineAssetFprints) //todo
+		apiV1.GET("/pagination/assets", api_server.GetPaginationAssets)     //todo
+		apiV1.GET("/all/assets", api_server.GetAllAssets)                   //todo
+		apiV1.GET("/assets/:asset_id", api_server.GetAsset)                 //todo
+		apiV1.PUT("/assets/:asset_id", api_server.EditAsset)                //todo
+		apiV1.PUT("/assets/:asset_id/asset_info", api_server.EditAssetInfo) //todo
+		//apiV1.POST("/assets/examines/:asset_id", api_server.AddExamineAssetFprints) //todo dele
 
 		//apiV1.POST("/assets", api_server.AddAsset)
 		apiV1.DELETE("/assets/:asset_id", api_server.DeleAsset)

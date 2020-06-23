@@ -37,8 +37,6 @@ func getTables() []interface{} {
 	automatedLearningResult := &model.AutomatedLearningResult{}
 	category := &model.Category{}
 	disk := &model.Disk{}
-	fingerPrint := &model.FingerPrint{}
-	fprintInfo := &model.FprintInfo{}
 	firmwareInfo := &model.FirmwareInfo{}
 	firmwareUpdate := &model.FirmwareUpdate{}
 	flowStatistic := &model.FlowStatistic{}
@@ -66,9 +64,9 @@ func getTables() []interface{} {
 	whiteAsset := &model.WhiteAsset{}
 
 	tables := []interface{}{
-		alayerProto, area, assetArea, asset, assetLeader, category, fingerPrint, flow, tflow, flowStatistic, firmwareUpdate, firmwareInfo, vehicleInfo, vehicleLeader,
+		alayerProto, area, assetArea, asset, assetLeader, category, flow, tflow, flowStatistic, firmwareUpdate, firmwareInfo, vehicleInfo, vehicleLeader,
 		user, disk, threat, whiteList, vhalonet, redisInfo, portMap, strategy, strategyGroup, strategyVehicle,
-		flowStrategy, flowStrategyVehicles, fprintInfo,
+		flowStrategy, flowStrategyVehicles,
 		flowStrategyTtem, flowStrategyRelateItem, sample, strategyVehicleLearnings,
 		sampleItem, studyOrigin, automatedLearning, automatedLearningResult, whiteAsset,
 	}
