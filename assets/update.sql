@@ -110,6 +110,7 @@ CREATE TABLE IF NOT EXISTS `fprints`  (
   `collect_start` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
   `collect_end` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
   `collect_finish` tinyint(1) NULL DEFAULT NULL,
+  `auto_cate_id` varchar(255)  NULL DEFAULT NULL,
 
    PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_fprints_deleted_at`(`deleted_at`) USING BTREE

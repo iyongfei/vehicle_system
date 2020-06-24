@@ -26,6 +26,7 @@ type Fprint struct {
 	CollectStart  uint64
 	CollectEnd    uint64
 	CollectFinish bool
+	AutoCateId    string
 }
 
 //序列化为数字类型

@@ -283,6 +283,9 @@ func updateFprint(vehicleId string, mac string, finishFlg bool) {
 	hostName := model_helper.GetAssetCollectHostName(mac)
 	collectTime := model_helper.GetAssetCollectTime(mac)
 
+	//识别类别
+	autoCateId := model_helper.JudgeAssetCate(mac)
+
 	fprint := &model.Fprint{
 		AssetId: mac,
 	}
@@ -299,6 +302,7 @@ func updateFprint(vehicleId string, mac string, finishFlg bool) {
 	fprint.FprintId = util.RandomString(32)
 	fprint.VehicleId = vehicleId
 	fprint.CollectFinish = finishFlg
+	fprint.AutoCateId = autoCateId
 
 	if err != nil {
 		//todo
