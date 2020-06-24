@@ -4,23 +4,26 @@ import "fmt"
 
 func main() {
 
-	//rate := fmt.Sprintf("%.3f", 1.0/1.0)
-	//frate, _ := strconv.ParseFloat(rate, 64)
-	//
-	//fmt.Println(frate, frate)
+	a := map[string]int{
+		"a": 1,
+		"b": 2,
+		"c": 1,
+		"d": 3,
+	}
 
-	//fcollect := float64(float64(200)/float64(300)) * 0.2
-	//fmt.Println(fcollect)
+	maxKey := ""
+	for k, v := range a {
 
-	//fcollect = float64(float64(distanceTime) / float64(ctime)) * MAX_COLLECT_RATE
-	//-1592473012
-	//fmt.Println(uint64(1 - 2))
+		maxKey = k
 
-	var v Name
+		for k1, v1 := range a {
 
-	fmt.Println(v.Nam)
-}
+			if v1 > v {
+				maxKey = k1
+			}
 
-type Name struct {
-	Nam string
+		}
+	}
+
+	fmt.Println(maxKey)
 }

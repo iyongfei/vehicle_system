@@ -189,16 +189,12 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 		}
 
 		if totalRate >= conf.MinRate {
-			fmt.Println("fp.CollectBytes::", fp.CollectBytes)
 			if !fp.CollectFinish {
 				updateAssetCollectTime(mac)
 				updateFprint(vehicleId, mac, true)
 			}
 			continue
 		}
-
-		//如果没有记录，并且没有
-		updateAssetCollectTime(mac)
 
 		macFlows := macItems.GetFlowItem()
 		for _, flowItem := range macFlows {
