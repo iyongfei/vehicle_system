@@ -30,7 +30,7 @@ func JudgeAssetCollectByteTotalRate(assetId string) float64 {
 	if totalBytes > collectTotal {
 		ftatalBytes = collectTotalRate
 	} else {
-		ftatalBytes = float64(float64(totalBytes)/float64(collectTotal)) * collectTotalRate
+		ftatalBytes = float64(totalBytes) / float64(collectTotal) * collectTotalRate
 	}
 	logger.Logger.Print("%s ftatalBytes:%f", util.RunFuncName(), ftatalBytes)
 	logger.Logger.Info("%s ftatalBytes:%f", util.RunFuncName(), ftatalBytes)
@@ -178,7 +178,6 @@ func (list ProtoByteFList) Swap(i, j int) {
 	list[i], list[j] = list[j], list[i]
 }
 
-////
 func GetAssetCollectProtoFlow(assetId string) map[string]float64 {
 	fprotosMap := map[string]float64{}
 	fprintFlows := []*model.FprintFlow{}
@@ -186,6 +185,7 @@ func GetAssetCollectProtoFlow(assetId string) map[string]float64 {
 	if err != nil {
 		return fprotosMap
 	}
+	//协议->流量
 	fprotosBytesMap := map[string]uint64{}
 	for _, fpFlow := range fprintFlows {
 		protocolStr := protobuf.GetFlowProtocols(int(fpFlow.Protocol))
@@ -213,7 +213,7 @@ func GetAssetCollectProtoFlow(assetId string) map[string]float64 {
 		totalBytes += flowByte
 	}
 	for p, pb := range fprotosBytesMap {
-		pbRate := float64(float64(pb) / float64(totalBytes))
+		pbRate := float64(pb) / float64(totalBytes)
 
 		if v, ok := fprotosMap[p]; ok {
 			fprotosMap[p] = pbRate + v
@@ -237,7 +237,7 @@ func JudgeAssetCollectProtoFlowRate(assetId string) float64 {
 	if len(collectProtosRate) > int(PROTOS) {
 		fcollectProto = MAX_PROTOS_RATE
 	} else {
-		fcollectProto = float64(float64(len(collectProtosRate))/float64(PROTOS)) * MAX_PROTOS_RATE
+		fcollectProto = float64(len(collectProtosRate)) / float64(PROTOS) * MAX_PROTOS_RATE
 	}
 
 	logger.Logger.Print("%s collectProtosRate:%f", util.RunFuncName(), fcollectProto)
@@ -291,9 +291,8 @@ func GetAssetCollectTime(assetId string) uint32 {
 
 	collectTime = uint32(ctime) + uint32(endTime-startTime)
 
-	fmt.Println(util.UnixStamp2Str(int64(endTime)))
-	fmt.Println(util.UnixStamp2Str(int64(ctime)))
-	fmt.Println(util.UnixStamp2Str(int64(startTime)))
+	logger.Logger.Print("%s fcollect_time:%f", util.RunFuncName(), endTime, ctime, startTime)
+	logger.Logger.Info("%s fcollect_time:%f", util.RunFuncName(), endTime, ctime, startTime)
 	//2702494284
 	return collectTime
 }

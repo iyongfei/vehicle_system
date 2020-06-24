@@ -40,5 +40,6 @@ func init() {
 // @host localhost:7001
 // @BasePath /
 func main() {
+
 	router.RouterHandler()
 }

@@ -173,10 +173,10 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 		collectRate := model_helper.JudgeAssetCollectTimeRate(mac)      //采集时间
 
 		totalRate := totalByRate + tlsRate + hostRate + collectRate + protoRate
-		logger.Logger.Print("%s unmarshal totalByRate:%f, tlsRate:%f,hostRate:%f,protoRate:%f,collectRate:%f,totalRate:%f",
-			util.RunFuncName(), totalByRate, tlsRate, hostRate, protoRate, collectRate, totalRate)
-		logger.Logger.Info("%s unmarshal totalByRate:%f, tlsRate:%f,hostRate:%f,protoRate:%f,collectRate:%f,totalRate:%f",
-			util.RunFuncName(), totalByRate, tlsRate, hostRate, protoRate, collectRate, totalRate)
+		logger.Logger.Print("%s,asset:%s,totalByRate:%f,tlsRate:%f,hostRate:%f,protoRate:%f,collectRate:%f,totalRate:%f",
+			util.RunFuncName(), mac, totalByRate, tlsRate, hostRate, protoRate, collectRate, totalRate)
+		logger.Logger.Info("%s,asset:%s,totalByRate:%f,tlsRate:%f,hostRate:%f,protoRate:%f,collectRate:%f,totalRate:%f",
+			util.RunFuncName(), mac, totalByRate, tlsRate, hostRate, protoRate, collectRate, totalRate)
 
 		//无记录，更新
 		fp := &model.Fprint{
