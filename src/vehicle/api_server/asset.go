@@ -2,12 +2,16 @@ package api_server
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
+	"vehicle_system/src/vehicle/conf"
+	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/emq/protobuf"
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
@@ -407,6 +411,7 @@ func GetAsset(c *gin.Context) {
 		c.JSON(http.StatusOK, ret)
 		logger.Logger.Error("%s argsTrimsEmpty vehicle_id:%s", util.RunFuncName(), assetId)
 		logger.Logger.Print("%s argsTrimsEmpty vehicle_id:%s", util.RunFuncName(), assetId)
+		return
 	}
 
 	assetInfo := &model.Asset{
@@ -544,4 +549,119 @@ func DeleAsset(c *gin.Context) {
 
 	retObj := response.StructResponseObj(response.VStatusOK, response.ReqDeleAssetSuccessMsg, "")
 	c.JSON(http.StatusOK, retObj)
+}
+
+/**
+获取某资产的流量占比情况
+*/
+func GetAssetProtocolRatio(c *gin.Context) {
+	const REMAIN_MIN = 5
+	assetId := c.Param("asset_id")
+	argsTrimsEmpty := util.RrgsTrimsEmpty(assetId)
+	if argsTrimsEmpty {
+		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+		c.JSON(http.StatusOK, ret)
+		logger.Logger.Error("%s argsTrimsEmpty vehicle_id:%s", util.RunFuncName(), assetId)
+		logger.Logger.Print("%s argsTrimsEmpty vehicle_id:%s", util.RunFuncName(), assetId)
+		return
+	}
+
+	assetFlows := []*model.Flow{}
+	err := mysql.QueryModelRecordsByWhereCondition(&assetFlows, "asset_id = ?", []interface{}{assetId}...)
+	if err != nil {
+		logger.Logger.Error("%s asset_id:%s err:%s", util.RunFuncName(), assetId, err)
+		logger.Logger.Print("%s asset_id:%s err:%s", util.RunFuncName(), assetId, err)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetAssetFlowFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	//protocol->bytes
+	fprotosBytesMap := map[string]uint64{}
+
+	for _, fpFlow := range assetFlows {
+		protocolStr := protobuf.GetFlowProtocols(int(fpFlow.Protocol))
+		upProtocol := fmt.Sprintf("UP_%s", protocolStr)
+		downProtocol := fmt.Sprintf("DOWN_%s", protocolStr)
+		srcDstBytes := fpFlow.SrcDstBytes //up
+		dstSrcBytes := fpFlow.DstSrcBytes //down
+		if v, ok := fprotosBytesMap[upProtocol]; ok {
+			fprotosBytesMap[upProtocol] = v + srcDstBytes
+		} else {
+			fprotosBytesMap[upProtocol] = srcDstBytes
+		}
+		if v, ok := fprotosBytesMap[downProtocol]; ok {
+			fprotosBytesMap[downProtocol] = v + dstSrcBytes
+		} else {
+			fprotosBytesMap[downProtocol] = dstSrcBytes
+		}
+	}
+	//总流量大小
+	var totalBytes uint64
+	for _, fprintFlow := range assetFlows {
+		dstSrcBytes := fprintFlow.DstSrcBytes
+		srcDstBytes := fprintFlow.SrcDstBytes
+		flowByte := dstSrcBytes + srcDstBytes
+		totalBytes += flowByte
+	}
+	fprotosMap := map[string]float64{}
+
+	for p, pb := range fprotosBytesMap {
+		pbRate := float64(pb) / float64(totalBytes)
+		pbRate = util.Decimal(pbRate)
+		fmt.Println("pbRate--->", p, pb, pbRate)
+		if v, ok := fprotosMap[p]; ok {
+			fprotosMap[p] = pbRate + v
+		} else {
+			fprotosMap[p] = pbRate
+		}
+	}
+
+	fprotoBytesFloat := map[string]float64{}
+
+	var protoByteFListData ProtoByteFList
+	for protoId, protoByteF := range fprotosMap {
+		obj := ProtoByteF{Key: protoId, Value: protoByteF}
+		protoByteFListData = append(protoByteFListData, obj)
+	}
+
+	sort.Sort(protoByteFListData)
+
+	var tmpProtoByteFListData ProtoByteFList
+
+	if len(protoByteFListData) <= int(conf.ProtoCount) && len(protoByteFListData) >= REMAIN_MIN {
+		tmpProtoByteFListData = protoByteFListData[0:]
+	}
+	if len(protoByteFListData) > int(conf.ProtoCount) {
+		tmpProtoByteFListData = protoByteFListData[0:int(conf.ProtoCount)]
+	}
+
+	for _, v := range tmpProtoByteFListData {
+		key := v.Key
+		value := v.Value
+		fprotoBytesFloat[key] = value
+	}
+
+	responseData := map[string]interface{}{
+		"asset_flows": fprotoBytesFloat,
+	}
+
+	ret := response.StructResponseObj(response.VStatusOK, response.ReqGetAssetFlowSuccessMsg, responseData)
+	c.JSON(http.StatusOK, ret)
+}
+
+type ProtoByteFList []ProtoByteF
+type ProtoByteF struct {
+	Key   string
+	Value float64
+}
+
+func (list ProtoByteFList) Len() int {
+	return len(list)
+}
+func (list ProtoByteFList) Less(i, j int) bool {
+	return list[i].Value > list[j].Value
+}
+func (list ProtoByteFList) Swap(i, j int) {
+	list[i], list[j] = list[j], list[i]
 }

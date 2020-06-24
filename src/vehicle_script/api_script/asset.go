@@ -11,6 +11,7 @@ var assetUrls = map[string]string{
 	"get_assets_simple": "http://%s:7001/api/v1/all/assets",
 	"get_assets":        "http://%s:7001/api/v1/pagination/assets",
 	"get_asset":         "http://%s:7001/api/v1/assets/%s",
+	"get_asset_proto":   "http://%s:7001/api/v1/assets/%s/protocol_ratio",
 	"post_assets":       "http://localhost:7001/api/v1/assets",
 
 	"edit_assets":             "http://%s:7001/api/v1/assets/%s",
@@ -35,7 +36,24 @@ func main() {
 	//deleAsset()
 	//editAsset()
 
-	editVehicleAssetInfo()
+	//editVehicleAssetInfo()
+	getAssetProto()
+}
+
+/**
+获取一条车载信息
+*/
+func getAssetProto() {
+	fip := config["server_ip"]
+	assetId := config["asset_id"]
+
+	token := tool.GetVehicleToken()
+	urlReq := fmt.Sprintf(assetUrls["get_asset_proto"], fip, assetId)
+
+	queryParams := map[string]interface{}{}
+	resp, _ := tool.Get(urlReq, queryParams, token)
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
 }
 
 func editVehicleAssetInfo() {

@@ -185,6 +185,9 @@ const (
 
 	ReqGetAssetListFailMsg    = "设备列表获取失败"
 	ReqGetAssetListSuccessMsg = "设备列表获取成功"
+
+	ReqGetAssetFlowFailMsg    = "设备流量获取失败"
+	ReqGetAssetFlowSuccessMsg = "设备流量获取成功"
 )
 
 //strategy
