@@ -40,6 +40,22 @@ func main() {
 	getAssetProto()
 }
 
+func editAsset() {
+	fip := config["server_ip"]
+	assetId := config["asset_id"]
+	token := tool.GetVehicleToken()
+	urlReq := fmt.Sprintf(assetUrls["edit_assets"], fip, assetId)
+	bodyParams := map[string]interface{}{
+		"type":    "1",
+		"switch":  "false",
+		"cate_id": "8Ae3FuvVKu0nHaLiwIGfFqCyWoEUE1r7",
+	}
+	resp, _ := tool.PutForm(urlReq, bodyParams, token)
+
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+}
+
 /**
 获取一条车载信息
 */
@@ -68,22 +84,6 @@ func editVehicleAssetInfo() {
 	bodyParams := map[string]interface{}{
 		"vehicle_id": vehicle_id,
 		"name":       asset_new_name,
-	}
-	resp, _ := tool.PutForm(urlReq, bodyParams, token)
-
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
-}
-
-func editAsset() {
-	fip := config["server_ip"]
-	assetId := config["asset_id"]
-	token := tool.GetVehicleToken()
-	urlReq := fmt.Sprintf(assetUrls["edit_assets"], fip, assetId)
-	bodyParams := map[string]interface{}{
-		"type":    "1",
-		"switch":  "false",
-		"cate_id": "8Ae3FuvVKu0nHaLiwIGfFqCyWoEUE1r7",
 	}
 	resp, _ := tool.PutForm(urlReq, bodyParams, token)
 

@@ -112,14 +112,43 @@ func DeleCategory(c *gin.Context) {
 	}
 	tx := vgorm.Begin()
 
-	//dele 删除FstrategyVehicleItem表
+	//dele Category表
 	category := &model.Category{}
 
-	if err := tx.Debug().Unscoped().Where("cate_id = ?", cateId).Delete(category).Error; err != nil {
+	if err := tx.Unscoped().Where("cate_id = ?", cateId).Delete(category).Error; err != nil {
 		tx.Rollback()
 		logger.Logger.Error("%s dele category id:%s, err:%s", util.RunFuncName(), cateId, err)
 		logger.Logger.Print("%s dele category id:%s, err:%s", util.RunFuncName(), cateId, err)
 		ret := response.StructResponseObj(response.VStatusServerError, response.ReqDeleCategoryFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	//删除asset_fprints表
+
+	assetPrint := &model.AssetFprint{}
+
+	if err := tx.Unscoped().Where("cate_id = ?", cateId).Delete(assetPrint).Error; err != nil {
+		tx.Rollback()
+		logger.Logger.Error("%s dele assetFprint id:%s, err:%s", util.RunFuncName(), cateId, err)
+		logger.Logger.Print("%s dele assetFprint id:%s, err:%s", util.RunFuncName(), cateId, err)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqDeleAssetFprintsCateFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	//已经识别的资产转为未知资产
+	fprint := &model.Fprint{}
+
+	attrs := map[string]interface{}{
+		"auto_cate_id": "",
+	}
+
+	if err := tx.Model(fprint).Where("auto_cate_id = ?", []interface{}{cateId}...).Updates(attrs).Error; err != nil {
+		tx.Rollback()
+		logger.Logger.Error("%s update fprint id:%s, err:%s", util.RunFuncName(), cateId, err)
+		logger.Logger.Print("%s update fprint id:%s, err:%s", util.RunFuncName(), cateId, err)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqDeleFprintsFailMsg, "")
 		c.JSON(http.StatusOK, ret)
 		return
 	}

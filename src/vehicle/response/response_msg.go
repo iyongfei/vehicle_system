@@ -244,18 +244,6 @@ const (
 	//
 	ReqUpdateFStrategyFailMsg    = "会话策略信息更新失败"
 	ReqUpdateFStrategySuccessMsg = "会话策略信息更新成功"
-	//
-	//
-	//
-	//ReqGetStrategyVehicleFailMsg    		= "策略-终端信息获取失败"
-	//ReqGetStrategyVehicleUnExistMsg    		= "策略-终端信息不存在"
-	//ReqGetStrategyVehicleSuccessMsg		 = "策略-终端信息获取成功"
-	//
-	//ReqGetStrategyVehicleListFailMsg    = "策略-终端列表获取失败"
-	//ReqGetStrategyVehicleListSuccessMsg = "策略-终端列表获取成功"
-	//
-	//ReqGetStrategyVehicleResultListFailMsg    = "终端-学习结果列表获取失败"
-	//ReqGetStrategyVehicleResultListSuccessMsg = "终端-学习结果列表获取成功"
 )
 
 //category
@@ -291,6 +279,9 @@ const (
 	ReqGetAssetFprintsCateExistMsg   = "资产类别信息已存在"
 	ReqAddAssetFprintsCateFailMsg    = "资产类别信息添加失败"
 	ReqAddAssetFprintsCateSuccessMsg = "资产类别信息添加成功"
+
+	ReqDeleAssetFprintsCateFailMsg    = "资产类别信息删除失败"
+	ReqDeleAssetFprintsCateSuccessMsg = "资产类别信息删除成功"
 )
 
 //fprint

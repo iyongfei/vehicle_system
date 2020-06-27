@@ -10,7 +10,7 @@ var categoryUrls = map[string]string{
 	"post_cate": "http://%s:7001/api/v1/categorys",
 	"get_cates": "http://%s:7001/api/v1/all/categorys",
 	"edit_cate": "http://%s:7001/api/v1/categorys/%s",
-	"dele_cate": "http://localhost:7001/api/v1/categorys/1c8lCXFY0M2PbKX4bygV6tCJ0wrv4nwt",
+	"dele_cate": "http://localhost:7001/api/v1/categorys/8Ae3FuvVKu0nHaLiwIGfFqCyWoEUE1r7",
 
 	///
 	"get_assets": "http://localhost:7001/api/v1/assets",

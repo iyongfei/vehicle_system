@@ -18,7 +18,10 @@ import (
 func GetFprintProtoFlow(fp model.Fprint) map[string]float64 {
 	protoByteMap := map[string]float64{}
 	protoFlows := fp.CollectProtoFlows
-	_ = json.Unmarshal([]byte(protoFlows), &protoByteMap)
+	err := json.Unmarshal([]byte(protoFlows), &protoByteMap)
+	if err != nil {
+		return protoByteMap
+	}
 	return protoByteMap
 }
 
@@ -40,6 +43,7 @@ func GetAssetCateStd() []model.Fprint {
 	//目前选取第一个资产标签
 	for _, assetFp := range assetFps {
 
+		//todo
 		fprint := GetAssetFp(assetFp.AssetId)
 		fplist = append(fplist, fprint)
 	}
@@ -69,15 +73,26 @@ func GetAssetFp(assetId string) model.Fprint {
 	return *fp
 }
 
+/**
+main_proto_weight = 0.1
+protos_kind_weight = 0.1
+hostname_weight = 0.4
+mac_weight = 0.2
+type_weight = 0.1
+tls_weight = 0.1
+
+min_rate_weight=0.5
+*/
 func GetAssetCateMark(assetId string) map[string]float64 {
 	const Hundred = 100
 
 	mainProtoWeight := conf.MainProtoWeight
 	protosKindWeight := conf.ProtosKindWeight
 	hostnameWeight := conf.HostnameWeight
+	tlsWeight := conf.TlsWeight
 	macWeight := conf.MacWeight
 	//typeWeight := conf.TypeWeight
-	tlsWeight := conf.TlsWeight
+
 	MinRateWeight := conf.MinRateWeight
 
 	//获取需要识别属性的资产
@@ -88,7 +103,7 @@ func GetAssetCateMark(assetId string) map[string]float64 {
 	assetMarkMap := map[string]float64{}
 
 	for _, assetCate := range assetCateList {
-		//1.基础分
+		//1.基础分{"DOWN_PPSTREAM":0.2404,"DOWN_RSYNC":0.2531,"UP_NEST_LOG_SINK":0.13311,"UP_PPSTREAM":0.12605,"UP_SSDP":0.12194}
 		fpProtoFlowMap := GetFprintProtoFlow(fp)
 		stdFpProtoFlowMap := GetFprintProtoFlow(assetCate)
 
@@ -126,7 +141,7 @@ func GetAssetCateMark(assetId string) map[string]float64 {
 		stdProtoKinds := []string{}
 		fpProtoKinds := []string{}
 
-		//主协议
+		//主协议是否相同
 		maxKey := ""
 		for k, max := range stdFpProtoFlowMap {
 			maxKey = k
@@ -151,7 +166,7 @@ func GetAssetCateMark(assetId string) map[string]float64 {
 		}
 		logger.Logger.Print("%s stdProtoKinds:%v,fpProtoKinds:%v", util.RunFuncName(), stdProtoKinds, fpProtoKinds)
 		logger.Logger.Info("%s stdProtoKinds:%v,fpProtoKinds:%v", util.RunFuncName(), stdProtoKinds, fpProtoKinds)
-		//协议种类
+		//协议种类占比
 		fprotoKindRate := float64(len(fpProtoKinds)) / float64(len(stdProtoKinds)) * protosKindWeight
 		logger.Logger.Print("%s fprotoKindRate:%f", util.RunFuncName(), fprotoKindRate)
 		logger.Logger.Info("%s fprotoKindRate:%f", util.RunFuncName(), fprotoKindRate)
@@ -208,6 +223,8 @@ func JudgeAssetCate(assetId string) string {
 
 	//map[string]float64
 	assetCateMarkMap := GetAssetCateMark(assetId)
+
+	fmt.Printf("assetCateMarkMap:::::%+v", assetCateMarkMap)
 
 	//寻找最大值
 	maxAssetIdKey := ""

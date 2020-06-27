@@ -57,7 +57,7 @@ func creatFlowProtobuf(vehicleId string, InsertAssetids string, flowCount int) [
 				SrcPort:          23,
 				DstIp:            23,
 				DstPort:          23,
-				Protocol:         protobuf.FlowProtos(protocols[tool.RandOneToMaxNumber(10)]),
+				Protocol:         protobuf.FlowProtos(protocols[tool.RandOneToMaxNumberT(10)]),
 				FlowInfo:         "wklejl",
 				SafeType:         protobuf.FlowSafetype(33),
 				SafeInfo:         "jwek",

@@ -2,7 +2,6 @@ package api_server
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
@@ -10,7 +9,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"vehicle_system/src/vehicle/conf"
 	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/emq/protobuf"
 	"vehicle_system/src/vehicle/logger"
@@ -551,9 +549,7 @@ func DeleAsset(c *gin.Context) {
 	c.JSON(http.StatusOK, retObj)
 }
 
-/**
-获取某资产的流量占比情况
-*/
+//https://gallery.echartsjs.com/editor.html?c=x5_1MX1MWt
 func GetAssetProtocolRatio(c *gin.Context) {
 	const REMAIN_MIN = 5
 	assetId := c.Param("asset_id")
@@ -579,23 +575,37 @@ func GetAssetProtocolRatio(c *gin.Context) {
 	//protocol->bytes
 	fprotosBytesMap := map[string]uint64{}
 
+	//for _, fpFlow := range assetFlows {
+	//	protocolStr := protobuf.GetFlowProtocols(int(fpFlow.Protocol))
+	//	upProtocol := fmt.Sprintf("UP_%s", protocolStr)
+	//	downProtocol := fmt.Sprintf("DOWN_%s", protocolStr)
+	//	srcDstBytes := fpFlow.SrcDstBytes //up
+	//	dstSrcBytes := fpFlow.DstSrcBytes //down
+	//	if v, ok := fprotosBytesMap[upProtocol]; ok {
+	//		fprotosBytesMap[upProtocol] = v + srcDstBytes
+	//	} else {
+	//		fprotosBytesMap[upProtocol] = srcDstBytes
+	//	}
+	//	if v, ok := fprotosBytesMap[downProtocol]; ok {
+	//		fprotosBytesMap[downProtocol] = v + dstSrcBytes
+	//	} else {
+	//		fprotosBytesMap[downProtocol] = dstSrcBytes
+	//	}
+	//}
+
 	for _, fpFlow := range assetFlows {
 		protocolStr := protobuf.GetFlowProtocols(int(fpFlow.Protocol))
-		upProtocol := fmt.Sprintf("UP_%s", protocolStr)
-		downProtocol := fmt.Sprintf("DOWN_%s", protocolStr)
 		srcDstBytes := fpFlow.SrcDstBytes //up
 		dstSrcBytes := fpFlow.DstSrcBytes //down
-		if v, ok := fprotosBytesMap[upProtocol]; ok {
-			fprotosBytesMap[upProtocol] = v + srcDstBytes
+		flowByte := dstSrcBytes + srcDstBytes
+
+		if v, ok := fprotosBytesMap[protocolStr]; ok {
+			fprotosBytesMap[protocolStr] = v + flowByte
 		} else {
-			fprotosBytesMap[upProtocol] = srcDstBytes
-		}
-		if v, ok := fprotosBytesMap[downProtocol]; ok {
-			fprotosBytesMap[downProtocol] = v + dstSrcBytes
-		} else {
-			fprotosBytesMap[downProtocol] = dstSrcBytes
+			fprotosBytesMap[protocolStr] = flowByte
 		}
 	}
+
 	//总流量大小
 	var totalBytes uint64
 	for _, fprintFlow := range assetFlows {
@@ -609,7 +619,6 @@ func GetAssetProtocolRatio(c *gin.Context) {
 	for p, pb := range fprotosBytesMap {
 		pbRate := float64(pb) / float64(totalBytes)
 		pbRate = util.Decimal(pbRate)
-		fmt.Println("pbRate--->", p, pb, pbRate)
 		if v, ok := fprotosMap[p]; ok {
 			fprotosMap[p] = pbRate + v
 		} else {
@@ -617,7 +626,7 @@ func GetAssetProtocolRatio(c *gin.Context) {
 		}
 	}
 
-	fprotoBytesFloat := map[string]float64{}
+	fprotoBytesFloat := []map[string]interface{}{}
 
 	var protoByteFListData ProtoByteFList
 	for protoId, protoByteF := range fprotosMap {
@@ -627,20 +636,77 @@ func GetAssetProtocolRatio(c *gin.Context) {
 
 	sort.Sort(protoByteFListData)
 
-	var tmpProtoByteFListData ProtoByteFList
+	//var tmpProtoByteFListData ProtoByteFList
+	//
+	//if len(protoByteFListData) <= int(conf.ProtoCount) && len(protoByteFListData) >= REMAIN_MIN {
+	//	tmpProtoByteFListData = protoByteFListData[0:]
+	//}
+	//if len(protoByteFListData) > int(conf.ProtoCount) {
+	//	tmpProtoByteFListData = protoByteFListData[0:int(conf.ProtoCount)]
+	//}
 
-	if len(protoByteFListData) <= int(conf.ProtoCount) && len(protoByteFListData) >= REMAIN_MIN {
-		tmpProtoByteFListData = protoByteFListData[0:]
-	}
-	if len(protoByteFListData) > int(conf.ProtoCount) {
-		tmpProtoByteFListData = protoByteFListData[0:int(conf.ProtoCount)]
-	}
-
-	for _, v := range tmpProtoByteFListData {
+	for _, v := range protoByteFListData {
 		key := v.Key
 		value := v.Value
-		fprotoBytesFloat[key] = value
+
+		protoMap := map[string]interface{}{}
+		protoMap["name"] = key
+		protoMap["value"] = value
+
+		fprotoBytesFloat = append(fprotoBytesFloat, protoMap)
 	}
+
+	/**
+			data: [
+		                {value: 0.3, name: '直接访问'},
+		                {value: 0.3, name: '邮件营销'},
+		                {value: 0.3, name: '联盟广告'},
+		                {value:0.3, name: '视频广告'},
+		                {value: 0.3, name: '搜索引擎'}
+		            ]
+
+		{
+	    "code":2000,
+	    "data":{
+	        "asset_flows":[
+	            {
+	                "IPP":0.16919
+	            },
+	            {
+	                "HTTP":0.13709
+	            },
+	            {
+	                "MAIL_IMAP":0.12659
+	            },
+	            {
+	                "MDNS":0.11935
+	            },
+	            {
+	                "NTP":0.11757
+	            },
+	            {
+	                "MAIL_POP":0.08749
+	            },
+	            {
+	                "UNKNOWN":0.08343
+	            },
+	            {
+	                "DNS":0.05438
+	            },
+	            {
+	                "MAIL_SMTP":0.04649
+	            },
+	            {
+	                "NETBIOS":0.0354
+	            },
+	            {
+	                "FTP_CONTROL":0.02303
+	            }
+	        ]
+	    },
+	    "msg":"设备流量获取成功"
+	}
+	*/
 
 	responseData := map[string]interface{}{
 		"asset_flows": fprotoBytesFloat,

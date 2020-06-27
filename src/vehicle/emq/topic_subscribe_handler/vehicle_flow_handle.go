@@ -188,11 +188,18 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 			continue
 		}
 
+		//识别
+
 		if totalRate >= conf.MinRate {
 			if !fp.CollectFinish {
 				updateAssetCollectTime(mac)
 				updateFprint(vehicleId, mac, true)
 			}
+
+			if util.RrgsTrim(fp.AutoCateId) == "" {
+				updateFprintAutoCateId(vehicleId, mac)
+			}
+
 			continue
 		}
 
@@ -269,6 +276,42 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 	}
 }
 
+func updateFprintAutoCateId(vehicleId string, mac string) {
+	//识别类别
+	autoCateId := model_helper.JudgeAssetCate(mac)
+
+	fprint := &model.Fprint{
+		AssetId:   mac,
+		FprintId:  util.RandomString(32),
+		VehicleId: vehicleId,
+	}
+
+	fpModelBase := model_base.ModelBaseImpl(fprint)
+
+	err, recordNotFound := fpModelBase.GetModelByCondition("asset_id = ?", []interface{}{fprint.AssetId}...)
+
+	fprint.AutoCateId = autoCateId
+	if err != nil {
+		//todo
+	}
+
+	if recordNotFound {
+		err := fprint.InsertModel()
+		if err != nil {
+			//todo
+		}
+	} else {
+		attrs := map[string]interface{}{
+			"auto_cate_id": fprint.AutoCateId,
+		}
+		if err := fpModelBase.UpdateModelsByCondition(attrs, "asset_id = ?", []interface{}{fprint.AssetId}...); err != nil {
+			//todo
+			logger.Logger.Print("%s update flowParam err:%s", util.RunFuncName(), err.Error())
+			logger.Logger.Error("%s update flowParam err:%s", util.RunFuncName(), err.Error())
+		}
+	}
+}
+
 /**
 插入指纹资产
 */
@@ -287,7 +330,9 @@ func updateFprint(vehicleId string, mac string, finishFlg bool) {
 	autoCateId := model_helper.JudgeAssetCate(mac)
 
 	fprint := &model.Fprint{
-		AssetId: mac,
+		AssetId:   mac,
+		FprintId:  util.RandomString(32),
+		VehicleId: vehicleId,
 	}
 
 	fpModelBase := model_base.ModelBaseImpl(fprint)
@@ -298,9 +343,11 @@ func updateFprint(vehicleId string, mac string, finishFlg bool) {
 	fprint.CollectHost = hostName
 	fprint.CollectTls = tlsInfo
 	fprint.CollectBytes = totalBytes
-	fprint.CollectTime = collectTime
-	fprint.FprintId = util.RandomString(32)
-	fprint.VehicleId = vehicleId
+
+	if finishFlg {
+		fprint.CollectTime = collectTime
+	}
+
 	fprint.CollectFinish = finishFlg
 	fprint.AutoCateId = autoCateId
 
@@ -322,6 +369,7 @@ func updateFprint(vehicleId string, mac string, finishFlg bool) {
 			"collect_bytes":       fprint.CollectBytes,
 			"collect_time":        fprint.CollectTime,
 			"collect_finish":      fprint.CollectFinish,
+			"auto_cate_id":        fprint.AutoCateId,
 		}
 		if err := fpModelBase.UpdateModelsByCondition(attrs, "asset_id = ?", []interface{}{fprint.AssetId}...); err != nil {
 			//todo
@@ -357,7 +405,6 @@ func updateAssetCollectTime(mac string) {
 			//todo
 			logger.Logger.Print("%s asset:%s,err:%s", util.RunFuncName(), fprint.AssetId, insertErr.Error())
 			logger.Logger.Error("%s asset:%s,err:%s", util.RunFuncName(), fprint.AssetId, insertErr.Error())
-
 		}
 	} else {
 		var attrs map[string]interface{}
@@ -366,13 +413,11 @@ func updateAssetCollectTime(mac string) {
 				"collect_start": uint64(time.Now().Unix()),
 				"collect_end":   uint64(time.Now().Unix()),
 			}
-
 		} else {
 			attrs = map[string]interface{}{
 				"collect_end": uint64(time.Now().Unix()),
 			}
 		}
-
 		if err := fpModelBase.UpdateModelsByCondition(attrs,
 			"asset_id = ?", []interface{}{fprint.AssetId}...); err != nil {
 			logger.Logger.Print("%s asset:%s,err:%s", util.RunFuncName(), fprint.AssetId, err.Error())
