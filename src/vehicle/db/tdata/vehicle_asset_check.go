@@ -1,7 +1,6 @@
 package tdata
 
 import (
-	"github.com/jinzhu/gorm"
 	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
@@ -61,19 +60,19 @@ func VehicleAssetCheck(vehicleId string, flag bool) error {
 }
 
 func AssetFprintCheck() error {
-	attrs := map[string]interface{}{
-		"collect_time": gorm.Expr("collect_time + collect_end - collect_start"),
-	}
-	err := mysql.UpdateModelByMapModel(&model.Fprint{}, attrs, "", []interface{}{}...)
-	if err != nil {
-		return err
-	}
+	//attrs := map[string]interface{}{
+	//	"collect_time": gorm.Expr("collect_time + collect_end - collect_start"),
+	//}
+	//err := mysql.UpdateModelByMapModel(&model.Fprint{}, attrs, "", []interface{}{}...)
+	//if err != nil {
+	//	return err
+	//}
 
 	attrsNull := map[string]interface{}{
-		"collect_end":   nil,
-		"collect_start": nil,
+		//"collect_end":   nil,
+		"collect_start": 0,
 	}
-	err = mysql.UpdateModelByMapModel(&model.Fprint{}, attrsNull, "", []interface{}{}...)
+	err := mysql.UpdateModelByMapModel(&model.Fprint{}, attrsNull, "collect_finish = ?", []interface{}{false}...)
 	if err != nil {
 		return err
 	}
@@ -82,20 +81,19 @@ func AssetFprintCheck() error {
 }
 
 func VehicleAssetFprintCheck(vehicleId string) error {
-	attrs := map[string]interface{}{
-		"collect_time": gorm.Expr("collect_time + collect_end - collect_start"),
-	}
-	err := mysql.UpdateModelByMapModel(&model.Fprint{}, attrs, "vehicle_id = ?", []interface{}{vehicleId}...)
-	if err != nil {
-		return err
-	}
+	//attrs := map[string]interface{}{
+	//	"collect_time": gorm.Expr("collect_time + collect_end - collect_start"),
+	//}
+	//err := mysql.UpdateModelByMapModel(&model.Fprint{}, attrs, "vehicle_id = ?", []interface{}{vehicleId}...)
+	//if err != nil {
+	//	return err
+	//}
 
 	attrsNull := map[string]interface{}{
-		"collect_end":   nil,
-		"collect_start": nil,
+		//"collect_end":   nil,
+		"collect_start": 0,
 	}
-	err = mysql.UpdateModelByMapModel(&model.Fprint{}, attrsNull, "",
-		[]interface{}{}...)
+	err := mysql.UpdateModelByMapModel(&model.Fprint{}, attrsNull, "collect_finish = ?", []interface{}{false}...)
 	if err != nil {
 		return err
 	}

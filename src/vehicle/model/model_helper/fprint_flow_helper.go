@@ -65,12 +65,12 @@ func JudgeAssetCollectTlsInfoRate(assetId string) float64 {
 	MAX_TLS_RATE := conf.CollectTlsRate
 	var ftls float64
 
-	tlsInfo := GetAssetCollectTlsInfo(assetId)
+	tls := GetAssetCollectTlsInfo(assetId)
 
-	logger.Logger.Print("%s tlsInfo:%s", util.RunFuncName(), tlsInfo)
-	logger.Logger.Info("%s tlsInfo:%s", util.RunFuncName(), tlsInfo)
+	logger.Logger.Print("%s tlsInfo:%s", util.RunFuncName(), tls)
+	logger.Logger.Info("%s tlsInfo:%s", util.RunFuncName(), tls)
 
-	if tlsInfo == "" {
+	if len(tls) == 0 {
 		ftls = 0
 	} else {
 		ftls = MAX_TLS_RATE
@@ -80,16 +80,26 @@ func JudgeAssetCollectTlsInfoRate(assetId string) float64 {
 
 	return ftls
 }
-func GetAssetCollectTlsInfo(assetId string) string {
+func GetAssetCollectTlsInfo(assetId string) []string {
+	tls := []string{}
+	fprintFlows := []*model.FprintFlow{}
+	err := mysql.QueryModelRecordsByWhereCondition(&fprintFlows, "asset_id = ?", []interface{}{assetId}...)
 
-	fprintFlow := &model.FprintFlow{}
+	for _, fprintFlow := range fprintFlows {
+		tlsInfo := fprintFlow.TlsClientInfo
+		if tlsInfo != "" {
+			if !util.IsExistInSlice(tlsInfo, tls) {
+				tls = append(tls, tlsInfo)
+			}
 
-	err := mysql.QueryModelRecordsByWhereCondition(&fprintFlow, "asset_id = ? and tls_client_info != ''", []interface{}{assetId}...)
+		}
+	}
 
 	if err != nil {
-		return fprintFlow.TlsClientInfo
+		return tls
 	}
-	return fprintFlow.TlsClientInfo
+
+	return tls
 }
 
 /**************************************************************************************************
@@ -101,11 +111,11 @@ func JudgeAssetCollectHostNameRate(assetId string) float64 {
 	MAX_HOSTNAME_RATE := conf.CollectHostRate
 	var fhost float64
 
-	hostName := GetAssetCollectHostName(assetId)
-	logger.Logger.Print("%s hostName:%s", util.RunFuncName(), hostName)
-	logger.Logger.Info("%s hostName:%s", util.RunFuncName(), hostName)
+	hostNames := GetAssetCollectHostName(assetId)
+	logger.Logger.Print("%s hostName:%s", util.RunFuncName(), hostNames)
+	logger.Logger.Info("%s hostName:%s", util.RunFuncName(), hostNames)
 
-	if hostName == "" {
+	if len(hostNames) == 0 {
 		fhost = 0
 	} else {
 		fhost = MAX_HOSTNAME_RATE
@@ -115,16 +125,23 @@ func JudgeAssetCollectHostNameRate(assetId string) float64 {
 	return fhost
 }
 
-func GetAssetCollectHostName(assetId string) string {
-	fprintFlows := &model.FprintFlow{}
+func GetAssetCollectHostName(assetId string) []string {
+	hostNames := []string{}
+	fprintFlows := []*model.FprintFlow{}
+	err := mysql.QueryModelRecordsByWhereCondition(&fprintFlows, "asset_id = ?", []interface{}{assetId}...)
 
-	err := mysql.QueryModelRecordsByWhereCondition(&fprintFlows, "asset_id = ? and host_name != ''", []interface{}{assetId}...)
-
-	if err != nil {
-		return fprintFlows.HostName
+	for _, fprintFlow := range fprintFlows {
+		hostName := fprintFlow.HostName
+		if hostName != "" {
+			if !util.IsExistInSlice(hostName, hostNames) {
+				hostNames = append(hostNames, hostName)
+			}
+		}
 	}
-
-	return fprintFlows.HostName
+	if err != nil {
+		return hostNames
+	}
+	return hostNames
 }
 
 /**************************************************************************************************
@@ -285,14 +302,16 @@ func GetAssetCollectTime(assetId string) uint32 {
 	if err != nil || recordNotFound {
 		return collectTime
 	}
-	endTime := fprint.CollectEnd
-	ctime := fprint.CollectTime
-	startTime := fprint.CollectStart
-
-	collectTime = uint32(ctime) + uint32(endTime-startTime)
-
-	logger.Logger.Print("%s fcollect_time:%f", util.RunFuncName(), endTime, ctime, startTime)
-	logger.Logger.Info("%s fcollect_time:%f", util.RunFuncName(), endTime, ctime, startTime)
+	//endTime := fprint.CollectEnd
+	collectTime = fprint.CollectTime
+	//startTime := fprint.CollectStart
+	//
+	//collectTime = uint32(ctime) + uint32(endTime-startTime)
+	//
+	//logger.Logger.Print("%s fcollect_time:%f", util.RunFuncName(), endTime, ctime, startTime)
+	//logger.Logger.Info("%s fcollect_time:%f", util.RunFuncName(), endTime, ctime, startTime)
 	//2702494284
+
+	fmt.Println("GetAssetCollectTime", collectTime)
 	return collectTime
 }

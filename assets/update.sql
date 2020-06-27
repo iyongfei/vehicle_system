@@ -108,7 +108,6 @@ CREATE TABLE IF NOT EXISTS `fprints`  (
   `collect_tls` varchar(255) NULL DEFAULT NULL,
   `collect_bytes` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
   `collect_start` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
-  `collect_end` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
   `collect_finish` tinyint(1) NULL DEFAULT NULL,
   `auto_cate_id` varchar(255)  NULL DEFAULT NULL,
 

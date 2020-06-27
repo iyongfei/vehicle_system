@@ -57,7 +57,7 @@ func creatFlowProtobuf(vehicleId string, InsertAssetids string, flowCount int) [
 				SrcPort:          23,
 				DstIp:            23,
 				DstPort:          23,
-				Protocol:         protobuf.FlowProtos(protocols[tool.RandOneToMaxNumberT(10)]),
+				Protocol:         protobuf.FlowProtos(protocols[tool.RandOneToMaxNumberT(2)]),
 				FlowInfo:         "wklejl",
 				SafeType:         protobuf.FlowSafetype(33),
 				SafeInfo:         "jwek",
@@ -78,7 +78,7 @@ func creatFlowProtobuf(vehicleId string, InsertAssetids string, flowCount int) [
 				PktlenCToSStddev: 233.3,
 				PktlenSToCAvg:    1.333,
 				PktlenSToCStddev: 3.43,
-				TlsClientInfo:    "tls",
+				TlsClientInfo:    "gggg",
 				Ja3C:             "23_232,kk23",
 			}
 

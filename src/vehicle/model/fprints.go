@@ -24,7 +24,6 @@ type Fprint struct {
 	CollectTime       uint32 //采集时间
 
 	CollectStart  uint64
-	CollectEnd    uint64
 	CollectFinish bool
 	AutoCateId    string
 }

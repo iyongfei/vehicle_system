@@ -187,9 +187,22 @@ func GetAssetCateMark(assetId string) map[string]float64 {
 		fpHost := fp.CollectHost
 		assetCateStdHost := assetCate.CollectHost
 
-		if util.RrgsTrim(fpHost) == util.RrgsTrim(assetCateStdHost) {
-			weightRate += hostnameWeight
+		var fpHostslice []string
+		_ = json.Unmarshal([]byte(fpHost), &fpHostslice)
+
+		var assetCateStdHostslice []string
+		_ = json.Unmarshal([]byte(assetCateStdHost), &assetCateStdHostslice)
+
+		hostCommonMap := []string{}
+		for _, stdhost := range assetCateStdHostslice {
+			for _, host := range fpHostslice {
+				if host == stdhost {
+					hostCommonMap = append(hostCommonMap, host)
+				}
+			}
 		}
+		weightRate += float64(len(hostCommonMap)) / float64(len(assetCateStdHostslice)) * hostnameWeight
+
 		logger.Logger.Print("%s assetCateStdHost:%s", util.RunFuncName(), assetCateStdHost)
 		logger.Logger.Info("%s assetCateStdHost:%s", util.RunFuncName(), assetCateStdHost)
 
@@ -198,9 +211,27 @@ func GetAssetCateMark(assetId string) map[string]float64 {
 		//相同的clienname
 		fpTls := fp.CollectTls
 		assetCateStdTls := assetCate.CollectTls
-		if util.RrgsTrim(fpTls) == util.RrgsTrim(assetCateStdTls) {
-			weightRate += tlsWeight
+
+		var fpTlslice []string
+		_ = json.Unmarshal([]byte(fpTls), &fpTlslice)
+
+		var assetCateStdTlslice []string
+		_ = json.Unmarshal([]byte(assetCateStdTls), &assetCateStdTlslice)
+
+		commonMap := []string{}
+		for _, stdtls := range assetCateStdTlslice {
+			for _, tl := range fpTlslice {
+				if tl == stdtls {
+					commonMap = append(commonMap, tl)
+				}
+			}
 		}
+		weightRate += float64(len(commonMap)) / float64(len(assetCateStdTlslice)) * tlsWeight
+
+		//if util.RrgsTrim(fpTls) == util.RrgsTrim(assetCateStdTls) {
+		//	weightRate += tlsWeight
+		//}
+
 		assetCateMark = assetCateMark * (1 + weightRate)
 
 		stdCateMark = stdCateMark * (1 + MinRateWeight)
