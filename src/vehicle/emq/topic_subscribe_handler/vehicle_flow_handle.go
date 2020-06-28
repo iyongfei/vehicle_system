@@ -80,6 +80,9 @@ func HandleVehicleFlow(vehicleResult protobuf.GWResult, vehicleId string) error 
 				"flow_id = ? and vehicle_id = ? and asset_id = ?",
 				[]interface{}{flowInfo.FlowId, flowInfo.VehicleId, flowInfo.AssetId}...)
 			flowModelBase.CreateModel(flowItem)
+			//输出log
+			logger.Logger.Print("%s handle_flow%+v", util.RunFuncName(), flowInfo)
+			logger.Logger.Info("%s handle_flow%+v", util.RunFuncName(), flowInfo)
 
 			if flowRecordNotFound {
 				if err := flowModelBase.InsertModel(); err != nil {

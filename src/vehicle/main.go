@@ -10,7 +10,6 @@ import (
 	"vehicle_system/src/vehicle/router"
 	"vehicle_system/src/vehicle/service/push"
 	"vehicle_system/src/vehicle/timing"
-	"vehicle_system/src/vehicle/vgo"
 )
 
 func init() {
@@ -22,7 +21,7 @@ func init() {
 	emq.Setup()
 	cron.Setup()
 	push.Setup()
-	vgo.Setup()
+	//vgo.Setup()
 }
 
 // @title vehicle API

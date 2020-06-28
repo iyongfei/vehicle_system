@@ -3,10 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"strconv"
-	"time"
-	"vehicle_system/src/vehicle_script/mysql_script/model"
-	"vehicle_system/src/vehicle_script/mysql_script/mysql_util"
 )
 
 func main() {
@@ -21,30 +17,30 @@ func main() {
 
 	//获取未分组id
 
-	//插入小v
-	for i := 0; i < defaultVehicleCount; i++ {
-		finalVehicleId := strconv.Itoa(i)
-		vehicleInfoModel := &model.VehicleInfo{
-			VehicleId:       finalVehicleId,
-			Name:            finalVehicleId,
-			Version:         tools.GenVersion(),
-			StartTime:       time.Now(),
-			FirmwareVersion: tools.GenVersion(),
-			HardwareModel:   tools.GenVersion(),
-			Module:          tools.RandomString(8),
-			SupplyId:        tools.RandomString(8),
-			UpRouterIp:      tools.GenIpAddr(),
-
-			Ip:   tools.GenIpAddr(),
-			Type: tools.GenBrandType(1),
-
-			Mac: finalVehicleId,
-
-			OnlineStatus:  tools.RandomAlternativeBool(1),
-			ProtectStatus: tools.GenBrandType(1),
-		}
-
-		_ = tools.CreateModel(&vehicleInfoModel)
-	}
+	////插入小v
+	//for i := 0; i < defaultVehicleCount; i++ {
+	//	finalVehicleId := strconv.Itoa(i)
+	//	vehicleInfoModel := &model.VehicleInfo{
+	//		VehicleId:       finalVehicleId,
+	//		Name:            finalVehicleId,
+	//		Version:         tools.GenVersion(),
+	//		StartTime:       time.Now(),
+	//		FirmwareVersion: tools.GenVersion(),
+	//		HardwareModel:   tools.GenVersion(),
+	//		Module:          tools.RandomString(8),
+	//		SupplyId:        tools.RandomString(8),
+	//		UpRouterIp:      tools.GenIpAddr(),
+	//
+	//		Ip:   tools.GenIpAddr(),
+	//		Type: tools.GenBrandType(1),
+	//
+	//		Mac: finalVehicleId,
+	//
+	//		OnlineStatus:  tools.RandomAlternativeBool(1),
+	//		ProtectStatus: tools.GenBrandType(1),
+	//	}
+	//
+	//	_ = tools.CreateModel(&vehicleInfoModel)
+	//}
 
 }

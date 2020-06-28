@@ -6,10 +6,13 @@ import (
 	"github.com/eclipse/paho.mqtt.golang"
 	"github.com/golang/protobuf/proto"
 	"strings"
+	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/db/tdata"
 	"vehicle_system/src/vehicle/emq/emq_cacha"
 	"vehicle_system/src/vehicle/emq/protobuf"
 	"vehicle_system/src/vehicle/logger"
+	"vehicle_system/src/vehicle/model"
+	"vehicle_system/src/vehicle/response"
 	"vehicle_system/src/vehicle/util"
 )
 
@@ -35,6 +38,7 @@ Payload:{"clean_start":true,"clientid":"tianqi-R201b-967E6D9A3001","connack":0,"
 $SYS/brokers/emqx@127.0.0.1/clients/vehicle_test/connected
 */
 func (t *TopicSubscribeHandler) HanleSubscribeTopicData(topicMsg mqtt.Message) error {
+
 	disconnected := strings.HasSuffix(topicMsg.Topic(), "disconnected")
 	//_=strings.HasSuffix(topicMsg.Topic(),"connected")
 
@@ -53,6 +57,18 @@ func (t *TopicSubscribeHandler) HanleSubscribeTopicData(topicMsg mqtt.Message) e
 	}
 	//vehicleId null
 	vehicleId := vehicleResult.GetGUID()
+	//是否授权
+
+	vehicleIdMd5 := util.Md5(vehicleId + response.VehiclePasswordSecret)
+	vehicleAuth := &model.VehicleAuth{}
+
+	err, recordNotFound := mysql.QueryModelOneRecordIsExistByWhereCondition(vehicleAuth, "vehicle_id = ?", []interface{}{vehicleIdMd5}...)
+
+	if recordNotFound {
+		logger.Logger.Print("%s,hanleSubscribeTopicData query vehicle_auths recordNotFound vehicleId:%s", util.RunFuncName(), vehicleId)
+		logger.Logger.Info("%s,hanleSubscribeTopicData query vehicle_auths recordNotFound vehicleId:%s", util.RunFuncName(), vehicleId)
+		return fmt.Errorf("hanleSubscribeTopicData query vehicle_auths recordNotFound,vehicleId:%s,err:%s", vehicleId, err)
+	}
 
 	if util.RrgsTrimEmpty(vehicleId) {
 		return fmt.Errorf("vehicleResult vehicle id null")
