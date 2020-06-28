@@ -32,27 +32,12 @@ func init() {
 
 func main() {
 	//editVehicleInfo()
-	getVehicle()
+	//getVehicle()
 	//editVehicles()
-	//getVehicles()
+	getVehicles()
 	//unused
 	//addVehicle()
 	//deleVehicles()
-}
-
-func editVehicleInfo() {
-	token := tool.GetVehicleToken()
-	urlReq, _ := vehicleUrls["edit_vehicle_name"]
-
-	urlReq = fmt.Sprintf(urlReq, ip, vehicleId)
-
-	bodyParams := map[string]interface{}{
-		"name": vehicleName,
-	}
-	resp, _ := tool.PutForm(urlReq, bodyParams, token)
-
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
 }
 
 /**
@@ -71,6 +56,21 @@ func getVehicles() {
 	fmt.Println(reqUrl, "tok,,,,,,,,,,,")
 
 	resp, _ := tool.Get(reqUrl, queryParams, token)
+
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+}
+
+func editVehicleInfo() {
+	token := tool.GetVehicleToken()
+	urlReq, _ := vehicleUrls["edit_vehicle_name"]
+
+	urlReq = fmt.Sprintf(urlReq, ip, vehicleId)
+
+	bodyParams := map[string]interface{}{
+		"name": vehicleName,
+	}
+	resp, _ := tool.PutForm(urlReq, bodyParams, token)
 
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))

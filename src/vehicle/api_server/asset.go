@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"vehicle_system/src/vehicle/auth"
 	"vehicle_system/src/vehicle/emq/protobuf"
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
@@ -204,11 +205,18 @@ func GetAllAssets(c *gin.Context) {
 	assetInfos := []*model.Asset{}
 	var total int
 
+	authVehicleList := auth.AuthVehicleIdList()
+	var sqlQuery string
+	var sqlArgs []interface{}
+
+	sqlQuery = "vehicle_id in (?)"
+	sqlArgs = append(sqlArgs, authVehicleList)
+
 	modelBase := model_base.ModelBaseImplPagination(&model.Asset{})
 
 	err := modelBase.GetModelPaginationByCondition(pageIndex, pageSize,
-		&total, &assetInfos, "assets.created_at desc", "",
-		[]interface{}{}...)
+		&total, &assetInfos, "assets.created_at desc", sqlQuery,
+		sqlArgs...)
 
 	if err != nil {
 		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetAssetListFailMsg, "")
@@ -266,9 +274,9 @@ func GetPaginationAssets(c *gin.Context) {
 		fpageIndex = defaultPageIndex
 	}
 	//默认2天前
-	defaultStartTime := util.GetFewDayAgo(2) //2
+	//defaultStartTime := util.GetFewDayAgo(2) //2
 	if startTime == 0 {
-		fStartTime = defaultStartTime
+		fStartTime = util.StampUnix2Time(int64(0))
 	} else {
 		fStartTime = util.StampUnix2Time(int64(startTime))
 	}
@@ -295,9 +303,20 @@ func GetPaginationAssets(c *gin.Context) {
 	var sqlArgs []interface{}
 
 	if vehicleId == "" {
-		sqlQuery = "assets.created_at BETWEEN ? AND ?"
-		sqlArgs = append(sqlArgs, fStartTime, fEndTime)
+		authVehicleList := auth.AuthVehicleIdList()
+
+		sqlQuery = "assets.created_at BETWEEN ? AND ? and vehicle_id in (?)"
+		sqlArgs = append(sqlArgs, fStartTime, fEndTime, authVehicleList)
 	} else {
+
+		vehicleIdAuth := auth.VehicleAuth(vehicleId)
+		if !vehicleIdAuth { //如果没有授权
+			ret := response.StructResponseObj(response.VStatusUnauthorized, response.Unauthorized, "")
+			c.JSON(http.StatusOK, ret)
+			logger.Logger.Error("%s auth file:%s not exist", util.RunFuncName(), auth.AuthFile)
+			logger.Logger.Print("%s auth file:%s not exist", util.RunFuncName(), auth.AuthFile)
+			return
+		}
 		sqlQuery = "vehicle_id = ? and assets.created_at BETWEEN ? AND ?"
 		sqlArgs = append(sqlArgs, vehicleId, fStartTime, fEndTime)
 	}
@@ -353,6 +372,18 @@ func GetAsset(c *gin.Context) {
 		c.JSON(http.StatusOK, ret)
 		return
 	}
+	vehicleId := assetInfo.VehicleId
+
+	vehicleAuth := auth.VehicleAuth(vehicleId)
+
+	if !vehicleAuth { //如果没有授权
+		ret := response.StructResponseObj(response.VStatusUnauthorized, response.Unauthorized, "")
+		c.JSON(http.StatusOK, ret)
+		logger.Logger.Error("%s vehicleId:%s,unauthorized", util.RunFuncName(), vehicleId)
+		logger.Logger.Print("%s vehicleId:%s,unauthorized", util.RunFuncName(), vehicleId)
+		return
+	}
+
 	responseData := map[string]interface{}{
 		"asset": assetInfo,
 	}

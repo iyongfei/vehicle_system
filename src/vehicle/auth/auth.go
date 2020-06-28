@@ -28,8 +28,12 @@ type EmpowerDevice struct {
 
 func Setup() {
 	AESDecryptstr()
-	r := AuthVehicleAllExpire()
-	fmt.Println("rrr", r)
+	//r := AuthVehicleAllExpire()
+	//fmt.Println("rrr", r)
+
+	//for k, v := range EmpowerDevices {
+	//	fmt.Println("sjdklf", k, v)
+	//}
 }
 
 func AESDecryptstr() {
@@ -52,7 +56,6 @@ func AuthVehicleAllExpire() bool {
 	for _, empower := range EmpowerDevices {
 		endtime := empower.EndTime
 
-		fmt.Println("endtime:", endtime)
 		if timeNow < endtime {
 			allExpire = false
 		}

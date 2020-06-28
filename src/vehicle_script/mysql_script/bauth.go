@@ -36,7 +36,7 @@ func main() {
 	//多个guid生成授权文件
 	t := time.Now().Unix()
 	fmt.Println(t)
-	generateCertFile([]string{"12", "323"}, t, t+24*3600, "", "")
+	generateCertFile([]string{"754d2728b4e549c5a16c0180fcacb800", "323"}, t, t+24*3600, "", "")
 
 }
 

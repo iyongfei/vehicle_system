@@ -28,14 +28,58 @@ func init() {
 }
 
 func main() {
-	getAssetsimple()
+	//getAssetsimple()
 	//getAssets()
-	//getAsset()
+	getAsset()
 	//addAsset()
 	//deleAsset()
 	//editAsset()
 
 	//editVehicleAssetInfo()
+}
+
+/**
+获取一条车载信息
+*/
+func getAsset() {
+	fip := config["server_ip"]
+	assetId := config["asset_id"]
+
+	token := tool.GetVehicleToken()
+	urlReq := fmt.Sprintf(assetUrls["get_asset"], fip, assetId)
+
+	queryParams := map[string]interface{}{}
+	resp, _ := tool.Get(urlReq, queryParams, token)
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+}
+func getAssetsimple() {
+	fip := config["server_ip"]
+
+	token := tool.GetVehicleToken()
+	queryParams := map[string]interface{}{}
+	urlReq := fmt.Sprintf(assetUrls["get_assets_simple"], fip)
+	resp, _ := tool.Get(urlReq, queryParams, token)
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+
+}
+
+/**
+获取所有的车载信息
+*/
+func getAssets() {
+	fip := config["server_ip"]
+	token := tool.GetVehicleToken()
+	queryParams := map[string]interface{}{
+		"page_size":  "3",
+		"page_index": "1",
+		"vehicle_id": "1",
+	}
+	reqUrl := fmt.Sprintf(assetUrls["get_assets"], fip)
+	resp, _ := tool.Get(reqUrl, queryParams, token)
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
 }
 
 func editVehicleAssetInfo() {
@@ -72,22 +116,6 @@ func editAsset() {
 	fmt.Printf("resp %+v", string(respMarshal))
 }
 
-/**
-获取所有的车载信息
-*/
-func getAssets() {
-	fip := config["server_ip"]
-	token := tool.GetVehicleToken()
-	queryParams := map[string]interface{}{
-		"page_size":  "3",
-		"page_index": "1",
-	}
-	reqUrl := fmt.Sprintf(assetUrls["get_assets"], fip)
-	resp, _ := tool.Get(reqUrl, queryParams, token)
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
-}
-
 //
 //func getAssets() {
 //	fip := config["server_ip"]
@@ -100,34 +128,6 @@ func getAssets() {
 //	fmt.Printf("resp %+v", string(respMarshal))
 //
 //}
-
-func getAssetsimple() {
-	fip := config["server_ip"]
-
-	token := tool.GetVehicleToken()
-	queryParams := map[string]interface{}{}
-	urlReq := fmt.Sprintf(assetUrls["get_assets_simple"], fip)
-	resp, _ := tool.Get(urlReq, queryParams, token)
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
-
-}
-
-/**
-获取一条车载信息
-*/
-func getAsset() {
-	fip := config["server_ip"]
-	assetId := config["asset_id"]
-
-	token := tool.GetVehicleToken()
-	urlReq := fmt.Sprintf(assetUrls["get_asset"], fip, assetId)
-
-	queryParams := map[string]interface{}{}
-	resp, _ := tool.Get(urlReq, queryParams, token)
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
-}
 
 func deleAsset() {
 	token := tool.GetVehicleToken()

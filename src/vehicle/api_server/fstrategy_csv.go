@@ -54,7 +54,7 @@ func GetFStrategyCsv(c *gin.Context) {
 		c.JSON(http.StatusOK, ret)
 		return
 	}
-	//获取csv文件
+	//获取csv文件http://localhost:7001/fstrategy_csv/sTgjyl99ZWDXd8NctszvU6nsmhkJeE7E.csv
 	csvPath := fstrategy.CsvPath
 	fStrategyCsvFolderIndex := strings.Index(csvPath, csv.FStrategyCsvFolder)
 

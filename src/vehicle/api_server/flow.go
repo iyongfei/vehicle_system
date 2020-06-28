@@ -77,7 +77,8 @@ func GetFlowsDps(c *gin.Context) {
 	endTime, _ := strconv.Atoi(endTimeP)
 
 	if startTime == 0 {
-		fStartTime = util.GetFewDayAgo(2)
+		//fStartTime = util.GetFewDayAgo(2)
+		fStartTime = util.StampUnix2Time(int64(0))
 	} else {
 		fStartTime = util.StampUnix2Time(int64(startTime))
 	}
@@ -255,9 +256,10 @@ func GetPaginationFlows(c *gin.Context) {
 		fpageIndex = defaultPageIndex
 	}
 	//默认2天前
-	defaultStartTime := util.GetFewDayAgo(2) //2
+	//defaultStartTime := util.GetFewDayAgo(2) //2
 	if startTime == 0 {
-		fStartTime = defaultStartTime
+		//fStartTime = defaultStartTime
+		fStartTime = util.StampUnix2Time(int64(0))
 	} else {
 		fStartTime = util.StampUnix2Time(int64(startTime))
 	}

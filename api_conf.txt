@@ -64,4 +64,4 @@ end_time=1590344036
 
 #资产
 white_asset_ids=sdf,232,3fgg,44g
-asset_id=8C861E8D7EAF
+asset_id=DfQWLAOw

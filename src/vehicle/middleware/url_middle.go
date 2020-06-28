@@ -68,6 +68,7 @@ func urlMiddleHandlerFunc(c *gin.Context) {
 				}
 
 				if fVehicle != "" {
+
 					//判断是否是为授权
 					if !auth.VehicleAuth(fVehicle) {
 						ret := response.StructResponseObj(response.VStatusUnauthorized, response.Unauthorized, "")
@@ -146,6 +147,7 @@ func urlMiddleHandlerFunc(c *gin.Context) {
 	c.Next()
 }
 
+//dele
 //"fstrategys",
 
 //post
@@ -174,12 +176,12 @@ func UrlPutSlice() []string {
 
 /**
 get
-pagination/fstrategys
-pagination/vehicles
-fstrategy_csvs/:fstrategy_id
-pagination/assets
-all/assets
-assets/:asset_id
+pagination/fstrategys do
+pagination/vehicles do
+fstrategy_csvs/:fstrategy_id do 半do
+pagination/assets do
+all/assets do
+assets/:asset_id do
 */
 /**
 获取urlmap

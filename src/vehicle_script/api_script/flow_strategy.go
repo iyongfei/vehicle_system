@@ -31,7 +31,7 @@ func getConfig() map[string]string {
 }
 
 func main() {
-	addFStrategy()
+	//addFStrategy()
 	//getFStrategy()
 	//deleFStrategy()
 	//editFStrategy()
@@ -39,12 +39,33 @@ func main() {
 	//getAllFStrategys()
 	//getPartialFStrategys()
 	//getPaginationVehicleFstrategys()
-	//getPaginationFstrategys()
+	getPaginationFstrategys()
 	//unused
 	//getFStrategys()
 	//getStrategyVehicle()
 	//getVehicleLearningResults()
 	//getStrategyVehicleLearningResults()
+}
+
+func getPaginationFstrategys() {
+	token := tool.GetVehicleToken()
+	configs := getConfig()
+	fip := configs["server_ip"]
+	page_index := configs["page_index"]
+	page_size := configs["page_size"]
+	//start_time := configs["start_time"]
+	//end_time := configs["end_time"]
+
+	queryParams := map[string]interface{}{
+		"page_index": page_index,
+		"page_size":  page_size,
+		//"start_time": start_time,
+		//"end_time":   end_time,
+	}
+	reqUrl := fmt.Sprintf(fstrategyUrls["get_pagination_fstrategs"], fip)
+	resp, _ := tool.Get(reqUrl, queryParams, token)
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
 }
 
 func addFStrategy() {
@@ -93,27 +114,6 @@ func editFStrategy() {
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))
 }
-func getPaginationFstrategys() {
-	token := tool.GetVehicleToken()
-	configs := getConfig()
-	fip := configs["server_ip"]
-	page_index := configs["page_index"]
-	page_size := configs["page_size"]
-	//start_time := configs["start_time"]
-	//end_time := configs["end_time"]
-
-	queryParams := map[string]interface{}{
-		"page_index": page_index,
-		"page_size":  page_size,
-		//"start_time": start_time,
-		//"end_time":   end_time,
-	}
-	reqUrl := fmt.Sprintf(fstrategyUrls["get_pagination_fstrategs"], fip)
-	resp, _ := tool.Get(reqUrl, queryParams, token)
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
-}
-
 func getPaginationVehicleFstrategys() {
 	token := tool.GetVehicleToken()
 	configs := getConfig()

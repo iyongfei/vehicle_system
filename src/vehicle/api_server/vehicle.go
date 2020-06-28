@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+	"vehicle_system/src/vehicle/auth"
 	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/emq/emq_cmd"
 	"vehicle_system/src/vehicle/emq/protobuf"
@@ -168,9 +169,16 @@ func GetVehicles(c *gin.Context) {
 		fpageIndex = defaultPageIndex
 	}
 	//默认2天前
-	defaultStartTime := util.GetFewDayAgo(2) //2
+	//defaultStartTime := util.GetFewDayAgo(2) //2
+	//if startTime == 0 {
+	//	fStartTime = defaultStartTime
+	//} else {
+	//	fStartTime = util.StampUnix2Time(int64(startTime))
+	//}
+
 	if startTime == 0 {
-		fStartTime = defaultStartTime
+		//fStartTime = defaultStartTime
+		fStartTime = util.StampUnix2Time(int64(0))
 	} else {
 		fStartTime = util.StampUnix2Time(int64(startTime))
 	}
@@ -194,15 +202,26 @@ func GetVehicles(c *gin.Context) {
 
 	modelBase := model_base.ModelBaseImplPagination(&model.VehicleInfo{})
 
+	authVehicleList := auth.AuthVehicleIdList()
 	var sqlQuery string
 	var sqlArgs []interface{}
 
-	sqlQuery = "vehicle_infos.created_at BETWEEN ? AND ?"
-	sqlArgs = append(sqlArgs, fStartTime, fEndTime)
+	sqlQuery = "vehicle_infos.created_at BETWEEN ? AND ? and vehicle_infos.vehicle_id in (?)"
+	sqlArgs = append(sqlArgs, fStartTime, fEndTime, authVehicleList)
 
 	err := modelBase.GetModelPaginationByCondition(fpageIndex, fpageSize,
 		&total, &vehicleInfos, "vehicle_infos.created_at desc", sqlQuery,
 		sqlArgs...)
+
+	//为授权的过滤掉
+	//fVehicleInfos := []*model.VehicleInfo{}
+	//
+	//for _,vehicleInfo:=range vehicleInfos{
+	//	vid:= vehicleInfo.VehicleId
+	//	if util.IsExistInSlice(vid,authVehicleList){
+	//		fVehicleInfos = append(fVehicleInfos,vehicleInfo)
+	//	}
+	//}
 
 	////////////threat///////////////
 	vehicleIdMaps := []string{}

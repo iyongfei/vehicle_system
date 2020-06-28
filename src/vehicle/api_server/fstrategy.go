@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"vehicle_system/src/vehicle/auth"
 	"vehicle_system/src/vehicle/csv"
 	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/emq/emq_cmd"
@@ -797,9 +798,9 @@ func GetPaginationFstrategys(c *gin.Context) {
 		fpageIndex = defaultPageIndex
 	}
 	//默认2天前
-	defaultStartTime := util.GetFewDayAgo(2) //2
+	//defaultStartTime := util.GetFewDayAgo(2) //2
 	if startTime == 0 {
-		fStartTime = defaultStartTime
+		fStartTime = util.StampUnix2Time(int64(0))
 	} else {
 		fStartTime = util.StampUnix2Time(int64(startTime))
 	}
@@ -817,9 +818,17 @@ func GetPaginationFstrategys(c *gin.Context) {
 	logger.Logger.Print("%s request params page_size:%s,page_index:%s,start_time%s,endtime%s",
 		util.RunFuncName(), pageSizeP, pageIndexP, startTimeP, endTimeP)
 
+	authVehicleList := auth.AuthVehicleIdList()
+
+	var sqlQuery string
+	var sqlArgs []interface{}
+
+	sqlQuery = "fstrategies.created_at BETWEEN ? AND ? and fstrategy_vehicles.vehicle_id in (?)"
+	sqlArgs = append(sqlArgs, fStartTime, fEndTime, authVehicleList)
+
 	var totalCount int
 	vehicleFStrategys, err := model.GetPaginFStrategyVehicles(fpageIndex, fpageSize, &totalCount,
-		"fstrategies.created_at BETWEEN ? AND ?", []interface{}{fStartTime, fEndTime}...)
+		sqlQuery, sqlArgs...)
 	if err != nil {
 		logger.Logger.Error("%s vehicleFStrategys err:%+v", util.RunFuncName(), err)
 		logger.Logger.Print("%s vehicleFStrategys err:%+v", util.RunFuncName(), err)
@@ -881,9 +890,10 @@ func GetVehiclePaginationFstrategys(c *gin.Context) {
 		fpageIndex = defaultPageIndex
 	}
 	//默认2天前
-	defaultStartTime := util.GetFewDayAgo(2) //2
+	//defaultStartTime := util.GetFewDayAgo(2) //2
 	if startTime == 0 {
-		fStartTime = defaultStartTime
+		//fStartTime = defaultStartTime
+		fStartTime = util.StampUnix2Time(int64(0))
 	} else {
 		fStartTime = util.StampUnix2Time(int64(startTime))
 	}
