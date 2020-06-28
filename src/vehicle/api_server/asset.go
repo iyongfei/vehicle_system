@@ -117,6 +117,7 @@ func EditAsset(c *gin.Context) {
 		return
 
 	}
+
 	setType, _ := strconv.Atoi(setTypeP)
 
 	setSwitch := true
@@ -148,6 +149,17 @@ func EditAsset(c *gin.Context) {
 		logger.Logger.Print("%s asset_id:%s,recordNotFound", util.RunFuncName(), assetId)
 		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetAssetUnExistMsg, "")
 		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	//没有授权
+
+	vehicleIdAuth := auth.VehicleAuth(assetInfo.VehicleId)
+	if !vehicleIdAuth { //如果没有授权
+		ret := response.StructResponseObj(response.VStatusUnauthorized, response.Unauthorized, "")
+		c.JSON(http.StatusOK, ret)
+		logger.Logger.Error("%s vehicleId:%s,unauthorized", util.RunFuncName(), assetInfo.VehicleId)
+		logger.Logger.Print("%s vehicleId:%s,unauthorized", util.RunFuncName(), assetInfo.VehicleId)
 		return
 	}
 

@@ -33,18 +33,34 @@ func getConfig() map[string]string {
 func main() {
 	//addFStrategy()
 	//getFStrategy()
-	//deleFStrategy()
+	deleFStrategy()
 	//editFStrategy()
 	//getRecentFStrategy()
 	//getAllFStrategys()
 	//getPartialFStrategys()
 	//getPaginationVehicleFstrategys()
-	getPaginationFstrategys()
+	//getPaginationFstrategys()
 	//unused
 	//getFStrategys()
 	//getStrategyVehicle()
 	//getVehicleLearningResults()
 	//getStrategyVehicleLearningResults()
+}
+
+func deleFStrategy() {
+	configs := getConfig()
+	dele_flow_vehicle_id := configs["get_flow_fstrategy_id"]
+	fip := configs["server_ip"]
+	token := tool.GetVehicleToken()
+
+	queryParams := map[string]interface{}{}
+
+	reqUrl := fmt.Sprintf(fstrategyUrls["dele_fstrategy"], fip) + dele_flow_vehicle_id
+
+	resp, _ := tool.Delete(reqUrl, queryParams, token)
+
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
 }
 
 func getPaginationFstrategys() {
@@ -202,22 +218,6 @@ func getFStrategy() {
 	}
 	reqUrl := fmt.Sprintf(fstrategyUrls["get_fstrategy"], fip) + get_flow_fstrategy_id
 	resp, _ := tool.Get(reqUrl, queryParams, token)
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
-}
-
-func deleFStrategy() {
-	configs := getConfig()
-	dele_flow_vehicle_id := configs["get_flow_fstrategy_id"]
-	fip := configs["server_ip"]
-	token := tool.GetVehicleToken()
-
-	queryParams := map[string]interface{}{}
-
-	reqUrl := fmt.Sprintf(fstrategyUrls["dele_fstrategy"], fip) + dele_flow_vehicle_id
-
-	resp, _ := tool.Delete(reqUrl, queryParams, token)
-
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))
 }

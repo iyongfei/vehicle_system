@@ -505,6 +505,25 @@ func DeleFStrategy(c *gin.Context) {
 		fstrategyItemIdMapSlice = append(fstrategyItemIdMapSlice, k)
 	}
 
+	//是否未授权
+	var vehicleListUnAuth bool = false
+	for _, vehicleId := range fVehicleIdMapSlice {
+
+		vehicleAuth := auth.VehicleAuth(vehicleId)
+		if vehicleAuth {
+			vehicleListUnAuth = true
+		}
+	}
+
+	//都没有授权
+	if !vehicleListUnAuth {
+		ret := response.StructResponseObj(response.VStatusUnauthorized, response.Unauthorized, "")
+		c.JSON(http.StatusOK, ret)
+		logger.Logger.Error("%s vehicleIds:%+v,unauthorized", util.RunFuncName(), fVehicleIdMapSlice)
+		logger.Logger.Print("%s vehicleIds:%+v,unauthorized", util.RunFuncName(), fVehicleIdMapSlice)
+		return
+	}
+
 	//dele Fstrategy
 	fstrategyObj := &model.Fstrategy{
 		FstrategyId: fstrategyId,

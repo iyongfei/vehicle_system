@@ -155,6 +155,7 @@ func UrlPostSlice() []string {
 
 	urlPostSlice := []string{
 		"fstrategys",
+		"fstrategy_csvs",
 	}
 	return urlPostSlice
 }

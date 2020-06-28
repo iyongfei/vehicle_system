@@ -30,12 +30,27 @@ func init() {
 func main() {
 	//getAssetsimple()
 	//getAssets()
-	getAsset()
+	//getAsset()
 	//addAsset()
 	//deleAsset()
-	//editAsset()
+	editAsset()
 
 	//editVehicleAssetInfo()
+}
+
+func editAsset() {
+	fip := config["server_ip"]
+	assetId := config["asset_id"]
+	token := tool.GetVehicleToken()
+	urlReq := fmt.Sprintf(assetUrls["edit_assets"], fip, assetId)
+	bodyParams := map[string]interface{}{
+		"type":   "1",
+		"switch": "true",
+	}
+	resp, _ := tool.PutForm(urlReq, bodyParams, token)
+
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
 }
 
 /**
@@ -94,21 +109,6 @@ func editVehicleAssetInfo() {
 	bodyParams := map[string]interface{}{
 		"vehicle_id": vehicle_id,
 		"name":       asset_new_name,
-	}
-	resp, _ := tool.PutForm(urlReq, bodyParams, token)
-
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
-}
-
-func editAsset() {
-	fip := config["server_ip"]
-	assetId := config["asset_id"]
-	token := tool.GetVehicleToken()
-	urlReq := fmt.Sprintf(assetUrls["edit_assets"], fip, assetId)
-	bodyParams := map[string]interface{}{
-		"type":   "1",
-		"switch": "false",
 	}
 	resp, _ := tool.PutForm(urlReq, bodyParams, token)
 

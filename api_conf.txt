@@ -23,7 +23,7 @@ fips=192.168.2.48
 fports=123,3
 
 #获取会话策略接口
-get_flow_fstrategy_id=UO0mIFLaZ7sbiE5bfK40k9BE3UfszTwm
+get_flow_fstrategy_id=sTgjyl99ZWDXd8NctszvU6nsmhkJeE7E
 
 
 #修改会话策略接口
@@ -64,4 +64,4 @@ end_time=1590344036
 
 #资产
 white_asset_ids=sdf,232,3fgg,44g
-asset_id=DfQWLAOw
+asset_id=u4mYOxSI
