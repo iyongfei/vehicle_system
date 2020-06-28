@@ -148,10 +148,13 @@ func GetAssetCollectHostName(assetId string) []string {
 判断某个设备采集的协议种类数
 */
 func GetRankAssetCollectProtoFlow(assetId string) map[string]float64 {
-	const REMAIN_MIN = 5
+	const REMAIN_MIN = 1
 	fprotoBytesFloat := map[string]float64{}
 	PROTOS := conf.ProtoCount
 	fprotosBytesMap := GetAssetCollectProtoFlow(assetId)
+
+	logger.Logger.Print("%s fprotosBytesMap:%v", util.RunFuncName(), fprotosBytesMap)
+	logger.Logger.Info("%s fprotosBytesMap:%v", util.RunFuncName(), fprotosBytesMap)
 
 	var protoByteFListData ProtoByteFList
 	for protoId, protoByteF := range fprotosBytesMap {
@@ -160,6 +163,9 @@ func GetRankAssetCollectProtoFlow(assetId string) map[string]float64 {
 	}
 
 	sort.Sort(protoByteFListData)
+
+	logger.Logger.Print("%s protoByteFListData:%v", util.RunFuncName(), protoByteFListData)
+	logger.Logger.Info("%s protoByteFListData:%v", util.RunFuncName(), protoByteFListData)
 
 	var tmpProtoByteFListData ProtoByteFList
 
@@ -170,7 +176,7 @@ func GetRankAssetCollectProtoFlow(assetId string) map[string]float64 {
 		tmpProtoByteFListData = protoByteFListData[0:int(PROTOS)]
 	}
 
-	for _, v := range tmpProtoByteFListData {
+	for k, v := range tmpProtoByteFListData {
 		key := v.Key
 		value := v.Value
 		value = util.Decimal(value)

@@ -273,6 +273,16 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 		updateFprint(vehicleId, mac)
 		//如果没有记录，并且没有
 		updateAssetCollectTime(mac)
+
+		//totalByRateT := model_helper.JudgeAssetCollectByteTotalRate(mac) //总流量
+		//tlsRateT := model_helper.JudgeAssetCollectTlsInfoRate(mac)       //tls
+		//hostRateT := model_helper.JudgeAssetCollectHostNameRate(mac)     //host
+		//protoRateT := model_helper.JudgeAssetCollectProtoFlowRate(mac)   //各协议流量
+		//collectRateT := model_helper.JudgeAssetCollectTimeRate(mac)      //采集时间
+		//
+		//totalRateT := totalByRate + tlsRate + hostRate + collectRate + protoRate
+		//logger.Logger.Print("%s,--->>>>>>>>>>asset:%s,totalByRate:%f,tlsRate:%f,hostRate:%f,protoRate:%f,collectRate:%f,totalRate:%f",
+		//	util.RunFuncName(), mac, totalByRateT, tlsRateT, hostRateT, protoRateT, collectRateT, totalRateT)
 	}
 }
 
@@ -330,6 +340,7 @@ func updateFprintFinish(vehicleId string, mac string, collectFinish bool) {
 插入指纹资产
 */
 func updateFprint(vehicleId string, mac string) {
+
 	//插入资产指纹信息
 	protoFlow := model_helper.GetRankAssetCollectProtoFlow(mac)
 	protoFlowBys, _ := json.Marshal(protoFlow)
