@@ -8,7 +8,7 @@ import (
 
 func V1Router(r *gin.Engine) {
 	apiV1 := r.Group("/api/v1")
-	apiV1.Use(middleware.AuthMiddle())
+	apiV1.Use(middleware.AuthMiddle(), middleware.UrlMiddle())
 	{
 		//////////////////////////////////////////////流量接口//////////////////////////////////////////////
 		apiV1.GET("/flow_statistics", api_server.FlowStatistics) //todo
@@ -38,30 +38,30 @@ func V1Router(r *gin.Engine) {
 		//apiV1.POST("/flows", api_server.AddFlow)
 		//apiV1.PUT("/flows/:flow_id", api_server.EditFlow)
 		//////////////////////////////////////////////指纹库标签//////////////////////////////////////////////
-		apiV1.POST("/categorys", api_server.AddCategory)             //todo
-		apiV1.GET("/all/categorys", api_server.GetCategorys)         //todo
-		apiV1.PUT("/categorys/:cate_id", api_server.EditCategory)    //todo
-		apiV1.DELETE("/categorys/:cate_id", api_server.DeleCategory) //todo
+		apiV1.POST("/categorys", api_server.AddCategory)
+		apiV1.GET("/all/categorys", api_server.GetCategorys)
+		apiV1.PUT("/categorys/:cate_id", api_server.EditCategory)
+		apiV1.DELETE("/categorys/:cate_id", api_server.DeleCategory)
 		//////////////////////////////////////////////资产白名单接口//////////////////////////////////////////////
-		apiV1.POST("/white_assets", api_server.AddWhiteAsset)
-		apiV1.POST("/white_assets_csvs", api_server.UploadWhiteAsset)
-		apiV1.GET("/mac/white_assets", api_server.GetWhiteAssetMacs) //todo
+		apiV1.POST("/white_assets", api_server.AddWhiteAsset)         //todo
+		apiV1.POST("/white_assets_csvs", api_server.UploadWhiteAsset) //todo
+		apiV1.GET("/mac/white_assets", api_server.GetWhiteAssetMacs)  //todo
 		//////////////////////////////////////////////指纹信息接口//////////////////////////////////////////////
-		apiV1.GET("/asset_fprints", api_server.GetAssetFprints)                      //todo
-		apiV1.GET("/pagination/asset_fprints", api_server.GetPaginationAssetFprints) //todo
+		apiV1.GET("/asset_fprints", api_server.GetAssetFprints)
+		apiV1.GET("/pagination/asset_fprints", api_server.GetPaginationAssetFprints)
 		//指纹库接口///////////////////////////////////////////////////////////////////////////////////////////
-		apiV1.POST("/finger_prints", api_server.AddFprint)               //todo
-		apiV1.GET("/pagination/finger_prints", api_server.GetFprints)    //todo
-		apiV1.DELETE("/finger_prints/:fprint_id", api_server.DeleFprint) //todo
-		apiV1.PUT("/finger_prints/:fprint_id", api_server.EditFprint)    //todo
+		apiV1.POST("/finger_prints", api_server.AddFprint)
+		apiV1.GET("/pagination/finger_prints", api_server.GetFprints)
+		apiV1.DELETE("/finger_prints/:fprint_id", api_server.DeleFprint)
+		apiV1.PUT("/finger_prints/:fprint_id", api_server.EditFprint)
 		//////////////////////////////////////////////入网审批，允许入网//////////////////////////////////////////////
-		apiV1.GET("/pagination/asset_fprints/examines", api_server.GetExamineAssetFprints)        //todo
-		apiV1.POST("/asset_fprints/examines/:asset_fprint_id", api_server.AddExamineAssetFprints) //todo
+		apiV1.GET("/pagination/asset_fprints/examines", api_server.GetExamineAssetFprints)
+		apiV1.POST("/asset_fprints/examines/:asset_fprint_id", api_server.AddExamineAssetFprints)
 		//////////////////////////////////////////////允许入网//////////////////////////////////////////////
-		apiV1.POST("/asset_fprints/access_net/:asset_fprint_id", api_server.AddNetAccessAssetFprints) //todo
+		apiV1.POST("/asset_fprints/access_net/:asset_fprint_id", api_server.AddNetAccessAssetFprints)
 		//////////////////////////////////////////////车载接口//////////////////////////////////////////////
 		apiV1.GET("/vehicles/:vehicle_id", api_server.GetVehicle) //todo
-		apiV1.POST("/vehicles", api_server.AddVehicle)
+		//apiV1.POST("/vehicles", api_server.AddVehicle)
 		apiV1.PUT("/vehicles/:vehicle_id", api_server.EditVehicle)                  //todo
 		apiV1.PUT("/vehicles/:vehicle_id/vehicle_info", api_server.EditVehicleInfo) //todo
 		//apiV1.DELETE("/vehicles/:vehicle_id", api_server.DeleVehicle)

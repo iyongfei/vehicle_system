@@ -315,7 +315,6 @@ func EditFStrategyCsv(c *gin.Context) {
 	fstrategyId := c.Param("fstrategy_id")
 	vehicleId := c.PostForm("vehicle_id")
 
-	fmt.Println(uploadCsv, fstrategyId, vehicleId, "hahahahah")
 	logger.Logger.Print("%s vehicle_id:%s,uploadCsv:%s,fstrategyId:%s", util.RunFuncName(), vehicleId, uploadCsv.Filename, fstrategyId)
 	logger.Logger.Info("%s vehicle_id:%s,uploadCsv:%s,fstrategyId:%s", util.RunFuncName(), vehicleId, uploadCsv.Filename, fstrategyId)
 

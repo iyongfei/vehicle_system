@@ -10,7 +10,7 @@ import (
 const (
 	mysqlUser   = "root"
 	mysqlPwd    = "root"
-	mysqlPort   = 33066
+	mysqlPort   = 3306
 	mysqlDbname = "vehicle"
 
 	maxIdleConns = 10
@@ -34,11 +34,6 @@ func initConfIni() {
 	fmt.Println("ini_user_name-->", user_name, ",password-->", password, ",db_name-->", db_name, ",mysql_port-->", mysql_port)
 
 }
-
-//func GET() *gorm.DB {
-//	GormDb, _ = gorm.Open("mysql", getConnectParams())
-//	return GormDb
-//}
 
 func GetMysqlInstance() {
 	//initConfIni()

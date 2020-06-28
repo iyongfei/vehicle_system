@@ -6,6 +6,7 @@ import (
 	"flag"
 	"github.com/jinzhu/gorm"
 	"strings"
+	"time"
 	"vehicle_system/src/vehicle_script/mysql_script/tools"
 )
 
@@ -20,6 +21,7 @@ func init() {
 }
 
 const PasswordSecret = "vgw-1214-pwd-key-vgw-1214-pwd-key"
+const AuthDays = 30
 
 func main() {
 
@@ -37,14 +39,24 @@ func main() {
 */
 func TdataVehicleAuthCheck(vid string) error {
 	vehicleAuths := GetVehicleAuths(vid)
+
+	//授权天数，起始时间
+
+	authTime := uint32(time.Now().Unix())
+
+	authDaysSeconds := uint32(AuthDays * 24 * 3600)
+	authExpire := authTime + authDaysSeconds
+
 	for _, vehicleId := range vehicleAuths {
 
 		vehicleAuth := &VehicleAuth{
-			VehicleId: vehicleId,
+			VehicleId:  vehicleId,
+			AuthDays:   AuthDays,
+			AuthTime:   authTime,
+			AuthExpire: authExpire,
 		}
 
 		recordNotFound := tools.QueryFirstModelRecord(vehicleAuth, "vehicle_id = ?", []interface{}{vehicleAuth.VehicleId}...)
-
 		//不存在插入
 		if recordNotFound {
 			err := tools.CreateModel(vehicleAuth)
@@ -53,15 +65,15 @@ func TdataVehicleAuthCheck(vid string) error {
 			}
 		}
 	}
-
 	return nil
 }
 
 func GetVehicleAuths(vid string) []string {
-
 	//添加需要授权的唯一标识码
 	vehicleAuths := []string{
-		//"123",
+		//"754d2728b4e549c5a16c0180fcacb800",
+		"derXH5DghbCV3UVHFQaCNbmHitQHcTfj",
+		"754d2728b4e549c5a16c0180fcacb80",
 	}
 
 	fvehicleAuths := []string{}
@@ -78,7 +90,10 @@ func GetVehicleAuths(vid string) []string {
 
 type VehicleAuth struct {
 	gorm.Model
-	VehicleId string //关联的小v ID
+	VehicleId  string //关联的小v ID
+	AuthTime   uint32
+	AuthDays   uint32
+	AuthExpire uint32
 }
 
 //生成32位md5字串

@@ -28,12 +28,12 @@ func init() {
 }
 
 func main() {
-	//getAssetsimple()
+	getAssetsimple()
 	//getAssets()
 	//getAsset()
 	//addAsset()
 	//deleAsset()
-	editAsset()
+	//editAsset()
 
 	//editVehicleAssetInfo()
 }

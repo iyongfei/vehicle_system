@@ -31,6 +31,9 @@ const (
 const (
 	AuthTokenLost     = "请求未携带token，权限不足"
 	AuthTokenResignin = "请重新登录"
+
+	Unauthorized     = "未授权"
+	AuthorizedExpire = "授权已过期，请重新授权"
 )
 
 //解析

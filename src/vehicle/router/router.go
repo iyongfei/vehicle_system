@@ -30,5 +30,12 @@ func RouterHandler() {
 	router.POST("/regist", api_server.Regist) //todo
 
 	v1.V1Router(router)
+
+	ret := router.Routes()
+
+	for k, v := range ret {
+		fmt.Println(k, v)
+	}
+
 	router.Run(fmt.Sprintf("%s:%d", conf.ServerHost, conf.ServerPort))
 }

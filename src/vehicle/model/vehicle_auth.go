@@ -9,7 +9,10 @@ import (
 
 type VehicleAuth struct {
 	gorm.Model
-	VehicleId string //关联的小v ID
+	VehicleId  string //关联的小v ID
+	AuthTime   uint32
+	AuthDays   uint32
+	AuthExpire uint32
 }
 
 func (vehicleAuth *VehicleAuth) GetModelPaginationByCondition(pageIndex int, pageSize int, totalCount *int,

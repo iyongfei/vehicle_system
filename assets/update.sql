@@ -31,9 +31,12 @@ CREATE TABLE IF NOT EXISTS `vehicle_auths`  (
   `deleted_at` timestamp NULL DEFAULT NULL,
 
   `vehicle_id` varchar(255) NULL DEFAULT NULL,
+  `auth_time`   int(11) UNSIGNED NULL DEFAULT NULL,
+  `auth_days`   int(11) UNSIGNED NULL DEFAULT NULL,
+  `auth_expire`   int(11) UNSIGNED NULL DEFAULT NULL,
+
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_vehicle_auths_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
-
 
 

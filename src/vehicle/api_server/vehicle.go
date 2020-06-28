@@ -249,6 +249,7 @@ func GetVehicles(c *gin.Context) {
 }
 
 func GetVehicle(c *gin.Context) {
+
 	vehicleId := c.Param("vehicle_id")
 	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId)
 	if argsTrimsEmpty {

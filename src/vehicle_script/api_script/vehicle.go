@@ -31,8 +31,8 @@ func init() {
 }
 
 func main() {
-	editVehicleInfo()
-	//getVehicle()
+	//editVehicleInfo()
+	getVehicle()
 	//editVehicles()
 	//getVehicles()
 	//unused

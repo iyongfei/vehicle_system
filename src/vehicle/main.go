@@ -1,6 +1,7 @@
 package main
 
 import (
+	"vehicle_system/src/vehicle/auth"
 	"vehicle_system/src/vehicle/conf"
 	"vehicle_system/src/vehicle/cron"
 	"vehicle_system/src/vehicle/db"
@@ -21,6 +22,7 @@ func init() {
 	emq.Setup()
 	cron.Setup()
 	push.Setup()
+	auth.Setup()
 	//vgo.Setup()
 }
 
