@@ -181,7 +181,6 @@ message DeviceParam {
 		bool protect_switch = 8;//是否受小V保护 v2 留空
 		bool lan_visit_switch = 9;//是否可以访问内网,false:访问关闭. true:访问开启 v2 留空
 	}
-
 	repeated Item device_item = 1;
 }
 

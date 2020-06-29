@@ -7,7 +7,6 @@ import (
 	"os"
 	"strings"
 	"vehicle_system/src/vehicle/csv"
-	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/emq/emq_cmd"
 	"vehicle_system/src/vehicle/emq/protobuf"
 	"vehicle_system/src/vehicle/emq/topic_publish_handler"
@@ -159,15 +158,14 @@ func UploadFStrategyCsv(c *gin.Context) {
 
 				fstrategyItem := &model.FstrategyItem{
 					FstrategyItemId: util.RandomString(32),
-					VehicleId:       vehicleIdK,
 					DstIp:           dip,
 					DstPort:         dport,
 				}
 				modelBase := model_base.ModelBaseImpl(fstrategyItem)
 
 				err, fstrategyItemrecordNotFound := modelBase.GetModelByCondition(
-					"vehicle_id = ? and dst_ip = ? and dst_port = ?",
-					[]interface{}{fstrategyItem.VehicleId, fstrategyItem.DstIp, fstrategyItem.DstPort}...)
+					"dst_ip = ? and dst_port = ?",
+					[]interface{}{fstrategyItem.DstIp, fstrategyItem.DstPort}...)
 				if err != nil {
 					continue
 				}
@@ -291,8 +289,15 @@ func UploadFStrategyCsv(c *gin.Context) {
 		topic_publish_handler.GetPublishService().PutMsg2PublicChan(fstrategyCmd)
 	}
 
+	gormModel := model.Model{
+		fstrategy.ID, fstrategy.CreatedAt.Unix(),
+		fstrategy.UpdatedAt, fstrategy.DeletedAt,
+	}
+
 	vehicleSingleFlowStrategyItemsReult := model.VehicleSingleFlowStrategyItemsReult{
+		Model:                    gormModel,
 		FstrategyId:              fstrategy.FstrategyId,
+		Name:                     fstrategy.Name,
 		Type:                     fstrategy.Type,
 		HandleMode:               fstrategy.HandleMode,
 		Enable:                   fstrategy.Enable,
@@ -387,15 +392,14 @@ func EditFStrategyCsv(c *gin.Context) {
 
 				fstrategyItem := &model.FstrategyItem{
 					FstrategyItemId: util.RandomString(32),
-					VehicleId:       vehicleIdK,
 					DstIp:           dip,
 					DstPort:         dport,
 				}
 				modelBase := model_base.ModelBaseImpl(fstrategyItem)
 
 				err, fstrategyItemrecordNotFound := modelBase.GetModelByCondition(
-					"vehicle_id = ? and dst_ip = ? and dst_port = ?",
-					[]interface{}{fstrategyItem.VehicleId, fstrategyItem.DstIp, fstrategyItem.DstPort}...)
+					"dst_ip = ? and dst_port = ?",
+					[]interface{}{fstrategyItem.DstIp, fstrategyItem.DstPort}...)
 				if err != nil {
 					continue
 				}
@@ -420,27 +424,27 @@ func EditFStrategyCsv(c *gin.Context) {
 	*/
 	//找到FstrategyItemId(FstrategyVehicleItem表中)
 	//在FstrategyItemId(FstrategyItem表中)不存在的值
-	var fstrategyVehicleItemIds []string
-	_ = mysql.QueryPluckByModelWhere(&model.FstrategyVehicleItem{}, "fstrategy_item_id", &fstrategyVehicleItemIds,
-		"fstrategy_vehicle_id = ?", vehicleFStrategy.FstrategyVehicleId)
-
-	logger.Logger.Print("%s fstrategyItemIds:%+v", util.RunFuncName(), fstrategyVehicleItemIds)
-	logger.Logger.Info("%s fstrategyItemIds:%+v", util.RunFuncName(), fstrategyVehicleItemIds)
-
-	//如果没有在里面，就是被删除的，需要改delete标志位
-	newFstrategyItemIds := fstrategyItems[vehicleId]
-	var needDeleFstrategyItemIds []string
-	for _, fstrategyItemId := range fstrategyVehicleItemIds {
-		if !util.IsExistInSlice(fstrategyItemId, newFstrategyItemIds) {
-			needDeleFstrategyItemIds = append(needDeleFstrategyItemIds, fstrategyItemId)
-		}
-	}
-	logger.Logger.Print("%s needDeleFstrategyItemIds:%+v", util.RunFuncName(), needDeleFstrategyItemIds)
-	logger.Logger.Info("%s needDeleFstrategyItemIds:%+v", util.RunFuncName(), needDeleFstrategyItemIds)
-
-	//置成标志位
-	fstrategyItem := &model.FstrategyItem{}
-	err = fstrategyItem.SoftDeleModelImpl("fstrategy_item_id in (?)", needDeleFstrategyItemIds)
+	//var fstrategyVehicleItemIds []string
+	//_ = mysql.QueryPluckByModelWhere(&model.FstrategyVehicleItem{}, "fstrategy_item_id", &fstrategyVehicleItemIds,
+	//	"fstrategy_vehicle_id = ?", vehicleFStrategy.FstrategyVehicleId)
+	//
+	//logger.Logger.Print("%s fstrategyItemIds:%+v", util.RunFuncName(), fstrategyVehicleItemIds)
+	//logger.Logger.Info("%s fstrategyItemIds:%+v", util.RunFuncName(), fstrategyVehicleItemIds)
+	//
+	////如果没有在里面，就是被删除的，需要改delete标志位
+	//newFstrategyItemIds := fstrategyItems[vehicleId]
+	//var needDeleFstrategyItemIds []string
+	//for _, fstrategyItemId := range fstrategyVehicleItemIds {
+	//	if !util.IsExistInSlice(fstrategyItemId, newFstrategyItemIds) {
+	//		needDeleFstrategyItemIds = append(needDeleFstrategyItemIds, fstrategyItemId)
+	//	}
+	//}
+	//logger.Logger.Print("%s needDeleFstrategyItemIds:%+v", util.RunFuncName(), needDeleFstrategyItemIds)
+	//logger.Logger.Info("%s needDeleFstrategyItemIds:%+v", util.RunFuncName(), needDeleFstrategyItemIds)
+	//
+	////置成标志位
+	//fstrategyItem := &model.FstrategyItem{}
+	//err = fstrategyItem.SoftDeleModelImpl("fstrategy_item_id in (?)", needDeleFstrategyItemIds)
 
 	//删除FstrategyVehicleItem表
 	fstrategyVehicleItem := &model.FstrategyVehicleItem{}
@@ -451,6 +455,7 @@ func EditFStrategyCsv(c *gin.Context) {
 	}
 
 	//添加FstrategyVehicleItem表
+	newFstrategyItemIds := fstrategyItems[vehicleId]
 	for _, fstrategyItemId := range newFstrategyItemIds {
 		fstrategyVehicleItem := &model.FstrategyVehicleItem{
 			FstrategyVehicleId: vehicleFStrategy.FstrategyVehicleId,
@@ -497,8 +502,15 @@ func EditFStrategyCsv(c *gin.Context) {
 	}
 	topic_publish_handler.GetPublishService().PutMsg2PublicChan(fstrategyCmd)
 
+	gormModel := model.Model{
+		vehicleFStrategy.ID, vehicleFStrategy.CreatedAt.Unix(),
+		vehicleFStrategy.UpdatedAt, vehicleFStrategy.DeletedAt,
+	}
+
 	vehicleSingleFlowStrategyItemsReult := model.VehicleSingleFlowStrategyItemsReult{
+		Model:                    gormModel,
 		FstrategyId:              vehicleFStrategy.FstrategyId,
+		Name:                     vehicleFStrategy.Name,
 		Type:                     vehicleFStrategy.Type,
 		HandleMode:               vehicleFStrategy.HandleMode,
 		Enable:                   vehicleFStrategy.Enable,

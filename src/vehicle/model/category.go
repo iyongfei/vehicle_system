@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"vehicle_system/src/vehicle/db/mysql"
@@ -11,6 +12,17 @@ type Category struct {
 	gorm.Model
 	CateId string
 	Name   string `gorm:"unique"`
+}
+
+func (category *Category) MarshalJSON() ([]byte, error) {
+	type tempType Category
+	return json.Marshal(&struct {
+		CreatedAt int64
+		*tempType
+	}{
+		CreatedAt: category.CreatedAt.Unix(),
+		tempType:  (*tempType)(category),
+	})
 }
 
 func (category *Category) InsertModel() error {

@@ -246,8 +246,7 @@ const (
 	ReqDeleFStrategyFailMsg    = "会话策略信息删除失败"
 	ReqDeleFStrategySuccessMsg = "会话策略信息删除成功"
 	//
-	//ReqUpdateStrategyFailMsg    = "策略信息更新失败"
-	//ReqUpdateStrategySuccessMsg = "策略信息更新成功"
+	ReqUpdateFStrategySuccessMsg = "会话策略信息更新成功"
 	//
 	//
 	//
@@ -276,6 +275,9 @@ const (
 
 	ReqCategoryListFailMsg    = "获取指纹类别列表失败"
 	ReqCategoryListSuccessMsg = "获取指纹类别列表成功"
+
+	ReqDeleCategoryFailMsg    = "删除指纹类别失败"
+	ReqDeleCategorySuccessMsg = "删除指纹类别成功"
 )
 
 //assetprint

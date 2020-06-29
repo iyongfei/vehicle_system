@@ -62,7 +62,7 @@ func UploadFile(url string, token string, params map[string]string, nameField, f
 	return p, nil
 }
 
-func UploadEditFile(url string, params map[string]string, nameField, fileName string, file io.Reader) (map[string]interface{}, error) {
+func UploadEditFile(url string, token string, params map[string]string, nameField, fileName string, file io.Reader) (map[string]interface{}, error) {
 	body := new(bytes.Buffer)
 
 	writer := multipart.NewWriter(body)
@@ -92,7 +92,7 @@ func UploadEditFile(url string, params map[string]string, nameField, fileName st
 	}
 	//req.Header.Set("Content-Type","multipart/form-data")
 	req.Header.Add("Content-Type", writer.FormDataContentType())
-
+	req.Header.Add("token", token)
 	client := http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {

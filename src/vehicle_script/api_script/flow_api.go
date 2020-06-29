@@ -20,8 +20,8 @@ var urls = map[string]string{
 }
 
 func main() {
-	getFlow()
-	//getPaginationFlows()
+	//getFlow()
+	getPaginationFlows()
 	//getflowsDps()
 
 	//unused
@@ -115,7 +115,7 @@ func GetFewDayAgo(days int) string {
 }
 
 func getPaginationFlows() {
-	defaultStartTime := GetFewDayAgo(20) //2
+	//defaultStartTime := GetFewDayAgo(20) //2
 	now := strconv.Itoa(int(time.Now().Unix()))
 	//psize, _ := strconv.Atoi(page_size)
 	//pindex, _ := strconv.Atoi(page_index)
@@ -126,7 +126,7 @@ func getPaginationFlows() {
 		//"vehicle_id": flowvehicleId,
 		"page_size":  page_size,
 		"page_index": page_index,
-		"start_time": defaultStartTime,
+		"start_time": "0",
 		"end_time":   now,
 	}
 

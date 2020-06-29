@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+#123.57.252.4
+>>>>>>> test
 server_ip = localhost
 
 
@@ -6,7 +10,7 @@ user_name=a
 password=a
 
 #终端id
-vehicle_id=47aa3baa36d94269b9d32ed9bcf8a2f4
+vehicle_id=xBFFIEf9buA23WNooV48eevlI3wH1O3r
 
 #修改名字
 vehicle_new_name=sjdlfksf
@@ -19,11 +23,15 @@ handle_mode=2
 
 
 #增加会话策略接口
-fips=192.168.2.48
+fips=192.168.2.49
 fports=123,3
 
 #获取会话策略接口
+<<<<<<< HEAD
 get_flow_fstrategy_id=sTgjyl99ZWDXd8NctszvU6nsmhkJeE7E
+=======
+get_flow_fstrategy_id=DGzxsR6KKXsTqWGX17PPs6pNof4Dti6H
+>>>>>>> test
 
 
 #修改会话策略接口
