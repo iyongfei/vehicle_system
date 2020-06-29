@@ -325,8 +325,8 @@ func GetPaginationAssets(c *gin.Context) {
 		if !vehicleIdAuth { //如果没有授权
 			ret := response.StructResponseObj(response.VStatusUnauthorized, response.Unauthorized, "")
 			c.JSON(http.StatusOK, ret)
-			logger.Logger.Error("%s auth file:%s not exist", util.RunFuncName(), auth.AuthFile)
-			logger.Logger.Print("%s auth file:%s not exist", util.RunFuncName(), auth.AuthFile)
+			logger.Logger.Error("%s vehicleId:%s unauthorized", util.RunFuncName(), vehicleId)
+			logger.Logger.Print("%s vehicleId:%s unauthorized", util.RunFuncName(), vehicleId)
 			return
 		}
 		sqlQuery = "vehicle_id = ? and assets.created_at BETWEEN ? AND ?"

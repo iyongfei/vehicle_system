@@ -38,8 +38,8 @@ func urlMiddleHandlerFunc(c *gin.Context) {
 		ret := response.StructResponseObj(response.VStatusExpiredUnauthorized, response.AuthorizedExpire, "")
 		c.JSON(http.StatusOK, ret)
 		c.Abort()
-		logger.Logger.Error("%s auth file:%s not exist", util.RunFuncName(), auth.AuthFile)
-		logger.Logger.Print("%s auth file:%s not exist", util.RunFuncName(), auth.AuthFile)
+		logger.Logger.Error("%s auth file:%s authExpire", util.RunFuncName(), auth.AuthFile)
+		logger.Logger.Print("%s auth file:%s authExpire", util.RunFuncName(), auth.AuthFile)
 		return
 	}
 
@@ -74,8 +74,8 @@ func urlMiddleHandlerFunc(c *gin.Context) {
 						ret := response.StructResponseObj(response.VStatusUnauthorized, response.Unauthorized, "")
 						c.JSON(http.StatusOK, ret)
 						c.Abort()
-						logger.Logger.Error("%s auth file:%s not exist", util.RunFuncName(), auth.AuthFile)
-						logger.Logger.Print("%s auth file:%s not exist", util.RunFuncName(), auth.AuthFile)
+						logger.Logger.Error("%s fVehicle:%s unauthorized", util.RunFuncName(), fVehicle)
+						logger.Logger.Print("%s fVehicle:%s unauthorized", util.RunFuncName(), fVehicle)
 						return
 					}
 				}
@@ -102,8 +102,8 @@ func urlMiddleHandlerFunc(c *gin.Context) {
 						ret := response.StructResponseObj(response.VStatusUnauthorized, response.Unauthorized, "")
 						c.JSON(http.StatusOK, ret)
 						c.Abort()
-						logger.Logger.Error("%s auth file:%s not exist", util.RunFuncName(), auth.AuthFile)
-						logger.Logger.Print("%s auth file:%s not exist", util.RunFuncName(), auth.AuthFile)
+						logger.Logger.Error("%s fVehicle:%s unauthorized", util.RunFuncName(), fVehicle)
+						logger.Logger.Print("%s fVehicle:%s unauthorized", util.RunFuncName(), fVehicle)
 						return
 					}
 				}
@@ -132,8 +132,8 @@ func urlMiddleHandlerFunc(c *gin.Context) {
 						ret := response.StructResponseObj(response.VStatusUnauthorized, response.Unauthorized, "")
 						c.JSON(http.StatusOK, ret)
 						c.Abort()
-						logger.Logger.Error("%s auth file:%s not exist", util.RunFuncName(), auth.AuthFile)
-						logger.Logger.Print("%s auth file:%s not exist", util.RunFuncName(), auth.AuthFile)
+						logger.Logger.Error("%s fVehicle:%s unauthorized", util.RunFuncName(), fVehicle)
+						logger.Logger.Print("%s fVehicle:%s unauthorized", util.RunFuncName(), fVehicle)
 						return
 					}
 				}

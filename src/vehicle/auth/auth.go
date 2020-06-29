@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"time"
+	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/util"
 )
 
@@ -28,12 +29,10 @@ type EmpowerDevice struct {
 
 func Setup() {
 	AESDecryptstr()
-	//r := AuthVehicleAllExpire()
-	//fmt.Println("rrr", r)
-
-	//for k, v := range EmpowerDevices {
-	//	fmt.Println("sjdklf", k, v)
-	//}
+	for _, ep := range EmpowerDevices {
+		logger.Logger.Info("empowerDevices:%+v", ep)
+		logger.Logger.Print("empowerDevices:%+v", ep)
+	}
 }
 
 func AESDecryptstr() {

@@ -54,18 +54,6 @@ func (t *TopicSubscribeHandler) HanleSubscribeTopicData(topicMsg mqtt.Message) e
 	}
 	//vehicleId null
 	vehicleId := vehicleResult.GetGUID()
-	//是否授权
-
-	//vehicleIdMd5 := util.Md5(vehicleId + response.VehiclePasswordSecret)
-	//vehicleAuth := &model.VehicleAuth{}
-	//
-	//err, recordNotFound := mysql.QueryModelOneRecordIsExistByWhereCondition(vehicleAuth, "vehicle_id = ?", []interface{}{vehicleIdMd5}...)
-	//
-	//if recordNotFound {
-	//	logger.Logger.Print("%s,hanleSubscribeTopicData query vehicle_auths recordNotFound vehicleId:%s", util.RunFuncName(), vehicleId)
-	//	logger.Logger.Info("%s,hanleSubscribeTopicData query vehicle_auths recordNotFound vehicleId:%s", util.RunFuncName(), vehicleId)
-	//	return fmt.Errorf("hanleSubscribeTopicData query vehicle_auths recordNotFound,vehicleId:%s,err:%s", vehicleId, err)
-	//}
 
 	if util.RrgsTrimEmpty(vehicleId) {
 		return fmt.Errorf("vehicleResult vehicle id null")
@@ -203,6 +191,16 @@ func HanleSubscribeTopicLineData(topicMsg mqtt.Message) error {
 	}
 
 	var err error
+
+	if !util.RrgsTrimEmpty(vehicleId) {
+		//资产,设备离线
+		err = tdata.VehicleAssetCheck(vehicleId, false)
+		if err != nil {
+			logger.Logger.Error("tdata vehicle_asset check err:%v", err.Error())
+			logger.Logger.Print("tdata vehicle_asset check err:%v", err.Error())
+		}
+	}
+
 	if util.RrgsTrimEmpty(vehicleId) {
 		vehicleCache := emq_cacha.GetVehicleCache()
 		vehicleCache.Clean(vehicleId)
