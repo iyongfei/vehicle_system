@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	"strings"
+	"time"
+	"vehicle_system/src/vehicle/util"
 )
 
 type AuthVehicle struct {
@@ -19,16 +20,6 @@ type AuthVehicleList struct {
 var aggg []*AuthVehicleList
 
 func main() {
-<<<<<<< HEAD
-	a := "wjek"
-	b := "wjekeee"
-
-	c := strings.Index(a, b)
-	fmt.Println(c)
-=======
-	fStartTime := util.StampUnix2Time(int64(0))
-
-	fmt.Println(fStartTime)
 	return
 
 	fmt.Println(time.Now().Unix())
@@ -180,13 +171,3 @@ type FlowParam_FItem struct {
 //	GetModelListByCondition(&fstrategyVehicleItems,
 //		"fstrategy_item_id in (?)",
 //		[]interface{}{"Anvl7c2xEdm85wVwstHfNDj6TJeruWpZ","vmtsrkxsI87EoCLOtxag5Dh9V4CkW9GN"}...)
-
-func InitDataBase() *gorm.DB {
-	GormDb, _ := gorm.Open("mysql", "root:root@tcp(127.0.0.1:3306)/vehicle?charset=utf8&parseTime=True&loc=Local")
-	//GormDb.LogMode(true)
-
-	GormDb.DB().SetMaxIdleConns(conf.MaxIdleConns)
-	GormDb.DB().SetMaxOpenConns(conf.MaxOpenConns)
-	return GormDb
->>>>>>> test
-}

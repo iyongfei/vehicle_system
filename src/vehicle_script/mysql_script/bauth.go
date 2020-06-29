@@ -30,12 +30,11 @@ type EmpowerDevice struct {
 }
 
 const (
-	AddTime = 24 * 3600
+	AddTime = 10 * 60
 )
 
 var authVehicleList = []string{
-	"ca6b87124a13908f0519d7f939327037",
-	"e90bbbffdd81b155572aa9e74a295e49",
+	"e4aa43208d213dc1a4372185a7774fcc",
 }
 
 func main() {

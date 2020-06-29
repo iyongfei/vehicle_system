@@ -1293,6 +1293,7 @@ func GetFStrategy(c *gin.Context) {
 	vehicleSingleFlowStrategyItemsReult := model.VehicleSingleFlowStrategyItemsReult{
 		Model:                    gormModel,
 		FstrategyId:              vehicleFStrategy.FstrategyId,
+		Name:                     vehicleFStrategy.Name,
 		Type:                     vehicleFStrategy.Type,
 		HandleMode:               vehicleFStrategy.HandleMode,
 		Enable:                   vehicleFStrategy.Enable,

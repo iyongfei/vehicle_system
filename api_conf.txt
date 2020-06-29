@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 #123.57.252.4
->>>>>>> test
 server_ip = localhost
 
 
@@ -27,11 +24,7 @@ fips=192.168.2.49
 fports=123,3
 
 #获取会话策略接口
-<<<<<<< HEAD
 get_flow_fstrategy_id=sTgjyl99ZWDXd8NctszvU6nsmhkJeE7E
-=======
-get_flow_fstrategy_id=DGzxsR6KKXsTqWGX17PPs6pNof4Dti6H
->>>>>>> test
 
 
 #修改会话策略接口
