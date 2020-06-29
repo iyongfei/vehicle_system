@@ -26,5 +26,4 @@ func auth() {
 	fmt.Printf("resp %+v", string(respMarshal))
 }
 
-//eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZG53MTdBd0pNTWJpYzE2NnhHb3daUGZ1cWNiY2xqSkIiLCJ1c2VyX25hbWUiOiJhIiwicGFzc193b3JkIjoiYjYyZTM4OTc5MzE3NzhlNjk2OGFhZjBlZWVlZjMyZDYiLCJleHAiOjE2NjMyNTI5MTMsImlzcyI6InZlaGljbGUifQ.tB-St_qyvc1tMfhwXnhdyCJWTr3exqeWwV59-jCS8N4
-//eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZG53MTdBd0pNTWJpYzE2NnhHb3daUGZ1cWNiY2xqSkIiLCJ1c2VyX25hbWUiOiJhIiwicGFzc193b3JkIjoiYjYyZTM4OTc5MzE3NzhlNjk2OGFhZjBlZWVlZjMyZDYiLCJleHAiOjE2NjMyNTI5MTMsImlzcyI6InZlaGljbGUifQ.tB-St_qyvc1tMfhwXnhdyCJWTr3exqeWwV59-jCS8N4
+//curl http://192.168.40.234:8320/auth -X POST -d "user_name=aa&password=aa"
