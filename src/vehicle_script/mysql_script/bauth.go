@@ -34,8 +34,8 @@ const (
 )
 
 var authVehicleList = []string{
-	"754d2728b4e549c5a16c0180fcacb80",
-	"123",
+	"ca6b87124a13908f0519d7f939327037",
+	"e90bbbffdd81b155572aa9e74a295e49",
 }
 
 func main() {
@@ -69,5 +69,6 @@ func generateCertFile(guids []string, start int64, end int64, company string, co
 		return
 	}
 
-	tool.WriteFile(ReadPath, encrypted)
+	err = tool.WriteFile(ReadPath, encrypted)
+	fmt.Println("eeee=", err)
 }

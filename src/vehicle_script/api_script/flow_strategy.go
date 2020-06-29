@@ -32,15 +32,9 @@ func getConfig() map[string]string {
 
 func main() {
 	//addFStrategy()
-<<<<<<< HEAD
-	//getFStrategy()
-	deleFStrategy()
-	//editFStrategy()
-=======
 	editFStrategy()
 	//deleFStrategy()
 	//getFStrategy()
->>>>>>> test
 	//getRecentFStrategy()
 	//getAllFStrategys()
 	//getPartialFStrategys()
@@ -53,54 +47,24 @@ func main() {
 	//getStrategyVehicleLearningResults()
 }
 
-<<<<<<< HEAD
-func deleFStrategy() {
-	configs := getConfig()
-	dele_flow_vehicle_id := configs["get_flow_fstrategy_id"]
-	fip := configs["server_ip"]
-	token := tool.GetVehicleToken()
-
-	queryParams := map[string]interface{}{}
-
-	reqUrl := fmt.Sprintf(fstrategyUrls["dele_fstrategy"], fip) + dele_flow_vehicle_id
-
-	resp, _ := tool.Delete(reqUrl, queryParams, token)
-
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
-}
-
-func getPaginationFstrategys() {
-	token := tool.GetVehicleToken()
-	configs := getConfig()
-	fip := configs["server_ip"]
-=======
 func getPaginationVehicleFstrategys() {
 	token := tool.GetVehicleToken()
 	configs := getConfig()
 	fip := configs["server_ip"]
 	vehicle_id := configs["vehicle_id"]
->>>>>>> test
 	page_index := configs["page_index"]
 	page_size := configs["page_size"]
 	//start_time := configs["start_time"]
 	//end_time := configs["end_time"]
 
 	queryParams := map[string]interface{}{
-<<<<<<< HEAD
-=======
 		"vehicle_id": vehicle_id,
->>>>>>> test
 		"page_index": page_index,
 		"page_size":  page_size,
 		//"start_time": start_time,
 		//"end_time":   end_time,
 	}
-<<<<<<< HEAD
-	reqUrl := fmt.Sprintf(fstrategyUrls["get_pagination_fstrategs"], fip)
-=======
 	reqUrl := fmt.Sprintf(fstrategyUrls["get_pagination_vehicle_fstrategs"], fip)
->>>>>>> test
 	resp, _ := tool.Get(reqUrl, queryParams, token)
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))
@@ -154,28 +118,16 @@ func editFStrategy() {
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))
 }
-<<<<<<< HEAD
-func getPaginationVehicleFstrategys() {
-	token := tool.GetVehicleToken()
-	configs := getConfig()
-	fip := configs["server_ip"]
-	vehicle_id := configs["vehicle_id"]
-=======
 func getPaginationFstrategys() {
 	token := tool.GetVehicleToken()
 	configs := getConfig()
 	fip := configs["server_ip"]
->>>>>>> test
 	page_index := configs["page_index"]
 	page_size := configs["page_size"]
 	//start_time := configs["start_time"]
 	//end_time := configs["end_time"]
 
 	queryParams := map[string]interface{}{
-<<<<<<< HEAD
-		"vehicle_id": vehicle_id,
-=======
->>>>>>> test
 		"page_index": page_index,
 		"page_size":  page_size,
 		//"start_time": start_time,
@@ -252,6 +204,22 @@ func getFStrategy() {
 	}
 	reqUrl := fmt.Sprintf(fstrategyUrls["get_fstrategy"], fip) + get_flow_fstrategy_id
 	resp, _ := tool.Get(reqUrl, queryParams, token)
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+}
+
+func deleFStrategy() {
+	configs := getConfig()
+	dele_flow_vehicle_id := configs["get_flow_fstrategy_id"]
+	fip := configs["server_ip"]
+	token := tool.GetVehicleToken()
+
+	queryParams := map[string]interface{}{}
+
+	reqUrl := fmt.Sprintf(fstrategyUrls["dele_fstrategy"], fip) + dele_flow_vehicle_id
+
+	resp, _ := tool.Delete(reqUrl, queryParams, token)
+
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))
 }

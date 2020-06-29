@@ -31,6 +31,7 @@ func WriteFile(path string, buf []byte) error {
 	if !PathExist(path) {
 		_, err := os.Create(path)
 		if err != nil {
+
 			return err
 		}
 	}
