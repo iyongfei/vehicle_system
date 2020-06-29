@@ -231,7 +231,7 @@ const (
 
 //fstrategy
 const (
-	//ReqAddStrategyFailMsg    = "策略添加失败"
+	ReqAddFStrategyFailMsg    = "会话策略添加失败"
 	ReqAddFStrategySuccessMsg = "会话策略添加成功"
 	//ReqGetStrategyExistMsg    = "策略已存在"
 	ReqGetFStrtegyUnExistMsg = "会话策略信息不存在"
@@ -242,6 +242,7 @@ const (
 	ReqGetFStrategyFailMsg    = "会话策略信息获取失败"
 	ReqGetFStrategySuccessMsg = "会话策略信息获取成功"
 	//
+	ReqUpdateFStrategyFailMsg  = "会话策略信息更新失败"
 	ReqDeleFStrategyFailMsg    = "会话策略信息删除失败"
 	ReqDeleFStrategySuccessMsg = "会话策略信息删除成功"
 	//

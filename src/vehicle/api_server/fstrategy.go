@@ -23,6 +23,7 @@ import (
 
 func EditFStrategy(c *gin.Context) {
 	vehicleId := c.PostForm("vehicle_id")
+	fstrategyName := c.PostForm("name")
 	fstrategyId := c.Param("fstrategy_id")
 	diports := c.PostForm("dip_ports")
 
@@ -79,31 +80,55 @@ func EditFStrategy(c *gin.Context) {
 
 	//FstrategyVehicle,Fstrategy不更改
 
-	//遍历FstrategyVehicleItem表
+	////////////////////////////////////事务开始////////////////////////////////////////////////
+
+	vgorm, err := mysql.GetMysqlInstance().GetMysqlDB()
+	tx := vgorm.Begin()
+
+	//更新fstrategy表
+
+	attrs := map[string]interface{}{
+		"name": fstrategyName,
+	}
+
+	if err := tx.Model(&model.Fstrategy{}).Where("fstrategy_id = ?", vehicleFStrategy.FstrategyId).Updates(attrs).Error; err != nil {
+		logger.Logger.Print("%s update fstrategy csv err:%+v", util.RunFuncName(), err)
+		logger.Logger.Error("%s update fstrategy csv err:%+v", util.RunFuncName(), err)
+
+		tx.Rollback()
+		retObj := response.StructResponseObj(response.VStatusOK, response.ReqAddFStrategyFailMsg, "")
+		c.JSON(http.StatusOK, retObj)
+		return
+	}
+
+	//add fstrategy_items table
 	fstrategyItems := map[string][]string{}
 	var vehicleFstrategyItems []string
+
 	for dip, ports := range finalDiportsMap {
 		for _, dport := range ports {
 			fstrategyItem := &model.FstrategyItem{
 				FstrategyItemId: util.RandomString(32),
-				VehicleId:       vehicleId,
 				DstIp:           dip,
 				DstPort:         dport,
 			}
-			modelBase := model_base.ModelBaseImpl(fstrategyItem)
 
-			err, fstrategyItemRecordNotFound := modelBase.GetModelByCondition(
-				"vehicle_id = ? and dst_ip = ? and dst_port = ?",
-				[]interface{}{fstrategyItem.VehicleId, fstrategyItem.DstIp, fstrategyItem.DstPort}...)
-			if err != nil {
-				continue
-			}
+			fstrategyItemrecordNotFound := tx.Where("dst_ip = ? and dst_port = ?",
+				[]interface{}{fstrategyItem.DstIp, fstrategyItem.DstPort}...).First(fstrategyItem).RecordNotFound()
 
-			if fstrategyItemRecordNotFound {
-				if err := modelBase.InsertModel(); err != nil {
-					continue
+			if fstrategyItemrecordNotFound {
+				if err := tx.Create(fstrategyItem).Error; err != nil {
+					logger.Logger.Print("%s create fstrategy_item err:%+v", util.RunFuncName(), err)
+					logger.Logger.Error("%s create fstrategy_item err:%+v", util.RunFuncName(), err)
+
+					tx.Rollback()
+
+					retObj := response.StructResponseObj(response.VStatusOK, response.ReqUpdateFStrategyFailMsg, "")
+					c.JSON(http.StatusOK, retObj)
+					return
 				}
 			}
+
 			if !util.IsExistInSlice(fstrategyItem.FstrategyItemId, vehicleFstrategyItems) {
 				vehicleFstrategyItems = append(vehicleFstrategyItems, fstrategyItem.FstrategyItemId)
 			}
@@ -114,51 +139,35 @@ func EditFStrategy(c *gin.Context) {
 	logger.Logger.Print("%s vehicle_id:%s fstrategyItems:%+v", util.RunFuncName(), vehicleId, fstrategyItems)
 	logger.Logger.Info("%s vehicle_id:%s fstrategyItems:%+v", util.RunFuncName(), vehicleId, fstrategyItems)
 
-	//找到FstrategyItemId(FstrategyVehicleItem表中)
-	//在FstrategyItemId(FstrategyItem表中)不存在的值
-
-	var fstrategyVehicleItemIds []string
-	_ = mysql.QueryPluckByModelWhere(&model.FstrategyVehicleItem{}, "fstrategy_item_id", &fstrategyVehicleItemIds,
-		"fstrategy_vehicle_id = ?", vehicleFStrategy.FstrategyVehicleId)
-
-	logger.Logger.Print("%s fstrategyItemIds:%+v", util.RunFuncName(), fstrategyVehicleItemIds)
-	logger.Logger.Info("%s fstrategyItemIds:%+v", util.RunFuncName(), fstrategyVehicleItemIds)
-
-	//如果没有在里面，就是被删除的，需要改delete标志位
-	newFstrategyItemIds := fstrategyItems[vehicleId]
-	var needDeleFstrategyItemIds []string
-	for _, fstrategyItemId := range fstrategyVehicleItemIds {
-		if !util.IsExistInSlice(fstrategyItemId, newFstrategyItemIds) {
-			needDeleFstrategyItemIds = append(needDeleFstrategyItemIds, fstrategyItemId)
-		}
-	}
-	logger.Logger.Print("%s needDeleFstrategyItemIds:%+v", util.RunFuncName(), needDeleFstrategyItemIds)
-	logger.Logger.Info("%s needDeleFstrategyItemIds:%+v", util.RunFuncName(), needDeleFstrategyItemIds)
-
-	//置成标志位
-	fstrategyItem := &model.FstrategyItem{}
-	err = fstrategyItem.SoftDeleModelImpl("fstrategy_item_id in (?)", needDeleFstrategyItemIds)
-
-	//删除FstrategyVehicleItem表
+	//dele 删除FstrategyVehicleItem表
 	fstrategyVehicleItem := &model.FstrategyVehicleItem{}
-	fstrategyVehicleItemModelBase := model_base.ModelBaseImpl(fstrategyVehicleItem)
-	err = fstrategyVehicleItemModelBase.DeleModelsByCondition("fstrategy_vehicle_id = ?", vehicleFStrategy.FstrategyVehicleId)
-	if err != nil {
+
+	if err := tx.Debug().Unscoped().Where("fstrategy_vehicle_id = ?", vehicleFStrategy.FstrategyVehicleId).
+		Delete(fstrategyVehicleItem).Error; err != nil {
+		tx.Rollback()
+		logger.Logger.Error("%s fstrategy_id:%s dele fstrategyVehicleItem err:%s", util.RunFuncName(), vehicleFStrategy.FstrategyVehicleId, err)
+		logger.Logger.Print("%s fstrategy_id:%s dele fstrategyVehicleItem err:%s", util.RunFuncName(), vehicleFStrategy.FstrategyVehicleId, err)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqDeleFStrategyFailMsg, "")
+		c.JSON(http.StatusOK, ret)
 		return
 	}
 
-	//添加FstrategyVehicleItem表
-	for _, fstrategyItemId := range newFstrategyItemIds {
+	//add FstrategyVehicleItem
+	vehicleFsItems := fstrategyItems[vehicleId]
+	for _, item := range vehicleFsItems {
 		fstrategyVehicleItem := &model.FstrategyVehicleItem{
 			FstrategyVehicleId: vehicleFStrategy.FstrategyVehicleId,
-			FstrategyItemId:    fstrategyItemId,
+			FstrategyItemId:    item,
 		}
-
-		fstrategyVehicleItemModelBase := model_base.ModelBaseImpl(fstrategyVehicleItem)
-		if err := fstrategyVehicleItemModelBase.InsertModel(); err != nil {
-			continue
+		if err := tx.Create(fstrategyVehicleItem).Error; err != nil {
+			tx.Rollback()
+			retObj := response.StructResponseObj(response.VStatusOK, response.ReqUpdateFStrategyFailMsg, "")
+			c.JSON(http.StatusOK, retObj)
+			return
 		}
 	}
+	tx.Commit()
+	////////////////////////////////////事务结束////////////////////////////////////////////////
 
 	//插入csv
 	csvModel := csv.NewCsvWriter(vehicleFStrategy.FstrategyId, csv.FileTruncate)
@@ -181,13 +190,14 @@ func EditFStrategy(c *gin.Context) {
 	topic_publish_handler.GetPublishService().PutMsg2PublicChan(fstrategyCmd)
 
 	gormModel := model.Model{
-		vehicleFStrategy.ID, vehicleFStrategy.CreatedAt,
+		vehicleFStrategy.ID, vehicleFStrategy.CreatedAt.Unix(),
 		vehicleFStrategy.UpdatedAt, vehicleFStrategy.DeletedAt,
 	}
 
 	vehicleSingleFlowStrategyItemsReult := model.VehicleSingleFlowStrategyItemsReult{
 		Model:       gormModel,
 		FstrategyId: vehicleFStrategy.FstrategyId,
+		Name:        fstrategyName,
 		Type:        vehicleFStrategy.Type,
 		HandleMode:  vehicleFStrategy.HandleMode,
 		Enable:      vehicleFStrategy.Enable,
@@ -247,6 +257,7 @@ func GetFStrategys(c *gin.Context) {
 
 func AddFStrategy(c *gin.Context) {
 	vehicleId := c.PostForm("vehicle_id")
+	fstrategyName := c.PostForm("name")
 	diports := c.PostForm("dip_ports")
 
 	//默认白名单
@@ -289,7 +300,7 @@ func AddFStrategy(c *gin.Context) {
 
 	err, recordNotFound := vehicleInfoModelBase.GetModelByCondition("vehicle_id = ?", []interface{}{vehicleInfo.VehicleId}...)
 	if err != nil || recordNotFound {
-		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqGetVehicleFailMsg, "")
 		c.JSON(http.StatusOK, ret)
 
 		logger.Logger.Print("%s vehicle_id:%s recordNotFound", util.RunFuncName(), vehicleId)
@@ -310,6 +321,12 @@ func AddFStrategy(c *gin.Context) {
 		}
 	}
 
+	////////////////////////////////////事务开始////////////////////////////////////////////////
+	var txFail bool
+
+	vgorm, err := mysql.GetMysqlInstance().GetMysqlDB()
+	tx := vgorm.Begin()
+
 	//fstrategy_items table
 	fstrategyItems := map[string][]string{}
 	var vehicleFstrategyItems []string
@@ -318,24 +335,27 @@ func AddFStrategy(c *gin.Context) {
 		for _, dport := range ports {
 			fstrategyItem := &model.FstrategyItem{
 				FstrategyItemId: util.RandomString(32),
-				VehicleId:       vehicleId,
 				DstIp:           dip,
 				DstPort:         dport,
 			}
-			modelBase := model_base.ModelBaseImpl(fstrategyItem)
 
-			err, fstrategyItemrecordNotFound := modelBase.GetModelByCondition(
-				"vehicle_id = ? and dst_ip = ? and dst_port = ?",
-				[]interface{}{fstrategyItem.VehicleId, fstrategyItem.DstIp, fstrategyItem.DstPort}...)
-			if err != nil {
-				continue
-			}
+			fstrategyItemrecordNotFound := tx.Where("dst_ip = ? and dst_port = ?",
+				[]interface{}{fstrategyItem.DstIp, fstrategyItem.DstPort}...).First(fstrategyItem).RecordNotFound()
 
 			if fstrategyItemrecordNotFound {
-				if err := modelBase.InsertModel(); err != nil {
-					continue
+				if err := tx.Create(fstrategyItem).Error; err != nil {
+					logger.Logger.Print("%s create fstrategy_item err:%+v", util.RunFuncName(), err)
+					logger.Logger.Error("%s create fstrategy_item err:%+v", util.RunFuncName(), err)
+
+					txFail = true
+					tx.Rollback()
+
+					retObj := response.StructResponseObj(response.VStatusOK, response.ReqAddFStrategyFailMsg, "")
+					c.JSON(http.StatusOK, retObj)
+					return
 				}
 			}
+
 			if !util.IsExistInSlice(fstrategyItem.FstrategyItemId, vehicleFstrategyItems) {
 				vehicleFstrategyItems = append(vehicleFstrategyItems, fstrategyItem.FstrategyItemId)
 			}
@@ -349,44 +369,53 @@ func AddFStrategy(c *gin.Context) {
 	//fstrategy table
 	fstrategy := &model.Fstrategy{
 		FstrategyId: util.RandomString(32),
+		Name:        fstrategyName,
 		Type:        uint8(protobuf.FlowStrategyAddParam_FLWOWHITEMODE),
 		HandleMode:  uint8(protobuf.FlowStrategyAddParam_WARNING),
 		Enable:      true,
 	}
 
-	fstrategyModelBase := model_base.ModelBaseImpl(fstrategy)
-	if err := fstrategyModelBase.InsertModel(); err != nil {
-		//todo
-	}
+	if err := tx.Create(fstrategy).Error; err != nil {
+		logger.Logger.Print("%s create fstrategy err:%+v", util.RunFuncName(), err)
+		logger.Logger.Error("%s create fstrategy err:%+v", util.RunFuncName(), err)
 
+		txFail = true
+		tx.Rollback()
+		retObj := response.StructResponseObj(response.VStatusOK, response.ReqAddFStrategyFailMsg, "")
+		c.JSON(http.StatusOK, retObj)
+		return
+	}
 	//FstrategyVehicle table
 	fstrategyVehicle := &model.FstrategyVehicle{
 		FstrategyVehicleId: util.RandomString(32),
 		FstrategyId:        fstrategy.FstrategyId,
 		VehicleId:          vehicleId,
 	}
-	fstrategyVehicleModelBase := model_base.ModelBaseImpl(fstrategyVehicle)
-	if err := fstrategyVehicleModelBase.InsertModel(); err != nil {
-		logger.Logger.Print("%s vehicle_id:%s insert FstrategyVehicle err:%+v", util.RunFuncName(), vehicleId, err)
-		logger.Logger.Info("%s vehicle_id:%s insert FstrategyVehicle err:%+v", util.RunFuncName(), vehicleId, err)
 
+	if err := tx.Create(fstrategyVehicle).Error; err != nil {
+
+		logger.Logger.Print("%s create fstrategyVehicle err:%+v", util.RunFuncName(), err)
+		logger.Logger.Error("%s create fstrategyVehicle err:%+v", util.RunFuncName(), err)
+		txFail = true
+		tx.Rollback()
+		retObj := response.StructResponseObj(response.VStatusOK, response.ReqAddFStrategyFailMsg, "")
+		c.JSON(http.StatusOK, retObj)
+		return
 	}
 
+	//FstrategyVehicleItem
 	vehicleFsItems := fstrategyItems[vehicleId]
-	//fstrategy_vehicle_items table
 	for _, item := range vehicleFsItems {
 		fstrategyVehicleItem := &model.FstrategyVehicleItem{
 			FstrategyVehicleId: fstrategyVehicle.FstrategyVehicleId,
 			FstrategyItemId:    item,
 		}
-
-		fstrategyVehicleItemModelBase := model_base.ModelBaseImpl(fstrategyVehicleItem)
-
-		if err := fstrategyVehicleItemModelBase.InsertModel(); err != nil {
-			logger.Logger.Print("%s vehicle_id:%s insert fstrategyVehicleItem err:%+v", util.RunFuncName(), vehicleId, err)
-			logger.Logger.Info("%s vehicle_id:%s insert fstrategyVehicleItem err:%+v", util.RunFuncName(), vehicleId, err)
-
-			continue
+		if err := tx.Create(fstrategyVehicleItem).Error; err != nil {
+			txFail = true
+			tx.Rollback()
+			retObj := response.StructResponseObj(response.VStatusOK, response.ReqAddFStrategyFailMsg, "")
+			c.JSON(http.StatusOK, retObj)
+			return
 		}
 	}
 	//插入csv
@@ -398,11 +427,27 @@ func AddFStrategy(c *gin.Context) {
 	attrs := map[string]interface{}{
 		"csv_path": csvModel.CsvFilePath,
 	}
-	if err := fstrategyModelBase.UpdateModelsByCondition(attrs, "fstrategy_id = ?", fstrategy.FstrategyId); err != nil {
-		logger.Logger.Print("%s insert fstrategy csv_path:%s, err:%+v", util.RunFuncName(), csvModel.CsvFilePath, err)
-		logger.Logger.Info("%s insert fstrategy csv_path:%s, err:%+v", util.RunFuncName(), csvModel.CsvFilePath, err)
+
+	if err := tx.Model(&model.Fstrategy{}).Where("fstrategy_id = ?", fstrategy.FstrategyId).Updates(attrs).Error; err != nil {
+
+		logger.Logger.Print("%s update fstrategy csv err:%+v", util.RunFuncName(), err)
+		logger.Logger.Error("%s update fstrategy csv err:%+v", util.RunFuncName(), err)
+
+		txFail = true
+		tx.Rollback()
+		retObj := response.StructResponseObj(response.VStatusOK, response.ReqAddFStrategyFailMsg, "")
+		c.JSON(http.StatusOK, retObj)
+		return
 	} else {
 		fstrategy.CsvPath = csvModel.CsvFilePath
+	}
+
+	tx.Commit()
+	////////////////////////////////////事务结束////////////////////////////////////////////////
+	if txFail {
+		retObj := response.StructResponseObj(response.VStatusOK, response.ReqAddFStrategyFailMsg, "")
+		c.JSON(http.StatusOK, retObj)
+		return
 	}
 
 	//下发策略
@@ -419,13 +464,14 @@ func AddFStrategy(c *gin.Context) {
 	topic_publish_handler.GetPublishService().PutMsg2PublicChan(fstrategyCmd)
 
 	gormModel := model.Model{
-		fstrategy.ID, fstrategy.CreatedAt,
+		fstrategy.ID, fstrategy.CreatedAt.Unix(),
 		fstrategy.UpdatedAt, fstrategy.DeletedAt,
 	}
 
 	vehicleSingleFlowStrategyItemsReult := model.VehicleSingleFlowStrategyItemsReult{
 		Model:                    gormModel,
 		FstrategyId:              fstrategy.FstrategyId,
+		Name:                     fstrategy.Name,
 		Type:                     fstrategy.Type,
 		HandleMode:               fstrategy.HandleMode,
 		Enable:                   fstrategy.Enable,
@@ -605,6 +651,24 @@ func DeleFStrategy(c *gin.Context) {
 	c.JSON(http.StatusOK, retObj)
 }
 
+//是否未授权
+var vehicleListUnAuth bool = false
+for _, vehicleId := range fVehicleIdMapSlice {
+
+vehicleAuth := auth.VehicleAuth(vehicleId)
+if vehicleAuth {
+vehicleListUnAuth = true
+}
+}
+
+//都没有授权
+if !vehicleListUnAuth {
+ret := response.StructResponseObj(response.VStatusUnauthorized, response.Unauthorized, "")
+c.JSON(http.StatusOK, ret)
+logger.Logger.Error("%s vehicleIds:%+v,unauthorized", util.RunFuncName(), fVehicleIdMapSlice)
+logger.Logger.Print("%s vehicleIds:%+v,unauthorized", util.RunFuncName(), fVehicleIdMapSlice)
+return
+}
 /****************************************StrategyVehicle********************************************************/
 //
 //func GetStrategyVehicle(c *gin.Context) {

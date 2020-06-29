@@ -14,6 +14,7 @@ import (
 type Fstrategy struct {
 	gorm.Model
 	FstrategyId string
+	Name        string
 	CsvPath     string
 	Type        uint8 //策略模式
 	HandleMode  uint8 //处理方式
@@ -71,7 +72,12 @@ func (flowStrategy *Fstrategy) CreateModel(flowStrategyParams ...interface{}) in
 
 	flowStrategy.Type = uint8(strategyParam.GetDefenseType())
 	flowStrategy.HandleMode = uint8(strategyParam.GetHandleMode())
-	flowStrategy.Enable = strategyParam.GetEnable()
+	enable := strategyParam.GetEnable()
+	if !enable {
+		flowStrategy.Enable = true
+	} else {
+		flowStrategy.Enable = true
+	}
 	return flowStrategy
 }
 func (flowStrategy *Fstrategy) GetModelPaginationByCondition(pageIndex int, pageSize int, totalCount *int,
@@ -261,21 +267,15 @@ func (flowStrategyItem *FstrategyItem) CreateModel(strategyParams ...interface{}
 	return flowStrategyItem
 }
 
-/**
-SELECT strategies.*,strategy_vehicles.vehicle_id ,strategy_vehicle_learning_results.learning_result_id FROM strategies
-inner JOIN strategy_vehicles ON strategies.strategy_id = strategy_vehicles.strategy_id
-inner JOIN strategy_vehicle_learning_results ON strategy_vehicles.vehicle_id = strategy_vehicle_learning_results.vehicle_id
-*/
-
 type FlowStrategyVehicleItemJoin struct {
 	gorm.Model
 	FstrategyId string
-
-	Type       uint8 //策略模式
-	HandleMode uint8 //处理方式
-	Enable     bool  //策略启用状态
-	CsvPath    string
-	VehicleId  string
+	Name        string
+	Type        uint8 //策略模式
+	HandleMode  uint8 //处理方式
+	Enable      bool  //策略启用状态
+	CsvPath     string
+	VehicleId   string
 
 	FstrategyVehicleId string `json:"omitempty"`
 	FstrategyItemId    string `json:"omitempty"`
@@ -425,7 +425,7 @@ func GetVehicleFStrategyItems(query string, args ...interface{}) ([]*VehicleSing
 
 type Model struct {
 	ID        uint `gorm:"primary_key"`
-	CreatedAt time.Time
+	CreatedAt int64
 	UpdatedAt time.Time
 	DeletedAt *time.Time `sql:"index"`
 }
@@ -433,13 +433,12 @@ type Model struct {
 type VehicleSingleFlowStrategyItemsReult struct {
 	Model
 	FstrategyId string
+	Name        string
 	Type        uint8 //策略模式
 	HandleMode  uint8 //处理方式
 	Enable      bool  //策略启用状态
 	CsvPath     string
 
-	//Fstrategy
-	/////////////////////
 	VehicleId                string
 	VehicleFStrategyItemsMap map[string][]uint32
 }

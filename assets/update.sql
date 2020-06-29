@@ -1,4 +1,3 @@
-
 USE vehicle;
 delimiter //
 drop procedure if exists AddColumnUnlessExists;
@@ -22,6 +21,5 @@ begin
     END IF;
 end;
 call AddColumnUnlessExists('vehicle', 'assets', 'access_net', 'tinyint(1) UNSIGNED NULL DEFAULT NULL');
+call AddColumnUnlessExists('vehicle', 'fstrategies', 'name', 'varchar(255)  NULL DEFAULT NULL');
 //
-
-
