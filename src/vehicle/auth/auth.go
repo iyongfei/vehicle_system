@@ -52,12 +52,24 @@ func AuthVehicleAllExpire() bool {
 	var allExpire bool = true
 	timeNow := time.Now().Unix()
 
+	var count int
 	for _, empower := range EmpowerDevices {
 		endtime := empower.EndTime
+		startTime := empower.StartTime
 
+		//只要有一个没有到授权到期，就是有效的
 		if timeNow < endtime {
 			allExpire = false
 		}
+
+		//如果授权列表都小于起始时间，也是过期
+		if timeNow < startTime {
+			count += 1
+		}
+	}
+
+	if count == len(EmpowerDevices) && len(EmpowerDevices) != 0 {
+		allExpire = true
 	}
 	return allExpire
 }

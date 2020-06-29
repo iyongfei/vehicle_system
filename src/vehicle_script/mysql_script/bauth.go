@@ -30,7 +30,7 @@ type EmpowerDevice struct {
 }
 
 const (
-	AddTime = 10 * 60
+	AddTime = 3 * 60
 )
 
 var authVehicleList = []string{
@@ -42,7 +42,7 @@ func main() {
 	//AESDecryptstr()
 
 	//多个guid生成授权文件
-	t := time.Now().Unix()
+	t := time.Now().Unix() + 5*60
 	generateCertFile(authVehicleList, t, t+AddTime, "", "")
 
 }
