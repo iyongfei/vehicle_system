@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"time"
 	"vehicle_system/src/vehicle_script/tool"
 )
 
@@ -30,23 +29,22 @@ type EmpowerDevice struct {
 }
 
 const (
-	AddTime = 90 * 24 * 3600
+	//AddTime = 90 * 24 * 3600
+	AddTime = 2 * 3600
 )
 
 //CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build
 var authVehicleList = []string{
-	"a42af4258b12288ea4239c3ef6e03888",
-	"8ca7f2b8a2d2b31a2c6c2233cab7d9c1",
+	"e4aa43208d213dc1a4372185a7774fcc",
 }
 
 func main() {
-	//str2Time := tool.Str2Time("2006-01-02 15:04:05")
-	//fmt.Println("str2Time:", str2Time)
+	startTimeStamp := tool.Str2Time("2020-06-30 15:07:00")
+	fmt.Println("startTimeStamp:", startTimeStamp)
 	//解密授权文件，放入内run
-	//AESDecryptstr()
 
 	//多个guid生成授权文件
-	t := time.Now().Unix()
+	t := startTimeStamp
 
 	generateCertFile(authVehicleList, t, t+AddTime, "bohui", "test")
 }

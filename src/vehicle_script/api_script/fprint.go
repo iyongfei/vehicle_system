@@ -30,9 +30,9 @@ func getFprintConfig() map[string]string {
 
 func main() {
 	//添加白名单
-	//addAssetPWhiterints()
+	addAssetPWhiterints()
 	//getAssetWhitePrints()
-	getAssetPaginationFprint() //或者资产指纹信息列表
+	//getAssetPaginationFprint() //或者资产指纹信息列表
 	//asset_fprints()
 	//addFingerPrints()
 	//getAllFprints()
