@@ -29,18 +29,23 @@ type EmpowerDevice struct {
 }
 
 const (
-	//AddTime = 90 * 24 * 3600
-	AddTime = 2 * 3600
+	AddTime = 90 * 24 * 3600
+	//AddTime = 24 * 3600
 )
 
 //CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build
 var authVehicleList = []string{
-	"e4aa43208d213dc1a4372185a7774fcc",
+	"1597d612ffc99f61f39a7d491e2d48ec",
+	"a42af4258b12288ea4239c3ef6e03888",
+	"2833db1cff4e66b116ff7789c1c64cd1",
+	"2086b93ded62ba449fd69106f23c0311",
+	"fbee8075428a7b86dc8b4dde2b56e951",
+	"8ca7f2b8a2d2b31a2c6c2233cab7d9c1",
 }
 
 func main() {
-	startTimeStamp := tool.Str2Time("2020-06-30 15:07:00")
-	fmt.Println("startTimeStamp:", startTimeStamp)
+	startTimeStamp := tool.Str2Time("2020-07-01 10:00:00")
+	//fmt.Println("startTimeStamp:", startTimeStamp)
 	//解密授权文件，放入内run
 
 	//多个guid生成授权文件
