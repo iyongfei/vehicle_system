@@ -231,12 +231,17 @@ func GetAssetCateMark(assetId string) map[string]float64 {
 		//if util.RrgsTrim(fpTls) == util.RrgsTrim(assetCateStdTls) {
 		//	weightRate += tlsWeight
 		//}
+		logger.Logger.Print("%s jfoiejfioe-%d,%d,%f", util.RunFuncName(), assetCateMark, stdCateMark, weightRate)
+		logger.Logger.Info("%s jfoiejfioe-%d,%d,%f", util.RunFuncName(), assetCateMark, stdCateMark, weightRate, stdProtoKinds, fpProtoKinds)
 
 		assetCateMark = assetCateMark * (1 + weightRate)
 
 		stdCateMark = stdCateMark * (1 + MinRateWeight)
 
 		ret := float64(assetCateMark) / float64(stdCateMark)
+
+		logger.Logger.Print("%s retfohfhwefewf-%d,%d,%f", util.RunFuncName(), assetCateMark, stdCateMark, ret, weightRate)
+		logger.Logger.Info("%s retfohfhwefewf-%d,%d,%f", util.RunFuncName(), assetCateMark, stdCateMark, ret, weightRate)
 
 		assetMarkMap[assetCate.AssetId] = ret
 	}
@@ -255,7 +260,8 @@ func JudgeAssetCate(assetId string) string {
 	//map[string]float64
 	assetCateMarkMap := GetAssetCateMark(assetId)
 
-	fmt.Printf("assetCateMarkMap:::::%+v", assetCateMarkMap)
+	logger.Logger.Print("%s assetCateMarkMap:%+v", util.RunFuncName(), assetCateMarkMap)
+	logger.Logger.Info("%s assetCateMarkMap:%+v", util.RunFuncName(), assetCateMarkMap)
 
 	//寻找最大值
 	maxAssetIdKey := ""

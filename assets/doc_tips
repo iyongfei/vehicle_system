@@ -12,7 +12,7 @@ go mod why: 解释为什么需要依赖
 
 ####################################交叉编译###################################
 #Mac 下编译 Linux 和 Windows 64位可执行程序
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build main.go
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build  -o vservice main.go
 CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build main.go
 CGO_ENABLED=0 GOOS=linux GOARCH=arm go build -o vservice main.go
 

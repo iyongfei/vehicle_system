@@ -13,7 +13,7 @@ const (
 	mysqlUser = "root"
 	mysqlPwd  = "root"
 	//mysqlPort = 3306
-	mysqlPort    = 33066
+	mysqlPort    = 8322
 	mysqlDbname  = "vehicle"
 	maxIdleConns = 10
 	maxOpenConns = 100

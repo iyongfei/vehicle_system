@@ -86,6 +86,10 @@ func HandleVehicleFlow(vehicleResult protobuf.GWResult, vehicleId string) error 
 				[]interface{}{flowInfo.FlowId, flowInfo.VehicleId, flowInfo.AssetId}...)
 			flowModelBase.CreateModel(flowItem)
 
+			//输出log
+			logger.Logger.Print("%s flows table flow_vehicleId%s,flow_assetId:%s,flowId:%s", util.RunFuncName(), flowInfo.VehicleId, flowInfo.AssetId, flowInfo.FlowId)
+			logger.Logger.Info("%s flows table flow_vehicleId%s,flow_assetId:%s,flowId:%s", util.RunFuncName(), flowInfo.VehicleId, flowInfo.AssetId, flowInfo.FlowId)
+
 			if flowRecordNotFound {
 				if err := flowModelBase.InsertModel(); err != nil {
 					logger.Logger.Print("%s insert flowParam err:%s", util.RunFuncName(), err.Error())
@@ -95,37 +99,9 @@ func HandleVehicleFlow(vehicleResult protobuf.GWResult, vehicleId string) error 
 			} else {
 				//update
 				//更新 排除VehicleId,Name,ProtectStatus,LeaderId
-				attrs := map[string]interface{}{
-					"hash":           flowInfo.Hash,
-					"src_ip":         flowInfo.SrcIp,
-					"src_port":       flowInfo.SrcPort,
-					"dst_ip":         flowInfo.DstIp,
-					"dst_port":       flowInfo.DstPort,
-					"protocol":       flowInfo.Protocol,
-					"flow_info":      flowInfo.FlowInfo,
-					"safe_type":      flowInfo.SafeType,
-					"safe_info":      flowInfo.SafeInfo,
-					"start_time":     flowInfo.StartTime,
-					"last_seen_time": flowInfo.LastSeenTime,
-					"src_dst_bytes":  flowInfo.SrcDstBytes,
-					"dst_src_bytes":  flowInfo.DstSrcBytes,
-					"stat":           flowInfo.Stat,
-					//add
-					"src_dst_packets":      flowInfo.SrcDstPackets,
-					"dst_src_packets":      flowInfo.DstSrcPackets,
-					"host_name":            flowInfo.HostName,
-					"has_passive":          flowInfo.HasPassive,
-					"iat_flow_avg":         flowInfo.IatFlowAvg,
-					"iat_flow_stddev":      flowInfo.IatFlowStddev,
-					"data_ratio":           flowInfo.DataRatio,
-					"str_data_ratio":       flowInfo.StrDataRatio,
-					"pktlen_c_to_s_avg":    flowInfo.PktlenCToSAvg,
-					"pktlen_c_to_s_stddev": flowInfo.PktlenCToSStddev,
-					"pktlen_s_to_c_avg":    flowInfo.PktlenSToCAvg,
-					"pktlen_s_to_c_stddev": flowInfo.PktlenSToCStddev,
-					"tls_client_info":      flowInfo.TlsClientInfo,
-					"ja3c":                 flowInfo.Ja3c,
-				}
+
+				attrs := CreateFlowAttr(flowInfo)
+
 				if err := flowModelBase.UpdateModelsByCondition(attrs,
 					"flow_id = ? and vehicle_id = ? and asset_id = ?",
 					[]interface{}{flowInfo.FlowId, flowInfo.VehicleId, flowInfo.AssetId}...); err != nil {
@@ -195,6 +171,7 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 				updateFprintFinish(vehicleId, mac, true)
 			}
 
+			//todo 人为贴，不检测
 			if util.RrgsTrim(fp.AutoCateId) == "" {
 				updateFprintAutoCateId(vehicleId, mac)
 			}
@@ -218,6 +195,9 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 
 			fpflowModelBase.CreateModel(flowItem)
 
+			logger.Logger.Print("%s fprint_flows table flow_vehicleId%s,flow_assetId:%s,flowId:%s", util.RunFuncName(), fprintFlow.VehicleId, fprintFlow.AssetId, fprintFlow.FlowId)
+			logger.Logger.Info("%s fprint_flows table flow_vehicleId%s,flow_assetId:%s,flowId:%s", util.RunFuncName(), fprintFlow.VehicleId, fprintFlow.AssetId, fprintFlow.FlowId)
+
 			if flowRecordNotFound {
 				if err := fpflowModelBase.InsertModel(); err != nil {
 					logger.Logger.Print("%s insert fingerprint flowParam err:%s", util.RunFuncName(), err.Error())
@@ -227,37 +207,9 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 			} else {
 				//update
 				//更新 排除VehicleId,Name,ProtectStatus,LeaderId
-				attrs := map[string]interface{}{
-					"hash":           fprintFlow.Hash,
-					"src_ip":         fprintFlow.SrcIp,
-					"src_port":       fprintFlow.SrcPort,
-					"dst_ip":         fprintFlow.DstIp,
-					"dst_port":       fprintFlow.DstPort,
-					"protocol":       fprintFlow.Protocol,
-					"flow_info":      fprintFlow.FlowInfo,
-					"safe_type":      fprintFlow.SafeType,
-					"safe_info":      fprintFlow.SafeInfo,
-					"start_time":     fprintFlow.StartTime,
-					"last_seen_time": fprintFlow.LastSeenTime,
-					"src_dst_bytes":  fprintFlow.SrcDstBytes,
-					"dst_src_bytes":  fprintFlow.DstSrcBytes,
-					"stat":           fprintFlow.Stat,
-					//add
-					"src_dst_packets":      fprintFlow.SrcDstPackets,
-					"dst_src_packets":      fprintFlow.DstSrcPackets,
-					"host_name":            fprintFlow.HostName,
-					"has_passive":          fprintFlow.HasPassive,
-					"iat_flow_avg":         fprintFlow.IatFlowAvg,
-					"iat_flow_stddev":      fprintFlow.IatFlowStddev,
-					"data_ratio":           fprintFlow.DataRatio,
-					"str_data_ratio":       fprintFlow.StrDataRatio,
-					"pktlen_c_to_s_avg":    fprintFlow.PktlenCToSAvg,
-					"pktlen_c_to_s_stddev": fprintFlow.PktlenCToSStddev,
-					"pktlen_s_to_c_avg":    fprintFlow.PktlenSToCAvg,
-					"pktlen_s_to_c_stddev": fprintFlow.PktlenSToCStddev,
-					"tls_client_info":      fprintFlow.TlsClientInfo,
-					"ja3c":                 fprintFlow.Ja3c,
-				}
+
+				attrs := CreateAttr(fprintFlow)
+
 				if err := fpflowModelBase.UpdateModelsByCondition(attrs,
 					"flow_id = ? and vehicle_id = ? and asset_id = ?",
 					[]interface{}{fprintFlow.FlowId, fprintFlow.VehicleId, fprintFlow.AssetId}...); err != nil {
@@ -284,7 +236,6 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 		//	util.RunFuncName(), mac, totalByRateT, tlsRateT, hostRateT, protoRateT, collectRateT, totalRateT)
 	}
 }
-
 
 /**
 插入指纹资产
@@ -408,7 +359,6 @@ func updateAssetCollectTime(mac string) {
 	}
 }
 
-
 /*
 更新资产类别识别
 */
@@ -500,4 +450,78 @@ func deleTmpFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 		}
 	}
 
+}
+
+///////////////////////////////
+
+func CreateFlowAttr(fprintFlow *model.Flow) map[string]interface{} {
+
+	attrs := map[string]interface{}{
+		"hash":           fprintFlow.Hash,
+		"src_ip":         fprintFlow.SrcIp,
+		"src_port":       fprintFlow.SrcPort,
+		"dst_ip":         fprintFlow.DstIp,
+		"dst_port":       fprintFlow.DstPort,
+		"protocol":       fprintFlow.Protocol,
+		"flow_info":      fprintFlow.FlowInfo,
+		"safe_type":      fprintFlow.SafeType,
+		"safe_info":      fprintFlow.SafeInfo,
+		"start_time":     fprintFlow.StartTime,
+		"last_seen_time": fprintFlow.LastSeenTime,
+		"src_dst_bytes":  fprintFlow.SrcDstBytes,
+		"dst_src_bytes":  fprintFlow.DstSrcBytes,
+		"stat":           fprintFlow.Stat,
+		//add
+		"src_dst_packets":      fprintFlow.SrcDstPackets,
+		"dst_src_packets":      fprintFlow.DstSrcPackets,
+		"host_name":            fprintFlow.HostName,
+		"has_passive":          fprintFlow.HasPassive,
+		"iat_flow_avg":         fprintFlow.IatFlowAvg,
+		"iat_flow_stddev":      fprintFlow.IatFlowStddev,
+		"data_ratio":           fprintFlow.DataRatio,
+		"str_data_ratio":       fprintFlow.StrDataRatio,
+		"pktlen_c_to_s_avg":    fprintFlow.PktlenCToSAvg,
+		"pktlen_c_to_s_stddev": fprintFlow.PktlenCToSStddev,
+		"pktlen_s_to_c_avg":    fprintFlow.PktlenSToCAvg,
+		"pktlen_s_to_c_stddev": fprintFlow.PktlenSToCStddev,
+		"tls_client_info":      fprintFlow.TlsClientInfo,
+		"ja3c":                 fprintFlow.Ja3c,
+	}
+	return attrs
+}
+
+func CreateAttr(fprintFlow *model.FprintFlow) map[string]interface{} {
+
+	attrs := map[string]interface{}{
+		"hash":           fprintFlow.Hash,
+		"src_ip":         fprintFlow.SrcIp,
+		"src_port":       fprintFlow.SrcPort,
+		"dst_ip":         fprintFlow.DstIp,
+		"dst_port":       fprintFlow.DstPort,
+		"protocol":       fprintFlow.Protocol,
+		"flow_info":      fprintFlow.FlowInfo,
+		"safe_type":      fprintFlow.SafeType,
+		"safe_info":      fprintFlow.SafeInfo,
+		"start_time":     fprintFlow.StartTime,
+		"last_seen_time": fprintFlow.LastSeenTime,
+		"src_dst_bytes":  fprintFlow.SrcDstBytes,
+		"dst_src_bytes":  fprintFlow.DstSrcBytes,
+		"stat":           fprintFlow.Stat,
+		//add
+		"src_dst_packets":      fprintFlow.SrcDstPackets,
+		"dst_src_packets":      fprintFlow.DstSrcPackets,
+		"host_name":            fprintFlow.HostName,
+		"has_passive":          fprintFlow.HasPassive,
+		"iat_flow_avg":         fprintFlow.IatFlowAvg,
+		"iat_flow_stddev":      fprintFlow.IatFlowStddev,
+		"data_ratio":           fprintFlow.DataRatio,
+		"str_data_ratio":       fprintFlow.StrDataRatio,
+		"pktlen_c_to_s_avg":    fprintFlow.PktlenCToSAvg,
+		"pktlen_c_to_s_stddev": fprintFlow.PktlenCToSStddev,
+		"pktlen_s_to_c_avg":    fprintFlow.PktlenSToCAvg,
+		"pktlen_s_to_c_stddev": fprintFlow.PktlenSToCStddev,
+		"tls_client_info":      fprintFlow.TlsClientInfo,
+		"ja3c":                 fprintFlow.Ja3c,
+	}
+	return attrs
 }
