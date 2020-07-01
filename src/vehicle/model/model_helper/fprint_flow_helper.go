@@ -176,7 +176,7 @@ func GetRankAssetCollectProtoFlow(assetId string) map[string]float64 {
 		tmpProtoByteFListData = protoByteFListData[0:int(PROTOS)]
 	}
 
-	for k, v := range tmpProtoByteFListData {
+	for _, v := range tmpProtoByteFListData {
 		key := v.Key
 		value := v.Value
 		value = util.Decimal(value)

@@ -37,7 +37,6 @@ func HandleVehicleFlow(vehicleResult protobuf.GWResult, vehicleId string) error 
 			return fmt.Errorf("%s insert asset ungroup err:%s", err)
 		}
 	}
-
 	//parse
 	flowParams := &protobuf.FlowParam{}
 	err := proto.Unmarshal(vehicleResult.GetParam(), flowParams)
@@ -286,55 +285,6 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 	}
 }
 
-/*
-更新资产类别识别
-*/
-func updateFprintAutoCateId(vehicleId string, mac string) {
-	//识别类别
-	autoCateId := model_helper.JudgeAssetCate(mac)
-
-	fprint := &model.Fprint{
-		AssetId:    mac,
-		FprintId:   util.RandomString(32),
-		VehicleId:  vehicleId,
-		AutoCateId: autoCateId,
-	}
-
-	fpModelBase := model_base.ModelBaseImpl(fprint)
-
-	attrs := map[string]interface{}{
-		"auto_cate_id": fprint.AutoCateId,
-	}
-	if err := fpModelBase.UpdateModelsByCondition(attrs, "asset_id = ?", []interface{}{fprint.AssetId}...); err != nil {
-		//todo
-		logger.Logger.Print("%s update flowParam err:%s", util.RunFuncName(), err.Error())
-		logger.Logger.Error("%s update flowParam err:%s", util.RunFuncName(), err.Error())
-	}
-}
-
-/**
-更新采集完毕标志
-*/
-func updateFprintFinish(vehicleId string, mac string, collectFinish bool) {
-	//插入资产指纹信息
-	fprint := &model.Fprint{
-		AssetId:       mac,
-		FprintId:      util.RandomString(32),
-		VehicleId:     vehicleId,
-		CollectFinish: true,
-	}
-
-	fpModelBase := model_base.ModelBaseImpl(fprint)
-
-	attrs := map[string]interface{}{
-		"collect_finish": fprint.AutoCateId,
-	}
-	if err := fpModelBase.UpdateModelsByCondition(attrs, "asset_id = ?", []interface{}{fprint.AssetId}...); err != nil {
-		//todo
-		logger.Logger.Print("%s update flowParam err:%s", util.RunFuncName(), err.Error())
-		logger.Logger.Error("%s update flowParam err:%s", util.RunFuncName(), err.Error())
-	}
-}
 
 /**
 插入指纹资产
@@ -374,7 +324,6 @@ func updateFprint(vehicleId string, mac string) {
 	fprint.CollectBytes = totalBytes
 	fprint.CollectTls = tlsInfo
 	fprint.CollectHost = hostName
-
 	fprint.CollectTime = collectTime
 	fprint.AutoCateId = autoCateId
 
@@ -456,6 +405,57 @@ func updateAssetCollectTime(mac string) {
 			logger.Logger.Print("%s asset:%s,err:%s", util.RunFuncName(), fprint.AssetId, err.Error())
 			logger.Logger.Error("%s asset:%s,err:%s", util.RunFuncName(), fprint.AssetId, err.Error())
 		}
+	}
+}
+
+
+/*
+更新资产类别识别
+*/
+func updateFprintAutoCateId(vehicleId string, mac string) {
+	//识别类别
+	autoCateId := model_helper.JudgeAssetCate(mac)
+
+	fprint := &model.Fprint{
+		AssetId:    mac,
+		FprintId:   util.RandomString(32),
+		VehicleId:  vehicleId,
+		AutoCateId: autoCateId,
+	}
+
+	fpModelBase := model_base.ModelBaseImpl(fprint)
+
+	attrs := map[string]interface{}{
+		"auto_cate_id": fprint.AutoCateId,
+	}
+	if err := fpModelBase.UpdateModelsByCondition(attrs, "asset_id = ?", []interface{}{fprint.AssetId}...); err != nil {
+		//todo
+		logger.Logger.Print("%s update flowParam err:%s", util.RunFuncName(), err.Error())
+		logger.Logger.Error("%s update flowParam err:%s", util.RunFuncName(), err.Error())
+	}
+}
+
+/**
+更新采集完毕标志
+*/
+func updateFprintFinish(vehicleId string, mac string, collectFinish bool) {
+	//插入资产指纹信息
+	fprint := &model.Fprint{
+		AssetId:       mac,
+		FprintId:      util.RandomString(32),
+		VehicleId:     vehicleId,
+		CollectFinish: true,
+	}
+
+	fpModelBase := model_base.ModelBaseImpl(fprint)
+
+	attrs := map[string]interface{}{
+		"collect_finish": fprint.AutoCateId,
+	}
+	if err := fpModelBase.UpdateModelsByCondition(attrs, "asset_id = ?", []interface{}{fprint.AssetId}...); err != nil {
+		//todo
+		logger.Logger.Print("%s update flowParam err:%s", util.RunFuncName(), err.Error())
+		logger.Logger.Error("%s update flowParam err:%s", util.RunFuncName(), err.Error())
 	}
 }
 
