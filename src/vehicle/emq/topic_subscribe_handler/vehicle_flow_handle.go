@@ -259,7 +259,7 @@ func updateFprint(vehicleId string, mac string) {
 	hostName := string(hostNameBys)
 
 	//识别类别
-	autoCateId := model_helper.JudgeAssetCate(mac)
+	autoCateId, maxAssetIdValue := model_helper.JudgeAssetCate(mac)
 
 	fprint := &model.Fprint{
 		AssetId:   mac,
@@ -288,6 +288,7 @@ func updateFprint(vehicleId string, mac string) {
 	fprint.CollectTotalRate = fcollectProto + ftatalBytesRate + ftls + fhost + fcollect_time
 
 	fprint.AutoCateId = autoCateId
+	fprint.AutoCateRate = maxAssetIdValue
 
 	logger.Logger.Info("%s updateFprint:%+v", util.RunFuncName(), fprint)
 	logger.Logger.Print("%s updateFprint:%+v", util.RunFuncName(), fprint)
@@ -322,7 +323,8 @@ func updateFprint(vehicleId string, mac string) {
 
 			"collect_total_rate": fprint.CollectTotalRate,
 
-			"auto_cate_id": fprint.AutoCateId,
+			"auto_cate_id":   fprint.AutoCateId,
+			"auto_cate_rate": fprint.AutoCateRate,
 		}
 		if err := fpModelBase.UpdateModelsByCondition(attrs, "asset_id = ?", []interface{}{fprint.AssetId}...); err != nil {
 			//todo
