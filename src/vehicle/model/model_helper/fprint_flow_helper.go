@@ -24,16 +24,14 @@ func JudgeAssetCollectByteTotalRate(assetId string) (uint64, float64) {
 
 	totalBytes := GetAssetCollectByteTotal(assetId)
 
-	logger.Logger.Print("%s totalBytes:%d", util.RunFuncName(), totalBytes)
-	logger.Logger.Info("%s totalBytes:%d", util.RunFuncName(), totalBytes)
-
 	if totalBytes > collectTotal {
 		ftatalBytesRate = collectTotalRate
 	} else {
-		ftatalBytesRate = float64(totalBytes) / float64(collectTotal) * collectTotalRate
+		ftatalBytesRate = util.Decimal(float64(totalBytes) / float64(collectTotal) * collectTotalRate)
+
 	}
-	logger.Logger.Print("%s ftatalBytes:%f", util.RunFuncName(), ftatalBytesRate)
-	logger.Logger.Info("%s ftatalBytes:%f", util.RunFuncName(), ftatalBytesRate)
+	logger.Logger.Print("%s assetId:%s,totalBytes:%d,ftatalBytesRate:%f", util.RunFuncName(), assetId, totalBytes, ftatalBytesRate)
+	logger.Logger.Info("%s assetId:%s,totalBytes:%d,ftatalBytesRate:%f", util.RunFuncName(), assetId, totalBytes, ftatalBytesRate)
 
 	return totalBytes, ftatalBytesRate
 }
@@ -67,16 +65,14 @@ func JudgeAssetCollectTlsInfoRate(assetId string) ([]string, float64) {
 
 	tls := GetAssetCollectTlsInfo(assetId)
 
-	logger.Logger.Print("%s tlsInfo:%s", util.RunFuncName(), tls)
-	logger.Logger.Info("%s tlsInfo:%s", util.RunFuncName(), tls)
-
 	if len(tls) == 0 {
 		ftls = 0
 	} else {
 		ftls = MAX_TLS_RATE
 	}
-	logger.Logger.Print("%s tlsInfo:%f", util.RunFuncName(), ftls)
-	logger.Logger.Info("%s tlsInfo:%f", util.RunFuncName(), ftls)
+
+	logger.Logger.Print("%s assetId:%s,tlsInfo:%+v,tlsInfoRate:%f", util.RunFuncName(), assetId, tls, ftls)
+	logger.Logger.Info("%s assetId:%s,tlsInfo:%+v,tlsInfoRate:%f", util.RunFuncName(), assetId, tls, ftls)
 
 	return tls, ftls
 }
@@ -120,8 +116,9 @@ func JudgeAssetCollectHostNameRate(assetId string) ([]string, float64) {
 	} else {
 		fhost = MAX_HOSTNAME_RATE
 	}
-	logger.Logger.Print("%s fhost:%f", util.RunFuncName(), fhost)
-	logger.Logger.Info("%s fhost:%f", util.RunFuncName(), fhost)
+
+	logger.Logger.Print("%s assetId:%s,hostNames:%+v,fhost:%f", util.RunFuncName(), assetId, hostNames, fhost)
+	logger.Logger.Info("%s assetId:%s,hostNames:%+v,fhost:%f", util.RunFuncName(), assetId, hostNames, fhost)
 	return hostNames, fhost
 }
 
@@ -244,6 +241,14 @@ func GetAssetCollectProtoFlow(assetId string) map[string]float64 {
 			fprotosMap[p] = pbRate
 		}
 	}
+
+	for p, v := range fprotosMap {
+		key := p
+		value := v
+		value = util.Decimal(value)
+		fprotosMap[key] = value
+	}
+
 	return fprotosMap
 }
 
@@ -254,17 +259,15 @@ func JudgeAssetCollectProtoFlowRate(assetId string) (map[string]float64, float64
 	var fcollectProto float64
 	collectProtos := GetAssetCollectProtoFlow(assetId)
 
-	logger.Logger.Print("%s collectProtosRate:%v", util.RunFuncName(), collectProtos)
-	logger.Logger.Info("%s collectProtosRate:%v", util.RunFuncName(), collectProtos)
-
 	if len(collectProtos) > int(PROTOS) {
 		fcollectProto = MAX_PROTOS_RATE
 	} else {
 		fcollectProto = float64(len(collectProtos)) / float64(PROTOS) * MAX_PROTOS_RATE
 	}
 
-	logger.Logger.Print("%s collectProtosRate:%f", util.RunFuncName(), fcollectProto)
-	logger.Logger.Info("%s collectProtosRate:%f", util.RunFuncName(), fcollectProto)
+	logger.Logger.Print("%s assetId:%s,collectProtos:%+v,fcollectProto:%f", util.RunFuncName(), assetId, collectProtos, fcollectProto)
+	logger.Logger.Info("%s assetId:%s,collectProtos:%+v,fcollectProto:%f", util.RunFuncName(), assetId, collectProtos, fcollectProto)
+
 	return collectProtos, fcollectProto
 }
 
@@ -280,17 +283,16 @@ func JudgeAssetCollectTimeRate(assetId string) (uint32, float64) {
 
 	collectTime := GetAssetCollectTime(assetId)
 
-	logger.Logger.Print("%s collectTime:%d", util.RunFuncName(), collectTime)
-	logger.Logger.Info("%s collectTime:%d", util.RunFuncName(), collectTime)
 	//计算百分比
 	if collectTime > CTIME {
 		fcollect_time = MAX_COLLECT_RATE
 	} else {
-		fcollect_time = float64(float64(collectTime)/float64(CTIME)) * MAX_COLLECT_RATE
+		fcollect_time = util.Decimal(float64(float64(collectTime)/float64(CTIME)) * MAX_COLLECT_RATE)
 	}
 
-	logger.Logger.Print("%s fcollect_time:%f", util.RunFuncName(), fcollect_time)
-	logger.Logger.Info("%s fcollect_time:%f", util.RunFuncName(), fcollect_time)
+	logger.Logger.Print("%s assetId:%s,collectTime:%d,fcollect_time:%f", util.RunFuncName(), assetId, collectTime, fcollect_time)
+	logger.Logger.Info("%s assetId:%s,collectTime:%d,fcollect_time:%f", util.RunFuncName(), assetId, collectTime, fcollect_time)
+
 	return collectTime, fcollect_time
 }
 func GetAssetCollectTime(assetId string) uint32 {
@@ -308,15 +310,7 @@ func GetAssetCollectTime(assetId string) uint32 {
 	if err != nil || recordNotFound {
 		return collectTime
 	}
-	//endTime := fprint.CollectEnd
 	collectTime = fprint.CollectTime
-	//startTime := fprint.CollectStart
-	//
-	//collectTime = uint32(ctime) + uint32(endTime-startTime)
-	//
-	//logger.Logger.Print("%s fcollect_time:%f", util.RunFuncName(), endTime, ctime, startTime)
-	//logger.Logger.Info("%s fcollect_time:%f", util.RunFuncName(), endTime, ctime, startTime)
-	//2702494284
 
 	fmt.Println("GetAssetCollectTime", collectTime)
 	return collectTime

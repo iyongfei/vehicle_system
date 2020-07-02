@@ -146,14 +146,12 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 		//_, hostRate := model_helper.JudgeAssetCollectHostNameRate(mac)     //host
 		//_, protoRate := model_helper.JudgeAssetCollectProtoFlowRate(mac)   //各协议流量
 		//_, collectRate := model_helper.JudgeAssetCollectTimeRate(mac)      //采集时间
-		//
 		//totalRate := totalByRate + tlsRate + hostRate + collectRate + protoRate
 		//logger.Logger.Print("%s,metadata rate asset:%s,totalBytesRate:%f,tlsRate:%f,hostRate:%f,protoRate:%f,collectTimeRate:%f,totalRate:%f",
 		//	util.RunFuncName(), mac, totalByRate, tlsRate, hostRate, protoRate, collectRate, totalRate)
 		//logger.Logger.Info("%s,metadata rate asset:%s,totalBytesRate:%f,tlsRate:%f,hostRate:%f,protoRate:%f,collectTimeRate:%f,totalRate:%f",
 		//	util.RunFuncName(), mac, totalByRate, tlsRate, hostRate, protoRate, collectRate, totalRate)
 
-		//无记录，更新
 		fp := &model.Fprint{
 			AssetId: mac,
 		}
@@ -162,11 +160,18 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 		if err != nil {
 			continue
 		}
-
 		//指纹完整度分数
 		collectTotalRate := fp.CollectTotalRate
 
-		//识别
+		//自动识别
+		if util.RrgsTrim(fp.AutoCateId) == "" {
+			updateFprintAutoCateId(vehicleId, mac)
+		}
+
+		logger.Logger.Print("%s fprint:%+v", util.RunFuncName(), fp)
+		logger.Logger.Info("%s fprint:%+v", util.RunFuncName(), fp)
+
+		//采集完毕
 		if collectTotalRate >= conf.MinRate {
 			if !fp.CollectFinish {
 				updateAssetCollectTime(mac)
@@ -176,15 +181,6 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 				logger.Logger.Print("%s fprint %+v", util.RunFuncName(), fp)
 				logger.Logger.Info("%s fprint %+v", util.RunFuncName(), fp)
 			}
-
-			if util.RrgsTrim(fp.AutoCateId) == "" {
-				updateFprintAutoCateId(vehicleId, mac)
-
-				_, _ = fpModelBase.GetModelByCondition("asset_id = ?", []interface{}{fp.AssetId}...)
-				logger.Logger.Print("%s fprint %+v", util.RunFuncName(), fp)
-				logger.Logger.Info("%s fprint %+v", util.RunFuncName(), fp)
-			}
-
 			continue
 		}
 
@@ -204,8 +200,8 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 
 			fpflowModelBase.CreateModel(flowItem)
 
-			logger.Logger.Print("%s fprint_flows table flow_vehicleId%s,flow_assetId:%s,flowId:%s", util.RunFuncName(), fprintFlow.VehicleId, fprintFlow.AssetId, fprintFlow.FlowId)
-			logger.Logger.Info("%s fprint_flows table flow_vehicleId%s,flow_assetId:%s,flowId:%s", util.RunFuncName(), fprintFlow.VehicleId, fprintFlow.AssetId, fprintFlow.FlowId)
+			logger.Logger.Print("%s fprints table flow_vehicleId%s,flow_assetId:%s,flowId:%s", util.RunFuncName(), fprintFlow.VehicleId, fprintFlow.AssetId, fprintFlow.FlowId)
+			logger.Logger.Info("%s fprints table flow_vehicleId%s,flow_assetId:%s,flowId:%s", util.RunFuncName(), fprintFlow.VehicleId, fprintFlow.AssetId, fprintFlow.FlowId)
 
 			if flowRecordNotFound {
 				if err := fpflowModelBase.InsertModel(); err != nil {
@@ -292,6 +288,9 @@ func updateFprint(vehicleId string, mac string) {
 	fprint.CollectTotalRate = fcollectProto + ftatalBytesRate + ftls + fhost + fcollect_time
 
 	fprint.AutoCateId = autoCateId
+
+	logger.Logger.Info("%s updateFprint:%+v", util.RunFuncName(), fprint)
+	logger.Logger.Print("%s updateFprint:%+v", util.RunFuncName(), fprint)
 
 	if err != nil {
 		//todo
