@@ -69,7 +69,7 @@ func creatFlowProtobuf(vehicleId string, InsertAssetids string, flowCount int) [
 				Dst2SrcPackets:   200,
 				FlowStat:         protobuf.FlowStat_FST_FINISH,
 				HostName:         "",
-				Category:         24,
+				Category:         16,
 				HasPassive:       true,
 				IatFlowAvg:       3.2,
 				IatFlowStddev:    2.3,

@@ -90,7 +90,7 @@ func GetAssetCateMark(assetId string) map[string]float64 {
 	macWeight := conf.MacWeight
 	typeWeight := conf.TypeWeight
 
-	MinRateWeight := conf.MinRateWeight
+	//MinRateWeight := conf.MinRateWeight
 
 	//获取需要识别属性的资产
 	fp := GetAssetFp(assetId)
@@ -304,7 +304,7 @@ func GetAssetCateMark(assetId string) map[string]float64 {
 
 		assetCateMark = assetCateMark * (1 + weightRate)
 
-		stdCateMark = stdCateMark * (1 + MinRateWeight)
+		stdCateMark = stdCateMark * (1 + 1)
 
 		ret := float64(assetCateMark) / float64(stdCateMark)
 
@@ -323,7 +323,7 @@ func GetAssetCateMark(assetId string) map[string]float64 {
 资产类别识别
 */
 func JudgeAssetCate(assetId string) (string, float64) {
-	MinRateWeight := conf.MinRateWeight
+	MinRateWeight := conf.MinRateWeight //0.5
 
 	var cateId string
 
