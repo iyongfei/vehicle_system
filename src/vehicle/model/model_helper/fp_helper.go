@@ -120,8 +120,8 @@ func GetAssetCateMark(assetId string) map[string]float64 {
 			}
 		}
 
-		logger.Logger.Print("%s assetCateMark stdAssetId:%s,stdCateMark:%f,assetId:%s,assetCateMark:%f", util.RunFuncName(), assetCate.AssetId, stdCateMark, assetId, assetCateMark)
-		logger.Logger.Info("%s assetCateMark stdAssetId:%s,stdCateMark:%f,assetId:%s,assetCateMark:%f", util.RunFuncName(), assetCate.AssetId, stdCateMark, assetId, assetCateMark)
+		logger.Logger.Print("%s stdAssetId:%s,stdCateMark:%f,,,assetId:%s,assetCateMark:%f", util.RunFuncName(), assetCate.AssetId, stdCateMark, assetId, assetCateMark)
+		logger.Logger.Info("%s stdAssetId:%s,stdCateMark:%f,,,assetId:%s,assetCateMark:%f", util.RunFuncName(), assetCate.AssetId, stdCateMark, assetId, assetCateMark)
 
 		//2、得到标准指纹，占比最多的协议
 		var weightRate float64
@@ -168,23 +168,26 @@ func GetAssetCateMark(assetId string) map[string]float64 {
 			weightRate += fprotoKindRate
 		}
 
-		logger.Logger.Print("%s assetCateMark stdAssetId:%s,stdCateMark:%f,assetId:%s,fprotoKindRate:%f", util.RunFuncName(), assetCate.AssetId, stdCateMark, assetId, assetCateMark)
-		logger.Logger.Info("%s assetCateMark stdAssetId:%s,stdCateMark:%f,assetId:%s,fprotoKindRate:%f", util.RunFuncName(), assetCate.AssetId, stdCateMark, assetId, assetCateMark)
+		logger.Logger.Print("%s stdAssetId:%s,stdCateProtoKinds:%+v,,,assetId:%s,fpProtoKinds:%v,fmainProtoWeight:%f,fprotoKindRate:%f",
+			util.RunFuncName(), assetCate.AssetId, stdFpProtoFlowMap, assetId, fpProtoFlowMap, fmainProtoWeight, fprotoKindRate)
 
-		logger.Logger.Print("%s fprotoKindRate:%f", util.RunFuncName(), fprotoKindRate)
-		logger.Logger.Info("%s fprotoKindRate:%f", util.RunFuncName(), fprotoKindRate)
+		logger.Logger.Info("%s stdAssetId:%s,stdCateProtoKinds:%+v,,,assetId:%s,fpProtoKinds:%v,fmainProtoWeight:%f,fprotoKindRate:%f",
+			util.RunFuncName(), assetCate.AssetId, stdFpProtoFlowMap, assetId, fpProtoFlowMap, fmainProtoWeight, fprotoKindRate)
 
 		//相同的mac地址，厂商
 		fpTradeMark := mac.GetOrgByMAC(fp.AssetId)
 		assetCateStdTradeMark := mac.GetOrgByMAC(assetCate.AssetId)
 
-		logger.Logger.Print("%s assetCateStdTradeMark:%s", util.RunFuncName(), assetCateStdTradeMark)
-		logger.Logger.Info("%s assetCateStdTradeMark:%s", util.RunFuncName(), assetCateStdTradeMark)
-
 		if util.RrgsTrim(assetCateStdTradeMark) == util.RrgsTrim(fpTradeMark) {
 			fmacWeight = macWeight
 			weightRate += fmacWeight
 		}
+
+		logger.Logger.Print("%s stdAssetId:%s,assetCateStdTradeMark:%s,,,assetId:%s,fpTradeMark:%s,fmacWeight:%f",
+			util.RunFuncName(), assetCate.AssetId, assetCateStdTradeMark, assetId, fpTradeMark, fmacWeight)
+
+		logger.Logger.Info("%s stdAssetId:%s,assetCateStdTradeMark:%s,,,assetId:%s,fpTradeMark:%s,fmacWeight:%f",
+			util.RunFuncName(), assetCate.AssetId, assetCateStdTradeMark, assetId, fpTradeMark, fmacWeight)
 
 		//相同的hostname
 		fpHost := fp.CollectHost
@@ -210,15 +213,15 @@ func GetAssetCateMark(assetId string) map[string]float64 {
 			weightRate += fhostnameWeight
 		} else {
 			hostRateF := float64(len(hostCommonMap)) / float64(len(assetCateStdHostslice))
-			//logger.Logger.Info("%s weightRate3:%f,type:%s", util.RunFuncName(), float64(len(hostCommonMap)), float64(len(assetCateStdHostslice)))
-
 			fhostnameWeight = hostRateF * hostnameWeight
 			weightRate += fhostnameWeight
-
-			//logger.Logger.Print("%s assetCateStdHost:%s", util.RunFuncName(), assetCateStdHost)
-			//logger.Logger.Info("%s assetCateStdHost:%s", util.RunFuncName(), assetCateStdHost)
 		}
 
+		logger.Logger.Info("%s stdAssetId:%s,assetCateStdHostslice:%+v,,,assetId:%s,fpHostslice:%+v,fhostnameWeight:%f",
+			util.RunFuncName(), assetCate.AssetId, assetCateStdHostslice, assetId, fpHostslice, fhostnameWeight)
+
+		logger.Logger.Print("%s stdAssetId:%s,assetCateStdHostslice:%+v,,,assetId:%s,fpHostslice:%+v,fhostnameWeight:%f",
+			util.RunFuncName(), assetCate.AssetId, assetCateStdHostslice, assetId, fpHostslice, fhostnameWeight)
 		//相同分类
 
 		//相同的clienname
@@ -249,17 +252,25 @@ func GetAssetCateMark(assetId string) map[string]float64 {
 			weightRate += ftlsWeight
 		}
 
+		logger.Logger.Info("%s stdAssetId:%s,assetCateStdTlslice:%+v,,,assetId:%s,fpTlslice:%+v,ftlsWeight:%f",
+			util.RunFuncName(), assetCate.AssetId, assetCateStdTlslice, assetId, fpTlslice, ftlsWeight)
+
+		logger.Logger.Print("%s stdAssetId:%s,assetCateStdTlslice:%+v,,,assetId:%s,fpTlslice:%+v,ftlsWeight:%f",
+			util.RunFuncName(), assetCate.AssetId, assetCateStdTlslice, assetId, fpTlslice, ftlsWeight)
+
+		//相同分类
+
 		assetCateMark = assetCateMark * (1 + weightRate)
 
 		stdCateMark = stdCateMark * (1 + MinRateWeight)
 
 		ret := float64(assetCateMark) / float64(stdCateMark)
 
-		logger.Logger.Print("%s assetCateMark stdAssetId:%s,fprotoKindRate:%f,fmainProtoWeight:%f,fmacWeight:%f,fhostnameWeight:%f,ftlsWeight:%f,ftotalWeight:%f",
-			util.RunFuncName(), assetCate.AssetId, fprotoKindRate, fmainProtoWeight, fmacWeight, fhostnameWeight, ftlsWeight, ret)
+		logger.Logger.Print("%s stdAssetId:%s,assetId:%s,fprotoKindRate:%f,fmainProtoWeight:%f,fmacWeight:%f,fhostnameWeight:%f,ftlsWeight:%f,ftotalWeight:%f",
+			util.RunFuncName(), assetCate.AssetId, assetId, fprotoKindRate, fmainProtoWeight, fmacWeight, fhostnameWeight, ftlsWeight, ret)
 
-		logger.Logger.Info("%s assetCateMark stdAssetId:%s,fprotoKindRate:%f,fmainProtoWeight:%f,fmacWeight:%f,fhostnameWeight:%f,ftlsWeight:%f,ftotalWeight:%f",
-			util.RunFuncName(), assetCate.AssetId, fprotoKindRate, fmainProtoWeight, fmacWeight, fhostnameWeight, ftlsWeight, ret)
+		logger.Logger.Info("%s stdAssetId:%s,assetId:%s,fprotoKindRate:%f,fmainProtoWeight:%f,fmacWeight:%f,fhostnameWeight:%f,ftlsWeight:%f,ftotalWeight:%f",
+			util.RunFuncName(), assetCate.AssetId, assetId, fprotoKindRate, fmainProtoWeight, fmacWeight, fhostnameWeight, ftlsWeight, ret)
 
 		assetMarkMap[assetCate.AssetId] = ret
 	}
@@ -269,16 +280,17 @@ func GetAssetCateMark(assetId string) map[string]float64 {
 /******************************************************************************************
 资产类别识别
 */
-func JudgeAssetCate(assetId string) string {
+func JudgeAssetCate(assetId string) (string, float64) {
 	MinRateWeight := conf.MinRateWeight
 
 	var cateId string
+	//var auto_cate_rate float64
 
 	//map[string]float64
 	assetCateMarkMap := GetAssetCateMark(assetId)
 
-	logger.Logger.Print("%s assetCateMarkMap:%+v", util.RunFuncName(), assetCateMarkMap)
-	logger.Logger.Info("%s assetCateMarkMap:%+v", util.RunFuncName(), assetCateMarkMap)
+	logger.Logger.Print("%s assetId:%s,assetCateMarkMap:%+v", util.RunFuncName(), assetId, assetCateMarkMap)
+	logger.Logger.Info("%s assetId:%s,assetCateMarkMap:%+v", util.RunFuncName(), assetId, assetCateMarkMap)
 
 	//寻找最大值
 	maxAssetIdKey := ""
@@ -298,6 +310,7 @@ func JudgeAssetCate(assetId string) string {
 	maxAssetIdValue := assetCateMarkMap[maxAssetIdKey]
 	if maxAssetIdValue < MinRateWeight {
 		maxAssetIdKey = ""
+		maxAssetIdValue = 0
 	}
 
 	assetPrint := &model.AssetFprint{
@@ -317,5 +330,5 @@ func JudgeAssetCate(assetId string) string {
 
 	cateId = assetPrint.CateId
 
-	return cateId
+	return cateId, maxAssetIdValue
 }

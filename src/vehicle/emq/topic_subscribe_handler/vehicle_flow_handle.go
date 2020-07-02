@@ -391,16 +391,15 @@ func updateFprintAutoCateId(vehicleId string, mac string) {
 	autoCateId := model_helper.JudgeAssetCate(mac)
 
 	fprint := &model.Fprint{
-		AssetId:    mac,
-		FprintId:   util.RandomString(32),
-		VehicleId:  vehicleId,
-		AutoCateId: autoCateId,
+		AssetId:   mac,
+		FprintId:  util.RandomString(32),
+		VehicleId: vehicleId,
 	}
 
 	fpModelBase := model_base.ModelBaseImpl(fprint)
 
 	attrs := map[string]interface{}{
-		"auto_cate_id": fprint.AutoCateId,
+		"auto_cate_id": autoCateId,
 	}
 	if err := fpModelBase.UpdateModelsByCondition(attrs, "asset_id = ?", []interface{}{fprint.AssetId}...); err != nil {
 		//todo
