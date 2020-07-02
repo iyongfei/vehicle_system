@@ -28,6 +28,7 @@ call AddColumnUnlessExists('vehicle', 'fstrategies', 'name', 'varchar(255)  NULL
 call AddColumnUnlessExists('vehicle', 'flows', 'src_dst_packets', 'BIGINT(20) UNSIGNED NULL DEFAULT NULL');
 call AddColumnUnlessExists('vehicle', 'flows', 'dst_src_packets', 'BIGINT(20) UNSIGNED NULL DEFAULT NULL');
 call AddColumnUnlessExists('vehicle', 'flows', 'host_name', 'varchar(255) NULL DEFAULT NULL');
+call AddColumnUnlessExists('vehicle', 'flows', 'category', 'int(11) NULL DEFAULT NULL,');
 call AddColumnUnlessExists('vehicle', 'flows', 'has_passive', 'tinyint(1) NULL DEFAULT NULL');
 call AddColumnUnlessExists('vehicle', 'flows', 'iat_flow_avg', 'double  NULL DEFAULT NULL');
 call AddColumnUnlessExists('vehicle', 'flows', 'iat_flow_stddev', 'double  NULL DEFAULT NULL');
@@ -71,6 +72,7 @@ CREATE TABLE IF NOT EXISTS `fprint_flows`  (
    `src_dst_packets`  BIGINT(20) UNSIGNED NULL DEFAULT NULL,
    `dst_src_packets`  BIGINT(20) UNSIGNED NULL DEFAULT NULL,
    `host_name` varchar(255) NULL DEFAULT NULL,
+   `category` int(11) NULL DEFAULT NULL,
    `has_passive` tinyint(1) NULL DEFAULT NULL,
    `iat_flow_avg` double  NULL DEFAULT NULL,
    `iat_flow_stddev` double  NULL DEFAULT NULL,
@@ -107,6 +109,8 @@ CREATE TABLE IF NOT EXISTS `fprints`  (
   `collect_proto_flows`  varchar(1000) NULL DEFAULT NULL,
   `collect_proto_rate` double NULL DEFAULT NULL,
 
+  `categorys` varchar(255) NULL DEFAULT NULL,
+--   `categorys_rate` double NULL DEFAULT NULL,
 
   `collect_host` varchar(255) NULL DEFAULT NULL,
   `collect_host_rate` double NULL DEFAULT NULL,

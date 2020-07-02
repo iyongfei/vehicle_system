@@ -35,6 +35,7 @@ type FprintFlow struct {
 	DstSrcPackets uint64
 
 	HostName string
+	Category uint32
 
 	HasPassive       bool
 	IatFlowAvg       float32
@@ -148,6 +149,7 @@ func (flow *FprintFlow) CreateModel(flowParam ...interface{}) interface{} {
 	flow.SrcDstPackets = flowItemParams.GetSrc2DstPackets()
 	flow.DstSrcPackets = uint64(flowItemParams.GetDst2SrcPackets())
 	flow.HostName = flowItemParams.GetHostName()
+	flow.Category = flowItemParams.GetCategory()
 	flow.HasPassive = flowItemParams.GetHasPassive()
 	flow.IatFlowAvg = flowItemParams.GetIatFlowAvg()
 	flow.IatFlowStddev = flowItemParams.GetIatFlowStddev()

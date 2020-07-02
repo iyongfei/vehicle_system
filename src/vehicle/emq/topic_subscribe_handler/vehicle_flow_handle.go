@@ -245,18 +245,24 @@ func updateFprint(vehicleId string, mac string) {
 
 	protoFlow, fcollectProto := model_helper.JudgeAssetCollectProtoFlowRate(mac)
 	protoFlowBys, _ := json.Marshal(protoFlow)
-	fprotoFlowStr := string(protoFlowBys)
+	fprotoFlowStr := string(protoFlowBys) //protoflow
 
-	totalBytes, ftatalBytesRate := model_helper.JudgeAssetCollectByteTotalRate(mac) //总流量大小
-	tlsInfoS, ftls := model_helper.JudgeAssetCollectTlsInfoRate(mac)
-	hostNameS, fhost := model_helper.JudgeAssetCollectHostNameRate(mac)
-	collectTime, fcollect_time := model_helper.JudgeAssetCollectTimeRate(mac)
+	totalBytes, ftatalBytesRate := model_helper.JudgeAssetCollectByteTotalRate(mac) //totalflowbytes
+	tlsInfoS, ftls := model_helper.JudgeAssetCollectTlsInfoRate(mac)                //tls
+	hostNameS, fhost := model_helper.JudgeAssetCollectHostNameRate(mac)             //host
+	categoryS, _ := model_helper.JudgeAssetCollectCategoryRate(mac)                 //category
+	collectTime, fcollect_time := model_helper.JudgeAssetCollectTimeRate(mac)       //collectTime
 
 	tlsInfoBys, _ := json.Marshal(tlsInfoS)
 	tlsInfo := string(tlsInfoBys)
 
 	hostNameBys, _ := json.Marshal(hostNameS)
 	hostName := string(hostNameBys)
+
+	categoryBys, _ := json.Marshal(categoryS)
+	categorys := string(categoryBys)
+
+	fmt.Println("categorys::::", categorys)
 
 	//识别类别
 	autoCateId, maxAssetIdValue := model_helper.JudgeAssetCate(mac)
@@ -276,6 +282,9 @@ func updateFprint(vehicleId string, mac string) {
 
 	fprint.CollectBytes = totalBytes
 	fprint.CollectBytesRate = ftatalBytesRate
+
+	fprint.Categorys = categorys
+	//fprint.CategorysRate = fcategory
 
 	fprint.CollectTls = tlsInfo
 	fprint.CollectTlsRate = ftls
@@ -305,6 +314,9 @@ func updateFprint(vehicleId string, mac string) {
 		attrs := map[string]interface{}{
 			"fprint_id":  fprint.FprintId,
 			"vehicle_id": fprint.VehicleId,
+
+			"categorys": fprint.Categorys,
+			//"categorys_rate": fprint.CategorysRate,
 
 			"collect_proto_flows": fprint.CollectProtoFlows,
 			"collect_proto_rate":  fprint.CollectProtoRate,

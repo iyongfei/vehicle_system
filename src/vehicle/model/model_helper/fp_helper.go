@@ -88,7 +88,7 @@ func GetAssetCateMark(assetId string) map[string]float64 {
 	hostnameWeight := conf.HostnameWeight
 	tlsWeight := conf.TlsWeight
 	macWeight := conf.MacWeight
-	//typeWeight := conf.TypeWeight
+	typeWeight := conf.TypeWeight
 
 	MinRateWeight := conf.MinRateWeight
 
@@ -131,6 +131,7 @@ func GetAssetCateMark(assetId string) map[string]float64 {
 		var fmacWeight float64       //mac权重
 		var fhostnameWeight float64  //host权重
 		var ftlsWeight float64       //tls权重
+		var ftypeWeight float64      //tls权重
 
 		stdProtoKinds := []string{}
 		fpProtoKinds := []string{}
@@ -210,6 +211,9 @@ func GetAssetCateMark(assetId string) map[string]float64 {
 
 		if len(assetCateStdHostslice) == 0 {
 			fhostnameWeight = 0
+			if len(hostCommonMap) == 0 {
+				fhostnameWeight = hostnameWeight
+			}
 			weightRate += fhostnameWeight
 		} else {
 			hostRateF := float64(len(hostCommonMap)) / float64(len(assetCateStdHostslice))
@@ -223,6 +227,41 @@ func GetAssetCateMark(assetId string) map[string]float64 {
 		logger.Logger.Print("%s stdAssetId:%s,assetCateStdHostslice:%+v,,,assetId:%s,fpHostslice:%+v,fhostnameWeight:%f",
 			util.RunFuncName(), assetCate.AssetId, assetCateStdHostslice, assetId, fpHostslice, fhostnameWeight)
 		//相同分类
+		fpCategorys := fp.Categorys
+		assetCateStdCategorys := assetCate.Categorys
+
+		var fpCategorySlice []uint32
+		_ = json.Unmarshal([]byte(fpCategorys), &fpCategorySlice)
+
+		var assetCateStdCategorySlice []uint32
+		_ = json.Unmarshal([]byte(assetCateStdCategorys), &assetCateStdCategorySlice)
+
+		commonCategoryMap := []uint32{}
+		for _, category := range assetCateStdCategorySlice {
+			for _, fc := range fpCategorySlice {
+				if fc == category {
+					commonCategoryMap = append(commonCategoryMap, fc)
+				}
+			}
+		}
+
+		if len(assetCateStdCategorys) == 0 {
+			ftypeWeight = 0
+			if len(commonCategoryMap) == 0 {
+				ftypeWeight = typeWeight
+			}
+			weightRate += ftypeWeight
+		} else {
+			categoryRateF := float64(len(commonCategoryMap)) / float64(len(assetCateStdCategorySlice))
+			ftypeWeight = categoryRateF * typeWeight
+			weightRate += ftypeWeight
+		}
+
+		logger.Logger.Info("%s stdAssetId:%s,assetCateStdCategorySlice:%+v,,,assetId:%s,fpCategorySlice:%+v,fcategoryWeight:%f",
+			util.RunFuncName(), assetCate.AssetId, assetCateStdCategorySlice, assetId, fpCategorySlice, ftypeWeight)
+
+		logger.Logger.Print("%s stdAssetId:%s,assetCateStdCategorySlice:%+v,,,assetId:%s,fpCategorySlice:%+v,fcategoryWeight:%f",
+			util.RunFuncName(), assetCate.AssetId, assetCateStdCategorySlice, assetId, fpCategorySlice, ftypeWeight)
 
 		//相同的clienname
 		fpTls := fp.CollectTls
@@ -245,6 +284,9 @@ func GetAssetCateMark(assetId string) map[string]float64 {
 
 		if len(assetCateStdTlslice) == 0 {
 			ftlsWeight = 0
+			if len(commonMap) == 0 {
+				fhostnameWeight = hostnameWeight
+			}
 			weightRate += ftlsWeight
 		} else {
 			tlsRateF := float64(len(commonMap)) / float64(len(assetCateStdTlslice))
@@ -284,7 +326,6 @@ func JudgeAssetCate(assetId string) (string, float64) {
 	MinRateWeight := conf.MinRateWeight
 
 	var cateId string
-	//var auto_cate_rate float64
 
 	//map[string]float64
 	assetCateMarkMap := GetAssetCateMark(assetId)
