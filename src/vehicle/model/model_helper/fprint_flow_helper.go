@@ -16,11 +16,11 @@ import (
 判断某个设备采集的总流量
 */
 
-func JudgeAssetCollectByteTotalRate(assetId string) float64 {
+func JudgeAssetCollectByteTotalRate(assetId string) (uint64, float64) {
 	collectTotalRate := conf.CollectTotalRate //0.2
 	collectTotal := conf.CollectTotal         //字节104857600
 
-	var ftatalBytes float64
+	var ftatalBytesRate float64
 
 	totalBytes := GetAssetCollectByteTotal(assetId)
 
@@ -28,14 +28,14 @@ func JudgeAssetCollectByteTotalRate(assetId string) float64 {
 	logger.Logger.Info("%s totalBytes:%d", util.RunFuncName(), totalBytes)
 
 	if totalBytes > collectTotal {
-		ftatalBytes = collectTotalRate
+		ftatalBytesRate = collectTotalRate
 	} else {
-		ftatalBytes = float64(totalBytes) / float64(collectTotal) * collectTotalRate
+		ftatalBytesRate = float64(totalBytes) / float64(collectTotal) * collectTotalRate
 	}
-	logger.Logger.Print("%s ftatalBytes:%f", util.RunFuncName(), ftatalBytes)
-	logger.Logger.Info("%s ftatalBytes:%f", util.RunFuncName(), ftatalBytes)
+	logger.Logger.Print("%s ftatalBytes:%f", util.RunFuncName(), ftatalBytesRate)
+	logger.Logger.Info("%s ftatalBytes:%f", util.RunFuncName(), ftatalBytesRate)
 
-	return ftatalBytes
+	return totalBytes, ftatalBytesRate
 }
 
 func GetAssetCollectByteTotal(assetId string) uint64 {
@@ -61,7 +61,7 @@ func GetAssetCollectByteTotal(assetId string) uint64 {
 判断某个设备采集的tls
 */
 
-func JudgeAssetCollectTlsInfoRate(assetId string) float64 {
+func JudgeAssetCollectTlsInfoRate(assetId string) ([]string, float64) {
 	MAX_TLS_RATE := conf.CollectTlsRate
 	var ftls float64
 
@@ -78,7 +78,7 @@ func JudgeAssetCollectTlsInfoRate(assetId string) float64 {
 	logger.Logger.Print("%s tlsInfo:%f", util.RunFuncName(), ftls)
 	logger.Logger.Info("%s tlsInfo:%f", util.RunFuncName(), ftls)
 
-	return ftls
+	return tls, ftls
 }
 func GetAssetCollectTlsInfo(assetId string) []string {
 	tls := []string{}
@@ -107,7 +107,7 @@ func GetAssetCollectTlsInfo(assetId string) []string {
 SELECT * FROM flows WHERE vehicle_id = '';
 */
 
-func JudgeAssetCollectHostNameRate(assetId string) float64 {
+func JudgeAssetCollectHostNameRate(assetId string) ([]string, float64) {
 	MAX_HOSTNAME_RATE := conf.CollectHostRate
 	var fhost float64
 
@@ -122,7 +122,7 @@ func JudgeAssetCollectHostNameRate(assetId string) float64 {
 	}
 	logger.Logger.Print("%s fhost:%f", util.RunFuncName(), fhost)
 	logger.Logger.Info("%s fhost:%f", util.RunFuncName(), fhost)
-	return fhost
+	return hostNames, fhost
 }
 
 func GetAssetCollectHostName(assetId string) []string {
@@ -247,32 +247,32 @@ func GetAssetCollectProtoFlow(assetId string) map[string]float64 {
 	return fprotosMap
 }
 
-func JudgeAssetCollectProtoFlowRate(assetId string) float64 {
+func JudgeAssetCollectProtoFlowRate(assetId string) (map[string]float64, float64) {
 	PROTOS := conf.ProtoCount
 	MAX_PROTOS_RATE := conf.ProtoCountRate
 
 	var fcollectProto float64
-	collectProtosRate := GetAssetCollectProtoFlow(assetId)
+	collectProtos := GetAssetCollectProtoFlow(assetId)
 
-	logger.Logger.Print("%s collectProtosRate:%v", util.RunFuncName(), collectProtosRate)
-	logger.Logger.Info("%s collectProtosRate:%v", util.RunFuncName(), collectProtosRate)
+	logger.Logger.Print("%s collectProtosRate:%v", util.RunFuncName(), collectProtos)
+	logger.Logger.Info("%s collectProtosRate:%v", util.RunFuncName(), collectProtos)
 
-	if len(collectProtosRate) > int(PROTOS) {
+	if len(collectProtos) > int(PROTOS) {
 		fcollectProto = MAX_PROTOS_RATE
 	} else {
-		fcollectProto = float64(len(collectProtosRate)) / float64(PROTOS) * MAX_PROTOS_RATE
+		fcollectProto = float64(len(collectProtos)) / float64(PROTOS) * MAX_PROTOS_RATE
 	}
 
 	logger.Logger.Print("%s collectProtosRate:%f", util.RunFuncName(), fcollectProto)
 	logger.Logger.Info("%s collectProtosRate:%f", util.RunFuncName(), fcollectProto)
-	return fcollectProto
+	return collectProtos, fcollectProto
 }
 
 /******************************************************************************************
 判断某个设备采集时长是否达标
 */
 
-func JudgeAssetCollectTimeRate(assetId string) float64 {
+func JudgeAssetCollectTimeRate(assetId string) (uint32, float64) {
 	CTIME := conf.CollectTime
 	MAX_COLLECT_RATE := conf.CollectTimeRate
 
@@ -291,7 +291,7 @@ func JudgeAssetCollectTimeRate(assetId string) float64 {
 
 	logger.Logger.Print("%s fcollect_time:%f", util.RunFuncName(), fcollect_time)
 	logger.Logger.Info("%s fcollect_time:%f", util.RunFuncName(), fcollect_time)
-	return fcollect_time
+	return collectTime, fcollect_time
 }
 func GetAssetCollectTime(assetId string) uint32 {
 	var collectTime uint32

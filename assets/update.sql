@@ -102,14 +102,27 @@ CREATE TABLE IF NOT EXISTS `fprints`  (
   `asset_id` varchar(255) NULL DEFAULT NULL,
 
   `collect_time` int(11) NULL DEFAULT NULL,
-  `collect_proto_rate` double NULL DEFAULT NULL,
+  `collect_time_rate` double NULL DEFAULT NULL,
+
   `collect_proto_flows`  varchar(1000) NULL DEFAULT NULL,
+  `collect_proto_rate` double NULL DEFAULT NULL,
+
+
   `collect_host` varchar(255) NULL DEFAULT NULL,
+  `collect_host_rate` double NULL DEFAULT NULL,
+
   `collect_tls` varchar(255) NULL DEFAULT NULL,
+  `collect_tls_rate` double NULL DEFAULT NULL,
+
   `collect_bytes` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
+  `collect_bytes_rate` double NULL DEFAULT NULL,
+
+
+
   `collect_start` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
   `collect_finish` tinyint(1) NULL DEFAULT NULL,
   `auto_cate_id` varchar(255)  NULL DEFAULT NULL,
+  `auto_cate_rate` double NULL DEFAULT NULL,
 
    PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_fprints_deleted_at`(`deleted_at`) USING BTREE

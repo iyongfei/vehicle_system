@@ -141,11 +141,11 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 	for _, macItems := range flowParams.MacItems {
 		mac := macItems.GetMac()
 		//判断资产是否达标指纹完整度
-		totalByRate := model_helper.JudgeAssetCollectByteTotalRate(mac) //总流量
-		tlsRate := model_helper.JudgeAssetCollectTlsInfoRate(mac)       //tls
-		hostRate := model_helper.JudgeAssetCollectHostNameRate(mac)     //host
-		protoRate := model_helper.JudgeAssetCollectProtoFlowRate(mac)   //各协议流量
-		collectRate := model_helper.JudgeAssetCollectTimeRate(mac)      //采集时间
+		_, totalByRate := model_helper.JudgeAssetCollectByteTotalRate(mac) //总流量
+		_, tlsRate := model_helper.JudgeAssetCollectTlsInfoRate(mac)       //tls
+		_, hostRate := model_helper.JudgeAssetCollectHostNameRate(mac)     //host
+		_, protoRate := model_helper.JudgeAssetCollectProtoFlowRate(mac)   //各协议流量
+		_, collectRate := model_helper.JudgeAssetCollectTimeRate(mac)      //采集时间
 
 		totalRate := totalByRate + tlsRate + hostRate + collectRate + protoRate
 		logger.Logger.Print("%s,metadata rate asset:%s,totalBytesRate:%f,tlsRate:%f,hostRate:%f,protoRate:%f,collectTimeRate:%f,totalRate:%f",
@@ -164,7 +164,6 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 		}
 
 		//识别
-
 		if totalRate >= conf.MinRate {
 			if !fp.CollectFinish {
 				updateAssetCollectTime(mac)
@@ -176,6 +175,20 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 			}
 
 			//todo 人为贴，不检测
+
+			//assetPrint := &model.AssetFprint{
+			//	AssetId: mac,
+			//}
+			//
+			//assetPrintModelBase := model_base.ModelBaseImpl(assetPrint)
+			//
+			//_, _ = assetPrintModelBase.GetModelByCondition("asset_id = ?", []interface{}{assetPrint.AssetId}...)
+			//
+			//if assetPrint.CateId != ""{
+			//
+			//
+			//}
+
 			if util.RrgsTrim(fp.AutoCateId) == "" {
 				updateFprintAutoCateId(vehicleId, mac)
 
@@ -246,15 +259,15 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 */
 func updateFprint(vehicleId string, mac string) {
 
-	//插入资产指纹信息
-	protoFlow := model_helper.GetRankAssetCollectProtoFlow(mac)
+	//插入资产指纹信息 collectProtos, fcollectProto
+	protoFlow, fcollectProto := model_helper.JudgeAssetCollectProtoFlowRate(mac)
 	protoFlowBys, _ := json.Marshal(protoFlow)
 	fprotoFlowStr := string(protoFlowBys)
 
-	totalBytes := model_helper.GetAssetCollectByteTotal(mac) //总流量大小
-	tlsInfoS := model_helper.GetAssetCollectTlsInfo(mac)
-	hostNameS := model_helper.GetAssetCollectHostName(mac)
-	collectTime := model_helper.GetAssetCollectTime(mac)
+	totalBytes, ftatalBytesRate := model_helper.JudgeAssetCollectByteTotalRate(mac) //总流量大小
+	tlsInfoS, tls := model_helper.JudgeAssetCollectTlsInfoRate(mac)
+	hostNameS, fhost := model_helper.JudgeAssetCollectHostNameRate(mac)
+	collectTime, fcollect_time := model_helper.JudgeAssetCollectTimeRate(mac)
 
 	tlsInfoBys, _ := json.Marshal(tlsInfoS)
 	tlsInfo := string(tlsInfoBys)
@@ -276,10 +289,20 @@ func updateFprint(vehicleId string, mac string) {
 	err, recordNotFound := fpModelBase.GetModelByCondition("asset_id = ?", []interface{}{fprint.AssetId}...)
 
 	fprint.CollectProtoFlows = fprotoFlowStr
+	fprint.CollectProtoRate = fcollectProto
+
 	fprint.CollectBytes = totalBytes
+	fprint.CollectBytesRate = ftatalBytesRate
+
 	fprint.CollectTls = tlsInfo
+	fprint.CollectTlsRate = tls
+
 	fprint.CollectHost = hostName
+	fprint.CollectHostRate = fhost
+
 	fprint.CollectTime = collectTime
+	fprint.CollectTimeRate = fcollect_time
+
 	fprint.AutoCateId = autoCateId
 
 	if err != nil {

@@ -270,6 +270,8 @@ func GetAssetCateMark(assetId string) map[string]float64 {
 资产类别识别
 */
 func JudgeAssetCate(assetId string) string {
+	MinRateWeight := conf.MinRateWeight
+
 	var cateId string
 
 	//map[string]float64
@@ -284,9 +286,18 @@ func JudgeAssetCate(assetId string) string {
 		maxAssetIdKey = assetId
 		for tmpAssetId, tmpValue := range assetCateMarkMap {
 			if tmpValue > value {
+				value = tmpValue
 				maxAssetIdKey = tmpAssetId
+
 			}
 		}
+		break
+	}
+
+	//判断是否5成
+	maxAssetIdValue := assetCateMarkMap[maxAssetIdKey]
+	if maxAssetIdValue < MinRateWeight {
+		maxAssetIdKey = ""
 	}
 
 	assetPrint := &model.AssetFprint{
