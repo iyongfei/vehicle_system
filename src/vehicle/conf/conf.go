@@ -58,14 +58,17 @@ var (
 	//fp
 	CollectTime  uint32
 	ProtoCount   uint64
-	CollectTotal uint64
+	CollectBytes uint64
 
 	CollectTimeRate  float64
 	ProtoCountRate   float64
-	CollectTotalRate float64
+	CollectBytesRate float64
 	CollectHostRate  float64
 	CollectTlsRate   float64
 	MinRate          float64
+
+	//collect_bytes=1048576
+	//collect_bytes_rate=0.2
 
 	//权重占比
 	MainProtoWeight  float64
@@ -155,22 +158,22 @@ func Setup() {
 
 	CollectTime = iniParser.GetUint32("fp", "collect_time")
 	ProtoCount = iniParser.GetUint64("fp", "proto_count")
-	CollectTotal = iniParser.GetUint64("fp", "collect_total")
+	CollectBytes = iniParser.GetUint64("fp", "collect_bytes")
 
-	logger.Logger.Info("collect_time:%d,proto_count:%d,collect_total:%d", CollectTime, ProtoCount, CollectTotal)
-	logger.Logger.Print("collect_time:%d,proto_count:%d,collect_total:%d", CollectTime, ProtoCount, CollectTotal)
+	logger.Logger.Info("collect_time:%d,proto_count:%d,collect_total:%d", CollectTime, ProtoCount, CollectBytes)
+	logger.Logger.Print("collect_time:%d,proto_count:%d,collect_total:%d", CollectTime, ProtoCount, CollectBytes)
 
 	CollectTimeRate = iniParser.GetFloat64("fp", "collect_time_rate")
 	ProtoCountRate = iniParser.GetFloat64("fp", "proto_count_rate")
-	CollectTotalRate = iniParser.GetFloat64("fp", "collect_total_rate")
+	CollectBytesRate = iniParser.GetFloat64("fp", "collect_bytes_rate")
 	CollectHostRate = iniParser.GetFloat64("fp", "collect_host_rate")
 	CollectTlsRate = iniParser.GetFloat64("fp", "collect_tls_rate")
 	MinRate = iniParser.GetFloat64("fp", "min_rate")
 
 	logger.Logger.Info("collect_time_rate:%f,proto_count_rate:%f,collect_total_rate:%f,collect_host_rate:%f,collect_tls_rate:%f,min_rate:%f",
-		CollectTimeRate, ProtoCountRate, CollectTotalRate, CollectHostRate, CollectTlsRate, MinRate)
+		CollectTimeRate, ProtoCountRate, CollectBytesRate, CollectHostRate, CollectTlsRate, MinRate)
 	logger.Logger.Print("collect_time_rate:%f,proto_count_rate:%f,collect_total_rate:%f,collect_host_rate:%f,collect_tls_rate:%f,min_rate:%f",
-		CollectTimeRate, ProtoCountRate, CollectTotalRate, CollectHostRate, CollectTlsRate, MinRate)
+		CollectTimeRate, ProtoCountRate, CollectBytesRate, CollectHostRate, CollectTlsRate, MinRate)
 
 	MainProtoWeight = iniParser.GetFloat64("fp", "main_proto_weight")
 	ProtosKindWeight = iniParser.GetFloat64("fp", "protos_kind_weight")

@@ -17,8 +17,8 @@ import (
 */
 
 func JudgeAssetCollectByteTotalRate(assetId string) (uint64, float64) {
-	collectTotalRate := conf.CollectTotalRate //0.2
-	collectTotal := conf.CollectTotal         //字节104857600
+	collectTotalRate := conf.CollectBytesRate //0.2
+	collectTotal := conf.CollectBytes         //字节104857600
 
 	var ftatalBytesRate float64
 

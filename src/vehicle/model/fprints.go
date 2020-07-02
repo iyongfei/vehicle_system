@@ -30,6 +30,8 @@ type Fprint struct {
 	CollectTimeRate float64 //采集时间
 	CollectTime     uint32  //采集时间
 
+	CollectTotalRate float64 //采集时间
+
 	CollectStart  uint64
 	CollectFinish bool
 	AutoCateId    string

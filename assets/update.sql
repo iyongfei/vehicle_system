@@ -117,6 +117,8 @@ CREATE TABLE IF NOT EXISTS `fprints`  (
   `collect_bytes` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
   `collect_bytes_rate` double NULL DEFAULT NULL,
 
+  `collect_total_rate` double NULL DEFAULT NULL,
+
 
 
   `collect_start` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
