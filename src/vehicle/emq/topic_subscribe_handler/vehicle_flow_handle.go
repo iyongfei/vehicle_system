@@ -390,7 +390,7 @@ func updateAssetCollectTime(mac string) {
 */
 func updateFprintAutoCateId(vehicleId string, mac string) {
 	//识别类别
-	autoCateId := model_helper.JudgeAssetCate(mac)
+	autoCateId, maxAssetIdValue := model_helper.JudgeAssetCate(mac)
 
 	fprint := &model.Fprint{
 		AssetId:   mac,
@@ -401,7 +401,8 @@ func updateFprintAutoCateId(vehicleId string, mac string) {
 	fpModelBase := model_base.ModelBaseImpl(fprint)
 
 	attrs := map[string]interface{}{
-		"auto_cate_id": autoCateId,
+		"auto_cate_id":   autoCateId,
+		"auto_cate_rate": maxAssetIdValue,
 	}
 	if err := fpModelBase.UpdateModelsByCondition(attrs, "asset_id = ?", []interface{}{fprint.AssetId}...); err != nil {
 		//todo
