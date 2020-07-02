@@ -122,7 +122,7 @@ func HandleVehicleFlow(vehicleResult protobuf.GWResult, vehicleId string) error 
 	//处理临时表
 	deleTmpFlows(vehicleId, flowParams)
 
-	//处理指纹标签flow
+	//处理指纹标签flow  todo
 	handleFprintFlows(vehicleId, flowParams)
 
 	pushActionTypeName := protobuf.GWResult_ActionType_name[int32(vehicleResult.ActionType)]
@@ -148,9 +148,9 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 		collectRate := model_helper.JudgeAssetCollectTimeRate(mac)      //采集时间
 
 		totalRate := totalByRate + tlsRate + hostRate + collectRate + protoRate
-		logger.Logger.Print("%s,asset:%s,totalByRate:%f,tlsRate:%f,hostRate:%f,protoRate:%f,collectRate:%f,totalRate:%f",
+		logger.Logger.Print("%s,metadata rate asset:%s,totalBytesRate:%f,tlsRate:%f,hostRate:%f,protoRate:%f,collectTimeRate:%f,totalRate:%f",
 			util.RunFuncName(), mac, totalByRate, tlsRate, hostRate, protoRate, collectRate, totalRate)
-		logger.Logger.Info("%s,asset:%s,totalByRate:%f,tlsRate:%f,hostRate:%f,protoRate:%f,collectRate:%f,totalRate:%f",
+		logger.Logger.Info("%s,metadata rate asset:%s,totalBytesRate:%f,tlsRate:%f,hostRate:%f,protoRate:%f,collectTimeRate:%f,totalRate:%f",
 			util.RunFuncName(), mac, totalByRate, tlsRate, hostRate, protoRate, collectRate, totalRate)
 
 		//无记录，更新
@@ -169,11 +169,19 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 			if !fp.CollectFinish {
 				updateAssetCollectTime(mac)
 				updateFprintFinish(vehicleId, mac, true)
+
+				_, _ = fpModelBase.GetModelByCondition("asset_id = ?", []interface{}{fp.AssetId}...)
+				logger.Logger.Print("%s fprint %+v", util.RunFuncName(), fp)
+				logger.Logger.Info("%s fprint %+v", util.RunFuncName(), fp)
 			}
 
 			//todo 人为贴，不检测
 			if util.RrgsTrim(fp.AutoCateId) == "" {
 				updateFprintAutoCateId(vehicleId, mac)
+
+				_, _ = fpModelBase.GetModelByCondition("asset_id = ?", []interface{}{fp.AssetId}...)
+				logger.Logger.Print("%s fprint %+v", util.RunFuncName(), fp)
+				logger.Logger.Info("%s fprint %+v", util.RunFuncName(), fp)
 			}
 
 			continue
@@ -225,15 +233,11 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 		//如果没有记录，并且没有
 		updateAssetCollectTime(mac)
 
-		//totalByRateT := model_helper.JudgeAssetCollectByteTotalRate(mac) //总流量
-		//tlsRateT := model_helper.JudgeAssetCollectTlsInfoRate(mac)       //tls
-		//hostRateT := model_helper.JudgeAssetCollectHostNameRate(mac)     //host
-		//protoRateT := model_helper.JudgeAssetCollectProtoFlowRate(mac)   //各协议流量
-		//collectRateT := model_helper.JudgeAssetCollectTimeRate(mac)      //采集时间
-		//
-		//totalRateT := totalByRate + tlsRate + hostRate + collectRate + protoRate
-		//logger.Logger.Print("%s,--->>>>>>>>>>asset:%s,totalByRate:%f,tlsRate:%f,hostRate:%f,protoRate:%f,collectRate:%f,totalRate:%f",
-		//	util.RunFuncName(), mac, totalByRateT, tlsRateT, hostRateT, protoRateT, collectRateT, totalRateT)
+		//log
+		_, _ = fpModelBase.GetModelByCondition("asset_id = ?", []interface{}{fp.AssetId}...)
+
+		logger.Logger.Print("%s fprint %+v", util.RunFuncName(), fp)
+		logger.Logger.Info("%s fprint %+v", util.RunFuncName(), fp)
 	}
 }
 
@@ -277,8 +281,6 @@ func updateFprint(vehicleId string, mac string) {
 	fprint.CollectHost = hostName
 	fprint.CollectTime = collectTime
 	fprint.AutoCateId = autoCateId
-
-	fmt.Println("fprotoFlowStr>>>>", fprotoFlowStr, totalBytes, tlsInfo, hostName, collectTime, autoCateId)
 
 	if err != nil {
 		//todo
@@ -344,7 +346,6 @@ func updateAssetCollectTime(mac string) {
 			stime := fprint.CollectStart
 			now := uint64(time.Now().Unix())
 			distanceTime := ctime + uint32(now-stime)
-			fmt.Println("---->>>>>", ctime, stime, distanceTime)
 
 			attrs = map[string]interface{}{
 				"collect_start": uint64(time.Now().Unix()),
