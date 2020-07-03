@@ -28,7 +28,7 @@ call AddColumnUnlessExists('vehicle', 'fstrategies', 'name', 'varchar(255)  NULL
 call AddColumnUnlessExists('vehicle', 'flows', 'src_dst_packets', 'BIGINT(20) UNSIGNED NULL DEFAULT NULL');
 call AddColumnUnlessExists('vehicle', 'flows', 'dst_src_packets', 'BIGINT(20) UNSIGNED NULL DEFAULT NULL');
 call AddColumnUnlessExists('vehicle', 'flows', 'host_name', 'varchar(255) NULL DEFAULT NULL');
-call AddColumnUnlessExists('vehicle', 'flows', 'category', 'int(11) NULL DEFAULT NULL,');
+call AddColumnUnlessExists('vehicle', 'flows', 'category', 'int(11) NULL DEFAULT NULL');
 call AddColumnUnlessExists('vehicle', 'flows', 'has_passive', 'tinyint(1) NULL DEFAULT NULL');
 call AddColumnUnlessExists('vehicle', 'flows', 'iat_flow_avg', 'double  NULL DEFAULT NULL');
 call AddColumnUnlessExists('vehicle', 'flows', 'iat_flow_stddev', 'double  NULL DEFAULT NULL');
