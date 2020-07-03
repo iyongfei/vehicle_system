@@ -129,6 +129,18 @@ func QueryModelOneRecordByWhereCondition(model interface{}, query interface{}, a
 	return nil
 }
 
+func QueryModelLstOneRecordByWhereCondition(model interface{}, query interface{}, args ...interface{}) error {
+	vgorm, err := GetMysqlInstance().GetMysqlDB()
+	if err != nil {
+		return fmt.Errorf("%s open grom err:%v", util.RunFuncName(), err.Error())
+	}
+	err = vgorm.Where(query, args...).Last(model).Error
+	if err != nil {
+		return fmt.Errorf("%s err %v", util.RunFuncName(), err.Error())
+	}
+	return nil
+}
+
 /**
 检查是否有记录
 err = vgorm.Where(query, args...).Find(models).Error

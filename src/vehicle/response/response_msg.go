@@ -267,6 +267,7 @@ const (
 
 //assetprint
 const (
+	FPrintWholeRate              = "完整度"
 	ReqGetAssetFprintsUnExistMsg = "资产指纹信息不存在"
 	ReqGetAssetFprintsFailMsg    = "资产指纹信息获取失败"
 	ReqGetAssetFprintsSuccessMsg = "资产指纹信息获取成功"

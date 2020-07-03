@@ -2,6 +2,7 @@ package api_server
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
@@ -549,6 +550,272 @@ func DeleAsset(c *gin.Context) {
 	c.JSON(http.StatusOK, retObj)
 }
 
+/**
+获取资产指纹
+legend: {
+        data: ['风电电量', '光伏电量', '完整度']
+    }
+
+xAxis: ['2017', '2018', '2019', '2020']
+series:{
+"风电电量":[1,2,3,4]
+"光伏电量":[]
+"完整度":[]
+}
+*/
+func GetAssetFprint(c *gin.Context) {
+	//协议种类
+	assetId := c.Param("asset_id")
+	argsTrimsEmpty := util.RrgsTrimsEmpty(assetId)
+	if argsTrimsEmpty {
+		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+		c.JSON(http.StatusOK, ret)
+		logger.Logger.Error("%s argsTrimsEmpty vehicle_id:%s", util.RunFuncName(), assetId)
+		logger.Logger.Print("%s argsTrimsEmpty vehicle_id:%s", util.RunFuncName(), assetId)
+		return
+	}
+
+	////////////////////////////////取出所有的proto////////////////////////////
+	fprintFlows := []*model.FprintFlow{}
+
+	fprintFlow := &model.FprintFlow{
+		AssetId: assetId,
+	}
+
+	fprintFlowModelBase := model_base.ModelBaseImpl(fprintFlow)
+
+	err := fprintFlowModelBase.GetModelListByCondition(&fprintFlows,
+		"asset_id = ?", []interface{}{fprintFlow.AssetId}...)
+
+	if err != nil {
+		logger.Logger.Error("%s asset_id:%s err:%s", util.RunFuncName(), assetId, err)
+		logger.Logger.Print("%s asset_id:%s err:%s", util.RunFuncName(), assetId, err)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetAssetFprintsFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+	protoMap := map[string]float64{}
+
+	for _, fpFlow := range fprintFlows {
+		protocolStr := protobuf.GetFlowProtocols(int(fpFlow.Protocol))
+		protoMap[protocolStr] = 1
+	}
+
+	if len(protoMap) == 0 {
+		//todo
+	}
+	protoMap[response.FPrintWholeRate] = 1
+
+	////////////////////////////计算时间跨度///////////////////////////////
+	firstPrintFlow := &model.FprintFlow{
+		AssetId: assetId,
+	}
+	err = mysql.QueryModelOneRecordByWhereCondition(firstPrintFlow,
+		"asset_id = ?", []interface{}{firstPrintFlow.AssetId}...)
+
+	if err != nil {
+		//todo
+	}
+	LstfprintFlow := &model.FprintFlow{
+		AssetId: assetId,
+	}
+
+	err = mysql.QueryModelLstOneRecordByWhereCondition(LstfprintFlow,
+		"asset_id = ?", []interface{}{LstfprintFlow.AssetId}...)
+	if err != nil {
+		//todo
+	}
+	distanceTime := util.TimeSpace(firstPrintFlow.CreatedAt, LstfprintFlow.CreatedAt)
+
+	crossPart := distanceTime / 5
+
+	// | | | | | |
+	////////////////////////计算每个时间段协议的占比//////////////////////
+	timeStart := firstPrintFlow.CreatedAt.Unix()
+	timePart1End := timeStart + crossPart
+
+	timePart2End := timePart1End + crossPart
+	timePart3End := timePart2End + crossPart
+	timePart4End := timePart3End + crossPart
+	timePart5End := timePart4End + crossPart
+
+	timePart1PrintFlows := []*model.FprintFlow{}
+	timePart2PrintFlows := []*model.FprintFlow{}
+	timePart3PrintFlows := []*model.FprintFlow{}
+	timePart4PrintFlows := []*model.FprintFlow{}
+	timePart5PrintFlows := []*model.FprintFlow{}
+
+	for _, fpFlow := range fprintFlows {
+		fpCreatedTime := fpFlow.CreatedAt.Unix()
+		if fpCreatedTime > timeStart && fpCreatedTime < timePart1End {
+			timePart1PrintFlows = append(timePart1PrintFlows, fpFlow)
+		} else if fpCreatedTime > timePart1End && fpCreatedTime < timePart2End {
+			timePart2PrintFlows = append(timePart2PrintFlows, fpFlow)
+		} else if fpCreatedTime > timePart2End && fpCreatedTime < timePart3End {
+			timePart3PrintFlows = append(timePart3PrintFlows, fpFlow)
+		} else if fpCreatedTime > timePart3End && fpCreatedTime < timePart4End {
+			timePart4PrintFlows = append(timePart4PrintFlows, fpFlow)
+		} else if fpCreatedTime > timePart4End && fpCreatedTime < timePart5End {
+			timePart5PrintFlows = append(timePart5PrintFlows, fpFlow)
+		}
+	}
+
+	//1
+	var timePart1TotalBys uint64
+	timePart1BysRate := map[string]float64{}
+	for _, fprintFlow := range timePart1PrintFlows {
+		dstSrcBytes := fprintFlow.DstSrcBytes
+		srcDstBytes := fprintFlow.SrcDstBytes
+		flowByte := dstSrcBytes + srcDstBytes
+		timePart1TotalBys += flowByte
+	}
+	for _, fprintFlow := range timePart1PrintFlows {
+		dstSrcBytes := fprintFlow.DstSrcBytes
+		srcDstBytes := fprintFlow.SrcDstBytes
+		flowByte := dstSrcBytes + srcDstBytes
+
+		pbRate := float64(flowByte) / float64(timePart1TotalBys)
+		pbRate = util.Decimal(pbRate)
+
+		protocolStr := protobuf.GetFlowProtocols(int(fprintFlow.Protocol))
+		if v, ok := timePart1BysRate[protocolStr]; ok {
+			timePart1BysRate[protocolStr] = pbRate + v
+		} else {
+			timePart1BysRate[protocolStr] = pbRate
+		}
+
+	}
+
+	//2
+	var timePart2TotalBys uint64
+	timePart2BysRate := map[string]float64{}
+
+	for _, fprintFlow := range timePart2PrintFlows {
+		dstSrcBytes := fprintFlow.DstSrcBytes
+		srcDstBytes := fprintFlow.SrcDstBytes
+		flowByte := dstSrcBytes + srcDstBytes
+		timePart2TotalBys += flowByte
+
+	}
+	for _, fprintFlow := range timePart2PrintFlows {
+		dstSrcBytes := fprintFlow.DstSrcBytes
+		srcDstBytes := fprintFlow.SrcDstBytes
+		flowByte := dstSrcBytes + srcDstBytes
+
+		pbRate := float64(flowByte) / float64(timePart1TotalBys)
+		pbRate = util.Decimal(pbRate)
+
+		protocolStr := protobuf.GetFlowProtocols(int(fprintFlow.Protocol))
+		if v, ok := timePart2BysRate[protocolStr]; ok {
+			timePart2BysRate[protocolStr] = pbRate + v
+		} else {
+			timePart2BysRate[protocolStr] = pbRate
+		}
+
+	}
+
+	//3
+	var timePart3TotalBys uint64
+	for _, fprintFlow := range timePart3PrintFlows {
+		dstSrcBytes := fprintFlow.DstSrcBytes
+		srcDstBytes := fprintFlow.SrcDstBytes
+		flowByte := dstSrcBytes + srcDstBytes
+		timePart3TotalBys += flowByte
+
+	}
+	timePart3BysRate := map[string]float64{}
+	for _, fprintFlow := range timePart3PrintFlows {
+		dstSrcBytes := fprintFlow.DstSrcBytes
+		srcDstBytes := fprintFlow.SrcDstBytes
+		flowByte := dstSrcBytes + srcDstBytes
+
+		pbRate := float64(flowByte) / float64(timePart1TotalBys)
+		pbRate = util.Decimal(pbRate)
+
+		protocolStr := protobuf.GetFlowProtocols(int(fprintFlow.Protocol))
+		if v, ok := timePart3BysRate[protocolStr]; ok {
+			timePart3BysRate[protocolStr] = pbRate + v
+		} else {
+			timePart3BysRate[protocolStr] = pbRate
+		}
+
+	}
+	//4
+	var timePart4TotalBys uint64
+	for _, fprintFlow := range timePart4PrintFlows {
+		dstSrcBytes := fprintFlow.DstSrcBytes
+		srcDstBytes := fprintFlow.SrcDstBytes
+		flowByte := dstSrcBytes + srcDstBytes
+		timePart4TotalBys += flowByte
+
+	}
+	timePart4BysRate := map[string]float64{}
+	for _, fprintFlow := range timePart4PrintFlows {
+		dstSrcBytes := fprintFlow.DstSrcBytes
+		srcDstBytes := fprintFlow.SrcDstBytes
+		flowByte := dstSrcBytes + srcDstBytes
+
+		pbRate := float64(flowByte) / float64(timePart1TotalBys)
+		pbRate = util.Decimal(pbRate)
+
+		protocolStr := protobuf.GetFlowProtocols(int(fprintFlow.Protocol))
+		if v, ok := timePart4BysRate[protocolStr]; ok {
+			timePart4BysRate[protocolStr] = pbRate + v
+		} else {
+			timePart4BysRate[protocolStr] = pbRate
+		}
+
+	}
+	//5
+	var timePart5TotalBys uint64
+	for _, fprintFlow := range timePart5PrintFlows {
+		dstSrcBytes := fprintFlow.DstSrcBytes
+		srcDstBytes := fprintFlow.SrcDstBytes
+		flowByte := dstSrcBytes + srcDstBytes
+		timePart5TotalBys += flowByte
+
+	}
+
+	timePart5BysRate := map[string]float64{}
+	for _, fprintFlow := range timePart5PrintFlows {
+		dstSrcBytes := fprintFlow.DstSrcBytes
+		srcDstBytes := fprintFlow.SrcDstBytes
+		flowByte := dstSrcBytes + srcDstBytes
+
+		pbRate := float64(flowByte) / float64(timePart1TotalBys)
+		pbRate = util.Decimal(pbRate)
+
+		protocolStr := protobuf.GetFlowProtocols(int(fprintFlow.Protocol))
+		if v, ok := timePart5BysRate[protocolStr]; ok {
+			timePart5BysRate[protocolStr] = pbRate + v
+		} else {
+			timePart5BysRate[protocolStr] = pbRate
+		}
+
+	}
+
+	timeParts := []int64{
+		timeStart, timeStart, timePart2End, timePart3End, timePart4End,
+	}
+
+	timePartRate := []map[string]float64{
+		timePart1BysRate, timePart2BysRate, timePart3BysRate, timePart4BysRate, timePart5BysRate,
+	}
+
+	fmt.Println(protoMap)
+	fmt.Println(timePart1End, timePart2End, timePart3End, timePart4End, timePart5End)
+	fmt.Println(timePart1BysRate, timePart2BysRate, timePart3BysRate, timePart4BysRate, timePart5BysRate)
+
+	responseData := map[string]interface{}{
+		"protos":      protoMap,
+		"time_parts":  timeParts,
+		"proto_ratio": timePartRate,
+	}
+
+	ret := response.StructResponseObj(response.VStatusOK, response.ReqGetAssetFprintsSuccessMsg, responseData)
+	c.JSON(http.StatusOK, ret)
+}
+
 //https://gallery.echartsjs.com/editor.html?c=x5_1MX1MWt
 func GetAssetProtocolRatio(c *gin.Context) {
 	const REMAIN_MIN = 5
@@ -574,24 +841,6 @@ func GetAssetProtocolRatio(c *gin.Context) {
 
 	//protocol->bytes
 	fprotosBytesMap := map[string]uint64{}
-
-	//for _, fpFlow := range assetFlows {
-	//	protocolStr := protobuf.GetFlowProtocols(int(fpFlow.Protocol))
-	//	upProtocol := fmt.Sprintf("UP_%s", protocolStr)
-	//	downProtocol := fmt.Sprintf("DOWN_%s", protocolStr)
-	//	srcDstBytes := fpFlow.SrcDstBytes //up
-	//	dstSrcBytes := fpFlow.DstSrcBytes //down
-	//	if v, ok := fprotosBytesMap[upProtocol]; ok {
-	//		fprotosBytesMap[upProtocol] = v + srcDstBytes
-	//	} else {
-	//		fprotosBytesMap[upProtocol] = srcDstBytes
-	//	}
-	//	if v, ok := fprotosBytesMap[downProtocol]; ok {
-	//		fprotosBytesMap[downProtocol] = v + dstSrcBytes
-	//	} else {
-	//		fprotosBytesMap[downProtocol] = dstSrcBytes
-	//	}
-	//}
 
 	for _, fpFlow := range assetFlows {
 		protocolStr := protobuf.GetFlowProtocols(int(fpFlow.Protocol))
@@ -636,15 +885,6 @@ func GetAssetProtocolRatio(c *gin.Context) {
 
 	sort.Sort(protoByteFListData)
 
-	//var tmpProtoByteFListData ProtoByteFList
-	//
-	//if len(protoByteFListData) <= int(conf.ProtoCount) && len(protoByteFListData) >= REMAIN_MIN {
-	//	tmpProtoByteFListData = protoByteFListData[0:]
-	//}
-	//if len(protoByteFListData) > int(conf.ProtoCount) {
-	//	tmpProtoByteFListData = protoByteFListData[0:int(conf.ProtoCount)]
-	//}
-
 	for _, v := range protoByteFListData {
 		key := v.Key
 		value := v.Value
@@ -655,58 +895,6 @@ func GetAssetProtocolRatio(c *gin.Context) {
 
 		fprotoBytesFloat = append(fprotoBytesFloat, protoMap)
 	}
-
-	/**
-			data: [
-		                {value: 0.3, name: '直接访问'},
-		                {value: 0.3, name: '邮件营销'},
-		                {value: 0.3, name: '联盟广告'},
-		                {value:0.3, name: '视频广告'},
-		                {value: 0.3, name: '搜索引擎'}
-		            ]
-
-		{
-	    "code":2000,
-	    "data":{
-	        "asset_flows":[
-	            {
-	                "IPP":0.16919
-	            },
-	            {
-	                "HTTP":0.13709
-	            },
-	            {
-	                "MAIL_IMAP":0.12659
-	            },
-	            {
-	                "MDNS":0.11935
-	            },
-	            {
-	                "NTP":0.11757
-	            },
-	            {
-	                "MAIL_POP":0.08749
-	            },
-	            {
-	                "UNKNOWN":0.08343
-	            },
-	            {
-	                "DNS":0.05438
-	            },
-	            {
-	                "MAIL_SMTP":0.04649
-	            },
-	            {
-	                "NETBIOS":0.0354
-	            },
-	            {
-	                "FTP_CONTROL":0.02303
-	            }
-	        ]
-	    },
-	    "msg":"设备流量获取成功"
-	}
-	*/
 
 	responseData := map[string]interface{}{
 		"asset_flows": fprotoBytesFloat,

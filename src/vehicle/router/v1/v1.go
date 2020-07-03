@@ -67,16 +67,19 @@ func V1Router(r *gin.Engine) {
 		apiV1.POST("/white_assets_csvs", api_server.UploadWhiteAsset)
 		apiV1.GET("/mac/white_assets", api_server.GetWhiteAssetMacs) //todo
 		////////////////////////////////////////////////资产接口//////////////////////////////////////////////
-		apiV1.GET("/pagination/assets", api_server.GetPaginationAssets)                 //todo
-		apiV1.GET("/all/assets", api_server.GetAllAssets)                               //todo
-		apiV1.GET("/assets/:asset_id", api_server.GetAsset)                             //todo
-		apiV1.GET("/assets/:asset_id/protocol_ratio", api_server.GetAssetProtocolRatio) //todo
-		apiV1.PUT("/assets/:asset_id", api_server.EditAsset)                            //todo
-		apiV1.PUT("/assets/:asset_id/asset_info", api_server.EditAssetInfo)             //todo
-		//apiV1.POST("/assets/examines/:asset_id", api_server.AddExamineAssetFprints) //todo dele
+		apiV1.GET("/pagination/assets", api_server.GetPaginationAssets) //todo
+		apiV1.GET("/all/assets", api_server.GetAllAssets)               //todo
+		apiV1.GET("/assets/:asset_id", api_server.GetAsset)             //todo
 
+		apiV1.PUT("/assets/:asset_id", api_server.EditAsset)                //todo
+		apiV1.PUT("/assets/:asset_id/asset_info", api_server.EditAssetInfo) //todo
+		//apiV1.POST("/assets/examines/:asset_id", api_server.AddExamineAssetFprints) //todo dele
 		//apiV1.POST("/assets", api_server.AddAsset)
 		apiV1.DELETE("/assets/:asset_id", api_server.DeleAsset)
+
+		apiV1.GET("/assets/:asset_id/protocol_ratio", api_server.GetAssetProtocolRatio) //todo new
+		apiV1.GET("/assets/:asset_id/fprint", api_server.GetAssetFprint)                //todo new
+
 		//////////////////////////////////////////////white_lists接口//////////////////////////////////////////////
 		apiV1.GET("/white_lists/:white_list_id", api_server.GetWhiteList)
 		apiV1.GET("/white_lists", api_server.GetWhiteLists)
