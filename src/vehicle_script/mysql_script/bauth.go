@@ -35,16 +35,15 @@ const (
 
 //CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build
 var authVehicleList = []string{
-	"1597d612ffc99f61f39a7d491e2d48ec",
-	"a42af4258b12288ea4239c3ef6e03888",
-	"2833db1cff4e66b116ff7789c1c64cd1",
-	"2086b93ded62ba449fd69106f23c0311",
-	"fbee8075428a7b86dc8b4dde2b56e951",
-	"8ca7f2b8a2d2b31a2c6c2233cab7d9c1",
+	"eeab59bb2fd81cb415a41ad45c137343",
+	"3177594c919ef4693ff5a0fbecbaa6ea",
+	"c39ac1c0aec983d559fa92efd63ae40c",
+	"01ddf38440394cb8b308eab80a61468a",
+	"c03a918e07b8fc855b460d20225851be",
 }
 
 func main() {
-	startTimeStamp := tool.Str2Time("2020-07-01 10:00:00")
+	startTimeStamp := tool.Str2Time("2020-07-05 18:50:00")
 	//fmt.Println("startTimeStamp:", startTimeStamp)
 	//解密授权文件，放入内run
 
