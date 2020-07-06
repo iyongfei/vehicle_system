@@ -20,14 +20,15 @@ func HandleMonitorInfo(vehicleResult protobuf.GWResult, vehicleId string) error 
 		logger.Logger.Error("%s unmarshal monitorParam err:%s", util.RunFuncName(), err.Error())
 		return fmt.Errorf("%s unmarshal monitorParam err:%s", util.RunFuncName(), err.Error())
 	}
-	//vehicleId
-	logger.Logger.Print("%s unmarshal monitorParam:%+v", util.RunFuncName(), monitorParam)
-	logger.Logger.Info("%s unmarshal monitorParam:%+v", util.RunFuncName(), monitorParam)
 	//create
 	var diskList []*model.Disk
 
 	diskItems := monitorParam.GetDiskItem()
 	for _, diskItem := range diskItems {
+
+		logger.Logger.Print("%s handle_monitor:%+v", util.RunFuncName(), *diskItem)
+		logger.Logger.Info("%s handle_monitor:%+v", util.RunFuncName(), *diskItem)
+
 		disk := &model.Disk{
 			MonitorId:  vehicleId,
 			Path:       diskItem.Path,
@@ -60,6 +61,9 @@ func HandleMonitorInfo(vehicleResult protobuf.GWResult, vehicleId string) error 
 	redisInfoParam := monitorParam.GetRedisInfo()
 	var redisInfo *model.RedisInfo
 	if redisInfoParam.GetActive() {
+		logger.Logger.Print("%s handle_monitor:%+v", util.RunFuncName(), *redisInfoParam)
+		logger.Logger.Info("%s handle_monitor:%+v", util.RunFuncName(), *redisInfoParam)
+
 		redisInfo = &model.RedisInfo{
 			MonitorId:  vehicleId,
 			GatherTime: monitorParam.GatherTime,
@@ -94,6 +98,9 @@ func HandleMonitorInfo(vehicleResult protobuf.GWResult, vehicleId string) error 
 	vhaloNetsParam := monitorParam.GetVhaloInfo()
 	var vhaloInfo *model.VhaloNets
 	if vhaloNetsParam.GetActive() {
+		logger.Logger.Print("%s handle_monitor:%+v", util.RunFuncName(), *vhaloNetsParam)
+		logger.Logger.Info("%s handle_monitor:%+v", util.RunFuncName(), *vhaloNetsParam)
+
 		vhaloInfo = &model.VhaloNets{
 			MonitorId:  vehicleId,
 			GatherTime: monitorParam.GatherTime,
@@ -124,8 +131,6 @@ func HandleMonitorInfo(vehicleResult protobuf.GWResult, vehicleId string) error 
 	}
 
 	//会话状态
-	logger.Logger.Print("%s monitorParam info %+v", util.RunFuncName(), monitorParam)
-	logger.Logger.Info("%s monitorParam info %+v", util.RunFuncName(), monitorParam)
 
 	pushActionTypeName := protobuf.GWResult_ActionType_name[int32(vehicleResult.ActionType)]
 	pushVehicleid := vehicleId

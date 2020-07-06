@@ -147,6 +147,7 @@ func Get(reqUrl string, queryParams map[string]interface{}, token string) (map[s
 
 	reqest, err := http.NewRequest("GET", urlReq.String(), nil)
 	reqest.Header.Add("token", token)
+	reqest.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	if err != nil {
 		return nil, err
@@ -180,6 +181,7 @@ func Delete(reqUrl string, queryParams map[string]interface{}, token string) (ma
 
 	reqest, err := http.NewRequest("DELETE", urlReq.String(), nil)
 	reqest.Header.Add("token", token)
+	reqest.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	if err != nil {
 		return nil, err
@@ -225,7 +227,7 @@ func PostForm(urlParam string, bodyParms map[string]interface{}, token string) (
 	if err != nil {
 		return nil, err
 	}
-	defer rsp.Body.Close()
+	//defer rsp.Body.Close()
 
 	buf, err := ioutil.ReadAll(rsp.Body)
 

@@ -236,8 +236,9 @@ func GetVehicleAllStrategys(query string, args ...interface{}) ([]*StrategyVehic
 /******************************分组扩展****************************/
 type StrategyGroup struct {
 	gorm.Model
-	StrategyId string
-	GroupId    string //终端分组
+	StrategyGroupId string
+	StrategyId      string
+	GroupId         string //终端分组
 }
 
 type StrategyGroupLearningResult struct {

@@ -34,7 +34,9 @@ func HandleVehicleFlow(vehicleResult protobuf.GWResult, vehicleId string) error 
 		_, recordNotFound := modelBase.GetModelByCondition(
 			"flow_id = ? and vehicle_id = ?", []interface{}{flowInfo.FlowId, flowInfo.VehicleId}...)
 		modelBase.CreateModel(flowItem)
-
+		//输出log
+		logger.Logger.Print("%s handle_flow%+v", util.RunFuncName(), flowInfo)
+		logger.Logger.Info("%s handle_flow%+v", util.RunFuncName(), flowInfo)
 		if recordNotFound {
 			if err := modelBase.InsertModel(); err != nil {
 				logger.Logger.Print("%s insert flowParam err:%s", util.RunFuncName(), err.Error())
@@ -101,10 +103,6 @@ func HandleVehicleFlow(vehicleResult protobuf.GWResult, vehicleId string) error 
 			}
 		}
 	}
-
-	//会话状态
-	logger.Logger.Print("%s flow info %+v", util.RunFuncName(), sendFlows)
-	logger.Logger.Info("%s flow info %+v", util.RunFuncName(), sendFlows)
 
 	pushActionTypeName := protobuf.GWResult_ActionType_name[int32(vehicleResult.ActionType)]
 	pushVehicleid := vehicleId

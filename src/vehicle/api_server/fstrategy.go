@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 	"vehicle_system/src/vehicle/csv"
 	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/emq/emq_cmd"
@@ -184,7 +185,7 @@ func EditFStrategy(c *gin.Context) {
 		HandleMode:               vehicleFStrategy.HandleMode,
 		Enable:                   vehicleFStrategy.Enable,
 		VehicleId:                vehicleFStrategy.VehicleId,
-		ScvPath:                  vehicleFStrategy.ScvPath,
+		CsvPath:                  vehicleFStrategy.CsvPath,
 		VehicleFStrategyItemsMap: finalDiportsMap,
 	}
 
@@ -389,13 +390,13 @@ func AddFStrategy(c *gin.Context) {
 	csvModel.SetCsvWritData(fCsvHeader, fCsvBody)
 
 	attrs := map[string]interface{}{
-		"scv_path": csvModel.CsvFilePath,
+		"csv_path": csvModel.CsvFilePath,
 	}
 	if err := fstrategyModelBase.UpdateModelsByCondition(attrs, "fstrategy_id = ?", fstrategy.FstrategyId); err != nil {
-		logger.Logger.Print("%s insert fstrategy scv_path:%s, err:%+v", util.RunFuncName(), csvModel.CsvFilePath, err)
-		logger.Logger.Info("%s insert fstrategy scv_path:%s, err:%+v", util.RunFuncName(), csvModel.CsvFilePath, err)
+		logger.Logger.Print("%s insert fstrategy csv_path:%s, err:%+v", util.RunFuncName(), csvModel.CsvFilePath, err)
+		logger.Logger.Info("%s insert fstrategy csv_path:%s, err:%+v", util.RunFuncName(), csvModel.CsvFilePath, err)
 	} else {
-		fstrategy.ScvPath = csvModel.CsvFilePath
+		fstrategy.CsvPath = csvModel.CsvFilePath
 	}
 
 	//下发策略
@@ -417,7 +418,7 @@ func AddFStrategy(c *gin.Context) {
 		HandleMode:               fstrategy.HandleMode,
 		Enable:                   fstrategy.Enable,
 		VehicleId:                vehicleInfo.VehicleId,
-		ScvPath:                  fstrategy.ScvPath,
+		CsvPath:                  fstrategy.CsvPath,
 		VehicleFStrategyItemsMap: finalDiportsMap,
 	}
 
@@ -442,6 +443,28 @@ func DeleFStrategy(c *gin.Context) {
 	}
 	logger.Logger.Info("%s fstrategyId:%s", util.RunFuncName(), fstrategyId)
 	logger.Logger.Print("%s fstrategyId:%s", util.RunFuncName(), fstrategyId)
+
+	fStrategyObj := &model.Fstrategy{
+		FstrategyId: fstrategyId,
+	}
+
+	modelBase := model_base.ModelBaseImpl(fStrategyObj)
+	err, frecordNotFound := modelBase.GetModelByCondition("fstrategy_id = ?", []interface{}{fStrategyObj.FstrategyId}...)
+
+	if err != nil {
+		logger.Logger.Error("%s fstrategy_id:%s err:%s", util.RunFuncName(), fStrategyObj.FstrategyId, err)
+		logger.Logger.Print("%s fstrategy_id:%s err:%s", util.RunFuncName(), fStrategyObj.FstrategyId, err)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqDeleFStrategyFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+	if frecordNotFound {
+		logger.Logger.Error("%s asset_id:%s,record not exist", util.RunFuncName(), fStrategyObj.FstrategyId)
+		logger.Logger.Print("%s asset_id:%s,record not exist", util.RunFuncName(), fStrategyObj.FstrategyId)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetFStrtegyUnExistMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
 
 	//连表查询
 	ftrategyVehicleItems, _ := model.GetFlowStrategyVehicleItems(
@@ -502,7 +525,9 @@ func DeleFStrategy(c *gin.Context) {
 	//dele FstrategyVehicleItem
 	fstrategyVehicleItem := &model.FstrategyVehicleItem{}
 	fstrategyVehicleItemModelBase := model_base.ModelBaseImpl(fstrategyVehicleItem)
-	err = fstrategyVehicleItemModelBase.DeleModelsByCondition("fstrategy_item_id in (?)", fstrategyItemIdMapSlice)
+	err = fstrategyVehicleItemModelBase.DeleModelsByCondition(
+		"fstrategy_item_id in (?) and fstrategy_vehicle_id in (?)",
+		fstrategyItemIdMapSlice, fstrategyVehicleIdMapSlice)
 	if err != nil {
 	}
 
@@ -513,7 +538,7 @@ func DeleFStrategy(c *gin.Context) {
 	}
 	//删除scv
 	//http://192.168.100.2:7001/fstrategy_csv/N5gqNSN0lpV30gKJOfBkYvGudNUfj1V5.csv
-	csvPath := fstrategyObj.ScvPath
+	csvPath := fstrategyObj.CsvPath
 	fStrategyCsvFolderIndex := strings.Index(csvPath, csv.FStrategyCsvFolder)
 
 	var csvFileName string
@@ -644,6 +669,403 @@ func GetVehicleFStrategyItem(c *gin.Context) {
 	c.JSON(http.StatusOK, retObj)
 }
 
+/**
+查看所有的策略id
+*/
+func GetAllFstrategys(c *gin.Context) {
+	vehicleId := c.Query("vehicle_id")
+	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId)
+	if argsTrimsEmpty {
+		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+		c.JSON(http.StatusOK, ret)
+		logger.Logger.Error("%s argsTrimsEmpty vehicleId:%s", util.RunFuncName(), vehicleId)
+		logger.Logger.Print("%s argsTrimsEmpty vehicleId:%s", util.RunFuncName(), vehicleId)
+		return
+	}
+	logger.Logger.Print("%s vehicle_id:%s", util.RunFuncName(), vehicleId)
+	logger.Logger.Info("%s vehicle_id:%s", util.RunFuncName(), vehicleId)
+
+	//查询终端id是否存在
+	vehicleInfo := &model.VehicleInfo{
+		VehicleId: vehicleId,
+	}
+
+	modelBase := model_base.ModelBaseImpl(vehicleInfo)
+
+	err, recordNotFound := modelBase.GetModelByCondition("vehicle_id = ?", []interface{}{vehicleInfo.VehicleId}...)
+
+	if err != nil {
+		logger.Logger.Error("%s vehicle_id:%s,err:%s", util.RunFuncName(), vehicleId, err)
+		logger.Logger.Print("%s vehicle_id:%s,err:%s", util.RunFuncName(), vehicleId, err)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetVehicleFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	if recordNotFound {
+		logger.Logger.Error("%s vehicle_id:%s,recordNotFound", util.RunFuncName(), vehicleId)
+		logger.Logger.Print("%s vehicle_id:%s,recordNotFound", util.RunFuncName(), vehicleId)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetVehicleUnExistMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+	//查询所有的策略
+	//查看该vehicle是否存在
+	vehicleFStrategys, err := model.GetFStrategyVehicles(
+		"fstrategy_vehicles.vehicle_id = ?", []interface{}{vehicleId}...)
+
+	var fstrategys []interface{}
+
+	for _, v := range vehicleFStrategys {
+		fstrategyId := v.FstrategyId
+		createdAt := v.CreatedAt
+		fstrategyIds := map[string]interface{}{}
+
+		fstrategyIds["CreatedAt"] = createdAt
+		fstrategyIds["FstrategyId"] = fstrategyId
+		fstrategys = append(fstrategys, fstrategyIds)
+	}
+
+	responseData := map[string]interface{}{
+		"Vehicle_Id":     vehicleId,
+		"All_Fstrategys": fstrategys,
+	}
+
+	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetFStrategySuccessMsg, responseData)
+	c.JSON(http.StatusOK, retObj)
+
+}
+
+/**
+查看所有的策略id
+*/
+func GetPartFstrategyIds(c *gin.Context) {
+	vehicleId := c.Query("vehicle_id")
+	fstrategyIds := c.Query("fstrategy_ids")
+	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId, fstrategyIds)
+	if argsTrimsEmpty {
+		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+		c.JSON(http.StatusOK, ret)
+		logger.Logger.Error("%s argsTrimsEmpty vehicleId:%s,fstrategyIds%s", util.RunFuncName(), vehicleId, fstrategyIds)
+		logger.Logger.Print("%s argsTrimsEmpty vehicleId:%s,fstrategyIds%s", util.RunFuncName(), vehicleId, fstrategyIds)
+		return
+	}
+	logger.Logger.Print("%s vehicle_id:%s", util.RunFuncName(), vehicleId)
+	logger.Logger.Info("%s vehicle_id:%s", util.RunFuncName(), vehicleId)
+
+	//过滤非法的fstrategyIds
+	fstrategyIdsRrgsTrim := util.RrgsTrim(fstrategyIds)
+	fstrategyIdSlice := strings.Split(fstrategyIdsRrgsTrim, ",")
+
+	fstrategyVehicles, err := model.GetFStrategyVehicles("fstrategy_vehicles.vehicle_id = ? and fstrategy_vehicles.fstrategy_id in (?)",
+		[]interface{}{vehicleId, fstrategyIdSlice}...)
+
+	if err != nil {
+
+	}
+	var fstrategyVehicleIds []string
+	for _, fstrategyVehicle := range fstrategyVehicles {
+
+		fVehicleId := fstrategyVehicle.FstrategyVehicleId
+		exist := util.IsExistInSlice(fVehicleId, fstrategyVehicleIds)
+		if !exist {
+			fstrategyVehicleIds = append(fstrategyVehicleIds, fVehicleId)
+		}
+	}
+
+	logger.Logger.Print("%s fstrategyVehicleIds:%+v", util.RunFuncName(), fstrategyVehicleIds)
+	logger.Logger.Info("%s fstrategyVehicleIds:%+v", util.RunFuncName(), fstrategyVehicleIds)
+
+	//fstrategyVehicleIds
+	vehicleFStrategyItems, err := model.GetVehicleFStrategyItems(
+		"fstrategy_vehicle_items.fstrategy_vehicle_id in (?) and fstrategy_items.deleted_at is null",
+		[]interface{}{fstrategyVehicleIds}...)
+
+	vehicleFStrategyItemsMap := map[string]map[string][]uint32{}
+
+	for _, vehicleFStrategyItem := range vehicleFStrategyItems {
+		_, ok := vehicleFStrategyItemsMap[vehicleFStrategyItem.FstrategyVehicleId]
+		if !ok {
+			vehicleFStrategyItemsMap[vehicleFStrategyItem.FstrategyVehicleId] = map[string][]uint32{}
+
+			_, oker := vehicleFStrategyItemsMap[vehicleFStrategyItem.FstrategyVehicleId][vehicleFStrategyItem.DstIp]
+			if !oker {
+				vehicleFStrategyItemsMap[vehicleFStrategyItem.FstrategyVehicleId][vehicleFStrategyItem.DstIp] = []uint32{vehicleFStrategyItem.DstPort}
+			}
+		} else {
+			vehicleFStrategyItemsMap[vehicleFStrategyItem.FstrategyVehicleId][vehicleFStrategyItem.DstIp] =
+				append(vehicleFStrategyItemsMap[vehicleFStrategyItem.FstrategyVehicleId][vehicleFStrategyItem.DstIp], vehicleFStrategyItem.DstPort)
+		}
+	}
+
+	var list []model.VehicleSingleFlowStrategyItemsReult
+	for _, vehicleFStrategy := range fstrategyVehicles {
+		vehicleSingleFlowStrategyItemsReult := model.VehicleSingleFlowStrategyItemsReult{
+			FstrategyId:              vehicleFStrategy.FstrategyId,
+			Type:                     vehicleFStrategy.Type,
+			HandleMode:               vehicleFStrategy.HandleMode,
+			Enable:                   vehicleFStrategy.Enable,
+			VehicleId:                vehicleFStrategy.VehicleId,
+			CsvPath:                  vehicleFStrategy.CsvPath,
+			VehicleFStrategyItemsMap: vehicleFStrategyItemsMap[vehicleFStrategy.FstrategyVehicleId],
+		}
+		list = append(list, vehicleSingleFlowStrategyItemsReult)
+	}
+
+	responseData := map[string]interface{}{
+		"fstrategys": list,
+	}
+
+	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetFStrategySuccessMsg, responseData)
+	c.JSON(http.StatusOK, retObj)
+}
+
+/**
+获取所有的策略
+*/
+func GetPaginationFstrategys(c *gin.Context) {
+	vehicleId := c.Query("vehicle_id")
+	pageSizeP := c.Query("page_size")
+	pageIndexP := c.Query("page_index")
+	startTimeP := c.Query("start_time")
+	endTimeP := c.Query("end_time")
+
+	logger.Logger.Info("%s request params vehicle_id:%s,page_size:%s,page_index:%s,start_time%s,endtime%s",
+		util.RunFuncName(), vehicleId, pageSizeP, pageIndexP, startTimeP, endTimeP)
+	logger.Logger.Print("%s request params vehicle_id:%s,page_size:%s,page_index:%s,start_time%s,endtime%s",
+		util.RunFuncName(), vehicleId, pageSizeP, pageIndexP, startTimeP, endTimeP)
+
+	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId)
+	if argsTrimsEmpty {
+		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+		c.JSON(http.StatusOK, ret)
+		logger.Logger.Error("%s argsTrimsEmpty threatId:%s", util.RunFuncName(), argsTrimsEmpty)
+		logger.Logger.Print("%s argsTrimsEmpty threatId:%s", util.RunFuncName(), argsTrimsEmpty)
+		return
+	}
+
+	fpageSize, _ := strconv.Atoi(pageSizeP)
+	fpageIndex, _ := strconv.Atoi(pageIndexP)
+
+	startTime, _ := strconv.Atoi(startTimeP)
+	endTime, _ := strconv.Atoi(endTimeP)
+
+	var fStartTime time.Time
+	var fEndTime time.Time
+
+	//默认20
+	defaultPageSize := 20
+	if fpageSize == 0 {
+		fpageSize = defaultPageSize
+	}
+	//默认第一页
+	defaultPageIndex := 1
+	if fpageIndex == 0 {
+		fpageIndex = defaultPageIndex
+	}
+	//默认2天前
+	defaultStartTime := util.GetFewDayAgo(2) //2
+	if startTime == 0 {
+		fStartTime = defaultStartTime
+	} else {
+		fStartTime = util.StampUnix2Time(int64(startTime))
+	}
+
+	//默认当前时间
+	defaultEndTime := time.Now()
+	if endTime == 0 {
+		fEndTime = defaultEndTime
+	} else {
+		fEndTime = util.StampUnix2Time(int64(endTime))
+	}
+
+	logger.Logger.Info("%s frequest params vehicle_id:%s,fpageSize:%d,fpageIndex:%d,fStartTime%d,fEndTime%d",
+		util.RunFuncName(), vehicleId, fpageSize, fpageIndex, fStartTime, fEndTime)
+	logger.Logger.Print("%s frequest params vehicle_id:%s,fpageSize:%d,fpageIndex:%d,fStartTime%d,fEndTime%d",
+		util.RunFuncName(), vehicleId, fpageSize, fpageIndex, fStartTime, fEndTime)
+
+	//查询终端id是否存在
+	vehicleInfo := &model.VehicleInfo{
+		VehicleId: vehicleId,
+	}
+
+	modelBase := model_base.ModelBaseImpl(vehicleInfo)
+
+	err, recordNotFound := modelBase.GetModelByCondition("vehicle_id = ?", []interface{}{vehicleInfo.VehicleId}...)
+
+	if err != nil {
+		logger.Logger.Error("%s vehicle_id:%s,err:%s", util.RunFuncName(), vehicleId, err)
+		logger.Logger.Print("%s vehicle_id:%s,err:%s", util.RunFuncName(), vehicleId, err)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetVehicleFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	if recordNotFound {
+		logger.Logger.Error("%s vehicle_id:%s,recordNotFound", util.RunFuncName(), vehicleId)
+		logger.Logger.Print("%s vehicle_id:%s,recordNotFound", util.RunFuncName(), vehicleId)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetVehicleUnExistMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+	var totalCount int
+
+	//终端-策略
+	vehicleFStrategys, err := model.GetPaginFStrategyVehicles(fpageIndex, fpageSize, &totalCount,
+		"fstrategy_vehicles.vehicle_id = ? and fstrategies.created_at BETWEEN ? AND ?", []interface{}{vehicleId, fStartTime, fEndTime}...)
+
+	if len(vehicleFStrategys) == 0 {
+		logger.Logger.Error("%s vehicle_id:%s,vehicleFStrategys null", util.RunFuncName(), vehicleId)
+		logger.Logger.Print("%s vehicle_id:%s,vehicleFStrategys null", util.RunFuncName(), vehicleId)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetStrtegyUnExistMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+	if err != nil {
+		logger.Logger.Error("%s vehicle_id:%s,vehicleFStrategys err:%+v", util.RunFuncName(), vehicleId, err)
+		logger.Logger.Print("%s vehicle_id:%s,vehicleFStrategys err:%+v", util.RunFuncName(), vehicleId, err)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetStrategyFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	//获取fstrategyVehicleIds
+	var fstrategyVehicleIds []string
+	for _, fstrategyVehicle := range vehicleFStrategys {
+
+		fVehicleId := fstrategyVehicle.FstrategyVehicleId
+		exist := util.IsExistInSlice(fVehicleId, fstrategyVehicleIds)
+		if !exist {
+			fstrategyVehicleIds = append(fstrategyVehicleIds, fVehicleId)
+		}
+	}
+	logger.Logger.Print("%s vehicle_id:%s,fstrategyVehicleIds:%+v", util.RunFuncName(), vehicleId, fstrategyVehicleIds)
+	logger.Logger.Info("%s vehicle_id:%s,fstrategyVehicleIds:%+v", util.RunFuncName(), vehicleId, fstrategyVehicleIds)
+
+	//fstrategyVehicleIds
+	vehicleFStrategyItems, err := model.GetVehicleFStrategyItems(
+		"fstrategy_vehicle_items.fstrategy_vehicle_id in (?) and fstrategy_items.deleted_at is null",
+		[]interface{}{fstrategyVehicleIds}...)
+
+	var list []model.VehicleSingleFlowStrategyItemsReult
+	for _, vehicleFStrategy := range vehicleFStrategys {
+		fVid := vehicleFStrategy.FstrategyVehicleId
+		//每个策略的ip:port列表
+		vehicleFStrategyItemsMap := map[string][]uint32{}
+		for _, vehicleFStrategyItem := range vehicleFStrategyItems {
+			fVehicleId := vehicleFStrategyItem.FstrategyVehicleId
+			if fVehicleId == fVid {
+				dip := util.RrgsTrim(vehicleFStrategyItem.DstIp)
+				dPort := vehicleFStrategyItem.DstPort
+				if _, ok := vehicleFStrategyItemsMap[dip]; ok {
+					if !util.IsExistInSlice(dPort, vehicleFStrategyItemsMap[dip]) {
+						vehicleFStrategyItemsMap[dip] = append(vehicleFStrategyItemsMap[dip], dPort)
+					}
+				} else {
+
+					vehicleFStrategyItemsMap[dip] = []uint32{dPort}
+				}
+
+			}
+
+		}
+		vehicleSingleFlowStrategyItemsReult := model.VehicleSingleFlowStrategyItemsReult{
+			FstrategyId:              vehicleFStrategy.FstrategyId,
+			Type:                     vehicleFStrategy.Type,
+			HandleMode:               vehicleFStrategy.HandleMode,
+			Enable:                   vehicleFStrategy.Enable,
+			VehicleId:                vehicleFStrategy.VehicleId,
+			CsvPath:                  vehicleFStrategy.CsvPath,
+			VehicleFStrategyItemsMap: vehicleFStrategyItemsMap,
+		}
+		list = append(list, vehicleSingleFlowStrategyItemsReult)
+	}
+
+	responseData := map[string]interface{}{
+		"fstrategys": list,
+		"totalCount": totalCount,
+	}
+
+	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetFStrategySuccessMsg, responseData)
+	c.JSON(http.StatusOK, retObj)
+}
+
+/**
+查询目前正在执行的策略
+*/
+func GetActiveFstrategy(c *gin.Context) {
+	vehicleId := c.Query("vehicle_id")
+	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId)
+	if argsTrimsEmpty {
+		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+		c.JSON(http.StatusOK, ret)
+		logger.Logger.Error("%s argsTrimsEmpty vehicleId:%s", util.RunFuncName(), vehicleId)
+		logger.Logger.Print("%s argsTrimsEmpty vehicleId:%s", util.RunFuncName(), vehicleId)
+		return
+	}
+	logger.Logger.Print("%s vehicle_id:%s", util.RunFuncName(), vehicleId)
+	logger.Logger.Info("%s vehicle_id:%s", util.RunFuncName(), vehicleId)
+
+	//查询终端id是否存在
+	vehicleInfo := &model.VehicleInfo{
+		VehicleId: vehicleId,
+	}
+
+	modelBase := model_base.ModelBaseImpl(vehicleInfo)
+
+	err, recordNotFound := modelBase.GetModelByCondition("vehicle_id = ?", []interface{}{vehicleInfo.VehicleId}...)
+
+	if err != nil {
+		logger.Logger.Error("%s vehicle_id:%s,err:%s", util.RunFuncName(), vehicleId, err)
+		logger.Logger.Print("%s vehicle_id:%s,err:%s", util.RunFuncName(), vehicleId, err)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetVehicleFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	if recordNotFound {
+		logger.Logger.Error("%s vehicle_id:%s,recordNotFound", util.RunFuncName(), vehicleId)
+		logger.Logger.Print("%s vehicle_id:%s,recordNotFound", util.RunFuncName(), vehicleId)
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetVehicleUnExistMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	//查询策略
+	recentFStrategy := model.GetVehicleRecentFStrategy(vehicleId)
+
+	strategyCmd := &emq_cmd.FStrategySetCmd{
+		VehicleId: recentFStrategy.VehicleId,
+		TaskType:  int(protobuf.Command_FLOWSTRATEGY_ADD),
+
+		FstrategyId: recentFStrategy.FstrategyId,
+		Type:        recentFStrategy.Type,
+		HandleMode:  recentFStrategy.HandleMode,
+		Enable:      true,
+		GroupId:     "", //目前不实现
+	}
+
+	_, dipPortMap := emq_cmd.FetchDipPortList(strategyCmd)
+
+	logger.Logger.Print("%s dipPortMap:%+v", util.RunFuncName(), dipPortMap)
+	logger.Logger.Info("%s dipPortMap:%+v", util.RunFuncName(), dipPortMap)
+
+	vehicleSingleFlowStrategyItemsReult := model.VehicleSingleFlowStrategyItemsReult{
+		FstrategyId:              recentFStrategy.FstrategyId,
+		Type:                     uint8(recentFStrategy.Type),
+		HandleMode:               uint8(recentFStrategy.HandleMode),
+		Enable:                   recentFStrategy.Enable,
+		VehicleId:                recentFStrategy.VehicleId,
+		VehicleFStrategyItemsMap: dipPortMap,
+	}
+	responseData := map[string]interface{}{
+		"active_fstrategy": vehicleSingleFlowStrategyItemsReult,
+	}
+
+	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetFStrategySuccessMsg, responseData)
+	c.JSON(http.StatusOK, retObj)
+}
+
 // @Summary GetFStrategy
 // @Description GetFStrategy
 // @Produce json
@@ -673,6 +1095,9 @@ func GetFStrategy(c *gin.Context) {
 	vehicleFStrategy, err := model.GetVehicleFStrategy(
 		"fstrategy_vehicles.vehicle_id = ? and fstrategies.fstrategy_id = ?",
 		[]interface{}{vehicleId, fstrategyId}...)
+
+	logger.Logger.Print("%s vehicleFStrategy:%+v", util.RunFuncName(), vehicleFStrategy)
+	logger.Logger.Info("%s vehicleFStrategy:%+v", util.RunFuncName(), vehicleFStrategy)
 
 	if vehicleFStrategy.FstrategyVehicleId == "" {
 		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetFStrtegyUnExistMsg, "")
@@ -720,7 +1145,7 @@ func GetFStrategy(c *gin.Context) {
 		HandleMode:               vehicleFStrategy.HandleMode,
 		Enable:                   vehicleFStrategy.Enable,
 		VehicleId:                vehicleFStrategy.VehicleId,
-		ScvPath:                  vehicleFStrategy.ScvPath,
+		CsvPath:                  vehicleFStrategy.CsvPath,
 		VehicleFStrategyItemsMap: vehicleFStrategyItemsMap,
 	}
 	responseData := map[string]interface{}{

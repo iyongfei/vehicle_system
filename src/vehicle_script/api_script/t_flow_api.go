@@ -7,35 +7,32 @@ import (
 )
 
 var tFlow_urls = map[string]string{
-	"get_flow":   "http://localhost:7001/api/v1/flows/2768455442",
-	"get_flows":  "http://localhost:7001/api/v1/tflows",
-	"tflow_dps":  "http://localhost:7001/api/v1/flow_dps",
-	"pagination": "http://localhost:7001/api/v1/pagination/flows",
-	"post_flows": "http://localhost:7001/api/v1/flows",
-	"edit_flows": "http://localhost:7001/api/v1/flows/1111",
-	"dele_flows": "http://localhost:7001/api/v1/flows/3648327872",
+	"get_flows": "http://%s:7001/api/v1/tflows",
+	"tflow_dps": "http://%s:7001/api/v1/flow_dps",
+}
+var tflowip string
+var tflowvehicleId string
+
+func init() {
+	apiConfigMap := tool.InitConfig("api_conf.txt")
+	tflowip = apiConfigMap["server_ip"]
+	tflowvehicleId = apiConfigMap["vehicle_id"]
 }
 
 func main() {
-	//getFlow()
 	//getTflows()
 	getTflowsDps()
-	//getPaginationFlows()
-	//addFlows()
-	//editFlows()
-	//deleFlows()
-
-	//pushFlow()
 }
 
 func getTflowsDps() {
 	token := tool.GetVehicleToken()
 
 	queryParams := map[string]interface{}{
-		"vehicle_id": "754d2728b4e549c5a16c0180fcacb800",
+		"vehicle_id": tflowvehicleId,
 	}
 
 	reqUrl := tFlow_urls["tflow_dps"]
+	reqUrl = fmt.Sprintf(reqUrl, tflowip)
 
 	resp, _ := tool.Get(reqUrl, queryParams, token)
 
@@ -47,10 +44,11 @@ func getTflows() {
 	token := tool.GetVehicleToken()
 
 	queryParams := map[string]interface{}{
-		"vehicle_id": "754d2728b4e549c5a16c0180fcacb800",
+		"vehicle_id": tflowvehicleId,
 	}
 
 	reqUrl := tFlow_urls["get_flows"]
+	reqUrl = fmt.Sprintf(reqUrl, tflowip)
 
 	resp, _ := tool.Get(reqUrl, queryParams, token)
 

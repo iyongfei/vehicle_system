@@ -33,8 +33,7 @@ xmzfn9PNpf5eq7+2FUahOXwDvWZszUs8zjKyye/++6h5AtmL2LKKPTt8G8DF6Arn
 		`)
 )
 
-
-func NewTLSConfig() *tls.Config  {
+func NewTLSConfig() *tls.Config {
 	certpool := x509.NewCertPool()
 	certpool.AppendCertsFromPEM(caBlock)
 	return &tls.Config{
@@ -48,7 +47,7 @@ func NewTLSConfig() *tls.Config  {
 		ClientCAs: nil,
 		// InsecureSkipVerify = verify that cert contents
 		// match server. IP matches what is in cert etc.
-		InsecureSkipVerify: false,
+		InsecureSkipVerify: true,
 		// Certificates = list of certs client sends to server.
 		// Certificates: []tls.Certificate{cert},
 	}

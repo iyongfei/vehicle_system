@@ -11,6 +11,19 @@ import (
 	"vehicle_system/src/vehicle/util"
 )
 
+/**
+mosquitto_pub -h localhost -p 1883  -t topic -m 'sljdfklsjd' //211
+mosquitto_sub -h localhost -p 1883 -t topic//211
+
+mosquitto_sub -h 211.159.167.112 -p 1883 -t topic //本机
+*/
+
+/**
+mosquitto_sub -h 192.168.1.103 -p 8843 --cafile ca.crt -t "a/b" --insecure
+
+mosquitto_pub -h 192.168.1.103 -p 8843 -t "a/b" -m " hello" --cafile ca.crt
+
+*/
 const (
 	SUBSCRIBE_SEEVER_TOPIC = "s/+/p"
 	SUBSCRIBE_MAIN_TOPIC   = "+/s/p"
@@ -45,8 +58,8 @@ func (m *EmqInstance) InitEmqClient() {
 	EmqClient = mqtt.NewClient(clientOptions)
 
 	if token := EmqClient.Connect(); token.Wait() && token.Error() != nil {
-		logger.Logger.Print("%s,err:%s", util.RunFuncName(), token.Error())
-		logger.Logger.Error("%s,err:%s", util.RunFuncName(), token.Error())
+		logger.Logger.Print("%s,mosquitto connect err:%s", util.RunFuncName(), token.Error())
+		logger.Logger.Error("%s,mosquitto connect err:%s", util.RunFuncName(), token.Error())
 		go EmqReConnectTokenError()
 		return
 	}

@@ -9,11 +9,16 @@ import (
 )
 
 var fstrategyUrls = map[string]string{
-	"post_fstrategy": "http://localhost:7001/api/v1/fstrategys",
-	"dele_fstrategy": "http://localhost:7001/api/v1/fstrategys/",
-	"edit_fstrategy": "http://localhost:7001/api/v1/fstrategys/",
-	"get_fstrategy":  "http://localhost:7001/api/v1/fstrategys/",
+	"post_fstrategy":           "http://%s:7001/api/v1/fstrategys",
+	"dele_fstrategy":           "http://%s:7001/api/v1/fstrategys/",
+	"edit_fstrategy":           "http://%s:7001/api/v1/fstrategys/",
+	"get_fstrategy":            "http://%s:7001/api/v1/fstrategys/",
+	"get_active_fstrategs":     "http://%s:7001/api/v1/active/fstrategys",
+	"get_all_fstrategs":        "http://%s:7001/api/v1/ids/fstrategys",
+	"get_partial_fstrategs":    "http://%s:7001/api/v1/partial/fstrategys",
+	"get_pagination_fstrategs": "http://%s:7001/api/v1/pagination/fstrategys",
 
+	//
 	"get_fstrategys":               "http://localhost:7001/api/v1/fstrategys",
 	"get_strategy_vehicles":        "http://localhost:7001/api/v1/strategy_vehicles/9xR5vYZweMb3aRoGGEQYaIw6xhRetYV8",
 	"get_vehicle_results":          "http://localhost:7001/api/v1/vehicle_lresults/cuMwUiDA2V8NLNWGznfVI2hP5Zi3PhMJ",
@@ -25,57 +30,90 @@ func getConfig() map[string]string {
 }
 
 func main() {
-	addFStrategy()
+	//addFStrategy()
 	//getFStrategy()
 	//deleFStrategy()
 	//editFStrategy()
-
+	//getRecentFStrategy()
+	//getAllFStrategys()
+	//getPartialFStrategys()
+	getPaginationFstrategys()
+	//unused
 	//getFStrategys()
 	//getStrategyVehicle()
 	//getVehicleLearningResults()
 	//getStrategyVehicleLearningResults()
-
 }
 
-func editFStrategy() {
+func getPaginationFstrategys() {
+	token := tool.GetVehicleToken()
 	configs := getConfig()
-	update_flow_vehicle_id := configs["update_flow_vehicle_id"]
-	update_flow_strategy_id := configs["update_flow_strategy_id"]
-	update_fips := configs["update_fips"]
-	update_fports := configs["update_fports"]
+	fip := configs["server_ip"]
+	vehicle_id := configs["vehicle_id"]
+	page_index := configs["page_index"]
+	page_size := configs["page_size"]
+	//start_time := configs["start_time"]
+	//end_time := configs["end_time"]
 
-	//token := tool.GetVehicleToken()
-	urlReq := fstrategyUrls["edit_fstrategy"] + update_flow_strategy_id
-
-	diports := creatFastrategyIpPortData(update_fips, update_fports)
 	queryParams := map[string]interface{}{
-		"vehicle_id": update_flow_vehicle_id,
-		"dip_ports":  diports,
+		"vehicle_id": vehicle_id,
+		"page_index": page_index,
+		"page_size":  page_size,
+		//"start_time": start_time,
+		//"end_time":   end_time,
 	}
-
-	resp, _ := tool.PutForm(urlReq, queryParams, "")
-
+	reqUrl := fmt.Sprintf(fstrategyUrls["get_pagination_fstrategs"], fip)
+	resp, _ := tool.Get(reqUrl, queryParams, token)
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))
 }
-func addFStrategy() {
+
+func getPartialFStrategys() {
 	configs := getConfig()
-	flow_vehicle_id := configs["flow_vehicle_id"]
-	fips := configs["fips"]
-	fports := configs["fports"]
-
-	//token := tool.GetVehicleToken()
-	reqUrl := fstrategyUrls["post_fstrategy"]
-
-	diports := creatFastrategyIpPortData(fips, fports)
+	get_flow_vehicle_id := configs["vehicle_id"]
+	partial_fstrategs := configs["partial_fstrategs"]
+	fip := configs["server_ip"]
+	token := tool.GetVehicleToken()
 
 	queryParams := map[string]interface{}{
-		"vehicle_id": flow_vehicle_id,
-		"dip_ports":  diports,
+		"vehicle_id":    get_flow_vehicle_id,
+		"fstrategy_ids": partial_fstrategs,
 	}
-	fmt.Println("req::::::", reqUrl, diports)
+	reqUrl := fmt.Sprintf(fstrategyUrls["get_partial_fstrategs"], fip)
+	resp, _ := tool.Get(reqUrl, queryParams, token)
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+}
 
-	resp, _ := tool.PostForm(reqUrl, queryParams, "token")
+func getAllFStrategys() {
+	configs := getConfig()
+	get_flow_vehicle_id := configs["vehicle_id"]
+	fip := configs["server_ip"]
+	token := tool.GetVehicleToken()
+
+	queryParams := map[string]interface{}{
+		"vehicle_id": get_flow_vehicle_id,
+	}
+	reqUrl := fmt.Sprintf(fstrategyUrls["get_all_fstrategs"], fip)
+	resp, _ := tool.Get(reqUrl, queryParams, token)
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+}
+
+/**
+获取一条会话策略信息
+*/
+func getRecentFStrategy() {
+	configs := getConfig()
+	get_flow_vehicle_id := configs["vehicle_id"]
+	fip := configs["server_ip"]
+	token := tool.GetVehicleToken()
+
+	queryParams := map[string]interface{}{
+		"vehicle_id": get_flow_vehicle_id,
+	}
+	reqUrl := fmt.Sprintf(fstrategyUrls["get_active_fstrategs"], fip)
+	resp, _ := tool.Get(reqUrl, queryParams, token)
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))
 }
@@ -86,33 +124,77 @@ func addFStrategy() {
 func getFStrategy() {
 	configs := getConfig()
 	get_flow_fstrategy_id := configs["get_flow_fstrategy_id"]
-	get_flow_vehicle_id := configs["get_flow_vehicle_id"]
-
+	get_flow_vehicle_id := configs["vehicle_id"]
+	fip := configs["server_ip"]
 	token := tool.GetVehicleToken()
-
-	fmt.Println(get_flow_fstrategy_id, get_flow_vehicle_id, token)
 
 	queryParams := map[string]interface{}{
 		"vehicle_id": get_flow_vehicle_id,
 	}
-	reqUrl := fstrategyUrls["get_fstrategy"] + get_flow_fstrategy_id
+	reqUrl := fmt.Sprintf(fstrategyUrls["get_fstrategy"], fip) + get_flow_fstrategy_id
 	resp, _ := tool.Get(reqUrl, queryParams, token)
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+}
+
+func editFStrategy() {
+	configs := getConfig()
+	update_flow_vehicle_id := configs["vehicle_id"]
+	update_flow_strategy_id := configs["get_flow_fstrategy_id"]
+	fip := configs["server_ip"]
+	update_fips := configs["update_fips"]
+	update_fports := configs["update_fports"]
+
+	token := tool.GetVehicleToken()
+	urlReq := fmt.Sprintf(fstrategyUrls["edit_fstrategy"], fip) + update_flow_strategy_id
+
+	diports := creatFastrategyIpPortData(update_fips, update_fports)
+	queryParams := map[string]interface{}{
+		"vehicle_id": update_flow_vehicle_id,
+		"dip_ports":  diports,
+	}
+
+	resp, _ := tool.PutForm(urlReq, queryParams, token)
+
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))
 }
 
 func deleFStrategy() {
 	configs := getConfig()
-	dele_flow_vehicle_id := configs["dele_flow_strategy_id"]
-
+	dele_flow_vehicle_id := configs["get_flow_fstrategy_id"]
+	fip := configs["server_ip"]
 	token := tool.GetVehicleToken()
 
 	queryParams := map[string]interface{}{}
 
-	reqUrl := fstrategyUrls["dele_fstrategy"] + dele_flow_vehicle_id
+	reqUrl := fmt.Sprintf(fstrategyUrls["dele_fstrategy"], fip) + dele_flow_vehicle_id
 
 	resp, _ := tool.Delete(reqUrl, queryParams, token)
 
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
+}
+
+func addFStrategy() {
+	configs := getConfig()
+	flow_vehicle_id := configs["vehicle_id"]
+	fips := configs["fips"]
+	fports := configs["fports"]
+	fip := configs["server_ip"]
+
+	token := tool.GetVehicleToken()
+	reqUrl := fstrategyUrls["post_fstrategy"]
+	reqUrl = fmt.Sprintf(reqUrl, fip)
+	diports := creatFastrategyIpPortData(fips, fports)
+
+	queryParams := map[string]interface{}{
+		"vehicle_id": flow_vehicle_id,
+		"dip_ports":  diports,
+	}
+	fmt.Println("req::::::", reqUrl, diports)
+
+	resp, _ := tool.PostForm(reqUrl, queryParams, token)
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))
 }

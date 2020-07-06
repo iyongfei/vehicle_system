@@ -86,15 +86,17 @@ func FetchDipPortList(setCmd *FStrategySetCmd) ([]*protobuf.FlowStrategyAddParam
 
 	fstrategyVehicleItems := []*model.FstrategyItem{}
 
-	_ = model_base.ModelBaseImpl(&model.AutomatedLearningResult{}).
+	_ = model_base.ModelBaseImpl(&model.FstrategyItem{}).
 		GetModelListByCondition(&fstrategyVehicleItems,
 			"fstrategy_item_id in (?)", []interface{}{fFstrategyVehicleItems}...)
 
 	fProtobufStrategyVehicleItems := []*protobuf.FlowStrategyAddParam_FlowStrategyItem{}
 	mapper := map[string][]uint32{}
 	for _, fItem := range fstrategyVehicleItems {
+
 		//去重
-		dip := fItem.DstIp
+		dip := fItem.DstIp //string
+
 		dport := fItem.DstPort
 
 		if len(mapper[dip]) == 0 {
@@ -110,7 +112,12 @@ func FetchDipPortList(setCmd *FStrategySetCmd) ([]*protobuf.FlowStrategyAddParam
 	for dip, ports := range mapper {
 		for _, port := range ports {
 			fProtobufStrategyVehicleItem := &protobuf.FlowStrategyAddParam_FlowStrategyItem{}
-			fProtobufStrategyVehicleItem.DstIp = uint32(util.InetAton(dip))
+			ipI := uint32(util.InetAton(dip))
+
+			sipBigEndian := util.BytesToBigEndian(util.LittleToBytes(uint32(ipI)))
+			//转换
+
+			fProtobufStrategyVehicleItem.DstIp = sipBigEndian
 			fProtobufStrategyVehicleItem.DstPort = port
 
 			fProtobufStrategyVehicleItems = append(fProtobufStrategyVehicleItems, fProtobufStrategyVehicleItem)

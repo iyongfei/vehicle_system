@@ -12,7 +12,7 @@ import (
 type Fstrategy struct {
 	gorm.Model
 	FstrategyId string
-	ScvPath     string
+	CsvPath     string
 	Type        uint8 //策略模式
 	HandleMode  uint8 //处理方式
 	Enable      bool  //策略启用状态
@@ -228,11 +228,11 @@ type FlowStrategyVehicleItemJoin struct {
 	Type       uint8 //策略模式
 	HandleMode uint8 //处理方式
 	Enable     bool  //策略启用状态
-	ScvPath    string
+	CsvPath    string
 	VehicleId  string
 
-	FstrategyVehicleId string
-	FstrategyItemId    string
+	FstrategyVehicleId string `json:"omitempty"`
+	FstrategyItemId    string `json:"omitempty"`
 }
 
 func GetFlowStrategyVehicleItems(query string, args ...interface{}) ([]*FlowStrategyVehicleItemJoin, error) {
@@ -254,7 +254,43 @@ func GetFlowStrategyVehicleItems(query string, args ...interface{}) ([]*FlowStra
 }
 
 /**
-获取某会话策略下的车载
+获取某会话策略下的车载GetVehicleRecentFStrategy
+err = vgorm.Debug().Offset((pageIndex-1)*pageSize).Limit(pageSize).Order(orderBy).Where(query, args...).Find(paginModel).
+		Offset(-1).Model(model).Count(totalCount).Error
+err = vgorm.Table("gw_infos").
+		Select("*").
+		Where("gw_infos.group_id in (?)",groupIdSlice).
+		Where(lineProtectStatusQuery,lineProtectStatusArgs).
+		Where(gwSearchTypeQuery,gwSearchTypeQueryArgs).
+		Where("gw_infos.deleted_at is null").
+		Offset((whichPageNum-1) * perPageNum).
+		Limit(perPageNum).
+		Order("gw_infos.created_at desc").
+		Order("gw_infos.id desc").
+		Scan(&paginationModelT).
+		Limit(-1).
+		Count(&totalCount).
+		Error
+
+err = vgorm.Table("gw_assets").
+		Select("*").
+		//Joins("left join gw_infos on gw_assets.gw_id = gw_infos.gw_id").
+		//Joins("left join asset_leaders on gw_assets.asset_leader = asset_leaders.leader_id").
+		//Joins("left join area_groups on gw_infos.group_id = area_groups.area_code").
+		Where("gw_assets.deleted_at IS NULL").
+		Where(groupOrGwQuery,groupOrGwArgs).
+		Where(onlineStatusQuery,onlineStatusArgs).
+		Where(gwAssetSearchTypeQuery,gwAssetSearchTypeQueryArgs).
+		Offset((whichPageNum-1) * perPageNum).
+		Limit(perPageNum).
+		Order("gw_assets.created_at desc").
+		Order("gw_assets.id desc").
+		Scan(&paginationModelT).
+
+		Limit(-1).
+		Count(&totalCount).
+
+		Error
 */
 func GetFStrategyVehicles(query string, args ...interface{}) ([]*FlowStrategyVehicleItemJoin, error) {
 	vgorm, err := mysql.GetMysqlInstance().GetMysqlDB()
@@ -264,28 +300,36 @@ func GetFStrategyVehicles(query string, args ...interface{}) ([]*FlowStrategyVeh
 	fstrategyVehicles := []*FlowStrategyVehicleItemJoin{}
 	err = vgorm.Debug().
 		Table("fstrategies").
-		Select("fstrategies.*,fstrategy_vehicles.vehicle_id").
+		Select("fstrategies.*,fstrategy_vehicles.vehicle_id,fstrategy_vehicles.fstrategy_vehicle_id").
 		Where(query, args...).
+		Order("fstrategies.created_at desc").
 		Joins("inner join fstrategy_vehicles ON fstrategies.fstrategy_id = fstrategy_vehicles.fstrategy_id").
 		Scan(&fstrategyVehicles).
 		Error
 	return fstrategyVehicles, err
 }
 
-/**************
-获取某车载的单条会话
-*/
+func GetPaginFStrategyVehicles(pageIndex int, pageSize int, totalCount *int, query interface{}, args ...interface{}) ([]*FlowStrategyVehicleItemJoin, error) {
+	vgorm, err := mysql.GetMysqlInstance().GetMysqlDB()
+	if err != nil {
+		return nil, fmt.Errorf("%s open grom err:%v", util.RunFuncName(), err.Error())
+	}
+	fstrategyVehicles := []*FlowStrategyVehicleItemJoin{}
 
-type VehicleSingleFlowStrategyItemsReult struct {
-	FstrategyId string
-	Type        uint8 //策略模式
-	HandleMode  uint8 //处理方式
-	Enable      bool  //策略启用状态
-	VehicleId   string
+	err = vgorm.Debug().
+		Table("fstrategies").
+		Select("fstrategies.*,fstrategy_vehicles.vehicle_id,fstrategy_vehicles.fstrategy_vehicle_id").
+		Where(query, args...).
+		Order("fstrategies.created_at desc").
+		Joins("inner join fstrategy_vehicles ON fstrategies.fstrategy_id = fstrategy_vehicles.fstrategy_id").
+		Offset((pageIndex - 1) * pageSize).
+		Limit(pageSize).
+		Scan(&fstrategyVehicles).
+		Limit(-1).
+		Count(totalCount).
+		Error
 
-	ScvPath string
-	/////////////////////
-	VehicleFStrategyItemsMap map[string][]uint32
+	return fstrategyVehicles, err
 }
 
 func GetVehicleFStrategy(query string, args ...interface{}) (*FlowStrategyVehicleItemJoin, error) {
@@ -347,3 +391,18 @@ func GetVehicleFStrategyItems(query string, args ...interface{}) ([]*VehicleSing
 //		Error
 //	return strategyVehicleLearningResultJoins,err
 //}
+/**************
+获取某车载的单条会话
+*/
+
+type VehicleSingleFlowStrategyItemsReult struct {
+	FstrategyId string
+	Type        uint8 //策略模式
+	HandleMode  uint8 //处理方式
+	Enable      bool  //策略启用状态
+	VehicleId   string
+
+	CsvPath string
+	/////////////////////
+	VehicleFStrategyItemsMap map[string][]uint32
+}
