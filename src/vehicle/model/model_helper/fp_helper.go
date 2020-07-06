@@ -327,7 +327,6 @@ func JudgeAssetCate(assetId string) (string, float64) {
 
 	var cateId string
 
-	//map[string]float64
 	assetCateMarkMap := GetAssetCateMark(assetId)
 
 	logger.Logger.Print("%s assetId:%s,assetCateMarkMap:%+v", util.RunFuncName(), assetId, assetCateMarkMap)

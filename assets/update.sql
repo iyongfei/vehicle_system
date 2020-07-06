@@ -110,7 +110,6 @@ CREATE TABLE IF NOT EXISTS `fprints`  (
   `collect_proto_rate` double NULL DEFAULT NULL,
 
   `categorys` varchar(255) NULL DEFAULT NULL,
---   `categorys_rate` double NULL DEFAULT NULL,
 
   `collect_host` varchar(255) NULL DEFAULT NULL,
   `collect_host_rate` double NULL DEFAULT NULL,

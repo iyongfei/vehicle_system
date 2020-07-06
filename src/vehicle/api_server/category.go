@@ -62,6 +62,24 @@ func AddCategory(c *gin.Context) {
 	c.JSON(http.StatusOK, retObj)
 }
 
+func GetCategory(c *gin.Context) {
+
+	cateId := c.Param("cate_id")
+	argsTrimsEmpty := util.RrgsTrimsEmpty(cateId)
+	if argsTrimsEmpty {
+		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+		c.JSON(http.StatusOK, ret)
+
+		logger.Logger.Print("%s cateId:%s", util.RunFuncName(), cateId)
+		logger.Logger.Error("%s cateId:%s", util.RunFuncName(), cateId)
+		return
+	}
+
+	logger.Logger.Print("%s cateId:%s,cateName%s", util.RunFuncName(), cateId)
+	logger.Logger.Error("%s cateId:%s,cateName%s", util.RunFuncName(), cateId)
+
+}
+
 /**
 查询所有指纹库
 */
@@ -157,7 +175,7 @@ func DeleCategory(c *gin.Context) {
 
 	logger.Logger.Print("%s cateId:%s", util.RunFuncName(), cateId)
 	logger.Logger.Info("%s cateId:%s", util.RunFuncName(), cateId)
-	ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqDeleCategorySuccessMsg, "")
+	ret := response.StructResponseObj(response.VStatusOK, response.ReqDeleCategorySuccessMsg, "")
 	c.JSON(http.StatusOK, ret)
 }
 
