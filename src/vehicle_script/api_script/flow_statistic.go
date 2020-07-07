@@ -12,14 +12,16 @@ func main() {
 
 func flowStatistic() {
 	apiConfigMap := tool.InitConfig("api_conf.txt")
-	vehicleId := apiConfigMap["flowstatistic_vehicle_id"]
+	vehicleId := apiConfigMap["vehicle_id"]
 	ip := apiConfigMap["server_ip"]
+
+	token := tool.GetVehicleToken()
 
 	req_url := fmt.Sprintf("http://%s:7001/api/v1/flow_statistics", ip)
 	bodyParams := map[string]interface{}{
 		"vehicle_id": vehicleId,
 	}
-	resp, _ := tool.PostForm(req_url, bodyParams, "")
+	resp, _ := tool.Get(req_url, bodyParams, token)
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))
 }

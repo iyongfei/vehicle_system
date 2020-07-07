@@ -44,14 +44,14 @@ func (vehicle *VehicleInfo) AfterCreate(tx *gorm.DB) error {
 	logger.Logger.Print("%s afterCreate vehicle_id:%s", util.RunFuncName(), vehicle.VehicleId)
 	logger.Logger.Info("%s afterCreate vehicle_id:%s", util.RunFuncName(), vehicle.VehicleId)
 
-	err := HandleVehicleStrategyInitAction(vehicle.VehicleId)
-	if err != nil {
-		logger.Logger.Print("%s afterCreate vehicle_id:%s,init strategy err:%s", util.RunFuncName(), vehicle.VehicleId, err)
-		logger.Logger.Info("%s afterCreate vehicle_id:%s,init strategy err:%s", util.RunFuncName(), vehicle.VehicleId, err)
-	}
-
-	//下发策略
-	initVehicleStrategy(vehicle.VehicleId)
+	//err := HandleVehicleStrategyInitAction(vehicle.VehicleId)
+	//if err != nil {
+	//	logger.Logger.Print("%s afterCreate vehicle_id:%s,init strategy err:%s", util.RunFuncName(), vehicle.VehicleId, err)
+	//	logger.Logger.Info("%s afterCreate vehicle_id:%s,init strategy err:%s", util.RunFuncName(), vehicle.VehicleId, err)
+	//}
+	//
+	////下发策略
+	//initVehicleStrategy(vehicle.VehicleId)
 	return nil
 }
 
@@ -175,4 +175,70 @@ func (vehicleInfo *VehicleInfo) GetModelPaginationByCondition(pageIndex int, pag
 		return fmt.Errorf("%s err %s", util.RunFuncName(), err.Error())
 	}
 	return nil
+}
+
+type VehicleInfoT struct {
+	//gorm.Model
+	ID        uint `gorm:"primary_key"`
+	CreatedAt int64
+	UpdatedAt time.Time
+	DeletedAt *time.Time `sql:"index"`
+
+	VehicleId       string `gorm:"unique"` //小v ID
+	Name            string //小v名称
+	Version         string
+	StartTime       time.Time //启动时间
+	FirmwareVersion string
+	HardwareModel   string
+	Module          string
+	SupplyId        string
+	UpRouterIp      string
+
+	Ip        string
+	Type      uint8
+	Mac       string //Mac地址
+	TimeStamp uint32 //最近活跃时间戳
+	HbTimeout uint32 //最近活跃时间戳
+
+	DeployMode       uint8 //部署模式
+	FlowIdleTimeSlot uint32
+
+	OnlineStatus  bool   //在线状态
+	ProtectStatus uint8  //保护状态										//保护状态
+	LeaderId      string //保护状态 // 保护状态
+	GroupId       string
+	FlowCount     int
+}
+
+func CreateVehicleInfoT(vehicle *VehicleInfo, flowCount int) *VehicleInfoT {
+
+	VehicleInfoTmp := &VehicleInfoT{
+		ID:               vehicle.ID,
+		CreatedAt:        vehicle.CreatedAt.Unix(),
+		UpdatedAt:        vehicle.UpdatedAt,
+		DeletedAt:        vehicle.DeletedAt,
+		VehicleId:        vehicle.VehicleId,
+		Name:             vehicle.Name,
+		Version:          vehicle.Version,
+		StartTime:        vehicle.StartTime,
+		FirmwareVersion:  vehicle.FirmwareVersion,
+		HardwareModel:    vehicle.HardwareModel,
+		Module:           vehicle.Module,
+		SupplyId:         vehicle.SupplyId,
+		UpRouterIp:       vehicle.UpRouterIp,
+		Ip:               vehicle.Ip,
+		Type:             vehicle.Type,
+		Mac:              vehicle.Mac,
+		TimeStamp:        vehicle.TimeStamp,
+		HbTimeout:        vehicle.HbTimeout,
+		DeployMode:       vehicle.DeployMode,
+		FlowIdleTimeSlot: vehicle.FlowIdleTimeSlot,
+		ProtectStatus:    vehicle.ProtectStatus,
+		LeaderId:         vehicle.LeaderId,
+		GroupId:          vehicle.GroupId,
+
+		FlowCount: flowCount,
+	}
+
+	return VehicleInfoTmp
 }

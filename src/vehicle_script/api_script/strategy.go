@@ -30,16 +30,31 @@ var apiConfigMap map[string]string
 func main() {
 	apiConfigMap = tool.InitConfig("api_conf.txt")
 
-	addStrategy()
+	//addStrategy()
 	//getStrategys()
 	//getStrategy()
 
 	//deleStrategy()//协议部分没有处理
-	//editStrategy()//
+	editStrategy() //
 
 	//getStrategyVehicle()
 	//getVehicleLearningResults()
 	//getStrategyVehicleLearningResults()
+}
+
+func editStrategy() {
+	token := tool.GetVehicleToken()
+	urlReq, _ := strategyUrls["edit_strategy"]
+
+	bodyParams := map[string]interface{}{
+		"type":        "22",
+		"handle_mode": "11",
+		"vehicle_id":  "dTtR4sFMYfDJzGAVTv4KWSc9KYLTA64d",
+	}
+	resp, _ := tool.PutForm(urlReq, bodyParams, token)
+
+	respMarshal, _ := json.Marshal(resp)
+	fmt.Printf("resp %+v", string(respMarshal))
 }
 
 func addStrategy() {
@@ -81,21 +96,6 @@ func getStrategyVehicleLearningResults() {
 	queryParams := map[string]interface{}{}
 	reqUrl := strategyUrls["get_strategy_vehicle_results"]
 	resp, _ := tool.Get(reqUrl, queryParams, token)
-	respMarshal, _ := json.Marshal(resp)
-	fmt.Printf("resp %+v", string(respMarshal))
-}
-
-func editStrategy() {
-	token := tool.GetVehicleToken()
-	urlReq, _ := strategyUrls["edit_strategy"]
-
-	bodyParams := map[string]interface{}{
-		"type":        "22",
-		"handle_mode": "11",
-		"vehicle_id":  "dTtR4sFMYfDJzGAVTv4KWSc9KYLTA64d",
-	}
-	resp, _ := tool.PutForm(urlReq, bodyParams, token)
-
 	respMarshal, _ := json.Marshal(resp)
 	fmt.Printf("resp %+v", string(respMarshal))
 }

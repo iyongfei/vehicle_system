@@ -52,11 +52,7 @@ func (t *TopicSubscribeHandler) HanleSubscribeTopicData(topicMsg mqtt.Message) e
 		return fmt.Errorf("hanleSubscribeTopicData unmarshal payload err:%s", err)
 	}
 	//vehicleId null
-	vehicleIdTrim := util.RrgsTrimEmptyTableEnter(vehicleResult.GetGUID())
 	vehicleId := vehicleResult.GetGUID()
-
-	logger.Logger.Print("hanleSubscribeTopicData vehicleIdTrim_length:%d,vehicleId_length:%d", len(vehicleIdTrim), len(vehicleId))
-	logger.Logger.Info("hanleSubscribeTopicData vehicleIdTrim_length:%d,vehicleId_length:%d", len(vehicleIdTrim), len(vehicleId))
 
 	if util.RrgsTrimEmpty(vehicleId) {
 		return fmt.Errorf("vehicleResult vehicle id null")
@@ -150,6 +146,9 @@ func (t *TopicSubscribeHandler) HanleSubscribeTopicData(topicMsg mqtt.Message) e
 	case protobuf.GWResult_DEVICE: //DeviceParam
 		handGwResultError = HandleVehicleAsset(vehicleResult, vehicleId)
 
+	case protobuf.GWResult_FINGERPRINT: //FINGERPRINT
+		handGwResultError = HandleVehicleFingerPrint(vehicleResult, vehicleId)
+
 	case protobuf.GWResult_THREAT: //ThreatParam
 		handGwResultError = HandleVehicleThreat(vehicleResult, vehicleId)
 
@@ -191,11 +190,29 @@ func HanleSubscribeTopicLineData(topicMsg mqtt.Message) error {
 	}
 
 	var err error
-	if util.RrgsTrimEmpty(vehicleId) {
+	if !util.RrgsTrimEmpty(vehicleId) {
+		//资产,设备离线
+		err = tdata.VehicleAssetCheck(vehicleId, false)
+		if err != nil {
+			logger.Logger.Error("tdata vehicle_asset check err:%v", err.Error())
+			logger.Logger.Print("tdata vehicle_asset check err:%v", err.Error())
+		}
+	}
+
+	if !util.RrgsTrimEmpty(vehicleId) {
 		vehicleCache := emq_cacha.GetVehicleCache()
 		vehicleCache.Clean(vehicleId)
 		err = HandleVehicleOfflineStatus(vehicleId, false)
 	}
+
+	//更新指纹
+	//if !util.RrgsTrimEmpty(vehicleId) {
+	//	err = tdata.VehicleAssetFprintCheck(vehicleId)
+	//	if err != nil {
+	//		logger.Logger.Error("tdata vehicle_asset check fprint err:%v", err.Error())
+	//		logger.Logger.Print("tdata vehicle_asset check fprint err:%v", err.Error())
+	//	}
+	//}
 
 	return err
 }

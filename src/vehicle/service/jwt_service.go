@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/dgrijalva/jwt-go"
 	"time"
-	"vehicle_system/src/vehicle/conf"
 	"vehicle_system/src/vehicle/response"
 )
 
@@ -44,45 +43,42 @@ payload (base64后的)
 secret
 var encodedString = base64UrlEncode(header) + '.' + base64UrlEncode(payload);
 var signature = HMACSHA256(encodedString, 'secret');
- */
+*/
 var (
-	ExpiresAt = time.Now().Add(100 * time.Hour).Unix()
+	ExpiresAt = time.Now().Add(10000 * time.Hour).Unix()
 
 	//token过期
-	TokenExpired      = errors.New(response.TokenExpiredStr)
+	TokenExpired = errors.New(response.TokenExpiredStr)
 	//token未激活
-	TokenNotValidYet  = errors.New(response.TokenNotValidYetStr)
+	TokenNotValidYet = errors.New(response.TokenNotValidYetStr)
 	//token不合法
-	TokenMalformed    = errors.New(response.TokenMalformedStr)
+	TokenMalformed = errors.New(response.TokenMalformedStr)
 	//token未知
-	TokenInvalid      = errors.New(response.TokenInvalidStr)
+	TokenInvalid = errors.New(response.TokenInvalidStr)
 	//签名信息错误，无法验证token
 	ValidationErrorUnverifiable = errors.New(response.ValidationErrorUnverifiableStr)
 	//签名验证失败
 	ValidationErrorSignatureInvalid = errors.New(response.ValidationErrorSignatureInvalidStr)
-	Jwt *JWT
-	SignKey = conf.SignKey
+	SignKey                         = "vehicle"
 )
-func init() {
-	Jwt = newJWT()
-}
 
-func newJWT() *JWT {
+func NewJWT() *JWT {
 	return &JWT{
 		[]byte(SignKey),
 	}
 }
+
 type JWT struct {
 	SigningKey []byte
 }
 
-
 type VehicleClaims struct {
-	UserId   string  `json:"user_id"`
-	UserName string  `json:"user_name"`
-	PassWord string  `json:"pass_word"`
+	UserId   string `json:"user_id"`
+	UserName string `json:"user_name"`
+	PassWord string `json:"pass_word"`
 	jwt.StandardClaims
 }
+
 //生成token
 func (j *JWT) CreateToken(claims VehicleClaims) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -95,9 +91,10 @@ func (j *JWT) CreateToken(claims VehicleClaims) (string, error) {
 func (j *JWT) keyFunc(token *jwt.Token) (interface{}, error) {
 	return j.SigningKey, nil
 }
+
 //解析token
 func (j *JWT) ParseToken(tokenString string) (*VehicleClaims, error) {
-	token, err := jwt.ParseWithClaims(tokenString, &VehicleClaims{},j.keyFunc)
+	token, err := jwt.ParseWithClaims(tokenString, &VehicleClaims{}, j.keyFunc)
 	if err != nil {
 		if ve, ok := err.(*jwt.ValidationError); ok {
 			if ve.Errors&jwt.ValidationErrorMalformed != 0 {
@@ -106,9 +103,9 @@ func (j *JWT) ParseToken(tokenString string) (*VehicleClaims, error) {
 				return nil, TokenExpired
 			} else if ve.Errors&jwt.ValidationErrorNotValidYet != 0 {
 				return nil, TokenNotValidYet
-			}else if ve.Errors&jwt.ValidationErrorUnverifiable != 0 {
+			} else if ve.Errors&jwt.ValidationErrorUnverifiable != 0 {
 				return nil, ValidationErrorUnverifiable
-			}else if ve.Errors&jwt.ValidationErrorSignatureInvalid != 0 {
+			} else if ve.Errors&jwt.ValidationErrorSignatureInvalid != 0 {
 				return nil, ValidationErrorSignatureInvalid
 			} else {
 				return nil, TokenInvalid
@@ -123,7 +120,7 @@ func (j *JWT) ParseToken(tokenString string) (*VehicleClaims, error) {
 
 // 更新token
 func (j *JWT) RefreshToken(tokenStr string) (string, error) {
-	token, err := jwt.ParseWithClaims(tokenStr, &VehicleClaims{},j.keyFunc)
+	token, err := jwt.ParseWithClaims(tokenStr, &VehicleClaims{}, j.keyFunc)
 	if err != nil {
 		return "", err
 	}
@@ -134,15 +131,3 @@ func (j *JWT) RefreshToken(tokenStr string) (string, error) {
 	}
 	return "", TokenInvalid
 }
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,0 +1,48 @@
+package main
+
+import (
+	"vehicle_system/src/vehicle_script/mysql_script/mysql_util"
+)
+
+//CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build
+func main() {
+	tools.Exec("truncate table alayer_protos;")
+	tools.Exec("truncate table area_groups;")
+	tools.Exec("truncate table asset_fprints;")
+	tools.Exec("truncate table asset_groups;")
+	tools.Exec("truncate table asset_leaders;")
+	tools.Exec("truncate table assets;")
+	tools.Exec("truncate table automated_learning_results;")
+	tools.Exec("truncate table automated_learnings;")
+	tools.Exec("truncate table categories;")
+	tools.Exec("truncate table disks;")
+	tools.Exec("truncate table finger_prints;")
+	tools.Exec("truncate table firmware_infos;")
+	tools.Exec("truncate table firmware_updates;")
+	tools.Exec("truncate table flow_statistics;")
+	tools.Exec("truncate table flows;")
+	tools.Exec("truncate table fprint_flows;")
+	tools.Exec("truncate table fprint_infos;")
+	tools.Exec("truncate table fprints;")
+	tools.Exec("truncate table fstrategies;")
+	tools.Exec("truncate table fstrategy_items;")
+	tools.Exec("truncate table fstrategy_vehicle_items;")
+	tools.Exec("truncate table fstrategy_vehicles;")
+	tools.Exec("truncate table port_maps;")
+	tools.Exec("truncate table redis_infos;")
+	tools.Exec("truncate table sample_items;")
+	tools.Exec("truncate table samples;")
+	tools.Exec("truncate table strategies;")
+	tools.Exec("truncate table strategy_groups;")
+	tools.Exec("truncate table strategy_vehicle_learning_results;")
+	tools.Exec("truncate table strategy_vehicles;")
+	tools.Exec("truncate table study_origins;")
+	tools.Exec("truncate table temp_flows;")
+	tools.Exec("truncate table threats;")
+	tools.Exec("truncate table users;")
+	tools.Exec("truncate table vehicle_infos;")
+	tools.Exec("truncate table vehicle_leaders;")
+	tools.Exec("truncate table vhalo_nets;")
+	tools.Exec("truncate table white_assets;")
+	tools.Exec("truncate table white_lists;")
+}

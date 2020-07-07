@@ -18,6 +18,22 @@ CREATE TABLE IF NOT EXISTS `area_groups`  (
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 
+
+CREATE TABLE IF NOT EXISTS `asset_groups`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  `area_code` varchar(255) NULL DEFAULT NULL,
+  `area_name` varchar(255) NULL DEFAULT NULL,
+  `parent_area_code` varchar(255) NULL DEFAULT NULL,
+   `tree_area_code` varchar(255) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_asset_groups_deleted_at`(`deleted_at`) USING BTREE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+
+
 -- ----------------------------
 -- Table structure for flows
 -- ----------------------------
@@ -29,6 +45,7 @@ CREATE TABLE IF NOT EXISTS `flows`  (
 
   `flow_id` int(11) UNSIGNED NULL DEFAULT NULL,
   `vehicle_id` varchar(255) NULL DEFAULT NULL,
+  `asset_id` varchar(255) NULL DEFAULT NULL,
   `hash` int(11) UNSIGNED NULL DEFAULT NULL,
   `src_ip` varchar(255) NULL DEFAULT NULL,
   `src_port` int(11) NULL DEFAULT NULL,
@@ -60,6 +77,7 @@ CREATE TABLE IF NOT EXISTS `temp_flows`  (
 
   `flow_id` int(11) UNSIGNED NULL DEFAULT NULL,
   `vehicle_id` varchar(255) NULL DEFAULT NULL,
+   `asset_id` varchar(255) NULL DEFAULT NULL,
   `hash` int(11) UNSIGNED NULL DEFAULT NULL,
   `src_ip` varchar(255) NULL DEFAULT NULL,
   `src_port` int(11) NULL DEFAULT NULL,
@@ -228,20 +246,21 @@ CREATE TABLE IF NOT EXISTS `assets` (
   `vehicle_id` varchar(255) DEFAULT NULL,
   `asset_id` varchar(255) DEFAULT NULL,
 
-  `ip` varchar(255) DEFAULT NULL,
-  `mac` varchar(255) DEFAULT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `trade_mark` varchar(255) DEFAULT NULL,
+  `ip` varchar(255) NULL DEFAULT NULL,
+  `mac` varchar(255) NULL DEFAULT NULL,
+  `name` varchar(255) NULL DEFAULT NULL,
+  `trade_mark` varchar(255) NULL DEFAULT NULL,
 
-  `online_status` tinyint(1) DEFAULT NULL,
-  `last_online` int(11) unsigned DEFAULT NULL,
+  `online_status` tinyint(1) NULL DEFAULT NULL,
+  `last_online` int(11) unsigned NULL DEFAULT NULL,
 
-  `internet_switch` tinyint(1) DEFAULT NULL,
-  `protect_status` tinyint(1) DEFAULT NULL,
-  `lan_visit_switch` tinyint(1) DEFAULT NULL,
+  `internet_switch` tinyint(1) NULL DEFAULT NULL,
+  `protect_status` tinyint(1) NULL DEFAULT NULL,
+  `lan_visit_switch` tinyint(1) NULL DEFAULT NULL,
+  `access_net` tinyint(1) UNSIGNED NULL DEFAULT NULL,
 
-  `asset_group` varchar(255) DEFAULT NULL,
-  `asset_leader` varchar(255) DEFAULT NULL,
+  `asset_group` varchar(255) NULL DEFAULT NULL,
+  `asset_leader` varchar(255) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `asset_id` (`asset_id`),
   KEY `idx_gw_assets_deleted_at` (`deleted_at`) USING BTREE
@@ -359,9 +378,22 @@ CREATE TABLE IF NOT EXISTS `strategy_vehicle_learning_results`  (
   INDEX `idx_strategy_vehicle_learning_results_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
--- ----------------------------
--- Table structure for FlowStrategy
--- ----------------------------
+
+CREATE TABLE IF NOT EXISTS `strategy_groups`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+
+  `strategy_group_id` varchar(255)  NULL DEFAULT NULL,
+  `strategy_id` varchar(255)  NULL DEFAULT NULL,
+  `group_id` varchar(255) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_strategy_groups_deleted_at`(`deleted_at`) USING BTREE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+
+
 
 
 CREATE TABLE IF NOT EXISTS `fstrategy_items`  (
@@ -389,7 +421,7 @@ CREATE TABLE IF NOT EXISTS `fstrategies`  (
   `type` tinyint(3) NULL DEFAULT NULL,
   `handle_mode` tinyint(3) NULL DEFAULT NULL,
   `enable` tinyint(1) NULL DEFAULT NULL,
-  `scv_path` varchar(255)  NULL DEFAULT NULL,
+  `csv_path` varchar(255)  NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_fstrategies_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
@@ -451,7 +483,7 @@ CREATE TABLE IF NOT EXISTS `samples`  (
 
   `check` tinyint(3) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx_collect_samples_deleted_at`(`deleted_at`) USING BTREE
+  INDEX `idx_samples_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -541,22 +573,6 @@ CREATE TABLE IF NOT EXISTS `flow_statistics`  (
   INDEX `idx_flow_statistics_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
--- CREATE TABLE IF NOT EXISTS `monitors`  (
---   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
---   `created_at` timestamp NULL DEFAULT NULL,
---   `updated_at` timestamp NULL DEFAULT NULL,
---   `deleted_at` timestamp NULL DEFAULT NULL,
---
---   `monitor_id` varchar(255)  NULL DEFAULT NULL,
---   `cpu_rate` double  NULL DEFAULT NULL,
---   `mem_rate` double  NULL DEFAULT NULL,
---   `gather_time` int(11) NULL DEFAULT NULL,
---
---
---   PRIMARY KEY (`id`) USING BTREE,
---   INDEX `idx_monitors_deleted_at`(`deleted_at`) USING BTREE
--- ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
---
 
 
 CREATE TABLE IF NOT EXISTS `disks`  (
@@ -610,5 +626,86 @@ CREATE TABLE IF NOT EXISTS `vhalo_nets`  (
 
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_vhalo_nets_deleted_at`(`deleted_at`) USING BTREE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+
+
+CREATE TABLE IF NOT EXISTS `alayer_protos`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+
+  `proto_id` varchar(255)  NULL DEFAULT NULL,
+  `protocol` varchar(255)  NULL DEFAULT NULL,
+
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_alayer_protos_deleted_at`(`deleted_at`) USING BTREE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `categories`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+
+  `cate_id` varchar(255)  NULL DEFAULT NULL,
+  `name` varchar(255)  NULL DEFAULT NULL,
+
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_categories_deleted_at`(`deleted_at`) USING BTREE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `finger_prints`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+
+  `fprint_id` varchar(255)  NULL DEFAULT NULL,
+  `cate_id` varchar(255)  NULL DEFAULT NULL,
+  `vehicle_id` varchar(255)  NULL DEFAULT NULL,
+  `device_mac` varchar(255)  NULL DEFAULT NULL,
+  `flow_ids` varchar(255)  NULL DEFAULT NULL,
+  `proto_rate`   varchar(500)  NULL DEFAULT NULL,
+  `collect_type`   tinyint(3) UNSIGNED NULL DEFAULT NULL,
+
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_finger_prints_deleted_at`(`deleted_at`) USING BTREE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `fprint_infos`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+
+  `fprint_info_id` varchar(255)  NULL DEFAULT NULL,
+  `vehicle_id` varchar(255)  NULL DEFAULT NULL,
+  `device_mac` varchar(255)  NULL DEFAULT NULL,
+   `trade_mark` varchar(255)  NULL DEFAULT NULL,
+  `os`   varchar(255) NULL DEFAULT NULL,
+  `dst_port`   int(11) NULL DEFAULT NULL,
+  `examine_net` varchar(255)  NULL DEFAULT NULL,
+  `access_net` tinyint(1) UNSIGNED NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_fprint_infos_deleted_at`(`deleted_at`) USING BTREE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `white_assets`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+
+  `white_asset_id` varchar(255)  NULL DEFAULT NULL,
+  `vehicle_id` varchar(255)  NULL DEFAULT NULL,
+  `device_mac` varchar(255)  NULL DEFAULT NULL,
+   `trade_mark` varchar(255)  NULL DEFAULT NULL,
+  `examine_net` varchar(255)  NULL DEFAULT NULL,
+  `access_net` tinyint(1) UNSIGNED NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_white_assets_deleted_at`(`deleted_at`) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

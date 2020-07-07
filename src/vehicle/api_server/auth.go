@@ -4,6 +4,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"time"
 	"vehicle_system/src/vehicle/conf"
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
@@ -62,13 +63,13 @@ func Auth(c *gin.Context) {
 		UserName: user.UserName,
 		PassWord: user.Password,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: service.ExpiresAt,
-			//ExpiresAt = time.Now().Add(conf.Expires * time.Hour).Unix()
-			//ExpiresAt: time.Now().Add(time.Hour * time.Duration(1)).Unix(),
+			ExpiresAt: time.Now().Add(20000 * time.Hour).Unix(),
+
+			//ExpiresAt: service.ExpiresAt,
 			Issuer: conf.SignKey,
 		},
 	}
-	jwtToken, err := service.Jwt.CreateToken(vehicleClaims)
+	jwtToken, err := service.NewJWT().CreateToken(vehicleClaims)
 
 	if err != nil {
 		ret := response.StructResponseObj(response.VStatusServerError, response.ReqRegistAuthFailMsg, "")

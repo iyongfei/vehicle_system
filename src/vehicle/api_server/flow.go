@@ -54,30 +54,6 @@ func GetFlow(c *gin.Context) {
 	c.JSON(http.StatusOK, retObj)
 }
 
-func GetFlows(c *gin.Context) {
-	vehicleId := c.Query("vehicle_id")
-
-	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId)
-	if argsTrimsEmpty {
-		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
-		c.JSON(http.StatusOK, ret)
-		logger.Logger.Error("%s argsTrimsEmpty vehicleId:%s argsTrimsEmpty", util.RunFuncName(), vehicleId)
-		logger.Logger.Print("%s argsTrimsEmpty vehicleId:%s argsTrimsEmpty", util.RunFuncName(), vehicleId)
-		return
-	}
-
-	flows := []*model.Flow{}
-	err := model_base.ModelBaseImpl(&model.Flow{}).
-		GetModelListByCondition(&flows, "vehicle_id = ?", []interface{}{vehicleId}...)
-	if err != nil {
-		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetFlowFailMsg, "")
-		c.JSON(http.StatusOK, ret)
-		return
-	}
-
-	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetFlowSuccessMsg, flows)
-	c.JSON(http.StatusOK, retObj)
-}
 func GetFlowsDps(c *gin.Context) {
 	vehicleId := c.Query("vehicle_id")
 	startTimeP := c.Query("start_time")
@@ -248,14 +224,16 @@ func GetPaginationFlows(c *gin.Context) {
 	logger.Logger.Print("%s request params vehicle_id:%s,page_size:%s,page_index:%s,start_time%s,endtime%s",
 		util.RunFuncName(), vehicleId, pageSizeP, pageIndexP, startTimeP, endTimeP)
 
-	argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId)
-	if argsTrimsEmpty {
-		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
-		c.JSON(http.StatusOK, ret)
-		logger.Logger.Error("%s argsTrimsEmpty threatId:%s", util.RunFuncName(), argsTrimsEmpty)
-		logger.Logger.Print("%s argsTrimsEmpty threatId:%s", util.RunFuncName(), argsTrimsEmpty)
-		return
-	}
+	vehicleId = util.RrgsTrim(vehicleId)
+
+	//argsTrimsEmpty := util.RrgsTrimsEmpty(vehicleId)
+	//if argsTrimsEmpty {
+	//	ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqArgsIllegalMsg, "")
+	//	c.JSON(http.StatusOK, ret)
+	//	logger.Logger.Error("%s argsTrimsEmpty threatId:%s", util.RunFuncName(), argsTrimsEmpty)
+	//	logger.Logger.Print("%s argsTrimsEmpty threatId:%s", util.RunFuncName(), argsTrimsEmpty)
+	//	return
+	//}
 
 	fpageSize, _ := strconv.Atoi(pageSizeP)
 	fpageIndex, _ := strconv.Atoi(pageIndexP)
@@ -277,9 +255,10 @@ func GetPaginationFlows(c *gin.Context) {
 		fpageIndex = defaultPageIndex
 	}
 	//默认2天前
-	defaultStartTime := util.GetFewDayAgo(2) //2
+	//defaultStartTime := util.GetFewDayAgo(2) //2
 	if startTime == 0 {
-		fStartTime = defaultStartTime
+		fStartTime = util.StampUnix2Time(int64(0))
+		//fStartTime = defaultStartTime
 	} else {
 		fStartTime = util.StampUnix2Time(int64(startTime))
 	}
@@ -302,9 +281,19 @@ func GetPaginationFlows(c *gin.Context) {
 
 	modelBase := model_base.ModelBaseImplPagination(&model.Flow{})
 
+	var sqlQuery string
+	var sqlArgs []interface{}
+	if vehicleId == "" {
+		sqlQuery = "flows.created_at BETWEEN ? AND ?"
+		sqlArgs = append(sqlArgs, fStartTime, fEndTime)
+	} else {
+		sqlQuery = "vehicle_id = ? and flows.created_at BETWEEN ? AND ?"
+		sqlArgs = append(sqlArgs, vehicleId, fStartTime, fEndTime)
+	}
+
 	err := modelBase.GetModelPaginationByCondition(fpageIndex, fpageSize,
-		&total, &flows, "flows.created_at desc", "vehicle_id = ? and flows.created_at BETWEEN ? AND ?",
-		[]interface{}{vehicleId, fStartTime, fEndTime}...)
+		&total, &flows, "flows.created_at desc", sqlQuery,
+		sqlArgs...)
 
 	if err != nil {
 		ret := response.StructResponseObj(response.VStatusServerError, response.ReqGetFlowFailMsg, "")
@@ -312,7 +301,12 @@ func GetPaginationFlows(c *gin.Context) {
 		return
 	}
 
-	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetFlowSuccessMsg, flows)
+	responseData := map[string]interface{}{
+		"flows":       flows,
+		"total_count": total,
+	}
+
+	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetFlowSuccessMsg, responseData)
 	c.JSON(http.StatusOK, retObj)
 }
 

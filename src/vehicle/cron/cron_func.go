@@ -7,6 +7,7 @@ import (
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
+	"vehicle_system/src/vehicle/model/model_helper"
 )
 
 func perMinuteFun() {
@@ -24,7 +25,7 @@ func HandleSpecFun() {
 	}
 
 	for _, vehicle := range vehicleInfos {
-		recentStrategy := model.GetVehicleRecentStrategy(vehicle.VehicleId)
+		recentStrategy := model_helper.GetVehicleRecentStrategy(vehicle.VehicleId)
 		strategyCmd := &emq_cmd.StrategySetCmd{
 			VehicleId: recentStrategy.VehicleId,
 			TaskType:  recentStrategy.TaskType,

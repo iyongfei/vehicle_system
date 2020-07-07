@@ -3,9 +3,12 @@ package main
 import (
 	"bytes"
 	"encoding/binary"
-	"encoding/json"
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/jinzhu/gorm"
+	"math/rand"
+	"strconv"
+	"time"
 	"vehicle_system/src/vehicle/conf"
 	"vehicle_system/src/vehicle/util"
 )
@@ -53,19 +56,128 @@ func Str2Stamp(formatTimeStr string) int64 {
 	return millisecond
 }
 
-func main() {
-	////2020-04-30 19:55:15
-	//
-	//r := Str2Stamp("2020-04-30 19:55:15")
-	//fmt.Println(r)
-	//
-	//r1 := Str2Stamp("2020-05-06 19:55:15")
-	//fmt.Println(r1)
+type CreatedAt time.Time
 
-	a := `["a","b"] `
-	aa := []string{}
-	json.Unmarshal([]byte(a), &aa)
-	fmt.Println(aa)
+func (ut *CreatedAt) MarshalJSON() (data []byte, err error) {
+	t := strconv.FormatInt(time.Time(*ut).Unix(), 10)
+	data = []byte(t)
+	return
+}
+
+type a struct {
+	gorm.Model
+	CreatedAt CreatedAt
+	Name      string
+}
+
+/**
+次方
+*/
+func pow(x, n int) int {
+	ret := 1 // 结果初始为0次方的值，整数0次方为1。如果是矩阵，则为单元矩阵。
+	for n != 0 {
+		if n%2 != 0 {
+			ret = ret * x
+		}
+		n /= 2
+		x = x * x
+	}
+	return ret
+}
+func RandToMaxNumber(ln int) int32 {
+	r := rand.New(rand.NewSource(time.Now().UnixNano())).Int31n(int32(pow(10, ln)))
+	return r
+}
+
+func main() {
+	a := time.Duration(1)
+	fmt.Println(a)
+	return
+
+	aat := `{"KONTIKI":0.029,"MDNS":0.291,"MGCP":0.076,"NFS":0.04,"NTP":0.041,"RDP":0.04,"RTP":0.031,"SNMP":0.178,"SSDP":0.069,"TFTP":0.171}`
+
+	fmt.Println(len(aat))
+
+	return
+	claims1 := &jwt.StandardClaims{
+		ExpiresAt: time.Now().Add(30 * time.Second).Unix(), // 过期时间，必须设置
+		Issuer:    "wang",                                  // 可不必设置，也可以填充用户名，
+	}
+	//expired := time.Now().Add(148 * time.Hour).Unix()
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims1) //生成token
+	accessToken, _ := token.SignedString([]byte("vector.sign"))
+	fmt.Println(accessToken)
+	////////////////////////////
+
+	mySigningKey := []byte("AllYourBase")
+
+	type MyCustomClaims struct {
+		Foo string `json:"foo"`
+		jwt.StandardClaims
+	}
+
+	// Create the Claims
+	claims2 := MyCustomClaims{
+		"bar",
+		jwt.StandardClaims{
+			ExpiresAt: 10,
+			Issuer:    "test",
+		},
+	}
+
+	token2 := jwt.NewWithClaims(jwt.SigningMethodHS256, claims2)
+	ss, err := token2.SignedString(mySigningKey)
+	fmt.Printf("%v %v", ss, err)
+	return
+
+	//dip := "3232235898"
+	//strDIp, _ := strconv.Atoi(dip)
+
+	//ip->int
+	s := util.StringIpToInt("192.168.1.122")
+	fmt.Println("ip->int", s)
+	//int->ip
+	r := util.IpIntToString(s)
+	fmt.Println("int->ip", r)
+
+	//小->大
+	sipBigEndian := util.BytesToBigEndian(util.LittleToBytes(uint32(s)))
+	//转换////////////////
+	dipf := int(sipBigEndian)
+
+	fmt.Println(dipf)
+
+	//大->小
+	dipLittleEndian := util.BytesToLittleEndian(util.BigToBytes(uint32(dipf)))
+	fss := util.IpIntToString(int(dipLittleEndian))
+	fmt.Println(fss)
+
+	//大端
+	rr := util.IpIntToString(2046929088)
+	fmt.Println("int-->ip", rr)
+}
+
+type FlowProtos int32
+type FlowSafetype int32
+type FlowStat int32
+type FlowParam_FItem struct {
+	Hash                 uint32       `protobuf:"varint,1,opt,name=hash,proto3" json:"hash,omitempty"`
+	SrcIp                uint32       `protobuf:"varint,2,opt,name=src_ip,json=srcIp,proto3" json:"src_ip,omitempty"`
+	SrcPort              uint32       `protobuf:"varint,3,opt,name=src_port,json=srcPort,proto3" json:"src_port,omitempty"`
+	DstIp                uint32       `protobuf:"varint,4,opt,name=dst_ip,json=dstIp,proto3" json:"dst_ip,omitempty"`
+	DstPort              uint32       `protobuf:"varint,5,opt,name=dst_port,json=dstPort,proto3" json:"dst_port,omitempty"`
+	Protocol             FlowProtos   `protobuf:"varint,6,opt,name=protocol,proto3,enum=protobuf.FlowProtos" json:"protocol,omitempty"`
+	FlowInfo             string       `protobuf:"bytes,7,opt,name=flow_info,json=flowInfo,proto3" json:"flow_info,omitempty"`
+	SafeType             FlowSafetype `protobuf:"varint,8,opt,name=safe_type,json=safeType,proto3,enum=protobuf.FlowSafetype" json:"safe_type,omitempty"`
+	SafeInfo             string       `protobuf:"bytes,9,opt,name=safe_info,json=safeInfo,proto3" json:"safe_info,omitempty"`
+	StartTime            uint32       `protobuf:"varint,10,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
+	LastSeenTime         uint32       `protobuf:"varint,11,opt,name=last_seen_time,json=lastSeenTime,proto3" json:"last_seen_time,omitempty"`
+	Src2DstBytes         uint64       `protobuf:"varint,12,opt,name=src2dst_bytes,json=src2dstBytes,proto3" json:"src2dst_bytes,omitempty"`
+	Dst2SrcBytes         uint64       `protobuf:"varint,13,opt,name=dst2src_bytes,json=dst2srcBytes,proto3" json:"dst2src_bytes,omitempty"`
+	FlowStat             FlowStat     `protobuf:"varint,14,opt,name=flow_stat,json=flowStat,proto3,enum=protobuf.FlowStat" json:"flow_stat,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}     `json:"-"`
+	XXX_unrecognized     []byte       `json:"-"`
+	XXX_sizecache        int32        `json:"-"`
 }
 
 //r := bytesToLittleEndian(UintToBytes(690530496))

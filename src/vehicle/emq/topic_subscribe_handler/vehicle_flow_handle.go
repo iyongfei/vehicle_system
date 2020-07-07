@@ -1,18 +1,39 @@
 package topic_subscribe_handler
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/golang/protobuf/proto"
+	"time"
+	"vehicle_system/src/vehicle/conf"
 	"vehicle_system/src/vehicle/emq/protobuf"
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
+	"vehicle_system/src/vehicle/model/model_helper"
+	"vehicle_system/src/vehicle/response"
 	"vehicle_system/src/vehicle/service/push"
 	"vehicle_system/src/vehicle/util"
 )
 
 func HandleVehicleFlow(vehicleResult protobuf.GWResult, vehicleId string) error {
-	//parse
+	//初始化资产默认分组
+	assetGroup := &model.AreaGroup{
+		AreaName:       response.UnGroupName,
+		AreaCode:       util.RandomString(32),
+		ParentAreaCode: "",
+		TreeAreaCode:   "",
+	}
+	assetGroupModelBase := model_base.ModelBaseImpl(assetGroup)
+	_, assetGroupRecordNotFound := assetGroupModelBase.GetModelByCondition("area_name = ?",
+		[]interface{}{assetGroup.AreaName}...)
+	if assetGroupRecordNotFound {
+		err := assetGroupModelBase.InsertModel()
+		if err != nil {
+			return fmt.Errorf("%s insert asset ungroup err:%s", err)
+		}
+	}
+	//解析flows
 	flowParams := &protobuf.FlowParam{}
 	err := proto.Unmarshal(vehicleResult.GetParam(), flowParams)
 	if err != nil {
@@ -21,55 +42,425 @@ func HandleVehicleFlow(vehicleResult protobuf.GWResult, vehicleId string) error 
 		return fmt.Errorf("%s unmarshal flowParam err:%s", util.RunFuncName(), err.Error())
 	}
 
-	var sendFlows []*model.Flow
-
-	for _, flowItem := range flowParams.FlowItem {
-
-		flowItemId := flowItem.GetHash()
-		flowInfo := &model.Flow{
-			FlowId:    flowItemId,
-			VehicleId: vehicleId,
+	var sendAssetFlows []map[string]interface{}
+	//{"id1":{"tls":"tls1","host":"host1"}}
+	//tlsHostMap := map[string]map[string]string{}
+	for _, macItems := range flowParams.MacItems {
+		mac := macItems.GetMac()
+		macFlows := macItems.GetFlowItem()
+		//创建或者获取asset
+		asset := &model.Asset{
+			VehicleId:  vehicleId,
+			AssetId:    mac,
+			AssetGroup: assetGroup.AreaCode,
 		}
-		modelBase := model_base.ModelBaseImpl(flowInfo)
-		_, recordNotFound := modelBase.GetModelByCondition(
-			"flow_id = ? and vehicle_id = ?", []interface{}{flowInfo.FlowId, flowInfo.VehicleId}...)
-		modelBase.CreateModel(flowItem)
-
+		assetModelBase := model_base.ModelBaseImpl(asset)
+		_, recordNotFound := assetModelBase.GetModelByCondition("asset_id = ?", asset.AssetId)
 		if recordNotFound {
-			if err := modelBase.InsertModel(); err != nil {
-				logger.Logger.Print("%s insert flowParam err:%s", util.RunFuncName(), err.Error())
-				logger.Logger.Error("%s insert flowParam err:%s", util.RunFuncName(), err.Error())
-				//return fmt.Errorf("%s insert flow err:%s",util.RunFuncName(),err.Error())
+			exist := checkoutAssetPrintInfos(asset.AssetId)
+			asset.AccessNet = exist
+
+			err := assetModelBase.InsertModel()
+			if err != nil {
+				logger.Logger.Print("%s flows1 table flow_assetId:%s", util.RunFuncName(), mac)
+				logger.Logger.Info("%s flows1 table flow_assetId:%s", util.RunFuncName(), mac)
+
 				continue
+			}
+		}
+
+		AssetFlows := []interface{}{}
+		//为asset插入flow
+		for _, flowItem := range macFlows {
+
+			//tlsHostMap[mac] =
+
+			flowItemId := flowItem.GetHash()
+			flowInfo := &model.Flow{
+				FlowId:    flowItemId,
+				AssetId:   mac,
+				VehicleId: vehicleId,
+			}
+			flowModelBase := model_base.ModelBaseImpl(flowInfo)
+			_, flowRecordNotFound := flowModelBase.GetModelByCondition(
+				"flow_id = ? and vehicle_id = ? and asset_id = ?",
+				[]interface{}{flowInfo.FlowId, flowInfo.VehicleId, flowInfo.AssetId}...)
+			flowModelBase.CreateModel(flowItem)
+
+			//输出log
+			logger.Logger.Print("%s flows table flow_vehicleId%s,flow_assetId:%s,flowId:%s", util.RunFuncName(), flowInfo.VehicleId, flowInfo.AssetId, flowInfo.FlowId)
+			logger.Logger.Info("%s flows table flow_vehicleId%s,flow_assetId:%s,flowId:%s", util.RunFuncName(), flowInfo.VehicleId, flowInfo.AssetId, flowInfo.FlowId)
+
+			if flowRecordNotFound {
+				if err := flowModelBase.InsertModel(); err != nil {
+					logger.Logger.Print("%s flows2 table flow_assetId:%s", util.RunFuncName(), mac)
+					logger.Logger.Info("%s flows2 table flow_assetId:%s", util.RunFuncName(), mac)
+
+					logger.Logger.Print("%s insert flowParam err:%s", util.RunFuncName(), err.Error())
+					logger.Logger.Error("%s insert flowParam err:%s", util.RunFuncName(), err.Error())
+					continue
+				}
+			} else {
+				//update
+				//更新 排除VehicleId,Name,ProtectStatus,LeaderId
+
+				attrs := CreateFlowAttr(flowInfo)
+
+				if err := flowModelBase.UpdateModelsByCondition(attrs,
+					"flow_id = ? and vehicle_id = ? and asset_id = ?",
+					[]interface{}{flowInfo.FlowId, flowInfo.VehicleId, flowInfo.AssetId}...); err != nil {
+					logger.Logger.Print("%s update flowParam err:%s", util.RunFuncName(), err.Error())
+					logger.Logger.Error("%s update flowParam err:%s", util.RunFuncName(), err.Error())
+					logger.Logger.Print("%s flows3 table flow_assetId:%s", util.RunFuncName(), mac)
+					logger.Logger.Info("%s flows3 table flow_assetId:%s", util.RunFuncName(), mac)
+
+					continue
+				}
+			}
+			AssetFlows = append(AssetFlows, flowInfo)
+		}
+
+		sendAssetFlow := map[string]interface{}{}
+		sendAssetFlow["asset_id"] = mac
+		sendAssetFlow["asset_flows"] = AssetFlows
+		sendAssetFlows = append(sendAssetFlows, sendAssetFlow)
+	}
+
+	//处理临时表
+	deleTmpFlows(vehicleId, flowParams)
+
+	//处理指纹标签flow  todo
+	handleFprintFlows(vehicleId, flowParams)
+
+	pushActionTypeName := protobuf.GWResult_ActionType_name[int32(vehicleResult.ActionType)]
+	pushVehicleid := vehicleId
+	pushData := sendAssetFlows
+	fPushData := push.CreatePushData(pushActionTypeName, pushVehicleid, pushData)
+	push.GetPushervice().SetPushData(fPushData).Write()
+
+	return nil
+}
+
+/**
+处理指纹库flows
+*/
+func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
+	for _, macItems := range flowParams.MacItems {
+		mac := macItems.GetMac()
+		//判断资产是否达标指纹完整度
+		fp := &model.Fprint{
+			AssetId: mac,
+		}
+		fpModelBase := model_base.ModelBaseImpl(fp)
+		err, _ := fpModelBase.GetModelByCondition("asset_id = ?", []interface{}{fp.AssetId}...)
+		if err != nil {
+			continue
+		}
+		//指纹完整度分数
+		collectTotalRate := fp.CollectTotalRate
+
+		//没有贴标签的进行资产识别
+		assetPrint := &model.AssetFprint{
+			AssetId: mac,
+		}
+		assetPrintModelBase := model_base.ModelBaseImpl(assetPrint)
+		err, assetPrintRecordNotFound := assetPrintModelBase.GetModelByCondition("asset_id = ?", []interface{}{assetPrint.AssetId}...)
+
+		if !assetPrintRecordNotFound && collectTotalRate >= conf.MinRate {
+			if fp.AutoCateId == "" {
+				updateFprintAutoCateId(vehicleId, mac)
 			}
 		} else {
-			//update
-			//更新 排除VehicleId,Name,ProtectStatus,LeaderId
-			attrs := map[string]interface{}{
-				"hash":           flowInfo.Hash,
-				"src_ip":         flowInfo.SrcIp,
-				"src_port":       flowInfo.SrcPort,
-				"dst_ip":         flowInfo.DstIp,
-				"dst_port":       flowInfo.DstPort,
-				"protocol":       flowInfo.Protocol,
-				"flow_info":      flowInfo.FlowInfo,
-				"safe_type":      flowInfo.SafeType,
-				"safe_info":      flowInfo.SafeInfo,
-				"start_time":     flowInfo.StartTime,
-				"last_seen_time": flowInfo.LastSeenTime,
-				"src_dst_bytes":  flowInfo.SrcDstBytes,
-				"dst_src_bytes":  flowInfo.DstSrcBytes,
-				"stat":           flowInfo.Stat,
+			updateFprintAutoCateId(vehicleId, mac)
+		}
+
+		logger.Logger.Print("%s fprint:%+v", util.RunFuncName(), fp)
+		logger.Logger.Info("%s fprint:%+v", util.RunFuncName(), fp)
+		//收集tls,hostname
+
+		//采集完毕
+		if collectTotalRate >= conf.MinRate {
+			if !fp.CollectFinish {
+				updateAssetCollectTime(mac)
+				updateFprintFinish(vehicleId, mac, true)
 			}
-			if err := modelBase.UpdateModelsByCondition(attrs,
-				"flow_id = ? and vehicle_id = ?", []interface{}{flowInfo.FlowId, flowInfo.VehicleId}...); err != nil {
-				logger.Logger.Print("%s update flowParam err:%s", util.RunFuncName(), err.Error())
-				logger.Logger.Error("%s update flowParam err:%s", util.RunFuncName(), err.Error())
-				continue
+			continue
+		}
+
+		macFlows := macItems.GetFlowItem()
+		for _, flowItem := range macFlows {
+			flowItemId := flowItem.GetHash()
+			fprintFlow := &model.FprintFlow{
+				FlowId:    flowItemId,
+				AssetId:   mac,
+				VehicleId: vehicleId,
+			}
+			fpflowModelBase := model_base.ModelBaseImpl(fprintFlow)
+
+			_, flowRecordNotFound := fpflowModelBase.GetModelByCondition(
+				"flow_id = ? and vehicle_id = ? and asset_id = ?",
+				[]interface{}{fprintFlow.FlowId, fprintFlow.VehicleId, fprintFlow.AssetId}...)
+
+			fpflowModelBase.CreateModel(flowItem)
+
+			logger.Logger.Print("%s fprints table flow_vehicleId%s,flow_assetId:%s,flowId:%s", util.RunFuncName(), fprintFlow.VehicleId, fprintFlow.AssetId, fprintFlow.FlowId)
+			logger.Logger.Info("%s fprints table flow_vehicleId%s,flow_assetId:%s,flowId:%s", util.RunFuncName(), fprintFlow.VehicleId, fprintFlow.AssetId, fprintFlow.FlowId)
+
+			if flowRecordNotFound {
+				if err := fpflowModelBase.InsertModel(); err != nil {
+					logger.Logger.Print("%s insert fingerprint flowParam err:%s", util.RunFuncName(), err.Error())
+					logger.Logger.Error("%s insert fingerprint flowParam err:%s", util.RunFuncName(), err.Error())
+					continue
+				}
+			} else {
+				//update
+				//更新 排除VehicleId,Name,ProtectStatus,LeaderId
+
+				attrs := CreateAttr(fprintFlow)
+
+				if err := fpflowModelBase.UpdateModelsByCondition(attrs,
+					"flow_id = ? and vehicle_id = ? and asset_id = ?",
+					[]interface{}{fprintFlow.FlowId, fprintFlow.VehicleId, fprintFlow.AssetId}...); err != nil {
+					logger.Logger.Print("%s update flowParam err:%s", util.RunFuncName(), err.Error())
+					logger.Logger.Error("%s update flowParam err:%s", util.RunFuncName(), err.Error())
+					continue
+				}
 			}
 		}
-		sendFlows = append(sendFlows, flowInfo)
+
+		//更新指纹库
+		updateFprint(vehicleId, mac)
+		//如果没有记录，并且没有
+		updateAssetCollectTime(mac)
+
+		//log
+		_, _ = fpModelBase.GetModelByCondition("asset_id = ?", []interface{}{fp.AssetId}...)
+
+		logger.Logger.Print("%s fprint %+v", util.RunFuncName(), fp)
+		logger.Logger.Info("%s fprint %+v", util.RunFuncName(), fp)
 	}
+}
+
+/**
+插入指纹资产
+*/
+func updateFprint(vehicleId string, mac string) {
+	//tls
+	tlsInfoS, _ := model_helper.JudgeAssetCollectTlsInfoRate(mac)
+	tlsInfoBys, _ := json.Marshal(tlsInfoS)
+	tlsInfo := string(tlsInfoBys)
+
+	//hostname
+	hostNameS, _ := model_helper.JudgeAssetCollectHostNameRate(mac)
+	hostNameBys, _ := json.Marshal(hostNameS)
+	hostName := string(hostNameBys)
+
+	//totalflowbytes
+	totalBytes, ftatalBytesRate := model_helper.JudgeAssetCollectByteTotalRate(mac)
+
+	//collectTime
+	collectTime, fcollect_time := model_helper.JudgeAssetCollectTimeRate(mac)
+
+	//protoflow
+	protoFlow, fcollectProto := model_helper.JudgeAssetCollectProtoFlowRate(mac)
+	protoFlowBys, _ := json.Marshal(protoFlow)
+	fprotoFlowStr := string(protoFlowBys)
+
+	//识别类别
+	//autoCateId, maxAssetIdValue := model_helper.JudgeAssetCate(mac)
+
+	fprint := &model.Fprint{
+		AssetId:   mac,
+		FprintId:  util.RandomString(32),
+		VehicleId: vehicleId,
+	}
+
+	fpModelBase := model_base.ModelBaseImpl(fprint)
+
+	err, recordNotFound := fpModelBase.GetModelByCondition("asset_id = ?", []interface{}{fprint.AssetId}...)
+	if err != nil {
+		//todo
+	}
+
+	fprint.CollectProtoFlows = fprotoFlowStr
+	fprint.CollectProtoRate = fcollectProto
+
+	fprint.CollectBytes = totalBytes
+	fprint.CollectBytesRate = ftatalBytesRate
+
+	fprint.CollectTls = tlsInfo
+	//fprint.CollectTlsRate = ftls
+
+	fprint.CollectHost = hostName
+	//fprint.CollectHostRate = fhost
+
+	fprint.CollectTime = collectTime
+	fprint.CollectTimeRate = fcollect_time
+	fprint.CollectTotalRate = fcollectProto + ftatalBytesRate + fcollect_time
+
+	//fprint.AutoCateId = autoCateId
+	//fprint.AutoCateRate = maxAssetIdValue
+
+	logger.Logger.Info("%s updateFprint:%+v", util.RunFuncName(), fprint)
+	logger.Logger.Print("%s updateFprint:%+v", util.RunFuncName(), fprint)
+
+	if recordNotFound {
+		err := fprint.InsertModel()
+		if err != nil {
+			//todo
+		}
+	} else {
+		attrs := map[string]interface{}{
+			"fprint_id":  fprint.FprintId,
+			"vehicle_id": fprint.VehicleId,
+
+			"categorys": fprint.Categorys,
+
+			"collect_proto_flows": fprint.CollectProtoFlows,
+			"collect_proto_rate":  fprint.CollectProtoRate,
+
+			"collect_bytes":      fprint.CollectBytes,
+			"collect_bytes_rate": fprint.CollectBytesRate,
+
+			"collect_tls":      fprint.CollectTls,
+			"collect_tls_rate": fprint.CollectTlsRate,
+
+			"collect_host":      fprint.CollectHost,
+			"collect_host_rate": fprint.CollectHostRate,
+
+			"collect_time":      fprint.CollectTime,
+			"collect_time_rate": fprint.CollectTimeRate,
+
+			"collect_total_rate": fprint.CollectTotalRate,
+
+			//"auto_cate_id":   fprint.AutoCateId,
+			//"auto_cate_rate": fprint.AutoCateRate,
+		}
+		if err := fpModelBase.UpdateModelsByCondition(attrs, "asset_id = ?", []interface{}{fprint.AssetId}...); err != nil {
+			//todo
+			logger.Logger.Print("%s update flowParam err:%s", util.RunFuncName(), err.Error())
+			logger.Logger.Error("%s update flowParam err:%s", util.RunFuncName(), err.Error())
+		}
+	}
+}
+
+/*
+更新采集时间
+*/
+func updateAssetCollectTime(mac string) {
+	fprint := &model.Fprint{
+		AssetId: mac,
+	}
+	fpModelBase := model_base.ModelBaseImpl(fprint)
+
+	err, recordNotFound := fpModelBase.GetModelByCondition("asset_id = ?", []interface{}{fprint.AssetId}...)
+	if err != nil {
+		//todo
+		logger.Logger.Print("%s asset:%s,err:%s", util.RunFuncName(), fprint.AssetId, err.Error())
+		logger.Logger.Error("%s asset:%s,err:%s", util.RunFuncName(), fprint.AssetId, err.Error())
+	}
+	if recordNotFound {
+		insertErr := fpModelBase.InsertModel()
+		if insertErr != nil {
+			//todo
+			logger.Logger.Print("%s asset:%s,err:%s", util.RunFuncName(), fprint.AssetId, insertErr.Error())
+			logger.Logger.Error("%s asset:%s,err:%s", util.RunFuncName(), fprint.AssetId, insertErr.Error())
+		}
+	} else {
+		var attrs map[string]interface{}
+		if fprint.CollectStart == 0 {
+			attrs = map[string]interface{}{
+				"collect_start": uint64(time.Now().Unix()),
+			}
+		} else {
+			ctime := fprint.CollectTime
+			stime := fprint.CollectStart
+			now := uint64(time.Now().Unix())
+			distanceTime := ctime + uint32(now-stime)
+
+			attrs = map[string]interface{}{
+				"collect_start": uint64(time.Now().Unix()),
+				"collect_time":  distanceTime,
+			}
+		}
+		if err := fpModelBase.UpdateModelsByCondition(attrs,
+			"asset_id = ?", []interface{}{fprint.AssetId}...); err != nil {
+			logger.Logger.Print("%s asset:%s,err:%s", util.RunFuncName(), fprint.AssetId, err.Error())
+			logger.Logger.Error("%s asset:%s,err:%s", util.RunFuncName(), fprint.AssetId, err.Error())
+		}
+	}
+}
+
+/*
+更新资产类别识别
+*/
+func updateFprintAutoCateId(vehicleId string, mac string) {
+	//识别类别
+	autoCateId, maxAssetIdValue := model_helper.JudgeAssetCate(mac)
+	logger.Logger.Print("%s update updateFprintAutoCateId err:%s", util.RunFuncName(), autoCateId, maxAssetIdValue)
+	logger.Logger.Info("%s update updateFprintAutoCateId err:%s", util.RunFuncName(), autoCateId, maxAssetIdValue)
+
+	fprint := &model.Fprint{
+		AssetId:   mac,
+		FprintId:  util.RandomString(32),
+		VehicleId: vehicleId,
+	}
+
+	fpModelBase := model_base.ModelBaseImpl(fprint)
+
+	err, recordNotFound := fpModelBase.GetModelByCondition("asset_id = ?", []interface{}{fprint.AssetId}...)
+	if err != nil {
+		//todo
+		logger.Logger.Print("%s asset:%s,err:%s", util.RunFuncName(), fprint.AssetId, err.Error())
+		logger.Logger.Error("%s asset:%s,err:%s", util.RunFuncName(), fprint.AssetId, err.Error())
+	}
+	if recordNotFound {
+		insertErr := fpModelBase.CreateModel(fprint)
+		if insertErr != nil {
+			logger.Logger.Print("%s asset:%s,err:%s", util.RunFuncName(), fprint.AssetId, insertErr)
+			logger.Logger.Error("%s asset:%s,err:%s", util.RunFuncName(), fprint.AssetId, insertErr)
+		}
+	} else {
+		attrs := map[string]interface{}{
+			"auto_cate_id":   autoCateId,
+			"auto_cate_rate": maxAssetIdValue,
+		}
+		if err := fpModelBase.UpdateModelsByCondition(attrs, "asset_id = ?", []interface{}{fprint.AssetId}...); err != nil {
+			//todo
+			logger.Logger.Print("%s update flowParam err:%s", util.RunFuncName(), err.Error())
+			logger.Logger.Error("%s update flowParam err:%s", util.RunFuncName(), err.Error())
+		}
+	}
+}
+
+/**
+更新采集完毕标志
+*/
+func updateFprintFinish(vehicleId string, mac string, collectFinish bool) {
+	//插入资产指纹信息
+	fprint := &model.Fprint{
+		AssetId:       mac,
+		FprintId:      util.RandomString(32),
+		VehicleId:     vehicleId,
+		CollectFinish: true,
+	}
+
+	fpModelBase := model_base.ModelBaseImpl(fprint)
+
+	attrs := map[string]interface{}{
+		"collect_finish": fprint.AutoCateId,
+	}
+	if err := fpModelBase.UpdateModelsByCondition(attrs, "asset_id = ?", []interface{}{fprint.AssetId}...); err != nil {
+		//todo
+		logger.Logger.Print("%s update flowParam err:%s", util.RunFuncName(), err.Error())
+		logger.Logger.Error("%s update flowParam err:%s", util.RunFuncName(), err.Error())
+	}
+}
+
+/**
+处理临时表
+*/
+func deleTmpFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 
 	//删除临时表
 	tFlow := &model.TempFlow{}
@@ -80,39 +471,107 @@ func HandleVehicleFlow(vehicleResult protobuf.GWResult, vehicleId string) error 
 		logger.Logger.Error("%s dele temp vehicle flow err:%s", util.RunFuncName(), err.Error())
 
 	}
-	for _, tFlowItem := range flowParams.FlowItem {
+	//插入临时表
+	for _, macItems := range flowParams.MacItems {
+		mac := macItems.GetMac()
+		macFlows := macItems.GetFlowItem()
 
-		tFlowItemId := tFlowItem.GetHash()
-		tFlowInfo := &model.TempFlow{
-			FlowId:    tFlowItemId,
-			VehicleId: vehicleId,
-		}
-		tFlowModelBase := model_base.ModelBaseImpl(tFlowInfo)
-		_, recordNotFound := tFlowModelBase.GetModelByCondition(
-			"flow_id = ? and vehicle_id = ?", []interface{}{tFlowInfo.FlowId, tFlowInfo.VehicleId}...)
-		tFlowModelBase.CreateModel(tFlowItem)
-
-		if recordNotFound {
-			if err := tFlowModelBase.InsertModel(); err != nil {
-				logger.Logger.Print("%s insert temp flow err:%s", util.RunFuncName(), err.Error())
-				logger.Logger.Error("%s insert temp flow err:%s", util.RunFuncName(), err.Error())
-				//return fmt.Errorf("%s insert flow err:%s",util.RunFuncName(),err.Error())
-				continue
+		for _, flowItem := range macFlows {
+			flowItemId := flowItem.GetHash()
+			tFlowInfo := &model.TempFlow{
+				FlowId:    flowItemId,
+				AssetId:   mac,
+				VehicleId: vehicleId,
+			}
+			flowModelBase := model_base.ModelBaseImpl(tFlowInfo)
+			_, flowRecordNotFound := flowModelBase.GetModelByCondition(
+				"flow_id = ? and vehicle_id = ? and asset_id = ?",
+				[]interface{}{tFlowInfo.FlowId, tFlowInfo.VehicleId, tFlowInfo.AssetId}...)
+			flowModelBase.CreateModel(flowItem)
+			if flowRecordNotFound {
+				if err := flowModelBase.InsertModel(); err != nil {
+					logger.Logger.Print("%s insert flowParam err:%s", util.RunFuncName(), err.Error())
+					logger.Logger.Error("%s insert flowParam err:%s", util.RunFuncName(), err.Error())
+					continue
+				}
 			}
 		}
 	}
 
-	//会话状态
-	logger.Logger.Print("%s flow info %+v", util.RunFuncName(), sendFlows)
-	logger.Logger.Info("%s flow info %+v", util.RunFuncName(), sendFlows)
+}
 
-	pushActionTypeName := protobuf.GWResult_ActionType_name[int32(vehicleResult.ActionType)]
-	pushVehicleid := vehicleId
-	pushData := sendFlows
+///////////////////////////////
 
-	fPushData := push.CreatePushData(pushActionTypeName, pushVehicleid, pushData)
+func CreateFlowAttr(fprintFlow *model.Flow) map[string]interface{} {
 
-	push.GetPushervice().SetPushData(fPushData).Write()
+	attrs := map[string]interface{}{
+		"hash":           fprintFlow.Hash,
+		"src_ip":         fprintFlow.SrcIp,
+		"src_port":       fprintFlow.SrcPort,
+		"dst_ip":         fprintFlow.DstIp,
+		"dst_port":       fprintFlow.DstPort,
+		"protocol":       fprintFlow.Protocol,
+		"flow_info":      fprintFlow.FlowInfo,
+		"safe_type":      fprintFlow.SafeType,
+		"safe_info":      fprintFlow.SafeInfo,
+		"start_time":     fprintFlow.StartTime,
+		"last_seen_time": fprintFlow.LastSeenTime,
+		"src_dst_bytes":  fprintFlow.SrcDstBytes,
+		"dst_src_bytes":  fprintFlow.DstSrcBytes,
+		"stat":           fprintFlow.Stat,
+		//add
+		"src_dst_packets":      fprintFlow.SrcDstPackets,
+		"dst_src_packets":      fprintFlow.DstSrcPackets,
+		"host_name":            fprintFlow.HostName,
+		"category":             fprintFlow.Category,
+		"has_passive":          fprintFlow.HasPassive,
+		"iat_flow_avg":         fprintFlow.IatFlowAvg,
+		"iat_flow_stddev":      fprintFlow.IatFlowStddev,
+		"data_ratio":           fprintFlow.DataRatio,
+		"str_data_ratio":       fprintFlow.StrDataRatio,
+		"pktlen_c_to_s_avg":    fprintFlow.PktlenCToSAvg,
+		"pktlen_c_to_s_stddev": fprintFlow.PktlenCToSStddev,
+		"pktlen_s_to_c_avg":    fprintFlow.PktlenSToCAvg,
+		"pktlen_s_to_c_stddev": fprintFlow.PktlenSToCStddev,
+		"tls_client_info":      fprintFlow.TlsClientInfo,
+		"ja3c":                 fprintFlow.Ja3c,
+	}
+	return attrs
+}
 
-	return nil
+func CreateAttr(fprintFlow *model.FprintFlow) map[string]interface{} {
+
+	attrs := map[string]interface{}{
+		"hash":           fprintFlow.Hash,
+		"src_ip":         fprintFlow.SrcIp,
+		"src_port":       fprintFlow.SrcPort,
+		"dst_ip":         fprintFlow.DstIp,
+		"dst_port":       fprintFlow.DstPort,
+		"protocol":       fprintFlow.Protocol,
+		"flow_info":      fprintFlow.FlowInfo,
+		"safe_type":      fprintFlow.SafeType,
+		"safe_info":      fprintFlow.SafeInfo,
+		"start_time":     fprintFlow.StartTime,
+		"last_seen_time": fprintFlow.LastSeenTime,
+		"src_dst_bytes":  fprintFlow.SrcDstBytes,
+		"dst_src_bytes":  fprintFlow.DstSrcBytes,
+		"stat":           fprintFlow.Stat,
+		//add
+		"src_dst_packets":      fprintFlow.SrcDstPackets,
+		"dst_src_packets":      fprintFlow.DstSrcPackets,
+		"host_name":            fprintFlow.HostName,
+		"category":             fprintFlow.Category,
+		"has_passive":          fprintFlow.HasPassive,
+		"iat_flow_avg":         fprintFlow.IatFlowAvg,
+		"iat_flow_stddev":      fprintFlow.IatFlowStddev,
+		"data_ratio":           fprintFlow.DataRatio,
+		"str_data_ratio":       fprintFlow.StrDataRatio,
+		"pktlen_c_to_s_avg":    fprintFlow.PktlenCToSAvg,
+		"pktlen_c_to_s_stddev": fprintFlow.PktlenCToSStddev,
+		"pktlen_s_to_c_avg":    fprintFlow.PktlenSToCAvg,
+		"pktlen_s_to_c_stddev": fprintFlow.PktlenSToCStddev,
+		"tls_client_info":      fprintFlow.TlsClientInfo,
+		"ja3c":                 fprintFlow.Ja3c,
+	}
+	return attrs
 }

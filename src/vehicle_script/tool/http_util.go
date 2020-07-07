@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-func UploadFile(url string, params map[string]string, nameField, fileName string, file io.Reader) (map[string]interface{}, error) {
+func UploadFile(url string, token string, params map[string]string, nameField, fileName string, file io.Reader) (map[string]interface{}, error) {
 	body := new(bytes.Buffer)
 
 	writer := multipart.NewWriter(body)
@@ -41,6 +41,7 @@ func UploadFile(url string, params map[string]string, nameField, fileName string
 	}
 	//req.Header.Set("Content-Type","multipart/form-data")
 	req.Header.Add("Content-Type", writer.FormDataContentType())
+	req.Header.Add("token", token)
 
 	client := http.Client{}
 	resp, err := client.Do(req)
@@ -61,7 +62,7 @@ func UploadFile(url string, params map[string]string, nameField, fileName string
 	return p, nil
 }
 
-func UploadEditFile(url string, params map[string]string, nameField, fileName string, file io.Reader) (map[string]interface{}, error) {
+func UploadEditFile(url string, token string, params map[string]string, nameField, fileName string, file io.Reader) (map[string]interface{}, error) {
 	body := new(bytes.Buffer)
 
 	writer := multipart.NewWriter(body)
@@ -91,7 +92,7 @@ func UploadEditFile(url string, params map[string]string, nameField, fileName st
 	}
 	//req.Header.Set("Content-Type","multipart/form-data")
 	req.Header.Add("Content-Type", writer.FormDataContentType())
-
+	req.Header.Add("token", token)
 	client := http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
@@ -147,6 +148,7 @@ func Get(reqUrl string, queryParams map[string]interface{}, token string) (map[s
 
 	reqest, err := http.NewRequest("GET", urlReq.String(), nil)
 	reqest.Header.Add("token", token)
+	reqest.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	if err != nil {
 		return nil, err
@@ -180,6 +182,7 @@ func Delete(reqUrl string, queryParams map[string]interface{}, token string) (ma
 
 	reqest, err := http.NewRequest("DELETE", urlReq.String(), nil)
 	reqest.Header.Add("token", token)
+	reqest.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	if err != nil {
 		return nil, err
@@ -225,7 +228,7 @@ func PostForm(urlParam string, bodyParms map[string]interface{}, token string) (
 	if err != nil {
 		return nil, err
 	}
-	defer rsp.Body.Close()
+	//defer rsp.Body.Close()
 
 	buf, err := ioutil.ReadAll(rsp.Body)
 

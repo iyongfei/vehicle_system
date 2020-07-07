@@ -37,6 +37,11 @@ const (
 	UnmarshalErr = "数据解析失败"
 )
 
+//指纹库
+const (
+	Vc = "摄像头"
+)
+
 //group
 const (
 	UnGroupName           = "未分组"
@@ -180,6 +185,9 @@ const (
 
 	ReqGetAssetListFailMsg    = "设备列表获取失败"
 	ReqGetAssetListSuccessMsg = "设备列表获取成功"
+
+	ReqGetAssetFlowFailMsg    = "设备流量获取失败"
+	ReqGetAssetFlowSuccessMsg = "设备流量获取成功"
 )
 
 //strategy
@@ -220,7 +228,7 @@ const (
 
 //fstrategy
 const (
-	//ReqAddStrategyFailMsg    = "策略添加失败"
+	ReqAddFStrategyFailMsg    = "会话策略添加失败"
 	ReqAddFStrategySuccessMsg = "会话策略添加成功"
 	//ReqGetStrategyExistMsg    = "策略已存在"
 	ReqGetFStrtegyUnExistMsg = "会话策略信息不存在"
@@ -234,18 +242,58 @@ const (
 	ReqDeleFStrategyFailMsg    = "会话策略信息删除失败"
 	ReqDeleFStrategySuccessMsg = "会话策略信息删除成功"
 	//
-	//ReqUpdateStrategyFailMsg    = "策略信息更新失败"
-	//ReqUpdateStrategySuccessMsg = "策略信息更新成功"
-	//
-	//
-	//
-	//ReqGetStrategyVehicleFailMsg    		= "策略-终端信息获取失败"
-	//ReqGetStrategyVehicleUnExistMsg    		= "策略-终端信息不存在"
-	//ReqGetStrategyVehicleSuccessMsg		 = "策略-终端信息获取成功"
-	//
-	//ReqGetStrategyVehicleListFailMsg    = "策略-终端列表获取失败"
-	//ReqGetStrategyVehicleListSuccessMsg = "策略-终端列表获取成功"
-	//
-	//ReqGetStrategyVehicleResultListFailMsg    = "终端-学习结果列表获取失败"
-	//ReqGetStrategyVehicleResultListSuccessMsg = "终端-学习结果列表获取成功"
+	ReqUpdateFStrategyFailMsg    = "会话策略信息更新失败"
+	ReqUpdateFStrategySuccessMsg = "会话策略信息更新成功"
+)
+
+//category
+const (
+	ReqAddCategoryFailMsg    = "添加指纹类别失败"
+	ReqAddCategorySuccessMsg = "添加指纹类别成功"
+	ReqCategoryExistMsg      = "该指纹类别已存在"
+	ReqCategoryNotExistMsg   = "该指纹类别不存在"
+	ReqCategoryFailMsg       = "获取指纹类别失败"
+	ReqCategorySuccessMsg    = "获取指纹类别成功"
+
+	ReqUpdateCategoryFailMsg    = "更新指纹类别失败"
+	ReqUpdateCategorySuccessMsg = "更新指纹类别成功"
+
+	ReqCategoryListFailMsg    = "获取指纹类别列表失败"
+	ReqCategoryListSuccessMsg = "获取指纹类别列表成功"
+
+	ReqDeleCategoryFailMsg    = "删除指纹类别失败"
+	ReqDeleCategorySuccessMsg = "删除指纹类别成功"
+)
+
+//assetprint
+const (
+	FPrintWholeRate              = "完整度"
+	ReqGetAssetFprintsUnExistMsg = "资产指纹信息不存在"
+	ReqGetAssetFprintsFailMsg    = "资产指纹信息获取失败"
+	ReqGetAssetFprintsSuccessMsg = "资产指纹信息获取成功"
+
+	ReqAddFprintsFailMsg             = "指纹信息入库获取失败"
+	ReqAddFprintsSuccessMsg          = "指纹信息入库获取成功"
+	ReqAddFprintsAccessNetSuccessMsg = "指纹入网成功"
+	ReqAddFprintsAccessNetFailMsg    = "指纹入网失败"
+
+	ReqGetAssetFprintsCateExistMsg   = "资产类别信息已存在"
+	ReqAddAssetFprintsCateFailMsg    = "资产类别信息添加失败"
+	ReqAddAssetFprintsCateSuccessMsg = "资产类别信息添加成功"
+
+	ReqDeleAssetFprintsCateFailMsg    = "资产类别信息删除失败"
+	ReqDeleAssetFprintsCateSuccessMsg = "资产类别信息删除成功"
+)
+
+//fprint
+const (
+	//ReqGetAssetFprintsUnExistMsg = "资产指纹信息不存在"
+	//ReqGetAssetFprintsFailMsg    = "资产指纹信息获取失败"
+	//ReqGetAssetFprintsSuccessMsg = "资产指纹信息获取成功"
+
+	ReqGetFprintsFailMsg     = "指纹库获取失败"
+	ReqGetFprintsSuccessMsg  = "指纹库获取成功"
+	ReqGetFprintsUnExistMsg  = "指纹库信息不存在"
+	ReqDeleFprintsSuccessMsg = "指纹删除成功"
+	ReqDeleFprintsFailMsg    = "指纹删除失败"
 )

@@ -1,9 +1,11 @@
 package timing
 
-import "fmt"
+import (
+	"vehicle_system/src/vehicle/logger"
+	"vehicle_system/src/vehicle/util"
+)
 
-func licenseCron()  {
-	fmt.Println("license....")
-
-
+func licenseCron() {
+	logger.Logger.Print("%s license", util.RunFuncName())
+	logger.Logger.Info("%s license", util.RunFuncName())
 }

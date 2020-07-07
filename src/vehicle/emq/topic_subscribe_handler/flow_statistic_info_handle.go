@@ -21,8 +21,8 @@ func HandleFlowStatisticInfo(vehicleResult protobuf.GWResult, vehicleId string) 
 		return fmt.Errorf("%s unmarshal flowStatisticInfoParam err:%s", util.RunFuncName(), err.Error())
 	}
 	//vehicleId
-	logger.Logger.Print("%s unmarshal flowStatisticInfoParam:%+v", util.RunFuncName(), flowStatisticParam)
-	logger.Logger.Info("%s unmarshal flowStatisticInfoParam:%+v", util.RunFuncName(), flowStatisticParam)
+	logger.Logger.Print("%s handle_flowstatistic:%+v", util.RunFuncName(), *flowStatisticParam)
+	logger.Logger.Info("%s handle_flowstatistic:%+v", util.RunFuncName(), *flowStatisticParam)
 	//create
 	flowStatistic := &model.FlowStatistic{
 		VehicleId:     vehicleId,
@@ -55,8 +55,6 @@ func HandleFlowStatisticInfo(vehicleResult protobuf.GWResult, vehicleId string) 
 
 	//上报
 	//会话状态
-	logger.Logger.Print("%s flowStatistic info %+v", util.RunFuncName(), flowStatistic)
-	logger.Logger.Info("%s flowStatistic info %+v", util.RunFuncName(), flowStatistic)
 
 	pushActionTypeName := protobuf.GWResult_ActionType_name[int32(vehicleResult.ActionType)]
 	pushVehicleid := vehicleId

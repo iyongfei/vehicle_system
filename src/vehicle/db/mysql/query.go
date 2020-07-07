@@ -33,7 +33,7 @@ func QueryRawsqlScanVariable(tname string, selectColumn string, variable interfa
 	if err != nil {
 		return fmt.Errorf("%s open grom err:%v", util.RunFuncName(), err.Error())
 	}
-	err = vgorm.Table(tname).Where(query, args...).Select(selectColumn).Row().Scan(variable) // (*sql.Row)
+	err = vgorm.Debug().Table(tname).Where(query, args...).Select(selectColumn).Row().Scan(variable) // (*sql.Row)
 	if err != nil {
 		return fmt.Errorf("%s err %v", util.RunFuncName(), err.Error())
 	}
@@ -77,7 +77,22 @@ func QueryModelRecordsByWhereCondition(models interface{}, query interface{}, ar
 	if err != nil {
 		return fmt.Errorf("%s open grom err:%v", util.RunFuncName(), err.Error())
 	}
-	err = vgorm.Where(query, args...).Find(models).Error
+	err = vgorm.Debug().Where(query, args...).Find(models).Error
+	if err != nil {
+		return fmt.Errorf("%s err %v", util.RunFuncName(), err.Error())
+	}
+	return nil
+}
+
+/**
+获取某记录排序
+*/
+func QueryModelOneRecordByWhereSelectOrderBy(model interface{}, selects []string, orderBy interface{}, query interface{}, args ...interface{}) error {
+	vgorm, err := GetMysqlInstance().GetMysqlDB()
+	if err != nil {
+		return fmt.Errorf("%s open grom err:%v", util.RunFuncName(), err.Error())
+	}
+	err = vgorm.Where(query, args...).Select(selects).Order(orderBy).First(model).Error
 	if err != nil {
 		return fmt.Errorf("%s err %v", util.RunFuncName(), err.Error())
 	}
@@ -108,6 +123,18 @@ func QueryModelOneRecordByWhereCondition(model interface{}, query interface{}, a
 		return fmt.Errorf("%s open grom err:%v", util.RunFuncName(), err.Error())
 	}
 	err = vgorm.Where(query, args...).First(model).Error
+	if err != nil {
+		return fmt.Errorf("%s err %v", util.RunFuncName(), err.Error())
+	}
+	return nil
+}
+
+func QueryModelLstOneRecordByWhereCondition(model interface{}, query interface{}, args ...interface{}) error {
+	vgorm, err := GetMysqlInstance().GetMysqlDB()
+	if err != nil {
+		return fmt.Errorf("%s open grom err:%v", util.RunFuncName(), err.Error())
+	}
+	err = vgorm.Where(query, args...).Last(model).Error
 	if err != nil {
 		return fmt.Errorf("%s err %v", util.RunFuncName(), err.Error())
 	}

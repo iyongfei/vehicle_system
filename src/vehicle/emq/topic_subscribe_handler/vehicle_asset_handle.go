@@ -33,16 +33,44 @@ func HandleVehicleAsset(vehicleResult protobuf.GWResult, vehicleId string) error
 	if recordNotFound {
 		return fmt.Errorf("%s insert asset vehicleId recordNotFound", util.RunFuncName())
 	}
+
+	//初始化资产默认分组
+	//assetGroup := &model.AreaGroup{
+	//	AreaName:       response.UnGroupName,
+	//	AreaCode:       util.RandomString(32),
+	//	ParentAreaCode: "",
+	//	TreeAreaCode:   "",
+	//}
+	//
+	//assetGroupModelBase := model_base.ModelBaseImpl(assetGroup)
+	//
+	//_, assetGroupRecordNotFound := assetGroupModelBase.GetModelByCondition("area_name = ?",
+	//	[]interface{}{assetGroup.AreaName}...)
+	//
+	//if assetGroupRecordNotFound {
+	//	err := assetGroupModelBase.InsertModel()
+	//	if err != nil {
+	//		return fmt.Errorf("%s insert asset ungroup err:%s", err)
+	//	}
+	//}
+
 	for _, assetItem := range assetParam.GetDeviceItem() {
 		asset := &model.Asset{
-			VehicleId: vehicleId,
-			AssetId:   assetItem.GetMac(),
+			VehicleId:  vehicleId,
+			AssetId:    assetItem.GetMac(),
+			AssetGroup: vehicleInfo.GroupId,
 		}
 
 		modelBase := model_base.ModelBaseImpl(asset)
-		modelBase.CreateModel(assetItem)
+
 		_, recordNotFound := modelBase.GetModelByCondition("asset_id = ?", asset.AssetId)
+		modelBase.CreateModel(assetItem)
+
 		if recordNotFound {
+			//检索白名单列表
+			exist := checkoutAssetPrintInfos(asset.AssetId)
+			asset.AccessNet = exist
+
 			err := modelBase.InsertModel()
 			if err != nil {
 				continue
@@ -50,11 +78,11 @@ func HandleVehicleAsset(vehicleResult protobuf.GWResult, vehicleId string) error
 		} else {
 			//更新
 			attrs := map[string]interface{}{
-				"vehicle_id":       asset.VehicleId,
-				"asset_id":         asset.AssetId,
-				"ip":               asset.IP,
-				"mac":              asset.Mac,
-				"name":             asset.Name,
+				"vehicle_id": asset.VehicleId,
+				"asset_id":   asset.AssetId,
+				"ip":         asset.IP,
+				"mac":        asset.Mac,
+				//"name":             asset.Name,
 				"trade_mark":       asset.TradeMark,
 				"online_status":    asset.OnlineStatus,
 				"last_online":      asset.LastOnline,
@@ -65,11 +93,24 @@ func HandleVehicleAsset(vehicleResult protobuf.GWResult, vehicleId string) error
 				"asset_leader":     asset.AssetLeader,
 			}
 			if err := modelBase.UpdateModelsByCondition(attrs, "asset_id = ?", asset.AssetId); err != nil {
-				//return fmt.Errorf("%s update flow err:%s",util.RunFuncName(),err.Error())
 				continue
 			}
 		}
 	}
 
 	return nil
+}
+
+func checkoutAssetPrintInfos(assetId string) bool {
+	whiteAsset := &model.WhiteAsset{
+		DeviceMac: assetId,
+	}
+	modelBase := model_base.ModelBaseImpl(whiteAsset)
+
+	_, recordNotFound := modelBase.GetModelByCondition("device_mac = ?", whiteAsset.DeviceMac)
+
+	if recordNotFound {
+		return false
+	}
+	return true
 }

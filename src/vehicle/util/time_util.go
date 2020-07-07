@@ -15,6 +15,13 @@ func Str2Time(formatTimeStr string) time.Time {
 }
 
 /**字符串->时间戳*/
+func Str2UnixStamp(formatTimeStr string) int64 {
+	timeStruct := Str2Time(formatTimeStr)
+
+	return timeStruct.Unix()
+}
+
+/**字符串->时间戳*/
 func Str2Stamp(formatTimeStr string) int64 {
 	timeStruct := Str2Time(formatTimeStr)
 	millisecond := timeStruct.UnixNano() / 1e6

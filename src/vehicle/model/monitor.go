@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"strconv"
@@ -100,6 +101,17 @@ type Disk struct {
 	GatherTime uint64
 }
 
+func (tmp *Disk) MarshalJSON() ([]byte, error) {
+	type tempType Disk
+	return json.Marshal(&struct {
+		CreatedAt int64
+		*tempType
+	}{
+		CreatedAt: tmp.CreatedAt.Unix(),
+		tempType:  (*tempType)(tmp),
+	})
+}
+
 func (disk *Disk) InsertModel() error {
 	return mysql.CreateModel(disk)
 }
@@ -153,6 +165,17 @@ type RedisInfo struct {
 	MemRate    float32
 	Mem        uint64
 	GatherTime uint64
+}
+
+func (tmp *RedisInfo) MarshalJSON() ([]byte, error) {
+	type tempType RedisInfo
+	return json.Marshal(&struct {
+		CreatedAt int64
+		*tempType
+	}{
+		CreatedAt: tmp.CreatedAt.Unix(),
+		tempType:  (*tempType)(tmp),
+	})
 }
 
 func (redisInfo *RedisInfo) InsertModel() error {
@@ -212,6 +235,17 @@ type VhaloNets struct {
 	MemRate    float32
 	Mem        uint64
 	GatherTime uint64
+}
+
+func (tmp *VhaloNets) MarshalJSON() ([]byte, error) {
+	type tempType VhaloNets
+	return json.Marshal(&struct {
+		CreatedAt int64
+		*tempType
+	}{
+		CreatedAt: tmp.CreatedAt.Unix(),
+		tempType:  (*tempType)(tmp),
+	})
 }
 
 func (vhaloNets *VhaloNets) InsertModel() error {

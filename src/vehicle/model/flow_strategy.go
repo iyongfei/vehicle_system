@@ -1,8 +1,10 @@
 package model
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/jinzhu/gorm"
+	"time"
 	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/emq/protobuf"
 	"vehicle_system/src/vehicle/util"
@@ -12,10 +14,22 @@ import (
 type Fstrategy struct {
 	gorm.Model
 	FstrategyId string
-	ScvPath     string
+	Name        string
+	CsvPath     string
 	Type        uint8 //策略模式
 	HandleMode  uint8 //处理方式
 	Enable      bool  //策略启用状态
+}
+
+func (fstrategy *Fstrategy) MarshalJSON() ([]byte, error) {
+	type tempType Fstrategy
+	return json.Marshal(&struct {
+		CreatedAt int64
+		*tempType
+	}{
+		CreatedAt: fstrategy.CreatedAt.Unix(),
+		tempType:  (*tempType)(fstrategy),
+	})
 }
 
 func (flowStrategy *Fstrategy) InsertModel() error {
@@ -58,7 +72,12 @@ func (flowStrategy *Fstrategy) CreateModel(flowStrategyParams ...interface{}) in
 
 	flowStrategy.Type = uint8(strategyParam.GetDefenseType())
 	flowStrategy.HandleMode = uint8(strategyParam.GetHandleMode())
-	flowStrategy.Enable = strategyParam.GetEnable()
+	enable := strategyParam.GetEnable()
+	if !enable {
+		flowStrategy.Enable = true
+	} else {
+		flowStrategy.Enable = true
+	}
 	return flowStrategy
 }
 func (flowStrategy *Fstrategy) GetModelPaginationByCondition(pageIndex int, pageSize int, totalCount *int,
@@ -78,6 +97,17 @@ type FstrategyVehicle struct {
 	FstrategyVehicleId string
 	FstrategyId        string
 	VehicleId          string
+}
+
+func (fstrategyVehicle *FstrategyVehicle) MarshalJSON() ([]byte, error) {
+	type tempType FstrategyVehicle
+	return json.Marshal(&struct {
+		CreatedAt int64
+		*tempType
+	}{
+		CreatedAt: fstrategyVehicle.CreatedAt.Unix(),
+		tempType:  (*tempType)(fstrategyVehicle),
+	})
 }
 
 func (flowStrategyVehicle *FstrategyVehicle) InsertModel() error {
@@ -124,6 +154,17 @@ type FstrategyVehicleItem struct {
 	gorm.Model
 	FstrategyVehicleId string
 	FstrategyItemId    string
+}
+
+func (fstrategyVehicleItem *FstrategyVehicleItem) MarshalJSON() ([]byte, error) {
+	type tempType FstrategyVehicleItem
+	return json.Marshal(&struct {
+		CreatedAt int64
+		*tempType
+	}{
+		CreatedAt: fstrategyVehicleItem.CreatedAt.Unix(),
+		tempType:  (*tempType)(fstrategyVehicleItem),
+	})
 }
 
 func (flowStrategyVehicleItem *FstrategyVehicleItem) InsertModel() error {
@@ -174,6 +215,17 @@ type FstrategyItem struct {
 	DstPort         uint32
 }
 
+func (tmp *FstrategyItem) MarshalJSON() ([]byte, error) {
+	type tempType FstrategyItem
+	return json.Marshal(&struct {
+		CreatedAt int64
+		*tempType
+	}{
+		CreatedAt: tmp.CreatedAt.Unix(),
+		tempType:  (*tempType)(tmp),
+	})
+}
+
 func (flowStrategyItem *FstrategyItem) SoftDeleModelImpl(query interface{}, args ...interface{}) error {
 	err := mysql.SoftDeleteModelB(flowStrategyItem, query, args...)
 	if err != nil {
@@ -215,24 +267,29 @@ func (flowStrategyItem *FstrategyItem) CreateModel(strategyParams ...interface{}
 	return flowStrategyItem
 }
 
-/**
-SELECT strategies.*,strategy_vehicles.vehicle_id ,strategy_vehicle_learning_results.learning_result_id FROM strategies
-inner JOIN strategy_vehicles ON strategies.strategy_id = strategy_vehicles.strategy_id
-inner JOIN strategy_vehicle_learning_results ON strategy_vehicles.vehicle_id = strategy_vehicle_learning_results.vehicle_id
-*/
-
 type FlowStrategyVehicleItemJoin struct {
 	gorm.Model
 	FstrategyId string
+	Name        string
+	Type        uint8 //策略模式
+	HandleMode  uint8 //处理方式
+	Enable      bool  //策略启用状态
+	CsvPath     string
+	VehicleId   string
 
-	Type       uint8 //策略模式
-	HandleMode uint8 //处理方式
-	Enable     bool  //策略启用状态
-	ScvPath    string
-	VehicleId  string
+	FstrategyVehicleId string `json:"omitempty"`
+	FstrategyItemId    string `json:"omitempty"`
+}
 
-	FstrategyVehicleId string
-	FstrategyItemId    string
+func (tmp *FlowStrategyVehicleItemJoin) MarshalJSON() ([]byte, error) {
+	type tempType FlowStrategyVehicleItemJoin
+	return json.Marshal(&struct {
+		CreatedAt int64
+		*tempType
+	}{
+		CreatedAt: tmp.CreatedAt.Unix(),
+		tempType:  (*tempType)(tmp),
+	})
 }
 
 func GetFlowStrategyVehicleItems(query string, args ...interface{}) ([]*FlowStrategyVehicleItemJoin, error) {
@@ -253,9 +310,6 @@ func GetFlowStrategyVehicleItems(query string, args ...interface{}) ([]*FlowStra
 	return fstrategyVehicleItemJoin, err
 }
 
-/**
-获取某会话策略下的车载
-*/
 func GetFStrategyVehicles(query string, args ...interface{}) ([]*FlowStrategyVehicleItemJoin, error) {
 	vgorm, err := mysql.GetMysqlInstance().GetMysqlDB()
 	if err != nil {
@@ -264,28 +318,36 @@ func GetFStrategyVehicles(query string, args ...interface{}) ([]*FlowStrategyVeh
 	fstrategyVehicles := []*FlowStrategyVehicleItemJoin{}
 	err = vgorm.Debug().
 		Table("fstrategies").
-		Select("fstrategies.*,fstrategy_vehicles.vehicle_id").
+		Select("fstrategies.*,fstrategy_vehicles.vehicle_id,fstrategy_vehicles.fstrategy_vehicle_id").
 		Where(query, args...).
+		Order("fstrategies.created_at desc").
 		Joins("inner join fstrategy_vehicles ON fstrategies.fstrategy_id = fstrategy_vehicles.fstrategy_id").
 		Scan(&fstrategyVehicles).
 		Error
 	return fstrategyVehicles, err
 }
 
-/**************
-获取某车载的单条会话
-*/
+func GetPaginFStrategyVehicles(pageIndex int, pageSize int, totalCount *int, query interface{}, args ...interface{}) ([]*FlowStrategyVehicleItemJoin, error) {
+	vgorm, err := mysql.GetMysqlInstance().GetMysqlDB()
+	if err != nil {
+		return nil, fmt.Errorf("%s open grom err:%v", util.RunFuncName(), err.Error())
+	}
+	fstrategyVehicles := []*FlowStrategyVehicleItemJoin{}
 
-type VehicleSingleFlowStrategyItemsReult struct {
-	FstrategyId string
-	Type        uint8 //策略模式
-	HandleMode  uint8 //处理方式
-	Enable      bool  //策略启用状态
-	VehicleId   string
+	err = vgorm.Debug().
+		Table("fstrategies").
+		Select("fstrategies.*,fstrategy_vehicles.vehicle_id,fstrategy_vehicles.fstrategy_vehicle_id").
+		Where(query, args...).
+		Order("fstrategies.created_at desc").
+		Joins("inner join fstrategy_vehicles ON fstrategies.fstrategy_id = fstrategy_vehicles.fstrategy_id").
+		Offset((pageIndex - 1) * pageSize).
+		Limit(pageSize).
+		Scan(&fstrategyVehicles).
+		Limit(-1).
+		Count(totalCount).
+		Error
 
-	ScvPath string
-	/////////////////////
-	VehicleFStrategyItemsMap map[string][]uint32
+	return fstrategyVehicles, err
 }
 
 func GetVehicleFStrategy(query string, args ...interface{}) (*FlowStrategyVehicleItemJoin, error) {
@@ -315,6 +377,16 @@ type VehicleSingleFlowStrategyItems struct {
 	DstPort uint32
 }
 
+func (tmp *VehicleSingleFlowStrategyItems) MarshalJSON() ([]byte, error) {
+	type tempType VehicleSingleFlowStrategyItems
+	return json.Marshal(&struct {
+		CreatedAt int64
+		*tempType
+	}{
+		CreatedAt: tmp.CreatedAt.Unix(),
+		tempType:  (*tempType)(tmp),
+	})
+}
 func GetVehicleFStrategyItems(query string, args ...interface{}) ([]*VehicleSingleFlowStrategyItems, error) {
 	vgorm, err := mysql.GetMysqlInstance().GetMysqlDB()
 	if err != nil {
@@ -347,3 +419,26 @@ func GetVehicleFStrategyItems(query string, args ...interface{}) ([]*VehicleSing
 //		Error
 //	return strategyVehicleLearningResultJoins,err
 //}
+/**************
+获取某车载的单条会话
+*/
+
+type Model struct {
+	ID        uint `gorm:"primary_key"`
+	CreatedAt int64
+	UpdatedAt time.Time
+	DeletedAt *time.Time `sql:"index"`
+}
+
+type VehicleSingleFlowStrategyItemsReult struct {
+	Model
+	FstrategyId string
+	Name        string
+	Type        uint8 //策略模式
+	HandleMode  uint8 //处理方式
+	Enable      bool  //策略启用状态
+	CsvPath     string
+
+	VehicleId                string
+	VehicleFStrategyItemsMap map[string][]uint32
+}

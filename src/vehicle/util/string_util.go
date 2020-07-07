@@ -2,7 +2,9 @@ package util
 
 import (
 	"bytes"
+	"fmt"
 	"runtime"
+	"strconv"
 	"strings"
 )
 
@@ -117,3 +119,8 @@ Phone 手机号或固定电话号，有效类型：string，其他类型都将�
 ZipCode 邮政编码，有效类型：string，其他类型都将不能通过验证
 
 */
+
+func Decimal(value float64) float64 {
+	value, _ = strconv.ParseFloat(fmt.Sprintf("%.5f", value), 64)
+	return value
+}

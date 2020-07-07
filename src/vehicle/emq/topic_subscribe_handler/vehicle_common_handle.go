@@ -25,6 +25,7 @@ func HandleVehicleCommonAction(vehicleResult protobuf.GWResult, vehicleId string
 		}
 	}
 
+	//终端初始化
 	vehicleInfo := &model.VehicleInfo{
 		VehicleId: vehicleId,
 		StartTime: time.Now(),
@@ -43,14 +44,15 @@ func HandleVehicleCommonAction(vehicleResult protobuf.GWResult, vehicleId string
 			return fmt.Errorf("%s insert vehicleId:%s,err:%s", util.RunFuncName(), vehicleId, err.Error())
 		}
 	} else {
-		attrs := map[string]interface{}{
-			"group_id": vehicleInfo.GroupId,
-		}
-		if err := modelBase.UpdateModelsByCondition(attrs, "vehicle_id = ?",
-			[]interface{}{vehicleInfo.GroupId}...); err != nil {
-			return fmt.Errorf("%s update vehicle err:%s", util.RunFuncName(), err.Error())
-		}
+		//attrs := map[string]interface{}{
+		//	"group_id": vehicleInfo.GroupId,
+		//}
+		//if err := modelBase.UpdateModelsByCondition(attrs, "vehicle_id = ?",
+		//	[]interface{}{vehicleInfo.GroupId}...); err != nil {
+		//	return fmt.Errorf("%s update vehicle err:%s", util.RunFuncName(), err.Error())
+		//}
 	}
+	//终端资产
 
 	//err = HandleVehicleStrategyInitAction(vehicleId)
 	//if err!=nil{

@@ -70,6 +70,12 @@ func RandOneToMaxNumber(max int) int64 {
 	return r
 }
 
+//[0,10)
+func RandOneToMaxNumberT(max int) int64 {
+	r := rand.New(rand.NewSource(time.Now().UnixNano())).Int63n(int64(max))
+	return r
+}
+
 func GenVersion() string {
 	rand.Seed(time.Now().UnixNano())
 	version := fmt.Sprintf("%d.%d.%d", rand.Intn(10), rand.Intn(10), rand.Intn(10))
