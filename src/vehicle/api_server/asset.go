@@ -74,11 +74,15 @@ func EditAssetInfo(c *gin.Context) {
 	_, _ = modelBase.GetModelByCondition("asset_id = ?", []interface{}{assetInfo.AssetId}...)
 
 	assetFprintCateJoin, _ := model.GetAssetFprintCateJoin("asset_id = ?", []interface{}{assetInfo.AssetId}...)
+	fprintJoinAsset, _ := model.GetFprintJoinAsset("asset_id = ?", []interface{}{assetInfo.AssetId}...)
 
 	AssetJoinFprintJoinCategory := model.AssetJoinFprintJoinCategory{
 		Asset:    assetInfo,
 		CateId:   assetFprintCateJoin.CateId,
 		CateName: assetFprintCateJoin.CateName,
+
+		AutoCateId:   fprintJoinAsset.AutoCateId,
+		AutoCateName: fprintJoinAsset.AutoCateName,
 	}
 
 	responseContent := map[string]interface{}{}
@@ -260,11 +264,15 @@ func EditAsset(c *gin.Context) {
 	_, _ = modelBase.GetModelByCondition("asset_id = ?", []interface{}{assetInfo.AssetId}...)
 
 	assetFprintCateJoin, _ := model.GetAssetFprintCateJoin("asset_id = ?", []interface{}{assetInfo.AssetId}...)
+	fprintJoinAsset, _ := model.GetFprintJoinAsset("asset_id = ?", []interface{}{assetInfo.AssetId}...)
 
 	AssetJoinFprintJoinCategory := model.AssetJoinFprintJoinCategory{
 		Asset:    assetInfo,
 		CateId:   assetFprintCateJoin.CateId,
 		CateName: assetFprintCateJoin.CateName,
+
+		AutoCateId:   fprintJoinAsset.AutoCateId,
+		AutoCateName: fprintJoinAsset.AutoCateName,
 	}
 
 	responseContent := map[string]interface{}{}
@@ -392,7 +400,7 @@ func GetPaginationAssets(c *gin.Context) {
 		c.JSON(http.StatusOK, ret)
 		return
 	}
-
+	//git remote add origin git@192.168.1.4:wangyongfei/vehicle_system.git
 	responseData := map[string]interface{}{
 		"assets":      assets,
 		"total_count": total,
@@ -440,11 +448,15 @@ func GetAsset(c *gin.Context) {
 	_, _ = modelBase.GetModelByCondition("asset_id = ?", []interface{}{assetInfo.AssetId}...)
 
 	assetFprintCateJoin, _ := model.GetAssetFprintCateJoin("asset_id = ?", []interface{}{assetInfo.AssetId}...)
+	fprintJoinAsset, _ := model.GetFprintJoinAsset("asset_id = ?", []interface{}{assetInfo.AssetId}...)
 
 	AssetJoinFprintJoinCategory := model.AssetJoinFprintJoinCategory{
 		Asset:    assetInfo,
 		CateId:   assetFprintCateJoin.CateId,
 		CateName: assetFprintCateJoin.CateName,
+
+		AutoCateId:   fprintJoinAsset.AutoCateId,
+		AutoCateName: fprintJoinAsset.AutoCateName,
 	}
 
 	responseContent := map[string]interface{}{}

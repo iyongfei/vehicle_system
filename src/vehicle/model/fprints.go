@@ -105,3 +105,30 @@ func (flow *Fprint) GetModelPaginationByCondition(pageIndex int, pageSize int, t
 	}
 	return nil
 }
+
+type FprintJoinAsset struct {
+	gorm.Model
+	VehicleId  string
+	AssetId    string
+	AutoCateId string
+
+	//join category
+	AutoCateName string
+}
+
+func GetFprintJoinAsset(query string, args ...interface{}) (*FprintJoinAsset, error) {
+	vgorm, err := mysql.GetMysqlInstance().GetMysqlDB()
+	if err != nil {
+		return nil, fmt.Errorf("%s open grom err:%v", util.RunFuncName(), err.Error())
+	}
+	fprintJoinAsset := &FprintJoinAsset{}
+	err = vgorm.Debug().
+		Table("fprints").
+		Select("fprints.*,categories.name as auto_cate_name").
+		Where(query, args...).
+		Joins("inner JOIN assets ON fprints.asset_id = assets.asset_id").
+		Joins("inner JOIN categories ON categories.cate_id = fprints.auto_cate_id").
+		Scan(&fprintJoinAsset).
+		Error
+	return fprintJoinAsset, err
+}

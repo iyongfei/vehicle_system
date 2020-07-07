@@ -142,8 +142,6 @@ func DeleCategory(c *gin.Context) {
 		return
 	}
 
-	//删除asset_fprints表
-
 	assetPrint := &model.AssetFprint{}
 
 	if err := tx.Unscoped().Where("cate_id = ?", cateId).Delete(assetPrint).Error; err != nil {

@@ -17,7 +17,6 @@ import (
 )
 
 func HandleVehicleFlow(vehicleResult protobuf.GWResult, vehicleId string) error {
-
 	//初始化资产默认分组
 	assetGroup := &model.AreaGroup{
 		AreaName:       response.UnGroupName,
@@ -25,19 +24,16 @@ func HandleVehicleFlow(vehicleResult protobuf.GWResult, vehicleId string) error 
 		ParentAreaCode: "",
 		TreeAreaCode:   "",
 	}
-
 	assetGroupModelBase := model_base.ModelBaseImpl(assetGroup)
-
 	_, assetGroupRecordNotFound := assetGroupModelBase.GetModelByCondition("area_name = ?",
 		[]interface{}{assetGroup.AreaName}...)
-
 	if assetGroupRecordNotFound {
 		err := assetGroupModelBase.InsertModel()
 		if err != nil {
 			return fmt.Errorf("%s insert asset ungroup err:%s", err)
 		}
 	}
-	//parse
+	//解析flows
 	flowParams := &protobuf.FlowParam{}
 	err := proto.Unmarshal(vehicleResult.GetParam(), flowParams)
 	if err != nil {
@@ -47,12 +43,11 @@ func HandleVehicleFlow(vehicleResult protobuf.GWResult, vehicleId string) error 
 	}
 
 	var sendAssetFlows []map[string]interface{}
-
+	//{"id1":{"tls":"tls1","host":"host1"}}
+	//tlsHostMap := map[string]map[string]string{}
 	for _, macItems := range flowParams.MacItems {
 		mac := macItems.GetMac()
-
 		macFlows := macItems.GetFlowItem()
-
 		//创建或者获取asset
 		asset := &model.Asset{
 			VehicleId:  vehicleId,
@@ -77,6 +72,9 @@ func HandleVehicleFlow(vehicleResult protobuf.GWResult, vehicleId string) error 
 		AssetFlows := []interface{}{}
 		//为asset插入flow
 		for _, flowItem := range macFlows {
+
+			//tlsHostMap[mac] =
+
 			flowItemId := flowItem.GetHash()
 			flowInfo := &model.Flow{
 				FlowId:    flowItemId,
@@ -162,31 +160,29 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 		collectTotalRate := fp.CollectTotalRate
 
 		//没有贴标签的进行资产识别
-		//assetPrint := &model.AssetFprint{
-		//	AssetId: mac,
-		//}
-		//assetPrintModelBase := model_base.ModelBaseImpl(assetPrint)
-		//
-		//err, assetPrintRecordNotFound := assetPrintModelBase.GetModelByCondition("asset_id = ?", []interface{}{assetPrint.AssetId}...)
-		//if assetPrintRecordNotFound {
-		//
-		//} else {
-		//
-		//}
-		updateFprintAutoCateId(vehicleId, mac)
+		assetPrint := &model.AssetFprint{
+			AssetId: mac,
+		}
+		assetPrintModelBase := model_base.ModelBaseImpl(assetPrint)
+		err, assetPrintRecordNotFound := assetPrintModelBase.GetModelByCondition("asset_id = ?", []interface{}{assetPrint.AssetId}...)
+
+		if !assetPrintRecordNotFound && collectTotalRate >= conf.MinRate {
+			if fp.AutoCateId == "" {
+				updateFprintAutoCateId(vehicleId, mac)
+			}
+		} else {
+			updateFprintAutoCateId(vehicleId, mac)
+		}
 
 		logger.Logger.Print("%s fprint:%+v", util.RunFuncName(), fp)
 		logger.Logger.Info("%s fprint:%+v", util.RunFuncName(), fp)
+		//收集tls,hostname
 
 		//采集完毕
 		if collectTotalRate >= conf.MinRate {
 			if !fp.CollectFinish {
 				updateAssetCollectTime(mac)
 				updateFprintFinish(vehicleId, mac, true)
-
-				_, _ = fpModelBase.GetModelByCondition("asset_id = ?", []interface{}{fp.AssetId}...)
-				logger.Logger.Print("%s fprint %+v", util.RunFuncName(), fp)
-				logger.Logger.Info("%s fprint %+v", util.RunFuncName(), fp)
 			}
 			continue
 		}
