@@ -73,8 +73,8 @@ func EditAssetInfo(c *gin.Context) {
 
 	_, _ = modelBase.GetModelByCondition("asset_id = ?", []interface{}{assetInfo.AssetId}...)
 
-	assetFprintCateJoin, _ := model.GetAssetFprintCateJoin("asset_id = ?", []interface{}{assetInfo.AssetId}...)
-	fprintJoinAsset, _ := model.GetFprintJoinAsset("asset_id = ?", []interface{}{assetInfo.AssetId}...)
+	assetFprintCateJoin, _ := model.GetAssetFprintCateJoin("asset_fprints.asset_id = ?", []interface{}{assetInfo.AssetId}...)
+	fprintJoinAsset, _ := model.GetFprintJoinAsset("fprints.asset_id = ?", []interface{}{assetInfo.AssetId}...)
 
 	AssetJoinFprintJoinCategory := model.AssetJoinFprintJoinCategory{
 		Asset:    assetInfo,
@@ -263,8 +263,8 @@ func EditAsset(c *gin.Context) {
 
 	_, _ = modelBase.GetModelByCondition("asset_id = ?", []interface{}{assetInfo.AssetId}...)
 
-	assetFprintCateJoin, _ := model.GetAssetFprintCateJoin("asset_id = ?", []interface{}{assetInfo.AssetId}...)
-	fprintJoinAsset, _ := model.GetFprintJoinAsset("asset_id = ?", []interface{}{assetInfo.AssetId}...)
+	assetFprintCateJoin, _ := model.GetAssetFprintCateJoin("asset_fprints.asset_id = ?", []interface{}{assetInfo.AssetId}...)
+	fprintJoinAsset, _ := model.GetFprintJoinAsset("fprints.asset_id = ?", []interface{}{assetInfo.AssetId}...)
 
 	AssetJoinFprintJoinCategory := model.AssetJoinFprintJoinCategory{
 		Asset:    assetInfo,
@@ -370,9 +370,9 @@ func GetPaginationAssets(c *gin.Context) {
 		fEndTime = util.StampUnix2Time(int64(endTime))
 	}
 
-	logger.Logger.Info("%s frequest params vehicle_id:%s,fpageSize:%s,fpageIndex:%s,fStartTime%s,fEndTime%s",
+	logger.Logger.Info("%s frequest params vehicle_id:%s,fpageSize:%d,fpageIndex:%d,fStartTime%s,fEndTime%s",
 		util.RunFuncName(), vehicleId, fpageSize, fpageIndex, fStartTime, fEndTime)
-	logger.Logger.Print("%s frequest params vehicle_id:%s,fpageSize:%s,fpageIndex:%s,fStartTime%s,fEndTime%s",
+	logger.Logger.Print("%s frequest params vehicle_id:%s,fpageSize:%d,fpageIndex:%d,fStartTime%s,fEndTime%s",
 		util.RunFuncName(), vehicleId, fpageSize, fpageIndex, fStartTime, fEndTime)
 
 	assets := []*model.Asset{}
@@ -400,12 +400,61 @@ func GetPaginationAssets(c *gin.Context) {
 		c.JSON(http.StatusOK, ret)
 		return
 	}
-	//git remote add origin git@192.168.1.4:wangyongfei/vehicle_system.git
-	responseData := map[string]interface{}{
-		"assets":      assets,
-		"total_count": total,
+
+	//assetId列表
+	assetIds := []string{}
+	for _, v := range assets {
+		assetIds = append(assetIds, v.AssetId)
+	}
+	if len(assetIds) == 0 {
+		assetIds = append(assetIds, "")
 	}
 
+	//类别识别
+	assetFprintCateJoin, _ := model.GetAssetFprintCateListJoin("asset_fprints.asset_id in (?)", []interface{}{assetIds}...)
+	fprintJoinAsset, _ := model.GetFprintJoinAssetList("fprints.asset_id in (?)", []interface{}{assetIds}...)
+
+	AssetJoinFprintJoinCategorys := []*model.AssetJoinFprintJoinCategoryTmp{}
+
+	for _, asset := range assets {
+		assetJoinFprintJoinCategory := &model.AssetJoinFprintJoinCategoryTmp{}
+
+		model.CreateAssetJoinFprintJoinCategoryTmp(assetJoinFprintJoinCategory, asset)
+
+		assetId := asset.AssetId
+		isInassetFprintCateJoin := false
+		for _, assetFprint := range assetFprintCateJoin {
+			assetFprintAssetId := assetFprint.AssetId
+			if assetFprintAssetId == assetId {
+				assetJoinFprintJoinCategory.CateId = assetFprint.CateId
+				assetJoinFprintJoinCategory.CateName = assetFprint.CateName
+				isInassetFprintCateJoin = true
+			}
+		}
+		if !isInassetFprintCateJoin {
+			assetJoinFprintJoinCategory.CateId = ""
+			assetJoinFprintJoinCategory.CateName = ""
+		}
+		isInfprintJoinAsset := false
+		for _, fprintAsset := range fprintJoinAsset {
+			fprintAssetId := fprintAsset.AssetId
+			if fprintAssetId == assetId {
+				assetJoinFprintJoinCategory.AutoCateId = fprintAsset.AutoCateId
+				assetJoinFprintJoinCategory.AutoCateName = fprintAsset.AutoCateName
+				isInfprintJoinAsset = true
+			}
+		}
+		if !isInfprintJoinAsset {
+			assetJoinFprintJoinCategory.AutoCateId = ""
+			assetJoinFprintJoinCategory.AutoCateName = ""
+		}
+		AssetJoinFprintJoinCategorys = append(AssetJoinFprintJoinCategorys, assetJoinFprintJoinCategory)
+	}
+
+	responseData := map[string]interface{}{
+		"assets":      AssetJoinFprintJoinCategorys,
+		"total_count": total,
+	}
 	retObj := response.StructResponseObj(response.VStatusOK, response.ReqGetAssetListSuccessMsg, responseData)
 	c.JSON(http.StatusOK, retObj)
 }
@@ -447,8 +496,8 @@ func GetAsset(c *gin.Context) {
 
 	_, _ = modelBase.GetModelByCondition("asset_id = ?", []interface{}{assetInfo.AssetId}...)
 
-	assetFprintCateJoin, _ := model.GetAssetFprintCateJoin("asset_id = ?", []interface{}{assetInfo.AssetId}...)
-	fprintJoinAsset, _ := model.GetFprintJoinAsset("asset_id = ?", []interface{}{assetInfo.AssetId}...)
+	assetFprintCateJoin, _ := model.GetAssetFprintCateJoin("asset_fprints.asset_id = ?", []interface{}{assetInfo.AssetId}...)
+	fprintJoinAsset, _ := model.GetFprintJoinAsset("fprints.asset_id = ?", []interface{}{assetInfo.AssetId}...)
 
 	AssetJoinFprintJoinCategory := model.AssetJoinFprintJoinCategory{
 		Asset:    assetInfo,

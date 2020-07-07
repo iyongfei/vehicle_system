@@ -106,7 +106,6 @@ func (asset *Asset) CreateModel(assetParams ...interface{}) interface{} {
 }
 
 type AssetJoinFprintJoinCategory struct {
-	//gorm.Model
 	*Asset
 
 	//join finger_prints
@@ -147,3 +146,66 @@ func (asset *AssetJoinFprintJoinCategory) MarshalJSON() ([]byte, error) {
 //		Error
 //	return assetJoinFprintJoinCategory, err
 //}
+
+type AssetJoinFprintJoinCategoryTmp struct {
+	gorm.Model
+	VehicleId string //关联的小v ID
+	AssetId   string `gorm:"unique"` //资产id
+
+	IP        string //小v资产 IP
+	Mac       string //资产Mac地址
+	Name      string //小v资产名称
+	TradeMark string //资产品牌
+
+	OnlineStatus bool   //在线状态
+	LastOnline   uint32 //最近活跃时间
+
+	InternetSwitch bool //是否允许联网
+	ProtectStatus  bool //是否受小V保护
+	LanVisitSwitch bool //是否可以访问内网
+
+	AssetGroup  string
+	AssetLeader string
+	AccessNet   bool
+
+	//join finger_prints
+	CateId string
+	//join categories
+	CateName string
+
+	AutoCateId   string
+	AutoCateName string
+}
+
+//序列化为数字类型
+func (asset *AssetJoinFprintJoinCategoryTmp) MarshalJSON() ([]byte, error) {
+	type AssetType AssetJoinFprintJoinCategoryTmp
+	return json.Marshal(&struct {
+		CreatedAt int64
+		*AssetType
+	}{
+		CreatedAt: asset.CreatedAt.Unix(),
+		AssetType: (*AssetType)(asset),
+	})
+}
+
+func CreateAssetJoinFprintJoinCategoryTmp(assetTmp *AssetJoinFprintJoinCategoryTmp, asset *Asset) {
+	assetTmp.ID = asset.ID
+	assetTmp.CreatedAt = asset.CreatedAt
+	assetTmp.UpdatedAt = asset.UpdatedAt
+	assetTmp.DeletedAt = asset.DeletedAt
+	assetTmp.VehicleId = asset.VehicleId
+	assetTmp.AssetId = asset.AssetId
+	assetTmp.IP = asset.IP
+	assetTmp.Mac = asset.Mac
+	assetTmp.Name = asset.Name
+	assetTmp.TradeMark = asset.TradeMark
+	assetTmp.OnlineStatus = asset.OnlineStatus
+	assetTmp.LastOnline = asset.LastOnline
+	assetTmp.InternetSwitch = asset.InternetSwitch
+	assetTmp.ProtectStatus = asset.ProtectStatus
+	assetTmp.LanVisitSwitch = asset.LanVisitSwitch
+	assetTmp.AssetGroup = asset.AssetGroup
+	assetTmp.AssetLeader = asset.AssetLeader
+	assetTmp.AccessNet = asset.AccessNet
+}

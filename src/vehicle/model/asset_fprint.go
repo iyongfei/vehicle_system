@@ -106,3 +106,19 @@ func GetAssetFprintCateJoin(query string, args ...interface{}) (*AssetFprintCate
 		Error
 	return assetFprintCateJoin, err
 }
+
+func GetAssetFprintCateListJoin(query string, args ...interface{}) ([]*AssetFprintCateJoin, error) {
+	vgorm, err := mysql.GetMysqlInstance().GetMysqlDB()
+	if err != nil {
+		return nil, fmt.Errorf("%s open grom err:%v", util.RunFuncName(), err.Error())
+	}
+	assetFprintCateListJoin := []*AssetFprintCateJoin{}
+	err = vgorm.Debug().
+		Table("asset_fprints").
+		Select("asset_fprints.*,categories.name as cate_name").
+		Where(query, args...).
+		Joins("inner JOIN categories ON categories.cate_id = asset_fprints.cate_id").
+		Scan(&assetFprintCateListJoin).
+		Error
+	return assetFprintCateListJoin, err
+}
