@@ -63,9 +63,9 @@ var (
 	CollectTimeRate  float64
 	ProtoCountRate   float64
 	CollectBytesRate float64
-	CollectHostRate  float64
-	CollectTlsRate   float64
-	MinRate          float64
+	//CollectHostRate  float64
+	//CollectTlsRate   float64
+	MinRate float64
 
 	//collect_bytes=1048576
 	//collect_bytes_rate=0.2
@@ -166,14 +166,14 @@ func Setup() {
 	CollectTimeRate = iniParser.GetFloat64("fp", "collect_time_rate")
 	ProtoCountRate = iniParser.GetFloat64("fp", "proto_count_rate")
 	CollectBytesRate = iniParser.GetFloat64("fp", "collect_bytes_rate")
-	CollectHostRate = iniParser.GetFloat64("fp", "collect_host_rate")
-	CollectTlsRate = iniParser.GetFloat64("fp", "collect_tls_rate")
+	//CollectHostRate = iniParser.GetFloat64("fp", "collect_host_rate")
+	//CollectTlsRate = iniParser.GetFloat64("fp", "collect_tls_rate")
 	MinRate = iniParser.GetFloat64("fp", "min_rate")
 
-	logger.Logger.Info("collect_time_rate:%f,proto_count_rate:%f,collect_total_rate:%f,collect_host_rate:%f,collect_tls_rate:%f,min_rate:%f",
-		CollectTimeRate, ProtoCountRate, CollectBytesRate, CollectHostRate, CollectTlsRate, MinRate)
-	logger.Logger.Print("collect_time_rate:%f,proto_count_rate:%f,collect_total_rate:%f,collect_host_rate:%f,collect_tls_rate:%f,min_rate:%f",
-		CollectTimeRate, ProtoCountRate, CollectBytesRate, CollectHostRate, CollectTlsRate, MinRate)
+	logger.Logger.Info("collect_time_rate:%f,proto_count_rate:%f,collect_total_rate:%f,min_rate:%f",
+		CollectTimeRate, ProtoCountRate, CollectBytesRate, MinRate)
+	logger.Logger.Print("collect_time_rate:%f,proto_count_rate:%f,collect_total_rate:%f,min_rate:%f",
+		CollectTimeRate, ProtoCountRate, CollectBytesRate, MinRate)
 
 	MainProtoWeight = iniParser.GetFloat64("fp", "main_proto_weight")
 	ProtosKindWeight = iniParser.GetFloat64("fp", "protos_kind_weight")

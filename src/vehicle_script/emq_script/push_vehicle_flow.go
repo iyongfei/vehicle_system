@@ -68,7 +68,7 @@ func creatFlowProtobuf(vehicleId string, InsertAssetids string, flowCount int) [
 				Src2DstPackets:   323232,
 				Dst2SrcPackets:   200,
 				FlowStat:         protobuf.FlowStat_FST_FINISH,
-				HostName:         "",
+				HostName:         "f",
 				Category:         16,
 				HasPassive:       true,
 				IatFlowAvg:       3.2,
@@ -79,7 +79,7 @@ func creatFlowProtobuf(vehicleId string, InsertAssetids string, flowCount int) [
 				PktlenCToSStddev: 233.3,
 				PktlenSToCAvg:    1.333,
 				PktlenSToCStddev: 3.43,
-				TlsClientInfo:    "gggg",
+				TlsClientInfo:    "ggg",
 				Ja3C:             "23_232,kk23",
 			}
 

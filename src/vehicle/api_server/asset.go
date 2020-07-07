@@ -76,6 +76,9 @@ func EditAssetInfo(c *gin.Context) {
 	assetFprintCateJoin, _ := model.GetAssetFprintCateJoin("asset_fprints.asset_id = ?", []interface{}{assetInfo.AssetId}...)
 	fprintJoinAsset, _ := model.GetFprintJoinAsset("fprints.asset_id = ?", []interface{}{assetInfo.AssetId}...)
 
+	if fprintJoinAsset.AutoCateName == "" {
+		fprintJoinAsset.AutoCateName = response.UnKnow
+	}
 	AssetJoinFprintJoinCategory := model.AssetJoinFprintJoinCategory{
 		Asset:    assetInfo,
 		CateId:   assetFprintCateJoin.CateId,
@@ -266,6 +269,10 @@ func EditAsset(c *gin.Context) {
 	assetFprintCateJoin, _ := model.GetAssetFprintCateJoin("asset_fprints.asset_id = ?", []interface{}{assetInfo.AssetId}...)
 	fprintJoinAsset, _ := model.GetFprintJoinAsset("fprints.asset_id = ?", []interface{}{assetInfo.AssetId}...)
 
+	if fprintJoinAsset.AutoCateName == "" {
+		fprintJoinAsset.AutoCateName = response.UnKnow
+	}
+
 	AssetJoinFprintJoinCategory := model.AssetJoinFprintJoinCategory{
 		Asset:    assetInfo,
 		CateId:   assetFprintCateJoin.CateId,
@@ -446,7 +453,7 @@ func GetPaginationAssets(c *gin.Context) {
 		}
 		if !isInfprintJoinAsset {
 			assetJoinFprintJoinCategory.AutoCateId = ""
-			assetJoinFprintJoinCategory.AutoCateName = ""
+			assetJoinFprintJoinCategory.AutoCateName = response.UnKnow
 		}
 		AssetJoinFprintJoinCategorys = append(AssetJoinFprintJoinCategorys, assetJoinFprintJoinCategory)
 	}
@@ -498,6 +505,10 @@ func GetAsset(c *gin.Context) {
 
 	assetFprintCateJoin, _ := model.GetAssetFprintCateJoin("asset_fprints.asset_id = ?", []interface{}{assetInfo.AssetId}...)
 	fprintJoinAsset, _ := model.GetFprintJoinAsset("fprints.asset_id = ?", []interface{}{assetInfo.AssetId}...)
+
+	if fprintJoinAsset.AutoCateName == "" {
+		fprintJoinAsset.AutoCateName = response.UnKnow
+	}
 
 	AssetJoinFprintJoinCategory := model.AssetJoinFprintJoinCategory{
 		Asset:    assetInfo,

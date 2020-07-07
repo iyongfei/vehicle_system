@@ -58,88 +58,88 @@ func GetAssetCollectByteTotal(assetId string) uint64 {
 /**************************************************************************************************
 判断某个设备采集的category
 */
-
-func JudgeAssetCollectTlsInfoRate(assetId string) ([]string, float64) {
-	MAX_TLS_RATE := conf.CollectTlsRate
-	var ftls float64
-
-	tls := GetAssetCollectTlsInfo(assetId)
-
-	if len(tls) == 0 {
-		ftls = 0
-	} else {
-		ftls = MAX_TLS_RATE
-	}
-
-	logger.Logger.Print("%s assetId:%s,tlsInfo:%+v,tlsInfoRate:%f", util.RunFuncName(), assetId, tls, ftls)
-	logger.Logger.Info("%s assetId:%s,tlsInfo:%+v,tlsInfoRate:%f", util.RunFuncName(), assetId, tls, ftls)
-
-	return tls, ftls
-}
-func GetAssetCollectTlsInfo(assetId string) []string {
-	tls := []string{}
-	fprintFlows := []*model.FprintFlow{}
-	err := mysql.QueryModelRecordsByWhereCondition(&fprintFlows, "asset_id = ?", []interface{}{assetId}...)
-
-	for _, fprintFlow := range fprintFlows {
-		tlsInfo := fprintFlow.TlsClientInfo
-		if tlsInfo != "" {
-			if !util.IsExistInSlice(tlsInfo, tls) {
-				tls = append(tls, tlsInfo)
-			}
-
-		}
-	}
-
-	if err != nil {
-		return tls
-	}
-
-	return tls
-}
-
-/**************************************************************************************************
-判断某个设备采集的hostname
-SELECT * FROM flows WHERE vehicle_id = '';
-*/
-
-func JudgeAssetCollectHostNameRate(assetId string) ([]string, float64) {
-	MAX_HOSTNAME_RATE := conf.CollectHostRate
-	var fhost float64
-
-	hostNames := GetAssetCollectHostName(assetId)
-	logger.Logger.Print("%s hostName:%s", util.RunFuncName(), hostNames)
-	logger.Logger.Info("%s hostName:%s", util.RunFuncName(), hostNames)
-
-	if len(hostNames) == 0 {
-		fhost = 0
-	} else {
-		fhost = MAX_HOSTNAME_RATE
-	}
-
-	logger.Logger.Print("%s assetId:%s,hostNames:%+v,fhost:%f", util.RunFuncName(), assetId, hostNames, fhost)
-	logger.Logger.Info("%s assetId:%s,hostNames:%+v,fhost:%f", util.RunFuncName(), assetId, hostNames, fhost)
-	return hostNames, fhost
-}
-
-func GetAssetCollectHostName(assetId string) []string {
-	hostNames := []string{}
-	fprintFlows := []*model.FprintFlow{}
-	err := mysql.QueryModelRecordsByWhereCondition(&fprintFlows, "asset_id = ?", []interface{}{assetId}...)
-
-	for _, fprintFlow := range fprintFlows {
-		hostName := fprintFlow.HostName
-		if hostName != "" {
-			if !util.IsExistInSlice(hostName, hostNames) {
-				hostNames = append(hostNames, hostName)
-			}
-		}
-	}
-	if err != nil {
-		return hostNames
-	}
-	return hostNames
-}
+//
+//func JudgeAssetCollectTlsInfoRate(assetId string) ([]string, float64) {
+//	MAX_TLS_RATE := 0.1
+//	var ftls float64
+//
+//	tls := GetAssetCollectTlsInfo(assetId)
+//
+//	if len(tls) == 0 {
+//		ftls = 0
+//	} else {
+//		ftls = MAX_TLS_RATE
+//	}
+//
+//	logger.Logger.Print("%s assetId:%s,tlsInfo:%+v,tlsInfoRate:%f", util.RunFuncName(), assetId, tls, ftls)
+//	logger.Logger.Info("%s assetId:%s,tlsInfo:%+v,tlsInfoRate:%f", util.RunFuncName(), assetId, tls, ftls)
+//
+//	return tls, ftls
+//}
+//func GetAssetCollectTlsInfo(assetId string) []string {
+//	tls := []string{}
+//	fprintFlows := []*model.FprintFlow{}
+//	err := mysql.QueryModelRecordsByWhereCondition(&fprintFlows, "asset_id = ?", []interface{}{assetId}...)
+//
+//	for _, fprintFlow := range fprintFlows {
+//		tlsInfo := fprintFlow.TlsClientInfo
+//		if tlsInfo != "" {
+//			if !util.IsExistInSlice(tlsInfo, tls) {
+//				tls = append(tls, tlsInfo)
+//			}
+//
+//		}
+//	}
+//
+//	if err != nil {
+//		return tls
+//	}
+//
+//	return tls
+//}
+//
+///**************************************************************************************************
+//判断某个设备采集的hostname
+//SELECT * FROM flows WHERE vehicle_id = '';
+//*/
+//
+//func JudgeAssetCollectHostNameRate(assetId string) ([]string, float64) {
+//	MAX_HOSTNAME_RATE := 0.1
+//	var fhost float64
+//
+//	hostNames := GetAssetCollectHostName(assetId)
+//	logger.Logger.Print("%s hostName:%s", util.RunFuncName(), hostNames)
+//	logger.Logger.Info("%s hostName:%s", util.RunFuncName(), hostNames)
+//
+//	if len(hostNames) == 0 {
+//		fhost = 0
+//	} else {
+//		fhost = MAX_HOSTNAME_RATE
+//	}
+//
+//	logger.Logger.Print("%s assetId:%s,hostNames:%+v,fhost:%f", util.RunFuncName(), assetId, hostNames, fhost)
+//	logger.Logger.Info("%s assetId:%s,hostNames:%+v,fhost:%f", util.RunFuncName(), assetId, hostNames, fhost)
+//	return hostNames, fhost
+//}
+//
+//func GetAssetCollectHostName(assetId string) []string {
+//	hostNames := []string{}
+//	fprintFlows := []*model.FprintFlow{}
+//	err := mysql.QueryModelRecordsByWhereCondition(&fprintFlows, "asset_id = ?", []interface{}{assetId}...)
+//
+//	for _, fprintFlow := range fprintFlows {
+//		hostName := fprintFlow.HostName
+//		if hostName != "" {
+//			if !util.IsExistInSlice(hostName, hostNames) {
+//				hostNames = append(hostNames, hostName)
+//			}
+//		}
+//	}
+//	if err != nil {
+//		return hostNames
+//	}
+//	return hostNames
+//}
 
 /**************************************************************************************************
 判断某个设备采集的协议种类数

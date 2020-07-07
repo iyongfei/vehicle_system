@@ -234,103 +234,6 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 	}
 }
 
-func updateTlsHost(vehicleId string, mac string, macFlows []*protobuf.FItem) {
-	tlsInfoSlice := []string{}
-	hostNameSlice := []string{}
-	for _, flowItem := range macFlows {
-		tlsInfo := flowItem.TlsClientInfo
-		hostName := flowItem.HostName
-		if !util.IsExistInSlice(tlsInfo, tlsInfoSlice) {
-			tlsInfoSlice = append(tlsInfoSlice, tlsInfo)
-		}
-		if !util.IsExistInSlice(hostName, hostNameSlice) {
-			hostNameSlice = append(hostNameSlice, hostName)
-		}
-	}
-
-	////tls
-	//tlsInfoS, _ := model_helper.JudgeAssetCollectTlsInfoRate(mac)
-	//tlsInfoBys, _ := json.Marshal(tlsInfoS)
-	//tlsInfo := string(tlsInfoBys)
-	//
-	////hostname
-	//hostNameS, _ := model_helper.JudgeAssetCollectHostNameRate(mac)
-	//hostNameBys, _ := json.Marshal(hostNameS)
-	//hostName := string(hostNameBys)
-
-	fprint := &model.Fprint{
-		AssetId:   mac,
-		FprintId:  util.RandomString(32),
-		VehicleId: vehicleId,
-	}
-
-	fpModelBase := model_base.ModelBaseImpl(fprint)
-
-	err, recordNotFound := fpModelBase.GetModelByCondition("asset_id = ?", []interface{}{fprint.AssetId}...)
-	if err != nil {
-		//todo
-	}
-	if recordNotFound {
-		err := fprint.InsertModel()
-		if err != nil {
-			//todo
-		}
-	} else {
-		dbHostName := fprint.CollectHost
-		dbTls := fprint.CollectTls
-
-		var ftlsInfoSlice string
-		var fhostNameSlice string
-
-		//tls
-		if dbTls == "" {
-			tlsInfoSliceBys, _ := json.Marshal(tlsInfoSlice)
-			ftlsInfoSlice = string(tlsInfoSliceBys)
-		} else {
-			dbTlsSlice := []string{}
-			_ = json.Unmarshal([]byte(dbTls), &dbTlsSlice)
-
-			for _, tl := range tlsInfoSlice {
-				if !util.IsExistInSlice(tl, dbTlsSlice) {
-					dbTlsSlice = append(dbTlsSlice, tl)
-				}
-			}
-
-			dbTlsSliceBys, _ := json.Marshal(dbTlsSlice)
-			ftlsInfoSlice = string(dbTlsSliceBys)
-		}
-
-		//host
-		if dbHostName == "" {
-			hostNameSliceBys, _ := json.Marshal(hostNameSlice)
-			fhostNameSlice = string(hostNameSliceBys)
-		} else {
-			dbHostSlice := []string{}
-			_ = json.Unmarshal([]byte(dbHostName), &dbHostSlice)
-
-			for _, host := range hostNameSlice {
-				if !util.IsExistInSlice(host, dbHostSlice) {
-					dbHostSlice = append(dbHostSlice, host)
-				}
-			}
-			dbhostSliceBys, _ := json.Marshal(dbHostSlice)
-			fhostNameSlice = string(dbhostSliceBys)
-
-		}
-
-		//更新
-		attrs := map[string]interface{}{
-			"collect_tls":  ftlsInfoSlice,
-			"collect_host": fhostNameSlice,
-		}
-		if err := fpModelBase.UpdateModelsByCondition(attrs, "asset_id = ?", []interface{}{fprint.AssetId}...); err != nil {
-			//todo
-			logger.Logger.Print("%s update flowParam err:%s", util.RunFuncName(), err.Error())
-			logger.Logger.Error("%s update flowParam err:%s", util.RunFuncName(), err.Error())
-		}
-	}
-}
-
 /**
 插入指纹资产
 */
@@ -346,9 +249,6 @@ func updateFprint(vehicleId string, mac string) {
 	protoFlow, fcollectProto := model_helper.JudgeAssetCollectProtoFlowRate(mac)
 	protoFlowBys, _ := json.Marshal(protoFlow)
 	fprotoFlowStr := string(protoFlowBys)
-
-	//识别类别
-	//autoCateId, maxAssetIdValue := model_helper.JudgeAssetCate(mac)
 
 	fprint := &model.Fprint{
 		AssetId:   mac,
@@ -447,6 +347,95 @@ func updateAssetCollectTime(mac string) {
 			"asset_id = ?", []interface{}{fprint.AssetId}...); err != nil {
 			logger.Logger.Print("%s asset:%s,err:%s", util.RunFuncName(), fprint.AssetId, err.Error())
 			logger.Logger.Error("%s asset:%s,err:%s", util.RunFuncName(), fprint.AssetId, err.Error())
+		}
+	}
+}
+
+func updateTlsHost(vehicleId string, mac string, macFlows []*protobuf.FItem) {
+	tlsInfoSlice := []string{}
+	hostNameSlice := []string{}
+	//获取当前的tls,hostname
+	for _, flowItem := range macFlows {
+		tlsInfo := util.RrgsTrim(flowItem.TlsClientInfo)
+		hostName := util.RrgsTrim(flowItem.HostName)
+		if !util.RrgsTrimEmpty(tlsInfo) && !util.IsExistInSlice(tlsInfo, tlsInfoSlice) {
+			tlsInfoSlice = append(tlsInfoSlice, tlsInfo)
+		}
+		if !util.RrgsTrimEmpty(hostName) && !util.IsExistInSlice(hostName, hostNameSlice) {
+			hostNameSlice = append(hostNameSlice, hostName)
+		}
+	}
+
+	fprint := &model.Fprint{
+		AssetId:   mac,
+		FprintId:  util.RandomString(32),
+		VehicleId: vehicleId,
+	}
+	fpModelBase := model_base.ModelBaseImpl(fprint)
+	err, recordNotFound := fpModelBase.GetModelByCondition("asset_id = ?", []interface{}{fprint.AssetId}...)
+	if err != nil {
+		//todo
+	}
+	//赋值
+	dbHostName := fprint.CollectHost
+	dbTls := fprint.CollectTls
+
+	var ftlsInfoStr string
+	var fhostNameStr string
+
+	//tls数据库为空,插入当前,不为空，合并
+	if dbTls == "" {
+		tlsInfoSliceBys, _ := json.Marshal(tlsInfoSlice)
+		ftlsInfoStr = string(tlsInfoSliceBys)
+	} else {
+		dbTlsSlice := []string{}
+		_ = json.Unmarshal([]byte(dbTls), &dbTlsSlice)
+
+		for _, tl := range tlsInfoSlice {
+			if !util.IsExistInSlice(tl, dbTlsSlice) {
+				dbTlsSlice = append(dbTlsSlice, tl)
+			}
+		}
+
+		dbTlsSliceBys, _ := json.Marshal(dbTlsSlice)
+		ftlsInfoStr = string(dbTlsSliceBys)
+	}
+
+	//host数据库为空,插入当前,不为空，合并
+	if dbHostName == "" {
+		hostNameSliceBys, _ := json.Marshal(hostNameSlice)
+		fhostNameStr = string(hostNameSliceBys)
+	} else {
+		dbHostSlice := []string{}
+		_ = json.Unmarshal([]byte(dbHostName), &dbHostSlice)
+
+		for _, host := range hostNameSlice {
+			if !util.IsExistInSlice(host, dbHostSlice) {
+				dbHostSlice = append(dbHostSlice, host)
+			}
+		}
+		dbhostSliceBys, _ := json.Marshal(dbHostSlice)
+		fhostNameStr = string(dbhostSliceBys)
+	}
+
+	fprint.CollectTls = ftlsInfoStr
+	fprint.CollectHost = fhostNameStr
+
+	//插入或者更新
+	if recordNotFound {
+		err := fprint.InsertModel()
+		if err != nil {
+			//todo
+		}
+	} else {
+		attrs := map[string]interface{}{
+			"collect_tls":  ftlsInfoStr,
+			"collect_host": fhostNameStr,
+		}
+		if err := fpModelBase.UpdateModelsByCondition(attrs, "asset_id = ?", []interface{}{fprint.AssetId}...); err != nil {
+			//todo
+			logger.Logger.Print("%s update flowParam err:%s", util.RunFuncName(), err.Error())
+			logger.Logger.Error("%s update flowParam err:%s", util.RunFuncName(), err.Error())
 		}
 	}
 }

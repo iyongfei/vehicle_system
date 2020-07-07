@@ -39,7 +39,8 @@ const (
 
 //指纹库
 const (
-	Vc = "摄像头"
+	Vc     = "摄像头"
+	UnKnow = "未知"
 )
 
 //group

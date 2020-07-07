@@ -71,11 +71,10 @@ func GetAssetFp(assetId string) model.Fprint {
 }
 
 /**
-main_proto_weight = 0.1
-protos_kind_weight = 0.1
-hostname_weight = 0.4
+main_proto_weight = 0.2
+protos_kind_weight = 0.2
+hostname_weight = 0.2
 mac_weight = 0.2
-type_weight = 0.1
 tls_weight = 0.1
 
 min_rate_weight=0.5
@@ -88,7 +87,6 @@ func GetAssetCateMark(assetId string) map[string]float64 {
 	hostnameWeight := conf.HostnameWeight
 	tlsWeight := conf.TlsWeight
 	macWeight := conf.MacWeight
-	typeWeight := conf.TypeWeight
 
 	//MinRateWeight := conf.MinRateWeight
 
@@ -123,7 +121,6 @@ func GetAssetCateMark(assetId string) map[string]float64 {
 		logger.Logger.Print("%s stdAssetId:%s,stdCateMark:%f,,,assetId:%s,assetCateMark:%f", util.RunFuncName(), assetCate.AssetId, stdCateMark, assetId, assetCateMark)
 		logger.Logger.Info("%s stdAssetId:%s,stdCateMark:%f,,,assetId:%s,assetCateMark:%f", util.RunFuncName(), assetCate.AssetId, stdCateMark, assetId, assetCateMark)
 
-		//2、得到标准指纹，占比最多的协议
 		var weightRate float64
 
 		var fprotoKindRate float64   //协议种类的权重
@@ -131,12 +128,11 @@ func GetAssetCateMark(assetId string) map[string]float64 {
 		var fmacWeight float64       //mac权重
 		var fhostnameWeight float64  //host权重
 		var ftlsWeight float64       //tls权重
-		var ftypeWeight float64      //tls权重
 
 		stdProtoKinds := []string{}
 		fpProtoKinds := []string{}
 
-		//3、主协议是否相同
+		//1、主协议是否相同
 		maxKey := ""
 		for k, max := range stdFpProtoFlowMap {
 			maxKey = k
@@ -160,7 +156,7 @@ func GetAssetCateMark(assetId string) map[string]float64 {
 				fpProtoKinds = append(fpProtoKinds, k)
 			}
 		}
-		//协议种类占比
+		//2、协议种类占比
 		if len(stdProtoKinds) == 0 {
 			fprotoKindRate = 0
 			weightRate += fprotoKindRate
@@ -175,7 +171,7 @@ func GetAssetCateMark(assetId string) map[string]float64 {
 		logger.Logger.Info("%s stdAssetId:%s,stdCateProtoKinds:%+v,,,assetId:%s,fpProtoKinds:%v,fmainProtoWeight:%f,fprotoKindRate:%f",
 			util.RunFuncName(), assetCate.AssetId, stdFpProtoFlowMap, assetId, fpProtoFlowMap, fmainProtoWeight, fprotoKindRate)
 
-		//相同的mac地址，厂商
+		//3、相同的mac地址，厂商
 		fpTradeMark := mac.GetOrgByMAC(fp.AssetId)
 		assetCateStdTradeMark := mac.GetOrgByMAC(assetCate.AssetId)
 
@@ -190,7 +186,7 @@ func GetAssetCateMark(assetId string) map[string]float64 {
 		logger.Logger.Info("%s stdAssetId:%s,assetCateStdTradeMark:%s,,,assetId:%s,fpTradeMark:%s,fmacWeight:%f",
 			util.RunFuncName(), assetCate.AssetId, assetCateStdTradeMark, assetId, fpTradeMark, fmacWeight)
 
-		//相同的hostname
+		//4、相同的hostname
 		fpHost := fp.CollectHost
 		assetCateStdHost := assetCate.CollectHost
 
@@ -226,44 +222,8 @@ func GetAssetCateMark(assetId string) map[string]float64 {
 
 		logger.Logger.Print("%s stdAssetId:%s,assetCateStdHostslice:%+v,,,assetId:%s,fpHostslice:%+v,fhostnameWeight:%f",
 			util.RunFuncName(), assetCate.AssetId, assetCateStdHostslice, assetId, fpHostslice, fhostnameWeight)
-		//相同分类
-		fpCategorys := fp.Categorys
-		assetCateStdCategorys := assetCate.Categorys
 
-		var fpCategorySlice []uint32
-		_ = json.Unmarshal([]byte(fpCategorys), &fpCategorySlice)
-
-		var assetCateStdCategorySlice []uint32
-		_ = json.Unmarshal([]byte(assetCateStdCategorys), &assetCateStdCategorySlice)
-
-		commonCategoryMap := []uint32{}
-		for _, category := range assetCateStdCategorySlice {
-			for _, fc := range fpCategorySlice {
-				if fc == category {
-					commonCategoryMap = append(commonCategoryMap, fc)
-				}
-			}
-		}
-
-		if len(assetCateStdCategorys) == 0 {
-			ftypeWeight = 0
-			if len(commonCategoryMap) == 0 {
-				ftypeWeight = typeWeight
-			}
-			weightRate += ftypeWeight
-		} else {
-			categoryRateF := float64(len(commonCategoryMap)) / float64(len(assetCateStdCategorySlice))
-			ftypeWeight = categoryRateF * typeWeight
-			weightRate += ftypeWeight
-		}
-
-		logger.Logger.Info("%s stdAssetId:%s,assetCateStdCategorySlice:%+v,,,assetId:%s,fpCategorySlice:%+v,fcategoryWeight:%f",
-			util.RunFuncName(), assetCate.AssetId, assetCateStdCategorySlice, assetId, fpCategorySlice, ftypeWeight)
-
-		logger.Logger.Print("%s stdAssetId:%s,assetCateStdCategorySlice:%+v,,,assetId:%s,fpCategorySlice:%+v,fcategoryWeight:%f",
-			util.RunFuncName(), assetCate.AssetId, assetCateStdCategorySlice, assetId, fpCategorySlice, ftypeWeight)
-
-		//相同的clienname
+		//5、相同的clienname
 		fpTls := fp.CollectTls
 		assetCateStdTls := assetCate.CollectTls
 
@@ -300,8 +260,6 @@ func GetAssetCateMark(assetId string) map[string]float64 {
 		logger.Logger.Print("%s stdAssetId:%s,assetCateStdTlslice:%+v,,,assetId:%s,fpTlslice:%+v,ftlsWeight:%f",
 			util.RunFuncName(), assetCate.AssetId, assetCateStdTlslice, assetId, fpTlslice, ftlsWeight)
 
-		//相同分类
-
 		assetCateMark = assetCateMark * (1 + weightRate)
 
 		stdCateMark = stdCateMark * (1 + 1)
@@ -323,7 +281,7 @@ func GetAssetCateMark(assetId string) map[string]float64 {
 资产类别识别
 */
 func JudgeAssetCate(assetId string) (string, float64) {
-	MinRateWeight := conf.MinRateWeight //0.5
+	MinRateWeight := conf.MinRateWeight
 
 	var cateId string
 
