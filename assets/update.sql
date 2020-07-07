@@ -29,6 +29,8 @@ call AddColumnUnlessExists('vehicle', 'flows', 'src_dst_packets', 'BIGINT(20) UN
 call AddColumnUnlessExists('vehicle', 'flows', 'dst_src_packets', 'BIGINT(20) UNSIGNED NULL DEFAULT NULL');
 call AddColumnUnlessExists('vehicle', 'flows', 'host_name', 'varchar(255) NULL DEFAULT NULL');
 call AddColumnUnlessExists('vehicle', 'flows', 'category', 'int(11) NULL DEFAULT NULL');
+call AddColumnUnlessExists('vehicle', 'flows', 'slide_s2d_bytes', 'BIGINT(20) UNSIGNED NULL DEFAULT NULL');
+call AddColumnUnlessExists('vehicle', 'flows', 'slide_d2s_bytes', 'BIGINT(20) UNSIGNED NULL DEFAULT NULL');
 call AddColumnUnlessExists('vehicle', 'flows', 'has_passive', 'tinyint(1) NULL DEFAULT NULL');
 call AddColumnUnlessExists('vehicle', 'flows', 'iat_flow_avg', 'double  NULL DEFAULT NULL');
 call AddColumnUnlessExists('vehicle', 'flows', 'iat_flow_stddev', 'double  NULL DEFAULT NULL');
@@ -41,6 +43,7 @@ call AddColumnUnlessExists('vehicle', 'flows', 'pktlen_s_to_c_stddev', 'double  
 call AddColumnUnlessExists('vehicle', 'flows', 'tls_client_info', 'varchar(255) NULL DEFAULT NULL');
 call AddColumnUnlessExists('vehicle', 'flows', 'ja3c', 'varchar(255) NULL DEFAULT NULL');
 //
+
 
 
 
@@ -73,6 +76,8 @@ CREATE TABLE IF NOT EXISTS `fprint_flows`  (
    `dst_src_packets`  BIGINT(20) UNSIGNED NULL DEFAULT NULL,
    `host_name` varchar(255) NULL DEFAULT NULL,
    `category` int(11) NULL DEFAULT NULL,
+  `slide_s2d_bytes`  BIGINT(20) UNSIGNED NULL DEFAULT NULL,
+  `slide_d2s_bytes`  BIGINT(20) UNSIGNED NULL DEFAULT NULL,
    `has_passive` tinyint(1) NULL DEFAULT NULL,
    `iat_flow_avg` double  NULL DEFAULT NULL,
    `iat_flow_stddev` double  NULL DEFAULT NULL,
@@ -108,8 +113,6 @@ CREATE TABLE IF NOT EXISTS `fprints`  (
 
   `collect_proto_flows`  varchar(1000) NULL DEFAULT NULL,
   `collect_proto_rate` double NULL DEFAULT NULL,
-
-  `categorys` varchar(255) NULL DEFAULT NULL,
 
   `collect_host` varchar(255) NULL DEFAULT NULL,
   `collect_host_rate` double NULL DEFAULT NULL,

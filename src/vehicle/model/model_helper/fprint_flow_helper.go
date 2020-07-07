@@ -99,50 +99,6 @@ func GetAssetCollectTlsInfo(assetId string) []string {
 }
 
 /**************************************************************************************************
-判断某个设备采集的tls
-*/
-
-func JudgeAssetCollectCategoryRate(assetId string) ([]uint32, float64) {
-	MAX_CATEGORY_RATE := conf.CollectTlsRate
-	MAX_CATEGORY_RATE = 0
-
-	var categoryRate float64
-
-	categorys := GetAssetCollectCategory(assetId)
-
-	if len(categorys) == 0 {
-		categoryRate = 0
-	} else {
-		categoryRate = MAX_CATEGORY_RATE
-	}
-
-	logger.Logger.Print("%s assetId:%s,categorys:%+v,categoryRate:%f", util.RunFuncName(), assetId, categorys, categoryRate)
-	logger.Logger.Info("%s assetId:%s,categorys:%+v,categoryRate:%f", util.RunFuncName(), assetId, categorys, categoryRate)
-
-	return categorys, categoryRate
-}
-func GetAssetCollectCategory(assetId string) []uint32 {
-	categorys := []uint32{}
-	fprintFlows := []*model.FprintFlow{}
-	err := mysql.QueryModelRecordsByWhereCondition(&fprintFlows, "asset_id = ?", []interface{}{assetId}...)
-
-	for _, fprintFlow := range fprintFlows {
-		category := fprintFlow.Category
-		if category != 0 {
-			if !util.IsExistInSlice(category, categorys) {
-				categorys = append(categorys, category)
-			}
-		}
-	}
-
-	if err != nil {
-		return categorys
-	}
-
-	return categorys
-}
-
-/**************************************************************************************************
 判断某个设备采集的hostname
 SELECT * FROM flows WHERE vehicle_id = '';
 */

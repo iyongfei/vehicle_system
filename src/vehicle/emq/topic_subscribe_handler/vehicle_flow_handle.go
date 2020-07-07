@@ -72,9 +72,6 @@ func HandleVehicleFlow(vehicleResult protobuf.GWResult, vehicleId string) error 
 		AssetFlows := []interface{}{}
 		//为asset插入flow
 		for _, flowItem := range macFlows {
-
-			//tlsHostMap[mac] =
-
 			flowItemId := flowItem.GetHash()
 			flowInfo := &model.Flow{
 				FlowId:    flowItemId,
@@ -232,12 +229,105 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 		updateFprint(vehicleId, mac)
 		//如果没有记录，并且没有
 		updateAssetCollectTime(mac)
+		//更新tls host
+		updateTlsHost(vehicleId, mac, macFlows)
+	}
+}
 
-		//log
-		_, _ = fpModelBase.GetModelByCondition("asset_id = ?", []interface{}{fp.AssetId}...)
+func updateTlsHost(vehicleId string, mac string, macFlows []*protobuf.FItem) {
+	tlsInfoSlice := []string{}
+	hostNameSlice := []string{}
+	for _, flowItem := range macFlows {
+		tlsInfo := flowItem.TlsClientInfo
+		hostName := flowItem.HostName
+		if !util.IsExistInSlice(tlsInfo, tlsInfoSlice) {
+			tlsInfoSlice = append(tlsInfoSlice, tlsInfo)
+		}
+		if !util.IsExistInSlice(hostName, hostNameSlice) {
+			hostNameSlice = append(hostNameSlice, hostName)
+		}
+	}
 
-		logger.Logger.Print("%s fprint %+v", util.RunFuncName(), fp)
-		logger.Logger.Info("%s fprint %+v", util.RunFuncName(), fp)
+	////tls
+	//tlsInfoS, _ := model_helper.JudgeAssetCollectTlsInfoRate(mac)
+	//tlsInfoBys, _ := json.Marshal(tlsInfoS)
+	//tlsInfo := string(tlsInfoBys)
+	//
+	////hostname
+	//hostNameS, _ := model_helper.JudgeAssetCollectHostNameRate(mac)
+	//hostNameBys, _ := json.Marshal(hostNameS)
+	//hostName := string(hostNameBys)
+
+	fprint := &model.Fprint{
+		AssetId:   mac,
+		FprintId:  util.RandomString(32),
+		VehicleId: vehicleId,
+	}
+
+	fpModelBase := model_base.ModelBaseImpl(fprint)
+
+	err, recordNotFound := fpModelBase.GetModelByCondition("asset_id = ?", []interface{}{fprint.AssetId}...)
+	if err != nil {
+		//todo
+	}
+	if recordNotFound {
+		err := fprint.InsertModel()
+		if err != nil {
+			//todo
+		}
+	} else {
+		dbHostName := fprint.CollectHost
+		dbTls := fprint.CollectTls
+
+		var ftlsInfoSlice string
+		var fhostNameSlice string
+
+		//tls
+		if dbTls == "" {
+			tlsInfoSliceBys, _ := json.Marshal(tlsInfoSlice)
+			ftlsInfoSlice = string(tlsInfoSliceBys)
+		} else {
+			dbTlsSlice := []string{}
+			_ = json.Unmarshal([]byte(dbTls), &dbTlsSlice)
+
+			for _, tl := range tlsInfoSlice {
+				if !util.IsExistInSlice(tl, dbTlsSlice) {
+					dbTlsSlice = append(dbTlsSlice, tl)
+				}
+			}
+
+			dbTlsSliceBys, _ := json.Marshal(dbTlsSlice)
+			ftlsInfoSlice = string(dbTlsSliceBys)
+		}
+
+		//host
+		if dbHostName == "" {
+			hostNameSliceBys, _ := json.Marshal(hostNameSlice)
+			fhostNameSlice = string(hostNameSliceBys)
+		} else {
+			dbHostSlice := []string{}
+			_ = json.Unmarshal([]byte(dbHostName), &dbHostSlice)
+
+			for _, host := range hostNameSlice {
+				if !util.IsExistInSlice(host, dbHostSlice) {
+					dbHostSlice = append(dbHostSlice, host)
+				}
+			}
+			dbhostSliceBys, _ := json.Marshal(dbHostSlice)
+			fhostNameSlice = string(dbhostSliceBys)
+
+		}
+
+		//更新
+		attrs := map[string]interface{}{
+			"collect_tls":  ftlsInfoSlice,
+			"collect_host": fhostNameSlice,
+		}
+		if err := fpModelBase.UpdateModelsByCondition(attrs, "asset_id = ?", []interface{}{fprint.AssetId}...); err != nil {
+			//todo
+			logger.Logger.Print("%s update flowParam err:%s", util.RunFuncName(), err.Error())
+			logger.Logger.Error("%s update flowParam err:%s", util.RunFuncName(), err.Error())
+		}
 	}
 }
 
@@ -245,15 +335,6 @@ func handleFprintFlows(vehicleId string, flowParams *protobuf.FlowParam) {
 插入指纹资产
 */
 func updateFprint(vehicleId string, mac string) {
-	//tls
-	tlsInfoS, _ := model_helper.JudgeAssetCollectTlsInfoRate(mac)
-	tlsInfoBys, _ := json.Marshal(tlsInfoS)
-	tlsInfo := string(tlsInfoBys)
-
-	//hostname
-	hostNameS, _ := model_helper.JudgeAssetCollectHostNameRate(mac)
-	hostNameBys, _ := json.Marshal(hostNameS)
-	hostName := string(hostNameBys)
 
 	//totalflowbytes
 	totalBytes, ftatalBytesRate := model_helper.JudgeAssetCollectByteTotalRate(mac)
@@ -288,18 +369,9 @@ func updateFprint(vehicleId string, mac string) {
 	fprint.CollectBytes = totalBytes
 	fprint.CollectBytesRate = ftatalBytesRate
 
-	fprint.CollectTls = tlsInfo
-	//fprint.CollectTlsRate = ftls
-
-	fprint.CollectHost = hostName
-	//fprint.CollectHostRate = fhost
-
 	fprint.CollectTime = collectTime
 	fprint.CollectTimeRate = fcollect_time
 	fprint.CollectTotalRate = fcollectProto + ftatalBytesRate + fcollect_time
-
-	//fprint.AutoCateId = autoCateId
-	//fprint.AutoCateRate = maxAssetIdValue
 
 	logger.Logger.Info("%s updateFprint:%+v", util.RunFuncName(), fprint)
 	logger.Logger.Print("%s updateFprint:%+v", util.RunFuncName(), fprint)
@@ -314,27 +386,15 @@ func updateFprint(vehicleId string, mac string) {
 			"fprint_id":  fprint.FprintId,
 			"vehicle_id": fprint.VehicleId,
 
-			"categorys": fprint.Categorys,
-
 			"collect_proto_flows": fprint.CollectProtoFlows,
 			"collect_proto_rate":  fprint.CollectProtoRate,
 
 			"collect_bytes":      fprint.CollectBytes,
 			"collect_bytes_rate": fprint.CollectBytesRate,
 
-			"collect_tls":      fprint.CollectTls,
-			"collect_tls_rate": fprint.CollectTlsRate,
-
-			"collect_host":      fprint.CollectHost,
-			"collect_host_rate": fprint.CollectHostRate,
-
-			"collect_time":      fprint.CollectTime,
-			"collect_time_rate": fprint.CollectTimeRate,
-
+			"collect_time":       fprint.CollectTime,
+			"collect_time_rate":  fprint.CollectTimeRate,
 			"collect_total_rate": fprint.CollectTotalRate,
-
-			//"auto_cate_id":   fprint.AutoCateId,
-			//"auto_cate_rate": fprint.AutoCateRate,
 		}
 		if err := fpModelBase.UpdateModelsByCondition(attrs, "asset_id = ?", []interface{}{fprint.AssetId}...); err != nil {
 			//todo
@@ -524,6 +584,8 @@ func CreateFlowAttr(fprintFlow *model.Flow) map[string]interface{} {
 		"dst_src_packets":      fprintFlow.DstSrcPackets,
 		"host_name":            fprintFlow.HostName,
 		"category":             fprintFlow.Category,
+		"slide_s2d_bytes":      fprintFlow.SlideS2dBytes,
+		"slide_d2s_bytes":      fprintFlow.SlideD2sBytes,
 		"has_passive":          fprintFlow.HasPassive,
 		"iat_flow_avg":         fprintFlow.IatFlowAvg,
 		"iat_flow_stddev":      fprintFlow.IatFlowStddev,
@@ -557,10 +619,13 @@ func CreateAttr(fprintFlow *model.FprintFlow) map[string]interface{} {
 		"dst_src_bytes":  fprintFlow.DstSrcBytes,
 		"stat":           fprintFlow.Stat,
 		//add
-		"src_dst_packets":      fprintFlow.SrcDstPackets,
-		"dst_src_packets":      fprintFlow.DstSrcPackets,
-		"host_name":            fprintFlow.HostName,
-		"category":             fprintFlow.Category,
+		"src_dst_packets": fprintFlow.SrcDstPackets,
+		"dst_src_packets": fprintFlow.DstSrcPackets,
+		"host_name":       fprintFlow.HostName,
+		"category":        fprintFlow.Category,
+		"slide_s2d_bytes": fprintFlow.SlideS2dBytes,
+		"slide_d2s_bytes": fprintFlow.SlideD2sBytes,
+
 		"has_passive":          fprintFlow.HasPassive,
 		"iat_flow_avg":         fprintFlow.IatFlowAvg,
 		"iat_flow_stddev":      fprintFlow.IatFlowStddev,
