@@ -3,7 +3,6 @@ package api_server
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"vehicle_system/src/vehicle/db/mysql"
 	"vehicle_system/src/vehicle/logger"
 	"vehicle_system/src/vehicle/model"
 	"vehicle_system/src/vehicle/model/model_base"
@@ -121,55 +120,109 @@ func DeleCategory(c *gin.Context) {
 	logger.Logger.Print("%s cateId:%s,cateName%s", util.RunFuncName(), cateId)
 	logger.Logger.Error("%s cateId:%s,cateName%s", util.RunFuncName(), cateId)
 
-	vgorm, err := mysql.GetMysqlInstance().GetMysqlDB()
+	//是否存在
+	cate := &model.Category{
+		CateId: cateId,
+	}
+	cateModelBase := model_base.ModelBaseImpl(cate)
 
+	err, cateRecordNotFound := cateModelBase.GetModelByCondition("cate_id = ?", []interface{}{cate.CateId}...)
+
+	if err != nil {
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqCategoryFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	if cateRecordNotFound {
+		ret := response.StructResponseObj(response.VStatusServerError, response.ReqCategoryNotExistMsg, "")
+		c.JSON(http.StatusOK, ret)
+		return
+	}
+
+	//查看类别是否被使用
+	assetFprint := &model.AssetFprint{
+		CateId: cateId,
+	}
+
+	assetFprintModelBase := model_base.ModelBaseImpl(assetFprint)
+
+	err, exist := assetFprintModelBase.GetModelByCondition("cate_id = ?", []interface{}{assetFprint.CateId}...)
+
+	if err != nil {
+		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqCategoryFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+
+		logger.Logger.Print("%s cateId:%s", util.RunFuncName(), cateId)
+		logger.Logger.Error("%s cateId:%s", util.RunFuncName(), cateId)
+		return
+	}
+
+	if !exist {
+		ret := response.StructResponseObj(response.VStatusBadRequest, response.ReqDeleCategoryExistFailMsg, "")
+		c.JSON(http.StatusOK, ret)
+
+		logger.Logger.Print("%s cateId:%s", util.RunFuncName(), cateId)
+		logger.Logger.Error("%s cateId:%s", util.RunFuncName(), cateId)
+		return
+	}
+
+	err = cateModelBase.DeleModelsByCondition("cate_id = ?", []interface{}{assetFprint.CateId}...)
 	if err != nil {
 		ret := response.StructResponseObj(response.VStatusServerError, response.ReqDeleCategoryFailMsg, "")
 		c.JSON(http.StatusOK, ret)
 		return
 	}
-	tx := vgorm.Begin()
 
-	//dele Category表
-	category := &model.Category{}
-
-	if err := tx.Unscoped().Where("cate_id = ?", cateId).Delete(category).Error; err != nil {
-		tx.Rollback()
-		logger.Logger.Error("%s dele category id:%s, err:%s", util.RunFuncName(), cateId, err)
-		logger.Logger.Print("%s dele category id:%s, err:%s", util.RunFuncName(), cateId, err)
-		ret := response.StructResponseObj(response.VStatusServerError, response.ReqDeleCategoryFailMsg, "")
-		c.JSON(http.StatusOK, ret)
-		return
-	}
-
-	assetPrint := &model.AssetFprint{}
-
-	if err := tx.Unscoped().Where("cate_id = ?", cateId).Delete(assetPrint).Error; err != nil {
-		tx.Rollback()
-		logger.Logger.Error("%s dele assetFprint id:%s, err:%s", util.RunFuncName(), cateId, err)
-		logger.Logger.Print("%s dele assetFprint id:%s, err:%s", util.RunFuncName(), cateId, err)
-		ret := response.StructResponseObj(response.VStatusServerError, response.ReqDeleAssetFprintsCateFailMsg, "")
-		c.JSON(http.StatusOK, ret)
-		return
-	}
-
-	//已经识别的资产转为未知资产
-	fprint := &model.Fprint{}
-
-	attrs := map[string]interface{}{
-		"auto_cate_id": "",
-	}
-
-	if err := tx.Model(fprint).Where("auto_cate_id = ?", []interface{}{cateId}...).Updates(attrs).Error; err != nil {
-		tx.Rollback()
-		logger.Logger.Error("%s update fprint id:%s, err:%s", util.RunFuncName(), cateId, err)
-		logger.Logger.Print("%s update fprint id:%s, err:%s", util.RunFuncName(), cateId, err)
-		ret := response.StructResponseObj(response.VStatusServerError, response.ReqDeleFprintsFailMsg, "")
-		c.JSON(http.StatusOK, ret)
-		return
-	}
-
-	tx.Commit()
+	//vgorm, err := mysql.GetMysqlInstance().GetMysqlDB()
+	//
+	//if err != nil {
+	//	ret := response.StructResponseObj(response.VStatusServerError, response.ReqDeleCategoryFailMsg, "")
+	//	c.JSON(http.StatusOK, ret)
+	//	return
+	//}
+	//tx := vgorm.Begin()
+	//
+	////dele Category表
+	//category := &model.Category{}
+	//
+	//if err := tx.Unscoped().Where("cate_id = ?", cateId).Delete(category).Error; err != nil {
+	//	tx.Rollback()
+	//	logger.Logger.Error("%s dele category id:%s, err:%s", util.RunFuncName(), cateId, err)
+	//	logger.Logger.Print("%s dele category id:%s, err:%s", util.RunFuncName(), cateId, err)
+	//	ret := response.StructResponseObj(response.VStatusServerError, response.ReqDeleCategoryFailMsg, "")
+	//	c.JSON(http.StatusOK, ret)
+	//	return
+	//}
+	//
+	//assetPrint := &model.AssetFprint{}
+	//
+	//if err := tx.Unscoped().Where("cate_id = ?", cateId).Delete(assetPrint).Error; err != nil {
+	//	tx.Rollback()
+	//	logger.Logger.Error("%s dele assetFprint id:%s, err:%s", util.RunFuncName(), cateId, err)
+	//	logger.Logger.Print("%s dele assetFprint id:%s, err:%s", util.RunFuncName(), cateId, err)
+	//	ret := response.StructResponseObj(response.VStatusServerError, response.ReqDeleAssetFprintsCateFailMsg, "")
+	//	c.JSON(http.StatusOK, ret)
+	//	return
+	//}
+	//
+	////已经识别的资产转为未知资产
+	//fprint := &model.Fprint{}
+	//
+	//attrs := map[string]interface{}{
+	//	"auto_cate_id": "",
+	//}
+	//
+	//if err := tx.Model(fprint).Where("auto_cate_id = ?", []interface{}{cateId}...).Updates(attrs).Error; err != nil {
+	//	tx.Rollback()
+	//	logger.Logger.Error("%s update fprint id:%s, err:%s", util.RunFuncName(), cateId, err)
+	//	logger.Logger.Print("%s update fprint id:%s, err:%s", util.RunFuncName(), cateId, err)
+	//	ret := response.StructResponseObj(response.VStatusServerError, response.ReqDeleFprintsFailMsg, "")
+	//	c.JSON(http.StatusOK, ret)
+	//	return
+	//}
+	//
+	//tx.Commit()
 
 	logger.Logger.Print("%s cateId:%s", util.RunFuncName(), cateId)
 	logger.Logger.Info("%s cateId:%s", util.RunFuncName(), cateId)

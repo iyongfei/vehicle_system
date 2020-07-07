@@ -264,6 +264,8 @@ const (
 
 	ReqDeleCategoryFailMsg    = "删除指纹类别失败"
 	ReqDeleCategorySuccessMsg = "删除指纹类别成功"
+
+	ReqDeleCategoryExistFailMsg = "资产类型正在使用中,请修改终端资产类型后删除"
 )
 
 //assetprint
