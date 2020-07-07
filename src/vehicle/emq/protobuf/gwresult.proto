@@ -1,4 +1,4 @@
-syntax = "proto3";
+﻿syntax = "proto3";
 package protobuf;
 //小v请求的基本格式
 message GWResult {
@@ -109,6 +109,9 @@ message FItem {
 
 	string host_name = 17; // DHCP/NETBIOS等协议中携带的主机名称信息
 	uint32 category = 18; // 协议门类
+
+	uint64 slide_s2d_bytes = 20; // 探测时间段内 上行流量(指src->dst方向) 单位:字节
+	uint64 slide_d2s_bytes = 21; // 探测时间段内 下行流量(指dst->src方向) 单位:字节
 
 	// 以下字段在被动指纹探测时输出
 	bool has_passive = 100; // 是否包含被动指纹信息 true: 以下字段有意义 /v1:每次都是true
